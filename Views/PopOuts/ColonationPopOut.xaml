@@ -171,62 +171,62 @@
                             <Border Background="{DynamicResource Overlay_CardBackground}"
                                     BorderBrush="{DynamicResource Overlay_BorderBrush}"
                                     BorderThickness="1"
-                                    CornerRadius="5"                                    
+                                    CornerRadius="5"
                                     Padding="5"
                                     Grid.ColumnSpan="2"
-                                    Margin="10">             
+                                    Margin="10">
                                 <StackPanel>
                                     <TextBlock Text="Header Visibilty"
                                                Margin="5"
                                                Foreground="{DynamicResource Header}"
                                                FontSize="16" />
 
-                                    <CheckBox   IsChecked="{Binding Settings.HeaderVisBool, Mode=OneWay}"
-                                                Style="{DynamicResource EliteStyleCheckBox}"
-                                                Content="Show Column Headers"
-                                                Margin="10,0"
-                                                Command="{Binding Settings.SetHeadersVisCommand}" />
+                                    <CheckBox IsChecked="{Binding Settings.HeaderVisBool, Mode=OneWay}"
+                                              Style="{DynamicResource EliteStyleCheckBox}"
+                                              Content="Show Column Headers"
+                                              Margin="10,0"
+                                              Command="{Binding Settings.SetHeadersVisCommand}" />
 
                                     <TextBlock Text="Columns Visibilty"
                                                Margin="5"
                                                Foreground="{DynamicResource Header}"
                                                FontSize="16" />
 
-                                    <CheckBox   IsChecked="{Binding Settings.NameVis, Converter={StaticResource VisToBoolConverter}, Mode=OneWay}"
-                                                Style="{DynamicResource EliteStyleCheckBox}"
-                                                Content="Show Commodity Column"
-                                                Margin="10,5"
-                                                Command="{Binding Settings.SetColumnVisCommand}"
-                                                CommandParameter="{x:Static settings:ColonisationColumns.Name}"/>
-                                    <CheckBox   IsChecked="{Binding Settings.CategoryVis, Converter={StaticResource VisToBoolConverter}, Mode=OneWay}"
-                                                Style="{DynamicResource EliteStyleCheckBox}"
-                                                Content="Show Category Column"
-                                                Margin="10,5"
-                                                Command="{Binding Settings.SetColumnVisCommand}"
-                                                CommandParameter="{x:Static settings:ColonisationColumns.Category}" />
-                                    <CheckBox   IsChecked="{Binding Settings.MarketStockVis, Converter={StaticResource VisToBoolConverter}, Mode=OneWay}"
-                                                Style="{DynamicResource EliteStyleCheckBox}"
-                                                Content="Show Market Stock Column"
-                                                Margin="10,5"
-                                                Command="{Binding Settings.SetColumnVisCommand}"
-                                                CommandParameter="{x:Static settings:ColonisationColumns.MarketStock}" />
-                                    <CheckBox   IsChecked="{Binding Settings.CarrierStockVis, Converter={StaticResource VisToBoolConverter}, Mode=OneWay}"
-                                                Style="{DynamicResource EliteStyleCheckBox}"
-                                                Content="Show Carrier Stock Column"
-                                                Margin="10,5"
-                                                Command="{Binding Settings.SetColumnVisCommand}"
-                                                CommandParameter="{x:Static settings:ColonisationColumns.CarrierStock}" />
-                                    <CheckBox   IsChecked="{Binding Settings.RemainingVis, Converter={StaticResource VisToBoolConverter}, Mode=OneWay}"
-                                                Style="{DynamicResource EliteStyleCheckBox}"
-                                                Content="Show Remaining Column"
-                                                Margin="10,5"
-                                                Command="{Binding Settings.SetColumnVisCommand}"
-                                                CommandParameter="{x:Static settings:ColonisationColumns.Remaining}" />
+                                    <CheckBox IsChecked="{Binding Settings.NameVis, Converter={StaticResource VisToBoolConverter}, Mode=OneWay}"
+                                              Style="{DynamicResource EliteStyleCheckBox}"
+                                              Content="Show Commodity Column"
+                                              Margin="10,5"
+                                              Command="{Binding Settings.SetColumnVisCommand}"
+                                              CommandParameter="{x:Static settings:ColonisationColumns.Name}" />
+                                    <CheckBox IsChecked="{Binding Settings.CategoryVis, Converter={StaticResource VisToBoolConverter}, Mode=OneWay}"
+                                              Style="{DynamicResource EliteStyleCheckBox}"
+                                              Content="Show Category Column"
+                                              Margin="10,5"
+                                              Command="{Binding Settings.SetColumnVisCommand}"
+                                              CommandParameter="{x:Static settings:ColonisationColumns.Category}" />
+                                    <CheckBox IsChecked="{Binding Settings.MarketStockVis, Converter={StaticResource VisToBoolConverter}, Mode=OneWay}"
+                                              Style="{DynamicResource EliteStyleCheckBox}"
+                                              Content="Show Market Stock Column"
+                                              Margin="10,5"
+                                              Command="{Binding Settings.SetColumnVisCommand}"
+                                              CommandParameter="{x:Static settings:ColonisationColumns.MarketStock}" />
+                                    <CheckBox IsChecked="{Binding Settings.CarrierStockVis, Converter={StaticResource VisToBoolConverter}, Mode=OneWay}"
+                                              Style="{DynamicResource EliteStyleCheckBox}"
+                                              Content="Show Carrier Stock Column"
+                                              Margin="10,5"
+                                              Command="{Binding Settings.SetColumnVisCommand}"
+                                              CommandParameter="{x:Static settings:ColonisationColumns.CarrierStock}" />
+                                    <CheckBox IsChecked="{Binding Settings.RemainingVis, Converter={StaticResource VisToBoolConverter}, Mode=OneWay}"
+                                              Style="{DynamicResource EliteStyleCheckBox}"
+                                              Content="Show Remaining Column"
+                                              Margin="10,5"
+                                              Command="{Binding Settings.SetColumnVisCommand}"
+                                              CommandParameter="{x:Static settings:ColonisationColumns.Remaining}" />
                                 </StackPanel>
                             </Border>
                         </Grid>
                     </Popup>
-                    
+
                     <ComboBox ItemsSource="{Binding Source={StaticResource CommodityEnum}}"
                               SelectedItem="{Binding CommoditySorting}"
                               Visibility="{Binding TitleBarVisibility}"

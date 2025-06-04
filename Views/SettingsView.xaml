@@ -129,8 +129,7 @@
                                               Width="20"
                                               IsHitTestVisible="True"
                                               Style="{DynamicResource CheckBoxStyle}"
-                                              Command="{Binding ElementName=Root, Path=DataContext.ToggleCommanderHidden}"
-                                              IsChecked="{Binding IsHidden, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
+                                              IsChecked="{Binding IsHidden, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
@@ -146,8 +145,7 @@
                                               Width="20"
                                               IsHitTestVisible="True"
                                               Style="{DynamicResource CheckBoxStyle}"
-                                              Command="{Binding ElementName=Root, Path=DataContext.ToggleCommanderUseCAPI}"
-                                              IsChecked="{Binding UseCAPI, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
+                                              IsChecked="{Binding UseCAPI, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>

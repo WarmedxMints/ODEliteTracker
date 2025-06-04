@@ -63,7 +63,7 @@ namespace ODEliteTracker.Stores
         #endregion
 
         #region Logprocessor Implementation
-        public override string StoreName => "Fleetcarrier";
+        public override string StoreName => "Fleet Carrier";
         public override Dictionary<JournalTypeEnum, bool> EventsToParse
         {
             get => new()
@@ -120,6 +120,9 @@ namespace ODEliteTracker.Stores
                     carrierData.AllowNotorious = carrier.AllowNotorious;
                     carrierData.FuelLevel = carrier.FuelLevel;
                     carrierData.Balance = carrier.Finance.CarrierBalance;
+                    carrierData.CarrierID = carrier.CarrierID;
+                    carrierData.Callsign = carrier.Callsign;
+
                     carrierData.AssignCrew(carrier.Crew);
 
                     if(IsLive)
@@ -360,6 +363,7 @@ namespace ODEliteTracker.Stores
             {
                 return;
             }
+
             carrierData ??= new(capiCarrier);
 
             carrierData.FuelLevel = capiCarrier.Fuel;

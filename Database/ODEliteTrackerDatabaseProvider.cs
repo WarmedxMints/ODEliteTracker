@@ -258,6 +258,7 @@ namespace ODEliteTracker.Database
             using var context = _contextFactory.CreateDbContext();
 
             var entries = context.JournalEntries
+                .Where(x => x.EventTypeId == (int)JournalTypeEnum.Shutdown)
                 .Select(x => x.Filename)
                 .Distinct()
                 .ToHashSet();

@@ -1,9 +1,12 @@
 ﻿using EliteJournalReader.Events;
+using NLog;
 using ODCapi.Models;
 using ODCapi.Services;
 using ODEliteTracker.Stores;
 using ODJournalDatabase.Database.Interfaces;
 using ODJournalDatabase.JournalManagement;
+using ODMVVM.Services.MessageBox;
+using System.Windows.Forms;
 
 namespace ODEliteTracker.Services
 {
@@ -22,9 +25,13 @@ namespace ODEliteTracker.Services
             this.capiService = cAPIService;
             this.eventParser.OnJournalEventReceived += EventParser_OnJournalEventReceived;
             this.eventParser.LiveStatusChange += async (sender, e) => await EventParser_LiveStatusChange(sender, e);
+
+            this.capiService.ErrorString += OnCAPIErrorString;
+            this.capiService.ErrorException += OnCAPIErrorException;
         }
- 
         #endregion
+
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private readonly JournalEventParser eventParser;
         private readonly SettingsStore settingsStore;
@@ -242,10 +249,26 @@ namespace ODEliteTracker.Services
                 || CanCallCAPI == false)
             {
                 return null;
-            }
-            lastCAPICall = DateTime.UtcNow;
+            }           
 
-            return await capiService.GetCarrier(selectedCommander.Name);
+            var ret = await capiService.GetCarrier(selectedCommander.Name);
+
+            if (ret != null)
+            {
+                lastCAPICall = DateTime.UtcNow;
+            }
+
+            return ret;
+        }
+
+        private void OnCAPIErrorException(object? sender, Exception e)
+        {
+            Logger.Error(e);
+        }
+
+        private void OnCAPIErrorString(object? sender, string e)
+        {
+            ODDialogService.ShowNoOwner("CAPI Error", e, System.Windows.MessageBoxButton.OK);
         }
     }
 }

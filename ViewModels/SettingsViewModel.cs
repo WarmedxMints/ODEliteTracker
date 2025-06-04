@@ -35,8 +35,6 @@ namespace ODEliteTracker.ViewModels
             SetTheme = new ODRelayCommand<Theme>(OnChangeTheme);
             OpenUrlCommand = new ODRelayCommand<string>(OpenUrl);
 
-            ToggleCommanderHidden = new ODRelayCommand(OnToggleCommanderHidden, (_) => SelectedCommander != null && SelectedCommander?.Id != setting.SelectedCommanderID);
-            ToggleCommanderUseCAPI = new ODRelayCommand(OnToggleCommanderUseCAPI, (_) => SelectedCommander != null);
             ResetLastReadFile = new ODRelayCommand(OnResetLastFile, (_) => SelectedCommander != null && SelectedCommander?.Id != setting.SelectedCommanderID);
             ChangeJourneyDirectoryCommand = new ODAsyncRelayCommand(OnChangeJournalDirectory, () => SelectedCommander != null && SelectedCommander?.Id != setting.SelectedCommanderID);
             SaveCommanderChanges = new ODAsyncRelayCommand(OnSaveCommanderChanges, () => SelectedCommander != null);
@@ -114,8 +112,6 @@ namespace ODEliteTracker.ViewModels
         #region Commands
         public ICommand SetTheme { get; }
         public ICommand OpenUrlCommand { get; }
-        public ICommand ToggleCommanderHidden { get; }
-        public ICommand ToggleCommanderUseCAPI { get; }
         public ICommand ResetLastReadFile { get; }
         public ICommand ChangeJourneyDirectoryCommand { get; }
         public ICommand SaveCommanderChanges { get; }
@@ -170,18 +166,6 @@ namespace ODEliteTracker.ViewModels
             ODMVVM.Helpers.OperatingSystem.OpenUrl(url);
         }
 
-        private void OnToggleCommanderHidden(object? obj)
-        {
-            if (SelectedCommander != null)
-                SelectedCommander.IsHidden = !SelectedCommander.IsHidden;
-        }
-        
-        private void OnToggleCommanderUseCAPI(object? obj)
-        {
-            if (SelectedCommander != null)
-                SelectedCommander.UseCAPI = !SelectedCommander.UseCAPI;
-        }
-
         private async Task OnChangeJournalDirectory()
         {
             if (SelectedCommander == null)
@@ -234,7 +218,7 @@ namespace ODEliteTracker.ViewModels
 
         private async Task OnSaveCommanderChanges()
         {
-            if (SelectedCommander == null)
+            if (JournalCommanderViews == null || JournalCommanderViews.Count == 0)
                 return;
 
             foreach (var commander in JournalCommanderViews)

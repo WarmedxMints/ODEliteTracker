@@ -64,5 +64,15 @@ namespace ODEliteTracker.ViewModels.ModelViews.Compass
 				OnPropertyChanged(nameof(Name));
 			}
 		}
-	}
+
+        internal void Reset()
+        {
+            Name = string.Empty;
+			BodyName = string.Empty;
+			BodyID = 0;
+			SystemAddress = 0;
+			Longitude = 0;
+			Latitude = 0;
+        }
+    }
 }

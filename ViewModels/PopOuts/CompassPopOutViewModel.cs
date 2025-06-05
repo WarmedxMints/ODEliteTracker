@@ -84,8 +84,8 @@ namespace ODEliteTracker.ViewModels.PopOuts
                 OnPropertyChanged(nameof(CompassSettings));
             }
         }
-        private BookmarkViewModel? currentTarget;
-        public BookmarkViewModel? CurrentTarget
+        private BookmarkViewModel currentTarget = new();
+        public BookmarkViewModel CurrentTarget
         {
             get
             {
@@ -131,17 +131,27 @@ namespace ODEliteTracker.ViewModels.PopOuts
             }
         }
 
+        private bool validLat;
+        public bool ValidLat
+        {
+            get => validLat;
+            set
+            {
+                validLat = value;
+                OnPropertyChanged(nameof(ValidLat));
+            }
+        }
+
         private string targetLat = string.Empty;
         public string TargetLat
         {
             get => targetLat;
             set
             {
-                var valid = double.TryParse(value, out var lat);
+                ValidLat = double.TryParse(value, out var lat) && lat >= -90 && lat <= 90;
 
-                if (valid)
+                if (ValidLat)
                 {
-                    CurrentTarget ??= new();
                     CurrentTarget.Latitude = lat;
                 }
                 targetLat = value;
@@ -151,16 +161,27 @@ namespace ODEliteTracker.ViewModels.PopOuts
 
         private double currentLat, currentLon;
 
+        private bool validLon;
+        public bool ValidLon
+        {
+            get => validLon;
+            set
+            {
+                validLon = value;
+                OnPropertyChanged(nameof(ValidLon));
+            }
+
+        }
+
         private string targetLon = string.Empty;
         public string TargetLon
         {
             get => targetLon;
             set
             {
-                var valid = double.TryParse(value, out var lon);
-                if (valid)
+                ValidLon = double.TryParse(value, out var lon) && lon <= 180 && lon >= -180;
+                if (ValidLon)
                 {
-                    CurrentTarget ??= new();
                     CurrentTarget.Longitude = lon;
                 }
                 targetLon = value;
@@ -225,7 +246,7 @@ namespace ODEliteTracker.ViewModels.PopOuts
 
         private void OnClearTarget(object? obj)
         {
-            CurrentTarget = null;
+            CurrentTarget.Reset();
             TargetLat = string.Empty;
             TargetLon = string.Empty;
             TargetHeading = null;
@@ -357,7 +378,7 @@ namespace ODEliteTracker.ViewModels.PopOuts
             if (currentTarget == null)
                 return;
 
-            var distance = onFoot ? CompassMath.CalculateDistance(currentLat,
+            var distance = altitude < 1000 ? CompassMath.CalculateDistance(currentLat,
                                                                   currentLon,
                                                                   currentTarget.Latitude,
                                                                   currentTarget.Longitude,

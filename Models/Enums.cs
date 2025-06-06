@@ -117,6 +117,24 @@ namespace ODEliteTracker.Models
         Wing
     }
 
+    public enum MassacreStackSorting
+    {
+        [Description("Issuing Faction")]
+        IssuingFaction,
+        [Description("Target Faction")]
+        TargetFaction,
+        [Description("Reward")]
+        Reward,
+        [Description("Total Kills")]
+        Kills,
+        [Description("Remaining Kills")]
+        Remaining,
+        [Description("Kills Difference")]
+        Difference,
+        [Description("Mission Count")]
+        MissionCount
+    }
+
     public enum LandingPadSize
     {
         Small,

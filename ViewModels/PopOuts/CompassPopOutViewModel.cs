@@ -1,7 +1,6 @@
 ﻿using EliteJournalReader.Events;
 using Newtonsoft.Json.Linq;
 using ODCompass;
-using ODEliteTracker.Models.Bookmarks;
 using ODEliteTracker.Models.Galaxy;
 using ODEliteTracker.Models.Settings;
 using ODEliteTracker.Services;
@@ -16,6 +15,7 @@ using ODMVVM.Extensions;
 using ODMVVM.Helpers;
 using ODMVVM.ViewModels;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Input;
 
@@ -148,7 +148,7 @@ namespace ODEliteTracker.ViewModels.PopOuts
             get => targetLat;
             set
             {
-                ValidLat = double.TryParse(value, out var lat) && lat >= -90 && lat <= 90;
+                ValidLat = double.TryParse(value, CultureInfo.InvariantCulture, out var lat ) && lat >= -90 && lat <= 90;
 
                 if (ValidLat)
                 {
@@ -179,7 +179,7 @@ namespace ODEliteTracker.ViewModels.PopOuts
             get => targetLon;
             set
             {
-                ValidLon = double.TryParse(value, out var lon) && lon <= 180 && lon >= -180;
+                ValidLon = double.TryParse(value, CultureInfo.InvariantCulture, out var lon) && lon <= 180 && lon >= -180;
                 if (ValidLon)
                 {
                     CurrentTarget.Longitude = lon;

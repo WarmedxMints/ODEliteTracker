@@ -1,6 +1,7 @@
 ﻿using ODEliteTracker.Models.Bookmarks;
 using ODEliteTracker.ViewModels.ModelViews.Galaxy;
 using ODMVVM.ViewModels;
+using System.Globalization;
 
 namespace ODEliteTracker.ViewModels.ModelViews.Bookmarks
 {
@@ -108,7 +109,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Bookmarks
             set
             {
                 latString = value;
-                if(double.TryParse(value, out var lat))
+                if(double.TryParse(value, CultureInfo.InvariantCulture, out var lat))
                 {
                     latitude = lat;
                 }
@@ -134,7 +135,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Bookmarks
             set
             {
                 lonString = value;
-                if(double.TryParse(value, out var lon))
+                if(double.TryParse(value, CultureInfo.InvariantCulture, out var lon))
                 {
                     longitude = lon;
                 }

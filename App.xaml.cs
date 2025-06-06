@@ -15,7 +15,7 @@ namespace ODEliteTracker
     /// </summary>
     public partial class App
     {
-        public static Version AppVersion { get; internal set; } = new Version(1, 3, 6);
+        public static Version AppVersion { get; internal set; } = new Version(1, 3, 7);
 
 #if INSTALL || DEBUG
         public readonly static string BaseDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ODEliteTracker");
@@ -68,21 +68,21 @@ namespace ODEliteTracker
                 builder.ForLogger().FilterMinLevel(LogLevel.Debug).WriteToFile(fileName: Path.Combine(BaseDirectory, "Logs", "Error.txt"));
             });
 
-            await _host.StartAsync();            
-
-            //Disable shutdown when the dialog closes
-            ShutdownMode = ShutdownMode.OnExplicitShutdown;
-            var updateWindow = Services.GetRequiredService<LoaderWindow>();
-            if (updateWindow.ShowDialog() is bool v && !v)
-            {
-                Shutdown();
-                return;
-            }
+            await _host.StartAsync();
 
             var settings = Services.GetRequiredService<SettingsStore>();
             settings.LoadSettings();
-            ShutdownMode = ShutdownMode.OnMainWindowClose;
 
+            //Disable shutdown when the dialog closes
+            ShutdownMode = ShutdownMode.OnExplicitShutdown; 
+            var updateWindow = Services.GetRequiredService<LoaderWindow>();
+            if (updateWindow.ShowDialog() is bool v && !v)
+            {
+                Shutdown(1);
+                return;
+            }
+
+            ShutdownMode = ShutdownMode.OnMainWindowClose;
             var mainWindow = Services.GetRequiredService<MainWindow>();
             mainWindow.Show();
         }
@@ -92,10 +92,12 @@ namespace ODEliteTracker
         /// </summary>
         private async void OnExit(object sender, ExitEventArgs e)
         {
-            var settings = Services.GetRequiredService<SettingsStore>();
-            settings.SaveSettings();
+            if (e.ApplicationExitCode == 0)
+            {
+                var settings = Services.GetRequiredService<SettingsStore>();
+                settings.SaveSettings();
+            }
             await _host.StopAsync();
-
             _host.Dispose();
         }
 

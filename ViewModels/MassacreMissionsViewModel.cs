@@ -35,7 +35,7 @@ namespace ODEliteTracker.ViewModels
 
         private void OnCurrentStationChanged(object? sender, string? e)
         {
-            foreach(var mission in activeMissions)
+            foreach (var mission in activeMissions)
             {
                 mission.UpdateStation(sharedDataStore.CurrentMarketID);
             }
@@ -57,16 +57,35 @@ namespace ODEliteTracker.ViewModels
         private readonly SettingsStore settings;
         private readonly Timer expiryTimeUpdateTimer;
 
+        public MassacreStackSorting StackSorting
+        {
+            get => settings.MassacreSettings.StackSorting;
+            set
+            {
+                settings.MassacreSettings.StackSorting = value;
+                OnPropertyChanged(nameof(StackSorting));
+                OnPropertyChanged(nameof(Stacks));
+            }
+        }
+
         private readonly List<MassacreStackVM> stacks = [];
         public IEnumerable<MassacreStackVM> Stacks
         {
             get
             {
-                if (HideCompletedStacks)
+                var massacreStacks = HideCompletedStacks ? stacks.Where(x => x.ActiveMissionCount > 0 && x.KillsRemaining > 0)
+                    : stacks.Where(x => x.ActiveMissionCount > 0);
+
+                return StackSorting switch
                 {
-                    return stacks.Where(x => x.ActiveMissionCount > 0 && x.KillsRemaining > 0).OrderBy(x => x.IssuingFaction);
-                }
-                return stacks.Where(x => x.ActiveMissionCount > 0).OrderBy(x => x.IssuingFaction);
+                    MassacreStackSorting.TargetFaction => massacreStacks.OrderBy(x => x.IssuingFaction).ThenBy(x => x.TargetFaction),
+                    MassacreStackSorting.Reward => massacreStacks.OrderByDescending(x => x.Reward),
+                    MassacreStackSorting.Kills => massacreStacks.OrderByDescending(x => x.Kills),
+                    MassacreStackSorting.Remaining => massacreStacks.OrderByDescending(x => x.KillsRemaining),
+                    MassacreStackSorting.Difference => massacreStacks.OrderByDescending(x => x.KillDifference),
+                    MassacreStackSorting.MissionCount => massacreStacks.OrderByDescending(x => x.ActiveMissionCount),
+                    _ => massacreStacks.OrderBy(x => x.IssuingFaction),
+                };
             }
         }
 
@@ -131,7 +150,7 @@ namespace ODEliteTracker.ViewModels
             set
             {
                 settings.MassacreSettings.MissionSorting = value;
-                OnPropertyChanged(nameof(Sorting)); 
+                OnPropertyChanged(nameof(Sorting));
                 OnPropertyChanged(nameof(ActiveMissions));
                 OnPropertyChanged(nameof(CompletedMissions));
             }
@@ -160,7 +179,7 @@ namespace ODEliteTracker.ViewModels
                                         .GroupBy(x => x.TargetFaction)
                                         .ToDictionary(x => x.Key, x => x.ToList());
 
-            
+
             FactionStacks = factionMissions.Count != 0 ? [.. factionMissions.Select(x => new FactionStackVM(x.Key, x.Value))] : [];
 
             SetMissionCollections();
@@ -208,14 +227,14 @@ namespace ODEliteTracker.ViewModels
 
             var knownFactionStack = FactionStacks.FirstOrDefault(x => string.Equals(x.TargetFaction, e.TargetFaction));
 
-            if(knownFactionStack != null)
+            if (knownFactionStack != null)
             {
                 knownFactionStack.AddMission(mission);
                 return;
             }
 
             FactionStacks.AddItem(new(e.TargetFaction, [mission]));
-           
+
         }
 
         private void OnMissionUpdated(object? sender, MassacreMission e)
@@ -231,7 +250,7 @@ namespace ODEliteTracker.ViewModels
             stack?.UpdateKills();
 
             if (e.CurrentState >= MissionState.Completed)
-            {               
+            {
 
                 if (stack != null && stack.UpdateMission(e))
                 {
@@ -247,7 +266,7 @@ namespace ODEliteTracker.ViewModels
                 return;
             }
 
-            if(factionStack.Update(mission) && factionStack.CurrentMissionCount == 0)
+            if (factionStack.Update(mission) && factionStack.CurrentMissionCount == 0)
             {
                 FactionStacks.RemoveItem(factionStack);
             }

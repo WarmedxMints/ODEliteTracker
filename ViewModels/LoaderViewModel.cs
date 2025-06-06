@@ -59,7 +59,7 @@ namespace ODEliteTracker.ViewModels
                         if (update == MessageBoxResult.Yes) 
                             Process.Start(filePath);
 
-                        Application.Current.Shutdown();
+                        Application.Current.Shutdown(1);
                         return;
                     }                    
                 }

@@ -21,6 +21,14 @@
                 <x:Type TypeName="models:MissionSorting" />
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
+
+        <ObjectDataProvider x:Key="StackSortingEnum"
+                            MethodName="GetValues"
+                            ObjectType="{x:Type System:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="models:MassacreStackSorting" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
     </UserControl.Resources>
     <busyIndicator:BusyMask x:Name="BusyIndicator"
                             IsBusy="{Binding IsBusy}"
@@ -387,6 +395,20 @@
                                     Padding="10">
                                 <StackPanel Orientation="Horizontal"
                                             Grid.Row="1">
+                                    <TextBlock Text="Stack Sorting"
+                                               VerticalAlignment="Center"
+                                               Margin="5" />
+                                    <ComboBox ItemsSource="{Binding Source={StaticResource StackSortingEnum}}"
+                                              SelectedItem="{Binding StackSorting, Mode=TwoWay}"
+                                              Tag="Up"
+                                              Width="150"
+                                              Margin="5">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}" />
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
                                     <CheckBox Style="{DynamicResource EliteStyleCheckBox}"
                                               IsThreeState="False"
                                               VerticalAlignment="Center"

@@ -391,6 +391,14 @@ namespace ODEliteTracker.Stores
                 case ShipTargetedEvent.ShipTargetedEventArgs shipTargetedData:
                     if (string.IsNullOrEmpty(shipTargetedData.Faction))
                         break;
+
+                    var name = shipTargetedData.PilotName_Localised ?? shipTargetedData.PilotName;
+
+                    if(shipTargets.ContainsKey(name))
+                    {
+                        shipTargets[name] = shipTargetedData.Faction;
+                        return;
+                    }
                     shipTargets.TryAdd(shipTargetedData.PilotName_Localised ?? shipTargetedData.PilotName, shipTargetedData.Faction);
                     break;
                 case MusicEvent.MusicEventArgs music:

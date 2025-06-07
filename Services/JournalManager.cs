@@ -6,7 +6,7 @@ using ODEliteTracker.Stores;
 using ODJournalDatabase.Database.Interfaces;
 using ODJournalDatabase.JournalManagement;
 using ODMVVM.Services.MessageBox;
-using System.Windows.Forms;
+using System.Windows;
 
 namespace ODEliteTracker.Services
 {
@@ -268,7 +268,10 @@ namespace ODEliteTracker.Services
 
         private void OnCAPIErrorString(object? sender, string e)
         {
-            ODDialogService.ShowNoOwner("CAPI Error", e, System.Windows.MessageBoxButton.OK);
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                ODDialogService.ShowNoOwner("CAPI Error", e, MessageBoxButton.OK);
+            });
         }
     }
 }

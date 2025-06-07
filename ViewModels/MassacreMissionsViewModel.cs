@@ -274,6 +274,8 @@ namespace ODEliteTracker.ViewModels
             OnPropertyChanged(nameof(ActiveMissionCount));
             OnPropertyChanged(nameof(RedirectedMissionCount));
             OnPropertyChanged(nameof(Stacks));
+            OnPropertyChanged(nameof(ActiveMissions));
+            OnPropertyChanged(nameof(CompletedMissions));
         }
 
         private void OnMissionsUpdated(object? sender, EventArgs e)

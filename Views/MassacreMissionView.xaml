@@ -375,6 +375,7 @@
                                                Margin="5" />
                                     <ComboBox ItemsSource="{Binding Source={StaticResource MissionSortingEnum}}"
                                               SelectedItem="{Binding Sorting, Mode=TwoWay}"
+                                              Style="{DynamicResource TopPlacementComboBox}"
                                               Tag="Up"
                                               Width="150"
                                               Margin="5">
@@ -400,6 +401,7 @@
                                                Margin="5" />
                                     <ComboBox ItemsSource="{Binding Source={StaticResource StackSortingEnum}}"
                                               SelectedItem="{Binding StackSorting, Mode=TwoWay}"
+                                              Style="{DynamicResource TopPlacementComboBox}"
                                               Tag="Up"
                                               Width="150"
                                               Margin="5">

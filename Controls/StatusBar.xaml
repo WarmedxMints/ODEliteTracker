@@ -33,6 +33,7 @@
         
         <ComboBox ItemsSource="{Binding JournalCommanders}"
                   SelectedValue="{Binding SelectedCommander}"
+                  Style="{DynamicResource TopPlacementComboBox}"
                   DisplayMemberPath="Name"
                   Margin="5,0,10,0"
                   Grid.Column="2"

@@ -15,7 +15,7 @@ namespace ODEliteTracker
     /// </summary>
     public partial class App
     {
-        public static Version AppVersion { get;  } = new Version(1, 3, 9);
+        public static Version AppVersion { get; } = new Version(1, 3, 10);
 
 #if INSTALL
         public readonly static string BaseDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ODEliteTracker");
@@ -70,9 +70,6 @@ namespace ODEliteTracker
 
             await _host.StartAsync();
 
-            var settings = Services.GetRequiredService<SettingsStore>();
-            settings.LoadSettings();
-
             //Disable shutdown when the dialog closes
             ShutdownMode = ShutdownMode.OnExplicitShutdown; 
             var updateWindow = Services.GetRequiredService<LoaderWindow>();
@@ -81,6 +78,9 @@ namespace ODEliteTracker
                 Shutdown(1);
                 return;
             }
+
+            var settings = Services.GetRequiredService<SettingsStore>();
+            settings.LoadSettings();
 
             ShutdownMode = ShutdownMode.OnMainWindowClose;
             var mainWindow = Services.GetRequiredService<MainWindow>();

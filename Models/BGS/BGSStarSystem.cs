@@ -44,7 +44,7 @@ namespace ODEliteTracker.Models.BGS
         {
             VisitCount += sys.VisitCount;
 
-            if (sys.Conflicts.Any())
+            if (sys.Conflicts.Count != 0)
                 AddConflicts(sys.Conflicts, eventTime);
 
             var data = sys.TickData.First();

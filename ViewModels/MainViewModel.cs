@@ -44,6 +44,7 @@ namespace ODEliteTracker.ViewModels
             navigationService.CurrentViewLive += NavigationService_CurrentViewLive;
 
             ResetWindowPositionCommand = new ODRelayCommand(OnResetWindow);
+            RefreshCommanderCommand = new ODRelayCommand(OnRefreshCommander);
         }
 
         public override bool IsLive => true;
@@ -55,8 +56,6 @@ namespace ODEliteTracker.ViewModels
         private readonly TickDataStore tickDataStore;
         private readonly FleetCarrierDataStore carrierDataStore;
         private readonly PopOutService popOutService;
-
-        public ICommand ResetWindowPositionCommand { get; }
 
         public EventHandler? WindowPositionReset;
 
@@ -193,10 +192,18 @@ namespace ODEliteTracker.ViewModels
             }
         }
 
+        public ICommand ResetWindowPositionCommand { get; }
+        public ICommand RefreshCommanderCommand { get; }
+
         private void OnResetWindow(object? obj)
         {
             ODWindowPosition.ResetWindowPosition(WindowPosition);
             WindowPositionReset?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void OnRefreshCommander(object? obj)
+        {
+            _ = ChangeCommander();
         }
 
         private void NavigationService_CurrentViewLive(object? sender, bool e)

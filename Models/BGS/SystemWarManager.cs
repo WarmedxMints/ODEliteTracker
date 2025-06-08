@@ -1,6 +1,7 @@
 ﻿namespace ODEliteTracker.Models.BGS
 {
-    public record SystemWarZone(DateTime TimeCompleted, ConflictType Type, string SupportingFaction);
+    public record SystemWarZone(DateTime TimeCompleted, ConflictType Type, string SupportingFaction, string SettlementName);
+
     public sealed class SystemWarManager
     {
         private ConflictType conflictType;
@@ -30,11 +31,13 @@
             if (destinationType.StartsWith("$Warzone_PointRace_Low"))
             {
                 conflictType = ConflictType.LowSpaceCZ;
+                return;
             }
 
             if (destinationType.StartsWith("$Warzone_PointRace_Med"))
             {
                 conflictType = ConflictType.MediumSpaceCZ;
+                return;
             }
 
             conflictType = ConflictType.HighSpaceCZ;
@@ -78,7 +81,7 @@
 
         public SystemWarZone GetConflictZone(DateTime timeCompleted)
         {
-            var ret = new SystemWarZone(timeCompleted, conflictType, supportingFaction);
+            var ret = new SystemWarZone(timeCompleted, conflictType, supportingFaction, settlementName);
             Reset();
             return ret;
         }

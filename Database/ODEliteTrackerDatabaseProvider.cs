@@ -48,7 +48,7 @@ namespace ODEliteTracker.Database
             return [.. ret];
         }
 
-        public JournalCommander AddCommander(JournalCommander cmdr)
+        public JournalCommander AddCommander(JournalCommander cmdr, bool updateHidden = false, bool updateCAPI = false)
         {
             using var context = _contextFactory.CreateDbContext();
 
@@ -72,8 +72,10 @@ namespace ODEliteTracker.Database
             known.LastFile = cmdr.LastFile ?? string.Empty;
             known.JournalDir = cmdr.JournalPath ?? string.Empty;
             known.Name = cmdr.Name;
-            known.IsHidden = cmdr.IsHidden;
-            known.UseCAPI = cmdr.UseCAPI;
+            if(updateHidden)
+                known.IsHidden = cmdr.IsHidden;
+            if(updateCAPI)
+                known.UseCAPI = cmdr.UseCAPI;
             context.SaveChanges();
             context.Database.CloseConnection();
             return new(known.Id, known.Name, known.JournalDir, known.LastFile, known.IsHidden, known.UseCAPI);

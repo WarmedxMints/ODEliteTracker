@@ -36,7 +36,7 @@ namespace ODEliteTracker.ViewModels
             OpenUrlCommand = new ODRelayCommand<string>(OpenUrl);
 
             ResetLastReadFile = new ODRelayCommand(OnResetLastFile, (_) => SelectedCommander != null && SelectedCommander?.Id != setting.SelectedCommanderID);
-            ChangeJourneyDirectoryCommand = new ODAsyncRelayCommand(OnChangeJournalDirectory, () => SelectedCommander != null && SelectedCommander?.Id != setting.SelectedCommanderID);
+            ChangeJourneyDirectoryCommand = new ODRelayCommand(OnChangeJournalDirectory, (_) => SelectedCommander != null && SelectedCommander?.Id != setting.SelectedCommanderID);
             SaveCommanderChanges = new ODAsyncRelayCommand(OnSaveCommanderChanges, () => SelectedCommander != null);
             ReadNewDirectoryCommand = new ODAsyncRelayCommand(OnReadNewDirectory);
             DeleteCommander = new ODAsyncRelayCommand<Window?>(OnDeleteCommander, (_) => SelectedCommander?.Id != setting.SelectedCommanderID);
@@ -53,6 +53,7 @@ namespace ODEliteTracker.ViewModels
             this.capiService.StateChange -= OnCAPIStateChange;
             base.Dispose();
         }
+
         private readonly ThemeManager themeManager;
         private readonly SettingsStore setting;
         private readonly IODNavigationService navigationService;
@@ -166,7 +167,7 @@ namespace ODEliteTracker.ViewModels
             ODMVVM.Helpers.OperatingSystem.OpenUrl(url);
         }
 
-        private async Task OnChangeJournalDirectory()
+        private void OnChangeJournalDirectory(object? obj)
         {
             if (SelectedCommander == null)
             {
@@ -178,7 +179,7 @@ namespace ODEliteTracker.ViewModels
             {
                 SelectedCommander.JournalPath = directory;
                 SelectedCommander.LastFile = string.Empty;
-                await OnSaveCommanderChanges();
+                _= OnSaveCommanderChanges();
             }
         }
 
@@ -223,7 +224,7 @@ namespace ODEliteTracker.ViewModels
 
             foreach (var commander in JournalCommanderViews)
             {
-                databaseProvider.AddCommander(new(commander.Id, commander.Name, commander.JournalPath, commander.LastFile, commander.IsHidden, commander.UseCAPI));
+                databaseProvider.AddCommander(new(commander.Id, commander.Name, commander.JournalPath, commander.LastFile, commander.IsHidden, commander.UseCAPI), true, true);
             }
             await journalManager.UpdateCommanders();
         }

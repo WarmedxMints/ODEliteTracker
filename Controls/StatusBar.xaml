@@ -1,20 +1,21 @@
 ﻿<UserControl x:Class="ODEliteTracker.Controls.StatusBar"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:ODEliteTracker.Controls"
              xmlns:viewmodels="clr-namespace:ODEliteTracker.ViewModels"
              mc:Ignorable="d"
              FontSize="20"
              Foreground="{DynamicResource EliteBtnFG}"
              d:DataContext="{d:DesignInstance viewmodels:MainViewModel}"
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450"
+             d:DesignWidth="800">
     <Grid Background="{DynamicResource TitleBarBackGround}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition  MinWidth="230"
                                Width="Auto" />
-            <ColumnDefinition  Width="*"/>
+            <ColumnDefinition  Width="*" />
             <ColumnDefinition  MinWidth="230"
                                Width="Auto" />
         </Grid.ColumnDefinitions>
@@ -30,20 +31,33 @@
                    Grid.Column="1"
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center" />
-        
-        <ComboBox ItemsSource="{Binding JournalCommanders}"
-                  SelectedValue="{Binding SelectedCommander}"
-                  Style="{DynamicResource TopPlacementComboBox}"
-                  DisplayMemberPath="Name"
-                  Margin="5,0,10,0"
-                  Grid.Column="2"
-                  MinWidth="230"  
-                  Tag="Up"
-                  FontSize="18"
-                  IsEnabled="{Binding UiEnabled, Mode=OneWay}"
-                  HorizontalAlignment="Right"
-                  VerticalAlignment="Center"
-                  IsReadOnly="True"
-                  IsSynchronizedWithCurrentItem="False" />
+
+        <StackPanel  Margin="5,5"
+                     Grid.Column="2"
+                     Orientation="Horizontal"
+                     HorizontalAlignment="Right"
+                     VerticalAlignment="Center">
+            <ComboBox ItemsSource="{Binding JournalCommanders}"
+                      SelectedValue="{Binding SelectedCommander}"
+                      Style="{DynamicResource TopPlacementComboBox}"
+                      DisplayMemberPath="Name"
+                      MinWidth="230"
+                      Tag="Up"
+                      FontSize="18"
+                      IsEnabled="{Binding UiEnabled, Mode=OneWay}"
+                      IsReadOnly="True"
+                      IsSynchronizedWithCurrentItem="False" />
+            <Button Style="{DynamicResource EliteStyleButton}"
+                    Command="{Binding RefreshCommanderCommand}"
+                    FontFamily="Segoe MDL2 Assets"
+                    FontSize="18"
+                    Content="&#xE72C;"
+                    Margin="5,0">
+                <Button.ToolTip>
+                    <TextBlock Text="Reload Commander"
+                               FontFamily="{StaticResource Eurostile}" />
+                </Button.ToolTip>
+            </Button>
+        </StackPanel>
     </Grid>
 </UserControl>

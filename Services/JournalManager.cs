@@ -119,7 +119,7 @@ namespace ODEliteTracker.Services
 
                 var history = journalLogParserList.Where(x => x.EventsToParse.Count != 0).ToList();
                 if (SelectedCommander != null && SelectedCommander.UseCAPI && string.IsNullOrEmpty(SelectedCommander.Name) == false)
-                    _= capiService.Login(SelectedCommander.Name, SelectedCommander.Name.Contains("(Legacy)")).ConfigureAwait(false);
+                    _= Task.Run(() => capiService.Login(SelectedCommander.Name, SelectedCommander.Name.Contains("(Legacy)")).ConfigureAwait(false));
 
                 await eventParser.StreamJournalHistoryOfTypeAsync(settingsStore.SelectedCommanderID, history, settingsStore.JournalAgeDateTime);
             }

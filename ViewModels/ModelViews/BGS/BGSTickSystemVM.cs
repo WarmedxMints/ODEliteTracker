@@ -117,12 +117,15 @@ namespace ODEliteTracker.ViewModels.ModelViews.BGS
                             continue;
                         case Models.ConflictType.LowGroundCZ:
                             faction.Wars.LowGroundCZ++;
+                            faction.Wars.AddSettlement($"{item.SettlementName} [L]");
                             continue;
                         case Models.ConflictType.MediumGroundCZ:
                             faction.Wars.MediumGroundCZ++;
+                            faction.Wars.AddSettlement($"{item.SettlementName} [M]");
                             continue;
                         case Models.ConflictType.HighGroundCZ:
                             faction.Wars.HighGroundCZ++;
+                            faction.Wars.AddSettlement($"{item.SettlementName} [H]");
                             continue;
                         default:
                             continue;

@@ -34,7 +34,7 @@ namespace ODEliteTracker.Helpers
 
                 foreach(var faction in system.Factions)
                 {
-                    if (faction.HasData() == false)
+                    if (faction == null || faction.HasData() == false)
                         continue;
 
                     builder.AppendLine(FactionDataString(faction));
@@ -46,13 +46,8 @@ namespace ODEliteTracker.Helpers
             return ODMVVM.Helpers.OperatingSystem.SetStringToClipboard(result);
         }
 
-        private static string FactionDataString(FactionVM? data)
+        private static string FactionDataString(FactionVM data)
         {
-            if (data is null)
-            {
-                return string.Empty;
-            }
-
             StringBuilder builder = new();
 
             builder.Append(">    ");
@@ -90,15 +85,10 @@ namespace ODEliteTracker.Helpers
             {
                 builder.Append($"{data.CartoData} Carto, ");
             }
-            //Exo
-            //if (data.ExobiologySales > 0)
-            //{
-            //    builder.Append($"{Helpers.FormatNumber(data.ExobiologySales)} Exo, ");
-            //}
             //Bounties
             if (data.Bounties > 0)
             {
-                builder.Append($"{data.BountyVouchers} BVs , ");
+                builder.Append($"{data.BountyVouchers} BVs, ");
             }
             //Bonds
             if (data.Bonds > 0)
@@ -148,6 +138,17 @@ namespace ODEliteTracker.Helpers
                 if (data.Wars.HighGroundCZ > 0)
                 {
                     builder.Append($"{data.Wars.HighGroundCZ}x HGCZ, ");
+                }
+            }
+
+            if (data.Wars is not null && data.Wars.Settlements.Count > 0)
+            {
+                var ordered = data.Wars.Settlements.OrderBy(x => x.Key);
+                builder = new StringBuilder(builder.ToString().TrimEnd('\r', '\n').TrimEnd(',', ' '));
+                builder.AppendLine();
+                foreach (var item in ordered)
+                {
+                    builder.AppendLine($">           {item.Value}x {item.Key}");
                 }
             }
 

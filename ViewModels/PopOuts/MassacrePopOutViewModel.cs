@@ -63,7 +63,7 @@ namespace ODEliteTracker.ViewModels.PopOuts
                 return;
             }
 
-            FactionStacks.AddItem(new(e.TargetFaction, [mission]));
+            FactionStacks.AddItem(new(e.TargetFaction, e.TargetSystem, [mission]));
 
         }
 
@@ -118,11 +118,11 @@ namespace ODEliteTracker.ViewModels.PopOuts
             var factionMissions = stacks.Where(x => x.ActiveMissionCount > 0)
                                         .SelectMany(x => x.Missions)
                                         .Where(x => x.CurrentState <= MissionState.Completed)
-                                        .GroupBy(x => x.TargetFaction)
+                                        .GroupBy(x => new { x.TargetFaction, x.TargetSystem })
                                         .ToDictionary(x => x.Key, x => x.ToList());
 
 
-            FactionStacks = factionMissions.Count != 0 ? [.. factionMissions.Select(x => new FactionStackVM(x.Key, x.Value))] : [];
+            FactionStacks = factionMissions.Count != 0 ? [.. factionMissions.Select(x => new FactionStackVM(x.Key.TargetFaction, x.Key.TargetSystem, x.Value))] : [];
 
             OnPropertyChanged(nameof(FactionStacks));
         }
@@ -134,7 +134,7 @@ namespace ODEliteTracker.ViewModels.PopOuts
 
             if (stack is null)
             {
-                stack = new MassacreStackVM(mission.IssuingFaction, mission.TargetFaction, mission.OriginSystemName);
+                stack = new MassacreStackVM(mission.IssuingFaction, mission.TargetFaction, mission.OriginSystemName, mission.TargetSystem);
                 stacks.Add(stack);
             }
             return stack.AddMission(mission);

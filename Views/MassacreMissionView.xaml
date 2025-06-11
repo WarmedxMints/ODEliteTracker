@@ -73,18 +73,23 @@
                                       RowStyle="{DynamicResource ConstructionResourcesStyle}"
                                       CellStyle="{DynamicResource RouteCells}">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Target Faction"
-                                                        HeaderStyle="{DynamicResource DataGridHeaderLeft}"
-                                                        Width="*"
-                                                        MinWidth="130"
-                                                        Binding="{Binding TargetFaction}">
-                                        <DataGridTextColumn.ElementStyle>
-                                            <Style TargetType="{x:Type TextBlock}">
-                                                <Setter Property="TextWrapping"
-                                                        Value="Wrap" />
-                                            </Style>
-                                        </DataGridTextColumn.ElementStyle>
-                                    </DataGridTextColumn>
+                                    <DataGridTemplateColumn Header="Target Faction"
+                                                            Width="*"
+                                                            MinWidth="130"
+                                                            HeaderStyle="{DynamicResource DataGridHeaderLeft}">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <StackPanel>
+                                                    <TextBlock Text="{Binding TargetFaction}"
+                                                               TextWrapping="Wrap" />
+                                                    <TextBlock Text="Target System"
+                                                               Margin="0,36,0,0"/>
+                                                    <TextBlock Text="{Binding TargetSystem}" 
+                                                               Margin="0,5,0,0"/>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
                                     <DataGridTemplateColumn Header="Info"
                                                             Width="SizeToCells"
                                                             HeaderStyle="{DynamicResource DataGridHeaderLeft}"
@@ -335,6 +340,10 @@
                                                             Width="*"
                                                             ElementStyle="{DynamicResource DataGridElementLeftMarginBody}"
                                                             Binding="{Binding TargetFaction}" />
+                                        <DataGridTextColumn Header="Target System"
+                                                            MinWidth="120"
+                                                            HeaderStyle="{DynamicResource DataGridHeaderLeft}"
+                                                            Binding="{Binding TargetSystem}" />
                                         <DataGridTextColumn Header="Kills"
                                                             MinWidth="50"
                                                             HeaderStyle="{DynamicResource DataGridHeaderCenter}"
@@ -507,7 +516,7 @@
                                 <DataGridTextColumn Header="Origin Station"
                                                     MinWidth="120"
                                                     HeaderStyle="{DynamicResource DataGridHeaderLeft}"
-                                                    Binding="{Binding OriginStationName}" />
+                                                    Binding="{Binding OriginStationName}" />                   
                                 <DataGridTextColumn Header="Issuing Faction"
                                                     Width="*"
                                                     HeaderStyle="{DynamicResource DataGridHeaderLeft}"
@@ -515,6 +524,10 @@
                                 <DataGridTextColumn Header="Target Faction"
                                                     HeaderStyle="{DynamicResource DataGridHeaderLeft}"
                                                     Binding="{Binding TargetFaction}" />
+                                <DataGridTextColumn Header="Target System"
+                                                    MinWidth="120"
+                                                    HeaderStyle="{DynamicResource DataGridHeaderLeft}"
+                                                    Binding="{Binding TargetSystem}" />
                                 <DataGridTemplateColumn Header="Kills"
                                                         Width="100"
                                                         HeaderStyle="{DynamicResource DataGridHeaderCenter}">
@@ -538,7 +551,7 @@
                                             </Grid>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
+                                </DataGridTemplateColumn>           
                                 <DataGridTextColumn Header="Expires"
                                                     HeaderStyle="{DynamicResource DataGridHeaderCenter}"
                                                     ElementStyle="{DynamicResource DataGridElementRightMargin}"
@@ -598,6 +611,10 @@
                             <DataGridTextColumn Header="Target Faction"
                                                 HeaderStyle="{DynamicResource DataGridHeaderLeft}"
                                                 Binding="{Binding TargetFaction}" />
+                            <DataGridTextColumn Header="Target System"
+                                                MinWidth="120"
+                                                HeaderStyle="{DynamicResource DataGridHeaderLeft}"
+                                                Binding="{Binding TargetSystem}" />
                             <DataGridTextColumn Header="Kill Count"
                                                 HeaderStyle="{DynamicResource DataGridHeaderCenter}"
                                                 ElementStyle="{DynamicResource DataGridElementCenter}"

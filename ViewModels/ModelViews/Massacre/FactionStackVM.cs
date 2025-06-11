@@ -4,9 +4,11 @@ namespace ODEliteTracker.ViewModels.ModelViews.Massacre
 {
     public class FactionStackVM : ODObservableObject
     {
-        public FactionStackVM(string targetFaction, List<MassacreMissionVM> missions)
+        public FactionStackVM(string targetFaction, string targetSystem, List<MassacreMissionVM> missions)
         {
             this.TargetFaction = targetFaction;
+            this.TargetSystem = targetSystem;
+
             this.missions = [.. missions.Where(x => x.CurrentState < Models.Missions.MissionState.Completed)];
             UpdateKillCounts();
         }
@@ -16,6 +18,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Massacre
         private int killsRemaining;
         private int killsToNextCompletion;
         public string TargetFaction { get; }
+        public string TargetSystem { get; }
         public int CurrentMissionCount => missions.Count;
         //Info
         public string MissionCount => $"{missions.Count}";

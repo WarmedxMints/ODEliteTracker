@@ -19,11 +19,13 @@ namespace ODEliteTracker.Models.Missions
             Target = args.Target;
             TargetType = args.TargetType;
             TargetFaction = args.TargetFaction;
+            TargetSystem = args.DestinationSystem;
             KillCount = args.KillCount ?? 0;
         }
 
         public string Target { get; set; }
         public string TargetType { get; set; }
+        public string TargetSystem { get; set; }
         public int KillCount { get; set; }
         public int Kills { get; set; }  
     }

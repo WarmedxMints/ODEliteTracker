@@ -4,12 +4,10 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using ODEliteTracker.Database.DTOs;
 using ODEliteTracker.Models.Bookmarks;
-using ODEliteTracker.Models.Galaxy;
 using ODEliteTracker.ViewModels.ModelViews.Bookmarks;
 using ODJournalDatabase.Database.DTOs;
 using ODJournalDatabase.Database.Interfaces;
 using ODJournalDatabase.JournalManagement;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
 
 namespace ODEliteTracker.Database
 {
@@ -257,10 +255,12 @@ namespace ODEliteTracker.Database
 
         public HashSet<string> GetAllReadFilenames()
         {
+            var fourWeeks = DateTime.UtcNow.AddDays(-28);
             using var context = _contextFactory.CreateDbContext();
 
             var entries = context.JournalEntries
-                .Where(x => x.EventTypeId == (int)JournalTypeEnum.Shutdown)
+                .Where(x => x.EventTypeId == (int)JournalTypeEnum.Shutdown && x.TimeStamp >= fourWeeks 
+                || x.EventTypeId == (int)JournalTypeEnum.Fileheader && x.TimeStamp < fourWeeks)
                 .Select(x => x.Filename)
                 .Distinct()
                 .ToHashSet();

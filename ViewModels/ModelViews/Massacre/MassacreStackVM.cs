@@ -7,19 +7,21 @@ namespace ODEliteTracker.ViewModels.ModelViews.Massacre
 {
     public sealed class MassacreStackVM : ODObservableObject
     {
-        public MassacreStackVM(string issuingFaction, string targetFaction, string starSystem)
+        public MassacreStackVM(string issuingFaction, string targetFaction, string starSystem, string targetSystem)
         {
             IssuingFaction = issuingFaction;
             TargetFaction = targetFaction;
+            TargetSystem = targetSystem;
 
             if (StarSystem.Contains(starSystem) == false)
             {
                 StarSystem.Add(starSystem);
-            }
+            }          
         }
 
         public string IssuingFaction { get; } 
         public string TargetFaction { get; }
+        public string TargetSystem { get; }
         public List<string> StarSystem { get; } = [];
         public int Reward => ActiveMissions.Sum(x => x.Reward);
         public int Kills => ActiveMissions.Sum(x => x.KillCount);

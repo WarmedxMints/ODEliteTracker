@@ -78,7 +78,7 @@ namespace ODEliteTracker.ViewModels
 
                 return StackSorting switch
                 {
-                    MassacreStackSorting.TargetFaction => massacreStacks.OrderBy(x => x.IssuingFaction).ThenBy(x => x.TargetFaction),
+                    MassacreStackSorting.TargetFaction => massacreStacks.OrderBy(x => x.TargetFaction).ThenBy(x => x.IssuingFaction),
                     MassacreStackSorting.Reward => massacreStacks.OrderByDescending(x => x.Reward),
                     MassacreStackSorting.Kills => massacreStacks.OrderByDescending(x => x.Kills),
                     MassacreStackSorting.Remaining => massacreStacks.OrderByDescending(x => x.KillsRemaining),
@@ -176,11 +176,11 @@ namespace ODEliteTracker.ViewModels
             var factionMissions = stacks.Where(x => x.ActiveMissionCount > 0)
                                         .SelectMany(x => x.Missions)
                                         .Where(x => x.CurrentState <= MissionState.Completed)
-                                        .GroupBy(x => x.TargetFaction)
+                                        .GroupBy(x => new { x.TargetFaction, x.TargetSystem })
                                         .ToDictionary(x => x.Key, x => x.ToList());
 
 
-            FactionStacks = factionMissions.Count != 0 ? [.. factionMissions.Select(x => new FactionStackVM(x.Key, x.Value))] : [];
+            FactionStacks = factionMissions.Count != 0 ? [.. factionMissions.Select(x => new FactionStackVM(x.Key.TargetFaction, x.Key.TargetSystem,x.Value))] : [];
 
             SetMissionCollections();
             OnPropertyChanged(nameof(FactionStacks));
@@ -233,8 +233,7 @@ namespace ODEliteTracker.ViewModels
                 return;
             }
 
-            FactionStacks.AddItem(new(e.TargetFaction, [mission]));
-
+            FactionStacks.AddItem(new(e.TargetFaction, e.TargetSystem, [mission]));
         }
 
         private void OnMissionUpdated(object? sender, MassacreMission e)
@@ -288,11 +287,12 @@ namespace ODEliteTracker.ViewModels
         private MassacreMissionVM? AddMissionToStack(MassacreMission mission)
         {
             var stack = stacks.FirstOrDefault(x => string.Equals(x.IssuingFaction, mission.IssuingFaction)
-                                                && string.Equals(x.TargetFaction, mission.TargetFaction));
+                                                && string.Equals(x.TargetFaction, mission.TargetFaction)
+                                                && string.Equals(x.TargetSystem, mission.TargetSystem));
 
             if (stack is null)
             {
-                stack = new MassacreStackVM(mission.IssuingFaction, mission.TargetFaction, mission.OriginSystemName);
+                stack = new MassacreStackVM(mission.IssuingFaction, mission.TargetFaction, mission.OriginSystemName, mission.TargetSystem);
                 stacks.Add(stack);
             }
             return stack.AddMission(mission);

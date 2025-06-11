@@ -1,14 +1,15 @@
 ﻿<UserControl x:Class="ODEliteTracker.Views.PopOuts.MassacrePopOutView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:ODEliteTracker.Views.PopOuts"
              xmlns:busyIndicator="https://github.com/moh3ngolshani/BusyIndicator"
              xmlns:popouts="clr-namespace:ODEliteTracker.ViewModels.PopOuts"
              d:DataContext="{d:DesignInstance popouts:MassacrePopOutViewModel}"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             mc:Ignorable="d"
+             d:DesignHeight="450"
+             d:DesignWidth="800">
     <busyIndicator:BusyMask x:Name="BusyIndicator"
                             IsBusy="{Binding IsBusy}"
                             Background="{DynamicResource Overlay_CardBackground}"
@@ -39,11 +40,16 @@
                           HeadersVisibility="Column"
                           AutoGenerateColumns="False">
                     <DataGrid.Columns>
-                    <DataGridTextColumn Header="Target Faction"
-                                        Width="*"
-                                        HeaderStyle="{DynamicResource OverlayDataGridHeaderLeft}"
-                                        ElementStyle="{DynamicResource DataGridElementLeftMarginBody}"
-                                        Binding="{Binding TargetFaction}" />
+                        <DataGridTextColumn Header="Target Faction"
+                                            Width="*"
+                                            HeaderStyle="{DynamicResource OverlayDataGridHeaderLeft}"
+                                            ElementStyle="{DynamicResource DataGridElementLeftMarginBody}"
+                                            Binding="{Binding TargetFaction}" />
+                        <DataGridTextColumn Header="Target System"
+                                            MinWidth="130"
+                                            HeaderStyle="{DynamicResource OverlayDataGridHeaderLeft}"
+                                            ElementStyle="{DynamicResource DataGridElementLeftMarginBody}"
+                                            Binding="{Binding TargetSystem}" />
                         <DataGridTextColumn Header="Missions Remaining"
                                             Width="170"
                                             HeaderStyle="{DynamicResource OverDataGridHeaderCenter}"

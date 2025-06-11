@@ -12,6 +12,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Massacre
             OriginSystemName = mission.OriginSystemName;
             OriginMarketID = mission.OriginMarketID;
             OriginStationName = mission.OriginStationName;
+            TargetSystem = mission.TargetSystem;
             CurrentState = mission.CurrentState;
             AcceptedTime = mission.AcceptedTime;
             MissionID = mission.MissionID;
@@ -34,6 +35,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Massacre
         public string OriginSystemName { get; private set; }
         public ulong OriginMarketID { get; private set; }
         public string OriginStationName { get; private set; }
+        public string TargetSystem { get; private set; }
         public MissionState CurrentState { get; set; }
         public DateTime AcceptedTime { get; private set; }
         public ulong MissionID { get; set; }

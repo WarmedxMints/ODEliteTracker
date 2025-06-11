@@ -53,6 +53,7 @@
                      BorderBrush="{DynamicResource EliteBtnBorder}"
                      Background="{DynamicResource ViewBackground}"
                      CaretBrush="{DynamicResource PrimaryControlForeground}"
+                     Foreground="{DynamicResource PrimaryForeground}"
                      VerticalContentAlignment="Center" />
             <Button Content="Set Faction"
                     Style="{DynamicResource EliteStyleButton}"

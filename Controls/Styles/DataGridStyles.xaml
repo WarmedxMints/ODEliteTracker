@@ -742,4 +742,131 @@
         </Style.Triggers>
     </Style>
 
+    <Style TargetType="{x:Type DataGridRow}"
+           x:Key="SpanshRowStyle">
+        <Setter Property="BorderThickness"
+                Value="0" />
+        <Setter Property="IsHitTestVisible"
+                Value="False" />
+        <Setter Property="BorderBrush"
+                Value="Transparent" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver"
+                     Value="True">
+                <Setter Property="Background"
+                        Value="Transparent" />
+                <Setter Property="BorderBrush"
+                        Value="Transparent" />
+                <Setter Property="BorderThickness"
+                        Value="0" />
+            </Trigger>
+            <Trigger Property="IsSelected"
+                     Value="True">
+                <Setter Property="Background"
+                        Value="Transparent" />
+                <Setter Property="Foreground"
+                        Value="Black" />
+                <Setter Property="BorderBrush"
+                        Value="Transparent" />
+                <Setter Property="BorderThickness"
+                        Value="0" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="SpanshDataGrid"
+           TargetType="{x:Type DataGrid}">
+        <Setter Property="AutoGenerateColumns"
+                Value="False" />
+        <Setter Property="GridLinesVisibility"
+                Value="None" />
+        <Setter Property="IsReadOnly"
+                Value="True" />
+        <Setter Property="SelectionMode"
+                Value="Single" />
+        <Setter Property="CanUserAddRows"
+                Value="False" />
+        <Setter Property="CanUserDeleteRows"
+                Value="False" />
+        <Setter Property="CanUserResizeColumns"
+                Value="False" />
+        <Setter Property="CanUserSortColumns"
+                Value="False" />
+        <Setter Property="HeadersVisibility"
+                Value="Column" />
+        <Setter Property="Background"
+                Value="Transparent" />
+        <Setter Property="BorderThickness"
+                Value="0" />
+        <Setter Property="HeadersVisibility"
+                Value="Column" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource PrimaryForeground}" />
+        <Setter Property="AlternationCount"
+                Value="1" />
+        <Setter Property="AlternatingRowBackground"
+                Value="{DynamicResource RowAlternationColour}" />
+        <Setter Property="RowBackground"
+                Value="Transparent" />
+        <Setter Property="RowStyle"
+                Value="{DynamicResource SpanshRowStyle}" />
+        <Setter Property="CellStyle"
+                Value="{DynamicResource CmdrSelectionCellLeft}" />
+        <Setter Property="ColumnHeaderStyle"
+                Value="{DynamicResource DataGridHeaderLeft}" />
+    </Style>
+
+    <Style x:Key="SpanshPopOutDataGrid"
+           TargetType="{x:Type DataGrid}">
+        <Setter Property="AutoGenerateColumns"
+                Value="False" />
+        <Setter Property="GridLinesVisibility"
+                Value="None" />
+        <Setter Property="IsReadOnly"
+                Value="True" />
+        <Setter Property="SelectionMode"
+                Value="Single" />
+        <Setter Property="CanUserAddRows"
+                Value="False" />
+        <Setter Property="CanUserDeleteRows"
+                Value="False" />
+        <Setter Property="CanUserResizeColumns"
+                Value="False" />
+        <Setter Property="CanUserSortColumns"
+                Value="False" />
+        <Setter Property="HeadersVisibility"
+                Value="Column" />
+        <Setter Property="Background"
+                Value="Transparent" />
+        <Setter Property="RowBackground"
+                Value="Transparent" />
+        <Setter Property="BorderThickness"
+                Value="0" />
+        <Setter Property="AlternationCount"
+                Value="0" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource Overlay_ForegroundBrush}" />
+        <Setter Property="RowStyle"
+                Value="{DynamicResource SpanshRowStyle}" />
+        <Setter Property="CellStyle"
+                Value="{DynamicResource CmdrSelectionCellLeft}" />
+        <Setter Property="ColumnHeaderStyle"
+                Value="{DynamicResource OverlayDataGridHeaderLeft}" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding IsMouseOver}"
+                         Value="True">
+                <Setter Property="ScrollViewer.HorizontalScrollBarVisibility"
+                        Value="Visible" />
+                <Setter Property="ScrollViewer.VerticalScrollBarVisibility"
+                        Value="Visible" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding IsMouseOver}"
+                         Value="False">
+                <Setter Property="ScrollViewer.HorizontalScrollBarVisibility"
+                        Value="Hidden" />
+                <Setter Property="ScrollViewer.VerticalScrollBarVisibility"
+                        Value="Hidden" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
 </ResourceDictionary>

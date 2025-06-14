@@ -37,6 +37,7 @@
     <None Remove="Assets\Icons\ShoppingCart.png" />
     <None Remove="Assets\Icons\ShowInTaskBar.png" />
     <None Remove="Assets\Icons\spansh.png" />
+    <None Remove="Assets\Icons\spanshbtn.png" />
     <None Remove="Assets\Icons\TopMost.png" />
     <None Remove="Assets\Icons\trade.png" />
     <None Remove="Assets\Icons\Transparency.png" />
@@ -125,6 +126,7 @@
     <Resource Include="Assets\Icons\ShoppingCart.png" />
     <Resource Include="Assets\Icons\ShowInTaskBar.png" />
     <Resource Include="Assets\Icons\spansh.png" />
+    <Resource Include="Assets\Icons\spanshbtn.png" />
     <Resource Include="Assets\Icons\TopMost.png" />
     <Resource Include="Assets\Icons\trade.png" />
     <Resource Include="Assets\Icons\Transparency.png" />

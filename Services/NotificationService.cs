@@ -110,10 +110,13 @@ namespace ODEliteTracker.Services
                 return;
             }
 
-            if (ODMVVM.Helpers.OperatingSystem.SetStringToClipboard(value))
+            Application.Current.Dispatcher.Invoke(() =>
             {
-                ShowBasicNotification(new("Clipboard", [value, "Copied To Clipboard"], NotificationOptions.CopyToClipboard));
-            }
+                if (ODMVVM.Helpers.OperatingSystem.SetStringToClipboard(value))
+                {
+                    ShowBasicNotification(new("Clipboard", [value, "Copied To Clipboard"], NotificationOptions.CopyToClipboard));
+                }
+            });
         }
 
         internal void ShowBasicNotification(NotificationArgs args)
@@ -136,7 +139,7 @@ namespace ODEliteTracker.Services
             {
                 if (shipScanNotifications.TryGetValue(name, out var notification))
                 {
-                    notification.UpdateBountyString(bounty);
+                    notification.UpdateBountyString(bounty, settingsStore.NotificationSettings.DisplayTime);
                     return;
                 }
 

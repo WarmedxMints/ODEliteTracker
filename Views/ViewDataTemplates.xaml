@@ -34,7 +34,10 @@
     <DataTemplate DataType="{x:Type viewmodels:PopOutControlViewModel}">
         <views:PopOutControlView />
     </DataTemplate>
-
+    <DataTemplate DataType="{x:Type viewmodels:SpanshViewModel}">
+        <views:SpanshView />
+    </DataTemplate>
+    
     <DataTemplate DataType="{x:Type popoutsVMs:ColonisationPopOut}">
         <popouts:ColonisationPopOut />
     </DataTemplate>
@@ -49,5 +52,8 @@
     </DataTemplate>
     <DataTemplate DataType="{x:Type popoutsVMs:ShoppingListPopOutVM}">
         <popouts:ShoppingListPopOut />
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type popoutsVMs:SpanshPopOutViewModel}">
+        <popouts:SpanshPopOutView />
     </DataTemplate>
 </ResourceDictionary>

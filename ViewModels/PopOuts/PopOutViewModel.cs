@@ -152,9 +152,9 @@ namespace ODEliteTracker.ViewModels.PopOuts
 		}
 
 		private readonly Thickness zeroThickness = new(0d);
-		private readonly Thickness threeThickness = new(3d);
+		private readonly Thickness threeThickness = new(4d);
 
-		private Thickness borderThickness = new(3d);
+		private Thickness borderThickness = new(4d);
 		public Thickness BorderThickness
         {
 			get

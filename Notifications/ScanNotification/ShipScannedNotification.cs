@@ -70,6 +70,7 @@ namespace ODEliteTracker.Notifications.ScanNotification
             ShipType = shipType;
             Faction = faction;
             TargetType = targetType.GetEnumDescription();
+            this.bountyValue = bountyValue;
             BountyVis = bountyValue > 0 ? Visibility.Visible : Visibility.Collapsed;
             BountyString = $"{bountyValue:N0} cr";
             PowerVis = string.IsNullOrEmpty(power) ? Visibility.Collapsed : Visibility.Visible;
@@ -92,10 +93,20 @@ namespace ODEliteTracker.Notifications.ScanNotification
         public string BountyString { get; private set; }
         public Visibility PowerVis { get; }
         public string? PowerString { get; }
-
-        public void UpdateBountyString(int value)
+        private int bountyValue;
+        public void UpdateBountyString(int value, int displayTime)
         {
+            if (bountyValue == value)
+                return;
+
+            bountyValue = value;
             BountyString = $"{value:N0} cr";
+            Task.Factory.StartNew(async () =>
+            {
+                CanClose = false;
+                await Task.Delay(displayTime * 1000);
+                CanClose = true;
+            });
             OnPropertyChanged(nameof(BountyString));
         }
 

@@ -77,6 +77,8 @@ namespace ODEliteTracker.Stores
         public OverlaySettings OverlaySettings { get; internal set; } = new();
         public Dictionary<int, List<PopOutParams>> PopOutParams { get; set; } = [];
 
+        public SpanshCSVSettings SpanshCSVSettings { get; set; } = new();
+
         #region Persistance
         public void LoadSettings()
         {
@@ -98,6 +100,7 @@ namespace ODEliteTracker.Stores
                 MassacreSettings = SettingsDTOHelpers.SettingDtoToObject(settings.GetSettingDTO(nameof(MassacreSettings)), MassacreSettings.GetDefault());
                 PopOutParams = SettingsDTOHelpers.SettingDtoToObject(settings.GetSettingDTO(nameof(PopOutParams)), new Dictionary<int, List<PopOutParams>>());
                 OverlaySettings = SettingsDTOHelpers.SettingDtoToObject(settings.GetSettingDTO(nameof(OverlaySettings)), OverlaySettings);
+                SpanshCSVSettings = SettingsDTOHelpers.SettingDtoToObject(settings.GetSettingDTO(nameof(SpanshCSVSettings)), SpanshCSVSettings);
             }
 
             //Apply Themes
@@ -130,6 +133,7 @@ namespace ODEliteTracker.Stores
                 SettingsDTOHelpers.ObjectToJsonStringDto(nameof(MassacreSettings), MassacreSettings),
                 SettingsDTOHelpers.ObjectToJsonStringDto(nameof(PopOutParams), PopOutParams),
                 SettingsDTOHelpers.ObjectToJsonStringDto(nameof(OverlaySettings), OverlaySettings),
+                SettingsDTOHelpers.ObjectToJsonStringDto(nameof(SpanshCSVSettings), SpanshCSVSettings),
             };
 
             databaseProvider.AddSettings(settings);

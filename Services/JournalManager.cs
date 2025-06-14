@@ -229,6 +229,10 @@ namespace ODEliteTracker.Services
 
         public void Shutdown()
         {
+            foreach (var parser in journalLogParserList)
+            {
+                parser.SaveData();
+            }
             eventParser.StopWatcher();
         }
         #endregion

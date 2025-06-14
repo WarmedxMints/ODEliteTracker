@@ -55,6 +55,7 @@ namespace ODEliteTracker.Extensions
             services.AddTransient<TradePopoutViewModel>();
             services.AddTransient<CompassPopOutViewModel>();
             services.AddTransient<ShoppingListPopOutVM>();
+            services.AddTransient<SpanshPopOutViewModel>();
         }
 
         public static void AddViewModels(this IServiceCollection services)
@@ -71,7 +72,8 @@ namespace ODEliteTracker.Extensions
             services.AddTransient<LoaderViewModel>();
             services.AddTransient<NotificationSettingsViewModel>();
             services.AddTransient<FleetCarrierViewModel>();
-            services.AddTransient<PopOutControlViewModel>();
+            services.AddTransient<PopOutControlViewModel>();   
+            services.AddTransient<SpanshViewModel>();
         }
 
         public static void AddServices(this IServiceCollection services, string basePath)
@@ -97,6 +99,7 @@ namespace ODEliteTracker.Extensions
             services.AddSingleton<TickDataStore>();
             services.AddSingleton<FleetCarrierDataStore>();
             services.AddSingleton<BookmarkDataStore>();
+            services.AddSingleton<SpanshCsvStore>();
         }
 
         public static void AddHttpClients(this IServiceCollection services, string appName)

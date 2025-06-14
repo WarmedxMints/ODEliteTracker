@@ -3,7 +3,9 @@ using EliteJournalReader;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using ODEliteTracker.Database.DTOs;
+using ODEliteTracker.Models;
 using ODEliteTracker.Models.Bookmarks;
+using ODEliteTracker.Models.Spansh;
 using ODEliteTracker.ViewModels.ModelViews.Bookmarks;
 using ODJournalDatabase.Database.DTOs;
 using ODJournalDatabase.Database.Interfaces;
@@ -560,6 +562,67 @@ namespace ODEliteTracker.Database
             known.Bookmarks.Remove(knownBookmark);
 
             await context.SaveChangesAsync(true);
+        }
+        #endregion
+
+        #region Spansh
+        internal Dictionary<CsvType, SpanshCsvContainer> GetSpanshCSVsDictionary(int commanderID)
+        {
+            using var context = _contextFactory.CreateDbContext();
+
+            var dict = context.SpanshCsvs
+                .Where(x => x.CommanderID == commanderID)
+                .ToDictionary(x => (CsvType)x.CsvType, y => JsonConvert.DeserializeObject<SpanshCsvContainer>(y.Json));
+
+            var ret = new Dictionary<CsvType, SpanshCsvContainer>();
+
+            foreach (var kvp in dict)
+            {
+                if (kvp.Value is not null)
+                {
+                    ret.Add(kvp.Key, kvp.Value);
+                }
+            }
+            return ret;
+        }
+
+        internal void DeleteCSV(CsvType csvType, int commanderID)
+        {
+            using var context = _contextFactory.CreateDbContext();
+
+            var known = context.SpanshCsvs.Where(x => x.CsvType == (int)csvType && x.CommanderID == commanderID).FirstOrDefault();
+
+            if(known != null)
+            {
+                context.SpanshCsvs.Remove(known);
+                context.SaveChanges();
+            }
+        }
+
+        internal void SaveCVSs(Dictionary<CsvType, SpanshCsvContainer> csvs, int commanderID)
+        {
+            List<SpanshCsvDTO> csvList = [];
+
+            foreach (var kvp in csvs)
+            {
+                if (kvp.Value.HasValue == false)
+                    continue;
+
+                var json = JsonConvert.SerializeObject(kvp.Value, Formatting.None);
+
+                if (string.IsNullOrEmpty(json))
+                    continue;
+
+                csvList.Add(new((int)kvp.Key, commanderID, json));
+            }
+
+            using var context = _contextFactory.CreateDbContext();
+
+            context.SpanshCsvs.UpsertRange(csvList)
+                .On(e => new { e.CsvType, e.CommanderID })
+                .Run();
+
+            context.SaveChanges();
         }
         #endregion
     }

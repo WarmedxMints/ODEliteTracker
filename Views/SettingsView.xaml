@@ -65,10 +65,9 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
-                <TextBox Text="COMMANDERS"
+                <TextBlock Text="COMMANDERS"
                          Foreground="{DynamicResource Header}"
-                         Background="Transparent"
-                         BorderThickness="0" />
+                         Background="Transparent" />
 
                 <DataGrid ItemsSource="{Binding JournalCommanderViews}"
                           SelectedValue="{Binding SelectedCommander}"
@@ -264,10 +263,9 @@
                 Grid.Row="1"
                 CornerRadius="5">
             <StackPanel Width="200">
-                <TextBox Text="THEME"
+                <TextBlock Text="THEME"
                          Foreground="{DynamicResource Header}"
-                         Background="Transparent"
-                         BorderThickness="0" />
+                         Background="Transparent" />
 
                 <RadioButton GroupName="ThemeButtons"
                              Command="{Binding SetTheme}"
@@ -312,10 +310,9 @@
                 Grid.Column="1"
                 CornerRadius="5">
             <StackPanel Orientation="Vertical">
-                <TextBox Text="DATABASE"
+                <TextBlock Text="DATABASE"
                          Foreground="{DynamicResource Header}"
-                         Background="Transparent"
-                         BorderThickness="0" />
+                         Background="Transparent"/>
                 <Button Content="Reset DataBase"
                         Style="{DynamicResource EliteStyleButton}"
                         Command="{Binding ResetDataBaseCommand}"
@@ -367,11 +364,10 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition  />
                 </Grid.RowDefinitions>
-                <TextBox Text="CAPI"
+                <TextBlock Text="CAPI"
                          HorizontalAlignment="Left"
                          Foreground="{DynamicResource Header}"
-                         Background="Transparent"
-                         BorderThickness="0" />        
+                         Background="Transparent" />        
 
                 <TextBlock Text="{Binding CAPIStatus}"
                            Margin="5,20,5,10"
@@ -405,11 +401,10 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition />
                 </Grid.RowDefinitions>
-                <TextBox Text="LINKS"
+                <TextBlock Text="LINKS"
                          Grid.Row="0"
                          Foreground="{DynamicResource Header}"
-                         Background="Transparent"
-                         BorderThickness="0" />
+                         Background="Transparent" />
                 <DockPanel VerticalAlignment="Center"
                            Margin="5"
                            Grid.Row="1">

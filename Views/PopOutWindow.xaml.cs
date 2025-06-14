@@ -113,7 +113,7 @@ namespace ODEliteTracker.Views
         private void SetRect()
         {
             Point screenCoordinates = this.PointToScreen(new Point(0, 0));
-            windowRect = new(screenCoordinates.X, screenCoordinates.Y, this.Width, this.Height);
+            windowRect = new(screenCoordinates.X - 10, screenCoordinates.Y - 10, this.Width + 20, this.Height + 20);
         }
 
         private void PopOut_SizeChanged(object sender, SizeChangedEventArgs e)

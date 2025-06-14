@@ -362,4 +362,46 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <Style TargetType="{x:Type Button}"
+           x:Key="TabButton">
+        <Setter Property="BorderThickness"
+                Value="0" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Border Name="border"
+                            BorderThickness="0,2"
+                            Padding="2"
+                            BorderBrush="{DynamicResource EliteBtnFG}"
+                            Background="Transparent">
+                        <Border x:Name="InnerBorder">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              SnapsToDevicePixels="True"
+                                              Name="content" />
+                        </Border>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsEnabled"
+                                 Value="False">
+                            <Setter TargetName="InnerBorder"
+                                    Property="Background"
+                                    Value="{DynamicResource EliteBtnBGMouseOver}" />
+                            <Setter Property="Foreground"
+                                    Value="{DynamicResource EliteBtnFGMouseOver}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled"
+                                 Value="True">
+                            <Setter Property="Background"
+                                    TargetName="InnerBorder"
+                                    Value="{DynamicResource EliteBtnBG}" />
+                            <Setter Property="Foreground"
+                                    Value="{DynamicResource EliteBtnFG}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 </ResourceDictionary>

@@ -11,6 +11,7 @@ namespace ODEliteTracker.Database
         public DbSet<BGSTickData> TickData { get; set; }
         public DbSet<IgnoredBounties> IgnoredBounties { get; set; }
         public DbSet<SystemBookmarkDTO> SystemBookmarks { get; set; }
+        public DbSet<SpanshCsvDTO> SpanshCsvs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -22,7 +23,6 @@ namespace ODEliteTracker.Database
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_SystemAddress");
-
         }
     }
 }

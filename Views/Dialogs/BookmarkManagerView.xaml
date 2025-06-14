@@ -227,6 +227,7 @@
 
                                     <TextBox Grid.Row="1"
                                              Margin="5"
+                                             Style="{DynamicResource PopOutTextBox}"
                                              Foreground="{DynamicResource PrimaryForeground}"
                                              Text="{Binding CurrentBookmark.Notes}" />
                                 </Grid>
@@ -276,6 +277,7 @@
                                                Grid.Column="1"
                                                Margin="5" />
                                     <TextBox Margin="5"
+                                             Style="{DynamicResource PopOutTextBox}"
                                              Text="{Binding SelectedBookmark.BookmarkName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                              Foreground="{DynamicResource PrimaryForeground}"
                                              Width="150"
@@ -287,6 +289,7 @@
                                                Grid.Column="2"
                                                Margin="5" />
                                     <TextBox Margin="5"
+                                             Style="{DynamicResource PopOutTextBox}"
                                              Text="{Binding SelectedBookmark.Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                              Foreground="{DynamicResource PrimaryForeground}"
                                              Grid.Column="2"
@@ -587,6 +590,7 @@
 
                                         <TextBox Grid.Row="1"
                                                  Margin="5"
+                                                 Style="{DynamicResource PopOutTextBox}"
                                                  Foreground="{DynamicResource PrimaryForeground}"
                                                  Text="{Binding SelectedSystem.Notes}" />
                                     </Grid>
@@ -632,6 +636,7 @@
                                         <TextBox Margin="5"
                                                  Text="{Binding SelectedBookmarkAll.BookmarkName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                  Foreground="{DynamicResource PrimaryForeground}"
+                                                 Style="{DynamicResource PopOutTextBox}"
                                                  Width="150"
                                                  Grid.Column="1"
                                                  Grid.Row="2" />
@@ -641,6 +646,7 @@
                                                    Grid.Column="2"
                                                    Margin="5" />
                                         <TextBox Margin="5"
+                                                 Style="{DynamicResource PopOutTextBox}"
                                                  Text="{Binding SelectedBookmarkAll.Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                  Foreground="{DynamicResource PrimaryForeground}"
                                                  Grid.Column="2"

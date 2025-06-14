@@ -22,6 +22,7 @@ namespace ODEliteTracker.ViewModels
                                       IManageJournalEvents journalManager,
                                       SharedDataStore sharedDataStore,
                                       NotificationService notificationService,
+                                      SpanshCsvStore spanshCsv,
                                       SettingsStore settings,
                                       TickDataStore tickDataStore,
                                       FleetCarrierDataStore carrierDataStore,
@@ -31,6 +32,7 @@ namespace ODEliteTracker.ViewModels
             this.journalManager = journalManager;
             this.sharedData = sharedDataStore;
             this.notificationService = notificationService;
+            this.spanshCsv = spanshCsv;
             this.settings = settings;
             this.tickDataStore = tickDataStore;
             this.carrierDataStore = carrierDataStore;
@@ -52,6 +54,7 @@ namespace ODEliteTracker.ViewModels
         private readonly IManageJournalEvents journalManager;
         private readonly SharedDataStore sharedData;
         private readonly NotificationService notificationService;
+        private readonly SpanshCsvStore spanshCsv;
         private readonly SettingsStore settings;
         private readonly TickDataStore tickDataStore;
         private readonly FleetCarrierDataStore carrierDataStore;
@@ -92,6 +95,11 @@ namespace ODEliteTracker.ViewModels
             {
                 ButtonImage = new BitmapImage(new Uri("/Assets/Icons/fleetcarrier.png", UriKind.Relative)),
                 TargetView = typeof(FleetCarrierViewModel)
+            },
+             new EliteStyleNavigationButton()
+            {
+                ButtonImage = new BitmapImage(new Uri("/Assets/Icons/spanshbtn.png", UriKind.Relative)),
+                TargetView = typeof(SpanshViewModel)
             },
         ];
 

@@ -1,6 +1,6 @@
 # OD Elite Tracker
 
-An app for tracking activies in game.  It currently tracks;
+An app for tracking activities in-game.  It currently tracks;
 
 - Pirate Massacre Missions
 - Trade Missions
@@ -13,4 +13,4 @@ An app for tracking activies in game.  It currently tracks;
 
 OD Elite Tracker is not affiliated with [Frontier Developments](https://www.frontier.co.uk/), the developers of [Elite Dangerous](https://www.elitedangerous.com/).
 
-OD Elite Tracker requires .NET 9 runtime which can be obtained [here](https://builds.dotnet.microsoft.com/dotnet/WindowsDesktop/9.0.4/windowsdesktop-runtime-9.0.4-win-x64.exe)
+OD Elite Tracker requires .NET 9 runtime, which can be obtained [here](https://builds.dotnet.microsoft.com/dotnet/WindowsDesktop/9.0.4/windowsdesktop-runtime-9.0.4-win-x64.exe)

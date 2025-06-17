@@ -212,7 +212,7 @@ namespace ODEliteTracker.Helpers
 
             }
 
-            sb.AppendLine($"{depot.SystemNameText} | {depot.StationName}");
+            sb.AppendLine($"{depot.SystemNameText} | {depot.StationNameSplit}");
             sb.AppendLine($"Progress {depot.Progress}");
             sb.AppendLine();
 

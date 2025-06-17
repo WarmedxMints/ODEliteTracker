@@ -357,6 +357,7 @@ namespace ODEliteTracker.ViewModels
                 return;
 
             var newDepot = new ConstructionDepotVM(e);
+            newDepot.UpdateMostRecentPurchase(sharedData.MarketPurchases);
             Depots.AddItem(newDepot);
             SelectedDepot = newDepot;
 
@@ -375,6 +376,7 @@ namespace ODEliteTracker.ViewModels
             if (known != null)
             {
                 known.Update(e);
+                known.UpdateMostRecentPurchase(sharedData.MarketPurchases);
                 SelectedDepot = known;
                 if(known.Complete)
                 {
@@ -420,6 +422,7 @@ namespace ODEliteTracker.ViewModels
                         depot.Inactive = true;
                     }
                     var newDepot = new ConstructionDepotVM(depot);
+                    newDepot.UpdateMostRecentPurchase(sharedData.MarketPurchases);
                     Depots.AddItem(newDepot);
 
                     if (depot.Inactive)
@@ -441,7 +444,7 @@ namespace ODEliteTracker.ViewModels
                     OnPropertyChanged(nameof(ShoppingListResources));
                 }
             }
-            SelectedDepot = Depots.LastOrDefault();
+            SelectedDepot = Depots.Where(x => x.Inactive == false).LastOrDefault();
             SelectedCommanderSystem = commanderSystems.LastOrDefault();
             OnModelLive(true);
         }
@@ -554,7 +557,8 @@ namespace ODEliteTracker.ViewModels
 
             foreach(var item in SelectedDepotResources)
             {
-                var onCarrier = e.Stock.FirstOrDefault(x => string.Equals(x.commodity.FdevName, item.FDEVName, StringComparison.OrdinalIgnoreCase));
+                var onCarrier = e.Stock.FirstOrDefault(x => string.Equals(x.commodity.FdevName, item.FDEVName, StringComparison.OrdinalIgnoreCase)
+                                    && x.Stolen == false);
 
                 if (onCarrier == null)
                 {

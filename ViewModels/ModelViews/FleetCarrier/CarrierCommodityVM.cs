@@ -6,7 +6,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.FleetCarrier
     {
         private readonly CarrierCommodity commodity = commodity;
 
-        public string Name => commodity.EnglishName;
+        public string Name => commodity.Stolen ? $"{commodity.EnglishName} [Stolen]" : commodity.EnglishName;
         public string Category => commodity.EnglishCategory;
         public long StockCount => commodity.StockCount;
         public string Stock => commodity.StockCount == 0 ? string.Empty : $"{StockCount:N0} t";

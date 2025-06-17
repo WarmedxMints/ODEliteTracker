@@ -316,10 +316,12 @@
 
                             <TextBlock Grid.Row="6"
                                        Text="Conflicts"
+                                       Visibility="{Binding SelectedSystem.HasConflict, Converter={StaticResource BoolToVis}}"
                                        VerticalAlignment="Center"
                                        Foreground="{DynamicResource Header}"
                                        FontSize="18" />
                             <ListBox ItemsSource="{Binding SelectedSystem.Conflicts}"
+                                     Visibility="{Binding SelectedSystem.HasConflict, Converter={StaticResource BoolToVis}}"
                                      HorizontalAlignment="Stretch"
                                      HorizontalContentAlignment="Stretch"
                                      BorderThickness="0"

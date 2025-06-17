@@ -532,7 +532,7 @@
                                                     Grid.ColumnSpan="2"
                                                     FontSize="20" />
                                         </StackPanel>
-                                        <TextBlock Text="{Binding SelectedDepot.StationName}"
+                                        <TextBlock Text="{Binding SelectedDepot.StationNameSplit}"
                                                    Grid.ColumnSpan="2"
                                                    FontSize="20"
                                                    Grid.Row="1" />

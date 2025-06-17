@@ -75,6 +75,7 @@ namespace ODEliteTracker.Stores
         public StationMarket? CurrentMarket { get; private set; }
         public string? CurrentBody_Station { get; private set; }
         public ulong CurrentMarketID { get; private set; } = 0;
+
         public ShipInfo? CurrentShipInfo { get; private set; }
         public IEnumerable<ShipCargo>? CurrentShipCargo { get; private set; }
         public Dictionary<ODMVVM.Helpers.Commodity, List<CommodityPurchase>> MarketPurchases => marketPurchases;
@@ -127,73 +128,40 @@ namespace ODEliteTracker.Stores
 
             switch (evt.EventData)
             {
-                case PowerplayEvent.PowerplayEventArgs powerPlay:
-                    commanderPower = powerPlay.Power;
+                case ApproachBodyEvent.ApproachBodyEventArgs approachBody:
+                    CurrentBody = CurrentSystem?.Bodies.FirstOrDefault(x => x.Key == approachBody.BodyID).Value;
+
+                    if (CurrentBody != null)
+                        CurrentBody.Landable = true;
+                    UpdateCurrentBody_Station(approachBody.Body);
                     break;
-                case LocationEvent.LocationEventArgs location:
-                    UpdateCurrentSystem(new(location));
-                    string? bodyStation = null;
-                    if (string.IsNullOrEmpty(location.Body) == false)
-                    {
-                        bodyStation = location.Body;
-                    }
-                    if (string.IsNullOrEmpty(location.StationName) == false)
-                    {
-                        bodyStation = location.StationName;
-                    }
-                    UpdateCurrentBody_Station(bodyStation);
-                    AddFactions(location.Factions);
+                case BountyEvent.BountyEventArgs bounty:
 
-                    if (location.BodyType == BodyType.Planet && CurrentSystem != null)
-                    {
-                        var body = new SystemBody(location, CurrentSystem);
-
-                        CurrentSystem.AddBody(body);
-                    }
-
-                    if (location.Population == 0 || location.SystemFaction is null || location.Factions is null || location.Factions.Count == 0)
-                    {
-                        SystemNotification(location.StarSystem,
-                        [
-                            "Unpopulated",
-                            location.SystemSecurity_Localised,
-                        ]);
+                    if (bounty.Rewards is null || bounty.Rewards.Count == 0)
                         break;
+
+                    foreach (var reward in bounty.Rewards)
+                    {
+                        bountiesManager.AddBounty(new VoucherClaim(Models.VoucherType.Bounty, reward.Faction, reward.Reward, bounty.Timestamp));
                     }
 
-                    SystemNotification(location.StarSystem,
-                        [
-                            location.SystemFaction.Name,
-                            $"Population : {EliteHelpers.FormatNumber(location.Population ?? 0)}",
-                            location.SystemAllegiance,
-                            location.SystemFaction.FactionState,
-                            location.SystemSecurity_Localised,
-                            EliteHelpers.FactionReputationToString(location.Factions.FirstOrDefault(x => string.Equals(x.Name, location.SystemFaction.Name))?.MyReputation)
-                        ]);
+                    FireBountiesChangedIfLive();
                     break;
-                case FSDJumpEvent.FSDJumpEventArgs fsdJump:
-                    CurrentBody = null;
-                    UpdateCurrentSystem(new(fsdJump));
-                    UpdateCurrentBody_Station(null);
-                    AddFactions(fsdJump.Factions);
-                    if (fsdJump.Population == 0 || fsdJump.SystemFaction is null || fsdJump.Factions is null || fsdJump.Factions.Count == 0)
+                case CargoEvent.CargoEventArgs:
+                    var cargo = journalManager.GetCargo();
+
+                    if (cargo != null && cargo.Vessel.Equals("Ship", StringComparison.OrdinalIgnoreCase))
                     {
-                        SystemNotification(fsdJump.StarSystem,
-                        [
-                            "Unpopulated",
-                            fsdJump.SystemSecurity_Localised,
-                        ]);
-                        break;
+                        CurrentShipCargo = cargo?.Inventory.Select(x =>
+                        {
+                            return new ShipCargo((string.IsNullOrEmpty(x.Name_Localised) ? x.Name : x.Name_Localised).ToTitleCase(), x.Count);
+                        });
+
+                        if (CurrentShipCargo != null)
+                        {
+                            ShipCargoUpdatedEvent?.Invoke(this, CurrentShipCargo);
+                        }
                     }
-                    SystemNotification(fsdJump.StarSystem,
-                    [
-                            fsdJump.SystemFaction.Name,
-                            $"Population : {EliteHelpers.FormatNumber(fsdJump.Population)}",
-                            fsdJump.SystemAllegiance,
-                            fsdJump.SystemFaction.FactionState,
-                            fsdJump.SystemSecurity_Localised,
-                            EliteHelpers.FactionReputationToString(fsdJump.Factions.FirstOrDefault(x => string.Equals(x.Name, fsdJump.SystemFaction.Name))?.MyReputation)
-                        ]);
                     break;
                 case CarrierJumpEvent.CarrierJumpEventArgs carrierJump:
                     UpdateCurrentSystem(new(carrierJump));
@@ -237,7 +205,9 @@ namespace ODEliteTracker.Stores
                     if (IsLive == false)
                         break;
 
-                    var args = new NotificationArgs(docked.StationName_Localised ?? docked.StationName,
+                    var stationName = docked.StationName_Localised ?? docked.StationName;
+                    stationName = stationName.Replace("$EXT_PANEL_ColonisationShip;", "Colonisation Ship -");
+                    var args = new NotificationArgs(stationName,
                         [
                             $"{EliteJournalReaderHelpers.StationTypeText(docked.StationType)}",
                             $"{docked.StationFaction.Name}",
@@ -249,17 +219,127 @@ namespace ODEliteTracker.Stores
 
                     notificationService.ShowBasicNotification(args);
                     break;
-                case UndockedEvent.UndockedEventArgs:
-                    CurrentMarketID = 0;
-                    currentStation = null;
+                case FSDJumpEvent.FSDJumpEventArgs fsdJump:
+                    CurrentBody = null;
+                    UpdateCurrentSystem(new(fsdJump));
                     UpdateCurrentBody_Station(null);
+                    AddFactions(fsdJump.Factions);
+                    if (fsdJump.Population == 0 || fsdJump.SystemFaction is null || fsdJump.Factions is null || fsdJump.Factions.Count == 0)
+                    {
+                        SystemNotification(fsdJump.StarSystem,
+                        [
+                            "Unpopulated",
+                            fsdJump.SystemSecurity_Localised,
+                        ]);
+                        break;
+                    }
+                    SystemNotification(fsdJump.StarSystem,
+                    [
+                            fsdJump.SystemFaction.Name,
+                            $"Population : {EliteHelpers.FormatNumber(fsdJump.Population)}",
+                            fsdJump.SystemAllegiance,
+                            fsdJump.SystemFaction.FactionState,
+                            fsdJump.SystemSecurity_Localised,
+                            EliteHelpers.FactionReputationToString(fsdJump.Factions.FirstOrDefault(x => string.Equals(x.Name, fsdJump.SystemFaction.Name))?.MyReputation)
+                        ]);
                     break;
-                case ApproachBodyEvent.ApproachBodyEventArgs approachBody:
-                    CurrentBody = CurrentSystem?.Bodies.FirstOrDefault(x => x.Key == approachBody.BodyID).Value;
+                case LoadoutEvent.LoadoutEventArgs loadOut:
+                    //Sometimes the ship name comes though as a string with a single space so we trim it
+                    CurrentShipInfo = new ShipInfo(string.IsNullOrEmpty(loadOut.ShipName.Trim()) ? EliteHelpers.ConvertShipName(loadOut.Ship) : loadOut.ShipName, loadOut.ShipIdent, loadOut.CargoCapacity);
 
-                    if (CurrentBody != null)
-                        CurrentBody.Landable = true;
-                    UpdateCurrentBody_Station(approachBody.Body);
+                    if (IsLive)
+                        ShipChangedEvent?.Invoke(this, CurrentShipInfo);
+                    break;
+                case LocationEvent.LocationEventArgs location:
+                    UpdateCurrentSystem(new(location));
+                    string? bodyStation = null;
+                    if (string.IsNullOrEmpty(location.Body) == false)
+                    {
+                        bodyStation = location.Body;
+                    }
+                    if (string.IsNullOrEmpty(location.StationName) == false)
+                    {
+                        bodyStation = location.StationName;
+                    }
+                    UpdateCurrentBody_Station(bodyStation);
+                    AddFactions(location.Factions);
+
+                    if (location.BodyType == BodyType.Planet && CurrentSystem != null)
+                    {
+                        var body = new SystemBody(location, CurrentSystem);
+
+                        CurrentSystem.AddBody(body);
+                    }
+
+                    if (location.Population == 0 || location.SystemFaction is null || location.Factions is null || location.Factions.Count == 0)
+                    {
+                        SystemNotification(location.StarSystem,
+                        [
+                            "Unpopulated",
+                            location.SystemSecurity_Localised,
+                        ]);
+                        break;
+                    }
+
+                    SystemNotification(location.StarSystem,
+                        [
+                            location.SystemFaction.Name,
+                            $"Population : {EliteHelpers.FormatNumber(location.Population ?? 0)}",
+                            location.SystemAllegiance,
+                            location.SystemFaction.FactionState,
+                            location.SystemSecurity_Localised,
+                            EliteHelpers.FactionReputationToString(location.Factions.FirstOrDefault(x => string.Equals(x.Name, location.SystemFaction.Name))?.MyReputation)
+                        ]);
+                    break;
+                case MarketBuyEvent.MarketBuyEventArgs marketBuy:
+                    if (currentStation == null
+                        || CurrentSystem == null)
+                    {
+                        break;
+                    }
+                    var commodity = EliteCommodityHelpers.GetCommodityFromPartial(marketBuy.Type, marketBuy.Type_Localised);
+
+                    if (CurrentMarket is not null)
+                    {
+                        var marketItem = CurrentMarket.ItemsForSale.FirstOrDefault(x => string.Equals(x.Name, commodity.FdevName));
+
+                        if (marketItem != null)
+                        {
+                            marketItem.Stock -= marketBuy.Count;
+
+                            if (marketItem.Stock <= 0)
+                                CurrentMarket.ItemsForSale.Remove(marketItem);
+
+                            MarketEvent?.Invoke(this, CurrentMarket);
+                        }
+                    }
+
+                    //We don't care about fleet carrier purchases for the history
+                    if (currentStation.StationType.Equals("FleetCarrier", StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+
+                    var purchase = new CommodityPurchase(commodity, currentStation, marketBuy.BuyPrice, marketBuy.Timestamp);
+
+                    if (marketPurchases.TryGetValue(commodity, out var list))
+                    {
+                        var known = list.FirstOrDefault(x => x.Commodity == commodity && x.Station.MarketID == currentStation.MarketID);
+
+                        if (known != null)
+                        {
+                            //Remove the older entry
+                            list.Remove(known);
+                        }
+                        list.Add(purchase);
+                        if (IsLive)
+                            PurchasesUpdated?.Invoke(this, purchase);
+                        break;
+                    }
+
+                    marketPurchases.TryAdd(commodity, [purchase]);
+                    if (IsLive)
+                        PurchasesUpdated?.Invoke(this, purchase);
                     break;
                 case EliteJournalReader.Events.MarketEvent.MarketEventArgs:
                     var market = journalManager.GetMarketInfo();
@@ -270,28 +350,22 @@ namespace ODEliteTracker.Stores
                         MarketEvent?.Invoke(this, CurrentMarket);
                     }
                     break;
-                case LoadoutEvent.LoadoutEventArgs loadOut:
-                    //Sometimes the ship name comes though as a string with a single space so we trim it
-                    CurrentShipInfo = new ShipInfo(string.IsNullOrEmpty(loadOut.ShipName.Trim()) ? EliteHelpers.ConvertShipName(loadOut.Ship) : loadOut.ShipName, loadOut.ShipIdent, loadOut.CargoCapacity);
-
-                    if (IsLive)
-                        ShipChangedEvent?.Invoke(this, CurrentShipInfo);
+                case PowerplayEvent.PowerplayEventArgs powerPlay:
+                    commanderPower = powerPlay.Power;
                     break;
-                case CargoEvent.CargoEventArgs:
-                    var cargo = journalManager.GetCargo();
+                case RedeemVoucherEvent.RedeemVoucherEventArgs redeemVoucher:
 
-                    if (cargo != null && cargo.Vessel.Equals("Ship", StringComparison.OrdinalIgnoreCase))
+                    if (!string.Equals(redeemVoucher.Type, "Bounty", StringComparison.OrdinalIgnoreCase))
+                        break;
+
+                    var fireEvent = false;
+                    foreach (var faction in redeemVoucher.Factions)
                     {
-                        CurrentShipCargo = cargo?.Inventory.Select(x =>
-                        {
-                            return new ShipCargo((string.IsNullOrEmpty(x.Name_Localised) ? x.Name : x.Name_Localised).ToTitleCase(), x.Count);
-                        });
-
-                        if (CurrentShipCargo != null)
-                        {
-                            ShipCargoUpdatedEvent?.Invoke(this, CurrentShipCargo);
-                        }
+                        fireEvent = bountiesManager.FactionBountiesClaimed(faction, redeemVoucher.BrokerPercentage) | fireEvent;
                     }
+
+                    if (fireEvent)
+                        FireBountiesChangedIfLive();
                     break;
                 case ShipTargetedEvent.ShipTargetedEventArgs shipTargeted:
 
@@ -329,63 +403,6 @@ namespace ODEliteTracker.Stores
 
                     notificationService.ShowShipTargetedNotification(pilotName, EliteHelpers.ConvertShipName(shipTargeted.Ship), targetType, shipTargeted.Bounty, shipTargeted.Faction, shipTargeted.Power);
                     break;
-                case BountyEvent.BountyEventArgs bounty:
-
-                    if (bounty.Rewards is null || bounty.Rewards.Count == 0)
-                        break;
-
-                    foreach (var reward in bounty.Rewards)
-                    {
-                        bountiesManager.AddBounty(new VoucherClaim(Models.VoucherType.Bounty, reward.Faction, reward.Reward, bounty.Timestamp));
-                    }
-
-                    FireBountiesChangedIfLive();
-                    break;
-                case RedeemVoucherEvent.RedeemVoucherEventArgs redeemVoucher:
-
-                    if (!string.Equals(redeemVoucher.Type, "Bounty", StringComparison.OrdinalIgnoreCase))
-                        break;
-
-                    var fireEvent = false;
-                    foreach (var faction in redeemVoucher.Factions)
-                    {
-                        fireEvent = bountiesManager.FactionBountiesClaimed(faction, redeemVoucher.BrokerPercentage) | fireEvent;
-                    }
-
-                    if (fireEvent)
-                        FireBountiesChangedIfLive();
-                    break;
-                case MarketBuyEvent.MarketBuyEventArgs marketBuy:
-                    if (currentStation == null
-                        || CurrentSystem == null
-                        || currentStation.StationType.Equals("FleetCarrier", StringComparison.OrdinalIgnoreCase))
-                    {
-                        break;
-                    }
-
-                    var commodity = EliteCommodityHelpers.GetCommodityFromPartial(marketBuy.Type, marketBuy.Type_Localised);
-
-                    var purchase = new CommodityPurchase(commodity, currentStation, marketBuy.BuyPrice, marketBuy.Timestamp);
-
-                    if (marketPurchases.TryGetValue(commodity, out var list))
-                    {
-                        var known = list.FirstOrDefault(x => x.Commodity == commodity && x.Station.MarketID == currentStation.MarketID);
-
-                        if (known != null)
-                        {
-                            //Remove the older entry
-                            list.Remove(known);
-                        }
-                        list.Add(purchase);
-                        if (IsLive)
-                            PurchasesUpdated?.Invoke(this, purchase);
-                        break;
-                    }
-
-                    marketPurchases.TryAdd(commodity, [purchase]);
-                    if (IsLive)
-                        PurchasesUpdated?.Invoke(this, purchase);
-                    break;
                 case ScanEvent.ScanEventArgs scan:
                     if (CurrentSystem is null)
                         break;
@@ -393,6 +410,11 @@ namespace ODEliteTracker.Stores
                     break;
                 case SupercruiseEntryEvent.SupercruiseEntryEventArgs:
                     CurrentBody = null;
+                    break;
+                case UndockedEvent.UndockedEventArgs:
+                    CurrentMarketID = 0;
+                    currentStation = null;
+                    UpdateCurrentBody_Station(null);
                     break;
             }
         }
@@ -439,6 +461,10 @@ namespace ODEliteTracker.Stores
 
         private void UpdateCurrentBody_Station(string? text)
         {
+            if (string.IsNullOrEmpty(text) == false)
+            {
+                text = text.Replace("$EXT_PANEL_ColonisationShip;", "Colonisation Ship -");
+            }
             CurrentBody_Station = text;
             if (IsLive)
                 CurrentBody_StationChanged?.Invoke(this, CurrentBody_Station);

@@ -78,7 +78,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Colonisation
 
             foreach(var item in Resources)
             {
-                var known = e.Stock.FirstOrDefault(x => x.commodity == item.commodity);
+                var known = e.Stock.FirstOrDefault(x => x.commodity == item.commodity && x.Stolen == false);
 
                 item.UpdateCarrierStock(known);
             }

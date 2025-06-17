@@ -17,7 +17,8 @@ namespace ODEliteTracker.Models.Galaxy
         public Station(LocationEvent.LocationEventArgs e, FactionData data, StarSystem system)
         {
             StarSystem = system;
-            StationName = e.StationName;
+            StationNameFDEV = e.StationName;
+            StationName = e.StationName.Replace("$EXT_PANEL_ColonisationShip;", "Colonisation Ship -");
             StationFaction = data;
             MarketID = e.MarketID;
             StationType = e.StationType;
@@ -27,7 +28,8 @@ namespace ODEliteTracker.Models.Galaxy
         public Station(DockedEvent.DockedEventArgs e, FactionData data, StarSystem system)
         {
             StarSystem = system;
-            StationName = e.StationName;
+            StationNameFDEV = e.StationName;
+            StationName = e.StationName.Replace("$EXT_PANEL_ColonisationShip;", "Colonisation Ship -");
             StationFaction = data;
             MarketID = e.MarketID;
             StationType = e.StationType;
@@ -38,6 +40,7 @@ namespace ODEliteTracker.Models.Galaxy
 
         public StarSystem StarSystem { get; }
         public string StationName { get; }
+        public string StationNameFDEV { get; }
         public FactionData StationFaction { get; }
         public ulong MarketID { get;  }
         public string StationType { get; }

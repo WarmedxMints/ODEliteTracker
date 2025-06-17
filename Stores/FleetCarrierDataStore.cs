@@ -79,7 +79,6 @@ namespace ODEliteTracker.Stores
                 { JournalTypeEnum.Docked, true },
                 { JournalTypeEnum.Undocked, true },
                 { JournalTypeEnum.CargoTransfer, false },
-                { JournalTypeEnum.MarketBuy, false },
                 { JournalTypeEnum.MarketSell, false },
             };
         }
@@ -277,15 +276,6 @@ namespace ODEliteTracker.Stores
                     if(IsLive && cargoMoved)
                         CarrierStockUpdated?.Invoke(this, CarrierData);
                     break;
-                case MarketBuyEvent.MarketBuyEventArgs buy:
-                    if (dockedOnCarrier == false || CarrierData is null || CarrierData.CarrierID != buy.MarketID)
-                        break;
-
-                    if (TransferCargo(buy.Type, buy.Type_Localised ?? buy.Type, buy.Count * -1, stolen: false) && IsLive)
-                    {
-                        CarrierStockUpdated?.Invoke(this, CarrierData);
-                    }
-                    break;
                 case MarketSellEvent.MarketSellEventArgs sell:
                     if (dockedOnCarrier == false || CarrierData is null || CarrierData.CarrierID != sell.MarketID || sell.BlackMarket)
                         break;
@@ -390,6 +380,7 @@ namespace ODEliteTracker.Stores
                 //We don't care about black market items
                 if (item.BlackMarket)
                     continue;
+
                 var value = EliteCommodityHelpers.GetCommodityFromPartial(item.Name, item.Name);
 
                 var known = cargo.FirstOrDefault(x => x.commodity == value);
@@ -481,10 +472,10 @@ namespace ODEliteTracker.Stores
                 }
 
                 known.StockCount = item.Stock;
-                stockUpdated = true;     
-                
+                stockUpdated = true;
+
                 //If the item is now out of stock
-                //if(known.StockCount <= 0)
+                //if (known.StockCount <= 0)
                 //{
                 //    carrierData.Stock.Remove(known);
                 //}

@@ -147,5 +147,6 @@ namespace ODEliteTracker.ViewModels.ModelViews.BGS
         public List<FactionVM> Factions { get; }
         public List<SystemConflictVM> Conflicts { get; } = [];    
         public bool HasData => Factions.Any(x => x.HasData());
+        public bool HasConflict => Conflicts.Count > 0;
     }
 }

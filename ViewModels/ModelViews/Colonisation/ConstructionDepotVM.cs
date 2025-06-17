@@ -15,7 +15,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Colonisation
         public string SystemName { get; set; } = depot.SystemName.ToUpper();
         public string SystemNameText { get; set; } = depot.SystemName;
         public string StationName { get; set; } = depot.StationName;
-        public string StationNameSplit => StationName.Split([':', ';']).Last().Trim();
+        public string StationNameSplit => StationName.Split([':', ';'], StringSplitOptions.TrimEntries).Last().Trim();
         public bool PlanetBuild => StationName.Contains("Planetary", StringComparison.OrdinalIgnoreCase);
         public long MarketID { get; set; } = depot.MarketID;
         public double ProgressValue { get; set; } = depot.Progress;

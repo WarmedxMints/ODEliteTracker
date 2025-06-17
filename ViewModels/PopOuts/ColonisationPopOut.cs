@@ -230,7 +230,7 @@ namespace ODEliteTracker.ViewModels.PopOuts
 
             foreach (var item in SelectedDepot.Resources)
             {
-                var onCarrier = e.Stock.FirstOrDefault(x => string.Equals(x.commodity.FdevName, item.FDEVName, StringComparison.OrdinalIgnoreCase));
+                var onCarrier = e.Stock.FirstOrDefault(x => string.Equals(x.commodity.FdevName, item.FDEVName, StringComparison.OrdinalIgnoreCase) && x.Stolen == false);
 
                 var count = onCarrier?.StockCount ?? 0;
                 item.SetCarrierStock(count);

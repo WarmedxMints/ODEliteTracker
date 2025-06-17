@@ -15,9 +15,9 @@ namespace ODEliteTracker
     /// </summary>
     public partial class App
     {
-        public static Version AppVersion { get; } = new Version(1, 4, 0);
+        public static Version AppVersion { get; } = new Version(1, 4, 1);
 
-#if INSTALL
+#if INSTALL || DEBUG
         public readonly static string BaseDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ODEliteTracker");
 #else
         public readonly static string BaseDirectory = AppDomain.CurrentDomain.BaseDirectory;

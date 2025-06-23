@@ -542,7 +542,13 @@ namespace ODEliteTracker.Stores
         {
             var task = Task.Run(async () => { await tickDataStore.UpdateTickFromDatabase(); });
             task.Wait();
-            this.tickContainer.UpdateTickData(tickDataStore.BGSTickData);
+            this.tickContainer.UpdateTickData(tickDataStore.BGSTickData);     
+        }
+
+        public override void RunAfterParsingHistory()
+        {
+            CheckForNewTick();
+            base.RunAfterParsingHistory();
         }
 
         public override void ClearData()

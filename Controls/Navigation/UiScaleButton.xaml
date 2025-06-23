@@ -8,6 +8,8 @@
                                 xmlns:controls="clr-namespace:ODMVVM.Navigation.Controls;assembly=ODMvvm"
                                 d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
                                 mc:Ignorable="d"
+                                Width="45"
+                                Height="45"
                                 d:DesignHeight="480"
                                 d:DesignWidth="480">
     <Grid SnapsToDevicePixels="True"

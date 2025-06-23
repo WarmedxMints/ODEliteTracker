@@ -202,11 +202,11 @@ namespace ODEliteTracker.ViewModels
 
             if (stacks.Count != 0)
             {
-                var maxKills = stacks.Max(x => x.Kills);
+                var maxKills = stacks.Max(x => x.ActiveKills);
 
                 foreach (var stack in stacks)
                 {
-                    stack.KillDifference = maxKills - stack.Kills;
+                    stack.KillDifference = maxKills - stack.ActiveKills;
                 }
             }
             OnPropertyChanged(nameof(ActiveMissions));

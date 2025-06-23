@@ -31,9 +31,16 @@ namespace ODEliteTracker.ViewModels.ModelViews
                 return $"{CargoCapacity - CargoCount} Unused";
             }
         }
+        public string CargoRemainingValue
+        {
+            get
+            {
+                return $"Cargo Space {CargoCapacity - CargoCount}";
+            }
+        }
         public ObservableCollection<ShipCargoVM> ShipCargo { get; set; } = [];
 
-        internal void OnCargoUpdated(IEnumerable<ShipCargo>? e)
+        internal void OnCargoUpdated(IEnumerable<ShipCargo>? e, string sorting = "")
         {
             ShipCargo.ClearCollection();
 
@@ -41,6 +48,11 @@ namespace ODEliteTracker.ViewModels.ModelViews
             {
                 var cargo = e.Select(x => new ShipCargoVM(x));
 
+                if(string.IsNullOrEmpty(sorting) == false)
+                {
+                    cargo = cargo.OrderByDescending(x => string.Equals(sorting, x.Name))
+                        .ThenByDescending(x => x.Count);
+                }
                 if (cargo.Any())
                 {
                     ShipCargo.AddRange(cargo);
@@ -48,6 +60,7 @@ namespace ODEliteTracker.ViewModels.ModelViews
             }
             OnPropertyChanged(nameof(CargoText));
             OnPropertyChanged(nameof(CargoRemaining));
+            OnPropertyChanged(nameof(CargoRemainingValue));
         }
     }
 }

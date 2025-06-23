@@ -1,4 +1,6 @@
-﻿using ODEliteTracker.Models.Settings;
+﻿using NetTopologySuite.Utilities;
+using ODEliteTracker.Models.Galaxy;
+using ODEliteTracker.Models.Settings;
 using ODMVVM.Commands;
 using System.Windows;
 using System.Windows.Input;
@@ -16,12 +18,38 @@ namespace ODEliteTracker.Notifications
             switch (args.Type)
             {
                 case NotificationOptions.Station:
-                    ImageSource = "/Assets/Icons/Coriolis_sm.png";
+                    if(args.Text.Length == 0)
+                    {
+                        ImageSource = "/Assets/Icons/Coriolis_sm.png";
+                        break;
+                    }
+                    if (args.Text.Length > 1 && args.Text[1] == "Brewer Corporation")
+                    {
+                        ImageSource = "/Assets/Notifications/Stations/Construction.png";
+                        break;
+                    }
+
+                    ImageSource = args.Text[0] switch
+                    {
+                        "Fleet Carrier" => "/Assets/Notifications/Stations/FleetCarrier.png",
+                        "Coriolis" => "/Assets/Notifications/Stations/Coriolis.png",
+                        "Orbis" => "/Assets/Notifications/Stations/Orbis.png",
+                        "Outpost" or "Scientific Outpost" => "/Assets/Notifications/Stations/Outpost.png",
+                        "Ocellus" => "/Assets/Notifications/Stations/Ocellus.png",
+                        "Surface Port" or "Crater Port" => "/Assets/Notifications/Stations/surface_port.png",
+                        "Odyssey Settlement" => "/Assets/Notifications/Stations/settlement_sm.png",
+                        "Mega Ship" or "Civilian Mega Ship" => "/Assets/Notifications/Stations/Mega-Ship_Icon.png",
+                        "Construction Depot" => "/Assets/Notifications/Stations/Construction.png",
+                        "Asteroid Base" => "/assets/Notifications/Stations/Asteroid_Station_Icon.png",
+                        _ => "/Assets/Icons/Coriolis_sm.png",
+                    };
                     break;
                 default:
                 case NotificationOptions.System:
+                    
                     ImageSource = "/Assets/Icons/orrery_map.png";
                     break;
+
                 case NotificationOptions.CopyToClipboard:
                     ImageSource = "/Assets/Icons/Clipboard.png";
                     break;

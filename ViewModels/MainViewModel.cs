@@ -59,7 +59,6 @@ namespace ODEliteTracker.ViewModels
         private readonly TickDataStore tickDataStore;
         private readonly FleetCarrierDataStore carrierDataStore;
         private readonly PopOutService popOutService;
-
         public EventHandler? WindowPositionReset;
 
         public string Title => $"Elite Tracker v{App.AppVersion}";
@@ -69,7 +68,7 @@ namespace ODEliteTracker.ViewModels
             new EliteStyleNavigationButton()
             {
                 ButtonImage = new BitmapImage(new Uri("/Assets/Icons/assassin.png", UriKind.Relative)),
-                TargetView = typeof(MassacreMissionsViewModel)
+                TargetView = typeof(MassacreMissionsViewModel),            
             },
             new EliteStyleNavigationButton()
             {
@@ -90,6 +89,11 @@ namespace ODEliteTracker.ViewModels
             {
                 ButtonImage = new BitmapImage(new Uri("/Assets/Icons/powerplay.png", UriKind.Relative)),
                 TargetView = typeof(PowerPlayViewModel)
+            },
+            new EliteStyleNavigationButton()
+            {
+                ButtonImage = new BitmapImage(new Uri("/Assets/Icons/Asteroid.png", UriKind.Relative)),
+                TargetView = typeof(MiningViewModel)
             },
             new EliteStyleNavigationButton()
             {

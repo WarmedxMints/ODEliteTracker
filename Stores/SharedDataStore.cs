@@ -307,8 +307,8 @@ namespace ODEliteTracker.Stores
                         {
                             marketItem.Stock -= marketBuy.Count;
 
-                            if (marketItem.Stock <= 0)
-                                CurrentMarket.ItemsForSale.Remove(marketItem);
+                            if (marketItem.Stock < 0)
+                                marketItem.Stock = 0;
 
                             MarketEvent?.Invoke(this, CurrentMarket);
                         }

@@ -25,7 +25,8 @@ namespace ODEliteTracker.ViewModels.ModelViews.Massacre
         public List<string> StarSystem { get; } = [];
         public int Reward => ActiveMissions.Sum(x => x.Reward);
         public int Kills => ActiveMissions.Sum(x => x.KillCount);
-        public int KillsRemaining => Missions.Sum(x => x.KillCount - x.Kills);
+        public int ActiveKills => ActiveMissions.Where(x => x.CurrentState == MissionState.Active).Sum(x => x.Kills);
+        public int KillsRemaining => ActiveMissions.Sum(x => x.KillCount - x.Kills);
 
         private int killDifference;
         public int KillDifference

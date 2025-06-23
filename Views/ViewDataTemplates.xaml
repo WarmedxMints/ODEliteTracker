@@ -37,6 +37,9 @@
     <DataTemplate DataType="{x:Type viewmodels:SpanshViewModel}">
         <views:SpanshView />
     </DataTemplate>
+    <DataTemplate DataType="{x:Type viewmodels:MiningViewModel}">
+        <views:MiningView />
+    </DataTemplate>
     
     <DataTemplate DataType="{x:Type popoutsVMs:ColonisationPopOut}">
         <popouts:ColonisationPopOut />
@@ -55,5 +58,11 @@
     </DataTemplate>
     <DataTemplate DataType="{x:Type popoutsVMs:SpanshPopOutViewModel}">
         <popouts:SpanshPopOutView />
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type popoutsVMs:MiningTablePopOut}">
+        <popouts:MiningTablePopOutView />
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type popoutsVMs:ProspectorPopOutViewModel}">
+        <popouts:ProspectorPopOutView />
     </DataTemplate>
 </ResourceDictionary>

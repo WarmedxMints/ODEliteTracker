@@ -8,7 +8,8 @@ namespace ODEliteTracker.Models.Galaxy
         public Station(CarrierJumpEvent.CarrierJumpEventArgs e, FactionData data, StarSystem system)
         {
             StarSystem = system;
-            StationName = e.StationName;
+            StationNameFDEV = e.StationName;
+            StationName = e.StationName.Replace("$EXT_PANEL_ColonisationShip;", "Colonisation Ship -");
             StationFaction = data;
             MarketID = e.MarketID;
             StationType = e.StationType;

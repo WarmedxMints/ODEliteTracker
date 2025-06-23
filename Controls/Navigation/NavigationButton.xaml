@@ -6,6 +6,8 @@
                               xmlns:local="clr-namespace:ODEliteTracker.Controls.Navigation"
                               xmlns:controls="clr-namespace:ODMVVM.Navigation.Controls;assembly=ODMvvm"
                               mc:Ignorable="d"
+                              Width="45"
+                              Height="45"
                               d:DataContext="{d:DesignInstance local:EliteStyleNavigationButton}">
     <Grid SnapsToDevicePixels="True"
           Margin="0,0,0,5">
@@ -40,10 +42,10 @@
                 Style="{DynamicResource NavigationImageBtn}"
                 Grid.Column="2"
                 Cursor="Hand"
-                HorizontalAlignment="Left"
+                HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch">
             <Image Source="{Binding ButtonImage}"
-                   Stretch="UniformToFill"
+                   Stretch="Uniform"
                    SnapsToDevicePixels="True"
                    UseLayoutRounding="True"
                    Margin="2"

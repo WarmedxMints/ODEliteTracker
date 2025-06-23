@@ -29,6 +29,7 @@
                 "MegaShip" => "Mega Ship",
                 "MegaShipCivilian" => "Civilian Mega Ship",
                 "CraterOutpost" => "Crater Port",
+                "CraterPort" => "Crater Port",
                 "PlanetaryConstructionDepot" => "Construction Depot",
                 _ => stationType,
             };

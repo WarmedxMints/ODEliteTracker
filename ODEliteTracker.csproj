@@ -14,6 +14,7 @@
     <None Remove="Assets\Fonts\EUROSTILE.TTF" />
     <None Remove="Assets\Icons\assassin-large.png" />
     <None Remove="Assets\Icons\assassin.png" />
+    <None Remove="Assets\Icons\Asteroid.png" />
     <None Remove="Assets\Icons\bgs.png" />
     <None Remove="Assets\Icons\bookmark.png" />
     <None Remove="Assets\Icons\ClickThrough.png" />
@@ -31,6 +32,7 @@
     <None Remove="Assets\Icons\paypal-donate-button.png" />
     <None Remove="Assets\Icons\PopOutBtn.png" />
     <None Remove="Assets\Icons\powerplay.png" />
+    <None Remove="Assets\Icons\Prospector.png" />
     <None Remove="Assets\Icons\ResetWindow.png" />
     <None Remove="Assets\Icons\settings.png" />
     <None Remove="Assets\Icons\settlement_pm.png" />
@@ -53,6 +55,16 @@
     <None Remove="Assets\Notifications\Notification Small.png" />
     <None Remove="Assets\Notifications\Notification Top Left.png" />
     <None Remove="Assets\Notifications\Notification Top Right.png" />
+    <None Remove="Assets\Notifications\Stations\Asteroid_Station_Icon.png" />
+    <None Remove="Assets\Notifications\Stations\Construction.png" />
+    <None Remove="Assets\Notifications\Stations\Coriolis.png" />
+    <None Remove="Assets\Notifications\Stations\FleetCarrier.png" />
+    <None Remove="Assets\Notifications\Stations\Mega-Ship_Icon.png" />
+    <None Remove="Assets\Notifications\Stations\Ocellus.png" />
+    <None Remove="Assets\Notifications\Stations\Orbis.png" />
+    <None Remove="Assets\Notifications\Stations\Outpost.png" />
+    <None Remove="Assets\Notifications\Stations\settlement_sm.png" />
+    <None Remove="Assets\Notifications\Stations\surface_port.png" />
     <None Remove="Assets\OD.ico" />
     <None Remove="Assets\PowerPlay\aisling-duval.png" />
     <None Remove="Assets\PowerPlay\archon-delaine.png" />
@@ -102,6 +114,7 @@
     <Resource Include="Assets\Fonts\EUROSTILE.TTF" />
     <Resource Include="Assets\Icons\assassin-large.png" />
     <Resource Include="Assets\Icons\assassin.png" />
+    <Resource Include="Assets\Icons\Asteroid.png" />
     <Resource Include="Assets\Icons\bgs.png" />
     <Resource Include="Assets\Icons\bookmark.png" />
     <Resource Include="Assets\Icons\ClickThrough.png" />
@@ -120,6 +133,7 @@
     <Resource Include="Assets\Icons\paypal-donate-button.png" />
     <Resource Include="Assets\Icons\PopOutBtn.png" />
     <Resource Include="Assets\Icons\powerplay.png" />
+    <Resource Include="Assets\Icons\Prospector.png" />
     <Resource Include="Assets\Icons\ResetWindow.png" />
     <Resource Include="Assets\Icons\settings.png" />
     <Resource Include="Assets\Icons\settlement_pm.png" />
@@ -142,6 +156,16 @@
     <Resource Include="Assets\Notifications\Notification Small.png" />
     <Resource Include="Assets\Notifications\Notification Top Left.png" />
     <Resource Include="Assets\Notifications\Notification Top Right.png" />
+    <Resource Include="Assets\Notifications\Stations\Asteroid_Station_Icon.png" />
+    <Resource Include="Assets\Notifications\Stations\Construction.png" />
+    <Resource Include="Assets\Notifications\Stations\Coriolis.png" />
+    <Resource Include="Assets\Notifications\Stations\FleetCarrier.png" />
+    <Resource Include="Assets\Notifications\Stations\Mega-Ship_Icon.png" />
+    <Resource Include="Assets\Notifications\Stations\Ocellus.png" />
+    <Resource Include="Assets\Notifications\Stations\Orbis.png" />
+    <Resource Include="Assets\Notifications\Stations\Outpost.png" />
+    <Resource Include="Assets\Notifications\Stations\settlement_sm.png" />
+    <Resource Include="Assets\Notifications\Stations\surface_port.png" />
     <Resource Include="Assets\OD.ico" />
     <Resource Include="Assets\PowerPlay\aisling-duval.png" />
     <Resource Include="Assets\PowerPlay\archon-delaine.png" />

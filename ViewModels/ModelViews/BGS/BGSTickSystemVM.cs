@@ -1,5 +1,9 @@
-﻿using ODEliteTracker.Models.BGS;
+﻿using EliteJournalReader;
+using EliteJournalReader.Events;
+using ODEliteTracker.Models.BGS;
 using ODEliteTracker.Models.Galaxy;
+using ODEliteTracker.ViewModels.ModelViews.PowerPlay;
+using ODMVVM.Helpers;
 using ODMVVM.ViewModels;
 
 namespace ODEliteTracker.ViewModels.ModelViews.BGS
@@ -132,6 +136,11 @@ namespace ODEliteTracker.ViewModels.ModelViews.BGS
                     }
                 }
             }
+
+            if (system.PowerConflict != null && system.PowerConflict.Count > 0)
+            {
+                SetConflict(system.PowerConflict);
+            }
         }
 
         private readonly BGSTickSystem system;
@@ -144,9 +153,58 @@ namespace ODEliteTracker.ViewModels.ModelViews.BGS
         public string? Security => system.Security;
         public string? ControllingFactionState => Factions.FirstOrDefault(x => string.Equals(x.Name, ControllingFaction))?.FactionState;
         public string SystemAllegiance => system.SystemAllegiance;
+        public string Power => system.Power;
+        public PowerplayState PowerState => system.PowerState;
+        public string PowerStateString => system.PowerState.GetEnumDescription();
+        public string PowerplayStateControlProgress => $"{system.PowerplayStateControlProgress * 100:N2} %";
+        public string PowerplayStateReinforcement => $"{system.PowerplayStateReinforcement:N0}";
+        public string PowerplayStateUndermining => $"{system.PowerplayStateUndermining:N0}";
+        public List<PowerPlayItemVM> GoodsCollected { get; } = [];
+        public List<PowerPlayItemVM> GoodsDelivered { get; } = [];
+        public List<string>? Powers => system.Powers;
+        public List<string> OpposingPowers
+        {
+            get
+            {
+                var opposing = Powers?.Where(x => string.Equals(ControllingPower, x) == false);
+
+                if (opposing is null || !opposing.Any())
+                {
+                    return ["No Opposing Power"];
+                }
+                var ret = opposing.ToList();
+                ret.Sort();
+                return ret;
+            }
+        }
+        public PowerPlayConflictDataVM? PowerPlayConflictData { get; set; }
+        public string? ControllingPower => system.ControllingPower;
         public List<FactionVM> Factions { get; }
         public List<SystemConflictVM> Conflicts { get; } = [];    
         public bool HasData => Factions.Any(x => x.HasData());
         public bool HasConflict => Conflicts.Count > 0;
+
+        private void SetConflict(List<PowerConflict> data)
+        {
+            var ordered = data.OrderByDescending(x => x.ConflictProgress).ToList();
+
+            var winning = ordered.First();
+            ordered.Remove(winning);
+
+            PowerPlayConflictData = new PowerPlayConflictDataVM()
+            {
+                WinningPower = new(winning)
+            };
+
+            if (ordered.Count == 0)
+            {
+                PowerPlayConflictData.LosingPowers = [new(new("No Opposing Power", -1))];
+                PowerPlayConflictData.ConflictState = "Expansion";
+                return;
+            }
+
+            PowerPlayConflictData.LosingPowers = [.. ordered.Select(x => new PowerPlayConflictVM(x))];
+            PowerPlayConflictData.ConflictState = "Contested";
+        }
     }
 }

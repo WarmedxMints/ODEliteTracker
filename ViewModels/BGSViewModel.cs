@@ -284,14 +284,8 @@ namespace ODEliteTracker.ViewModels
         {
             var tickData = dataStore.GetTickInfo(SelectedTick?.ID);
 
-            var systems = tickData.Item1.OrderBy(x => x.Name).Select(x => new BGSTickSystemVM(x));
+            var systems = tickData.Item1.OrderBy(x => x.Name).Select(x => new BGSTickSystemVM(x)).ToList();
 
-            this.systems.ClearCollection();
-            this.systems.AddRange(systems);
-
-            var address = SelectedSystem == null ? dataStore.CurrentSystem?.Address ?? 0 : SelectedSystem.Address;
-
-            SelectedSystem = system == null ? this.systems.FirstOrDefault(x => x.Address == address) : this.systems.FirstOrDefault(x => x.Address == system.Address);
             foreach (var mission in tickData.Item2)
             {
                 switch (mission.CurrentState)
@@ -306,7 +300,7 @@ namespace ODEliteTracker.ViewModels
                         {
                             foreach (var inf in effect.Influence)
                             {
-                                var faction = Systems.FirstOrDefault(x => x.Address == inf.SystemAddress)?
+                                var faction = systems.FirstOrDefault(x => x.Address == inf.SystemAddress)?
                                     .Factions.FirstOrDefault(x => string.Equals(x.Name, effect.FactionName));
 
                                 if (faction != null)
@@ -317,7 +311,7 @@ namespace ODEliteTracker.ViewModels
                         }
                         break;
                     case MissionState.Failed:
-                        var fction = Systems.FirstOrDefault(x => x.Address == mission.OriginSystemAddress)?
+                        var fction = systems.FirstOrDefault(x => x.Address == mission.OriginSystemAddress)?
                                    .Factions.FirstOrDefault(x => string.Equals(x.Name, mission.IssuingFaction));
 
                         if (fction != null)
@@ -328,6 +322,10 @@ namespace ODEliteTracker.ViewModels
                 }
             }
 
+            this.systems.ClearCollection();
+            this.systems.AddRange(systems);
+            var address = SelectedSystem == null ? dataStore.CurrentSystem?.Address ?? 0 : SelectedSystem.Address;
+            SelectedSystem = system == null ? this.systems.FirstOrDefault(x => x.Address == address) : this.systems.FirstOrDefault(x => x.Address == system.Address);
             OnPropertyChanged(nameof(Systems));
         }
 

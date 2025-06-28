@@ -41,7 +41,7 @@
                 <Grid.LayoutTransform>
                     <ScaleTransform ScaleX="{Binding UiScale}"
                                     ScaleY="{Binding UiScale}" />
-                </Grid.LayoutTransform>
+                </Grid.LayoutTransform>             
                 <TabControl Grid.Row="1"
                             Margin="5">
                     <TabItem Header="Current System">
@@ -769,6 +769,37 @@
                         </Grid>
                     </TabItem>
                 </TabControl>
+
+                <StackPanel HorizontalAlignment="Right"
+                            VerticalAlignment="Top"
+                            Margin="20,10"
+                            Orientation="Horizontal">
+                    <Button Style="{DynamicResource EliteStyleButton}"
+                            FontFamily="Segoe MDL2 Assets"
+                            Content="&#xf0ae;"
+                            HorizontalContentAlignment="Center"
+                            Height="25"
+                            Margin="10,0"
+                            Command="{Binding ImportBookmarks}">
+                        <Button.ToolTip>
+                            <ToolTip Placement="Top"
+                                     FontFamily="{StaticResource Eurostile}"
+                                     Content="Import Bookmarks" />
+                        </Button.ToolTip>
+                    </Button>
+                    <Button Style="{DynamicResource EliteStyleButton}"
+                            FontFamily="Segoe MDL2 Assets"
+                            Content="&#xf0ad;"
+                            HorizontalContentAlignment="Center"
+                            Height="25"
+                            Command="{Binding ExportBookmarks}">
+                        <Button.ToolTip>
+                            <ToolTip Placement="Top"
+                                     FontFamily="{StaticResource Eurostile}"
+                                     Content="Export Bookmarks" />
+                        </Button.ToolTip>
+                    </Button>
+                </StackPanel>
             </Grid>
         </Grid>
     </Border>

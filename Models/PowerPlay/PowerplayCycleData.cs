@@ -22,6 +22,9 @@ namespace ODEliteTracker.Models.PowerPlay
             PowerplayStateReinforcement = evt.PowerplayStateReinforcement;
             PowerplayStateUndermining = evt.PowerplayStateUndermining;
             PowerConflict = evt.PowerConflict?.Select(x => x.Copy()).ToList();
+            PowerState = evt.PowerState;
+            ControllingPower = evt.ControllingPower;
+            Powers = evt.Powers;
         }
     }
 }

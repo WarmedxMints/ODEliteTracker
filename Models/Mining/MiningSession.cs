@@ -23,14 +23,22 @@ namespace ODEliteTracker.Models.Mining
         public int HighContent { get; set; }
 
         [JsonIgnore]
-        internal bool HasData
+        internal bool Started
         {
             get
             {
                 return ProspectorsFired > 0
                     || CollectorsDeployed > 0
-                    || AsteroidsProspected > 0
-                    || Items.Where(x => x.Type == MiningItemType.Ore).Any();
+                    || HasData;
+            }
+        }
+       
+        [JsonIgnore]
+        internal bool HasData
+        {
+            get
+            {
+                return AsteroidsProspected > 0 || Items.Where(x => x.Type == MiningItemType.Ore).Any();
             }
         }
 

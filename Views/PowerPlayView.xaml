@@ -160,7 +160,8 @@
                                  ItemContainerStyle="{DynamicResource SelectedContainerStyle}"
                                  Background="Transparent"
                                  BorderThickness="0"
-                                 Foreground="{DynamicResource PrimaryForeground}">
+                                 Foreground="{DynamicResource PrimaryForeground}"
+                                 SelectionChanged="ThisCycleList_SelectionChanged">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <Button FontSize="20"

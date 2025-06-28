@@ -1,4 +1,5 @@
 ﻿using EliteJournalReader;
+using EliteJournalReader.Events;
 using ODEliteTracker.Models.PowerPlay;
 using ODMVVM.Helpers;
 using ODMVVM.ViewModels;
@@ -10,7 +11,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.PowerPlay
         private readonly PowerplayCycleData data;
 
         public PowerPlayCycleDataVM(PowerplayCycleData data) 
-        {
+        {          
             this.data = data;
 
             foreach (var item in data.GoodsCollected)
@@ -25,25 +26,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.PowerPlay
 
             if (data.PowerConflict != null && data.PowerConflict.Count > 0)
             {
-                var ordered = data.PowerConflict.OrderByDescending(x => x.ConflictProgress).ToList();
-
-                var winning = ordered.First();
-                ordered.Remove(winning);
-
-                PowerPlayConflictData = new PowerPlayConflictDataVM()
-                {
-                    WinningPower = new(winning)
-                };
-
-                if(ordered.Count == 0)
-                {
-                    PowerPlayConflictData.LosingPowers = [new(new("No Opposing Power", -1))];
-                    PowerPlayConflictData.ConflictState = "Expansion";
-                    return;
-                }
-
-                PowerPlayConflictData.LosingPowers = [.. ordered.Select(x => new PowerPlayConflictVM(x))];
-                PowerPlayConflictData.ConflictState = "Contested";
+                SetConflict(data.PowerConflict);                
             }
 
             if (data.MeritList.Count > 0)
@@ -60,6 +43,29 @@ namespace ODEliteTracker.ViewModels.ModelViews.PowerPlay
 
                 Merits.Sort((x, y) => x.Activity.CompareTo(y.Activity));
             }
+        }
+
+        private void SetConflict(List<PowerConflict> data)
+        {
+            var ordered = data.OrderByDescending(x => x.ConflictProgress).ToList();
+
+            var winning = ordered.First();
+            ordered.Remove(winning);
+
+            PowerPlayConflictData = new PowerPlayConflictDataVM()
+            {
+                WinningPower = new(winning)
+            };
+
+            if (ordered.Count == 0)
+            {
+                PowerPlayConflictData.LosingPowers = [new(new("No Opposing Power", -1))];
+                PowerPlayConflictData.ConflictState = "Expansion";
+                return;
+            }
+
+            PowerPlayConflictData.LosingPowers = [.. ordered.Select(x => new PowerPlayConflictVM(x))];
+            PowerPlayConflictData.ConflictState = "Contested";
         }
 
         public List<PPMeritsVM> Merits { get; } = [];

@@ -1,7 +1,9 @@
 ﻿using ODEliteTracker.Database;
+using ODEliteTracker.Database.DTOs;
 using ODEliteTracker.Models.Bookmarks;
 using ODEliteTracker.ViewModels.ModelViews.Bookmarks;
 using ODJournalDatabase.Database.Interfaces;
+using ODMVVM.Services.MessageBox;
 
 namespace ODEliteTracker.Stores
 {
@@ -57,6 +59,40 @@ namespace ODEliteTracker.Stores
             IsLive = true;
         }
 
+        internal bool ExportBookmarks()
+        {
+            var bookmarksToSave = databaseProvider.GetBookmarkDTOs();
+
+            if (bookmarksToSave.Count == 0) 
+                return false;
+
+            var filename = ODDialogService.SaveFileDialog("Export Bookmarks", "Json File|*.json");
+
+            if (string.IsNullOrEmpty(filename))
+                return false;
+
+            var saved = ODMVVM.Helpers.IO.Json.SaveJson(bookmarksToSave, filename);
+
+            return saved;
+        }
+
+        internal async Task ImportBookmarks()
+        {
+            var filename = ODDialogService.OpenFileDialog("Import Bookmarks", "json", "Json File|*.json", 1);
+
+            if (string.IsNullOrEmpty(filename)) 
+                return;
+
+            var bookmarks = ODMVVM.Helpers.IO.Json.LoadJson<List<SystemBookmarkDTO>>(filename);
+
+            if (bookmarks == null || bookmarks.Count == 0)
+                return;
+
+            await databaseProvider.AddImportedBookmarks(bookmarks);
+
+            await UpdateBookmarks();
+        }
+
         private async Task UpdateBookmarks()
         {
             Bookmarks.Clear();
@@ -65,6 +101,11 @@ namespace ODEliteTracker.Stores
             if (bookmarks.Count > 0)
             {
                 Bookmarks = bookmarks;
+            }
+
+            if (IsLive)
+            {
+                BookmarksUpdated?.Invoke(this, EventArgs.Empty);
             }
         }
 

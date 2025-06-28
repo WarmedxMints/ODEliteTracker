@@ -57,6 +57,8 @@ namespace ODEliteTracker.ViewModels
             SelectBookmarkCommand = new ODRelayCommand<BookmarkVM>(OnSetSelectedBookmark);
             SelectBookmarkAllCommand = new ODRelayCommand<BookmarkVM>(OnSetSelectedAllBookmark);
             SelectSystemCommand = new ODRelayCommand<SystemBookmarkVM>(OnSelectSystem);
+            ImportBookmarks = new ODAsyncRelayCommand(OnImportBookmarks);
+            ExportBookmarks = new ODRelayCommand(OnExportBookmarks, (_) => Bookmarks.Count > 0);
 
             if (this.bookmarkData.IsLive)
                 BookmarkData_StoreLive(null, true);
@@ -210,6 +212,8 @@ namespace ODEliteTracker.ViewModels
         public ICommand SelectBookmarkCommand { get; }
         public ICommand SelectBookmarkAllCommand { get; }
         public ICommand SelectSystemCommand { get; }
+        public ICommand ImportBookmarks { get; }
+        public ICommand ExportBookmarks { get; }
 
         private void OnSetSelectedBookmark(BookmarkVM bookmark)
         {
@@ -344,6 +348,17 @@ namespace ODEliteTracker.ViewModels
                 await bookmarkData.DeleteBookmark(system.Address, bookmark.Id);
             }
         }
+        private async Task OnImportBookmarks()
+        {
+            await bookmarkData.ImportBookmarks();
+        }
+
+        private void OnExportBookmarks(object? obj)
+        {
+            _= bookmarkData.ExportBookmarks();
+        }
+
+  
         #endregion
 
         #region Event Methods

@@ -79,8 +79,9 @@
                                 Style="{DynamicResource EliteStyleButton}"
                                 Command="{Binding AddNewTickCommand}"
                                 CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
-                                Margin="10"
+                                Margin="10,0"
                                 Width="35"
+                                Height="30"
                                 Grid.Column="1"
                                 Grid.Row="1" />
 
@@ -89,7 +90,7 @@
                                 Style="{DynamicResource EliteStyleButton}"
                                 Command="{Binding DeletedTickCommand}"
                                 Width="35"
-                                Margin="10"
+                                Margin="10,0"
                                 Grid.Row="1"
                                 Grid.Column="2" />
                     </Grid>
@@ -102,6 +103,7 @@
                         Padding="5">
                     <ListBox ItemsSource="{Binding Systems}"
                              SelectedItem="{Binding SelectedSystem, Mode=OneWay}"
+                             SelectionChanged="ListBox_SelectionChanged"
                              ScrollViewer.VerticalScrollBarVisibility="Visible"
                              ScrollViewer.HorizontalScrollBarVisibility="Visible"
                              HorizontalAlignment="Stretch"
@@ -125,18 +127,29 @@
                                             <ColumnDefinition Width="*" />
                                             <ColumnDefinition Width="40" />
                                         </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition />
+                                            <RowDefinition />
+                                        </Grid.RowDefinitions>
                                         <TextBlock Text="{Binding Name}"
                                                    HorizontalAlignment="Left"
                                                    VerticalAlignment="Center"
                                                    TextWrapping="NoWrap"
-                                                   Grid.RowSpan="2"
                                                    FontWeight="SemiBold"
-                                                   Margin="5,3" />
+                                                   Margin="5,1" />
 
+                                        <TextBlock Text="{Binding ControllingFaction}"
+                                                   HorizontalAlignment="Left"
+                                                   VerticalAlignment="Center"
+                                                   TextWrapping="NoWrap"
+                                                   Grid.Row="1"
+                                                   FontSize="14"
+                                                   Margin="5,1" />
                                         <Image Source="{Binding SystemAllegiance, Converter={StaticResource AllegianceToImage}}"
                                                Stretch="Uniform"
                                                Grid.Column="1"
-                                               Height="30"
+                                               Height="38"
+                                               Grid.RowSpan="3"
                                                VerticalAlignment="Center"
                                                HorizontalAlignment="Center" />
                                     </Grid>
@@ -214,6 +227,7 @@
             <Grid Grid.Column="1">
                 <Grid.RowDefinitions>
                     <RowDefinition />
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="320" />
                 </Grid.RowDefinitions>
 
@@ -231,13 +245,13 @@
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="50" />
-                                <RowDefinition Height="30" />
-                                <RowDefinition Height="30" />
-                                <RowDefinition Height="30" />
-                                <RowDefinition Height="30" />
-                                <RowDefinition Height="30" />
-                                <RowDefinition Height="40" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
                                 <RowDefinition />
                             </Grid.RowDefinitions>
                             <StackPanel Margin="0,5"
@@ -264,58 +278,59 @@
                             <TextBlock Text="Controlling Faction"
                                        Grid.Row="1"
                                        Grid.Column="0"
-                                       Margin="5" />
+                                       Margin="3" />
                             <TextBlock Text="{Binding SelectedSystem.ControllingFaction}"
                                        Grid.Row="1"
                                        Grid.Column="1"
-                                       Margin="5" />
+                                       Margin="3" />
 
                             <TextBlock Text="Faction State"
                                        Grid.Row="2"
                                        Grid.Column="0"
-                                       Margin="5" />
+                                       Margin="3" />
                             <TextBlock Text="{Binding SelectedSystem.ControllingFactionState}"
                                        Grid.Row="2"
                                        Grid.Column="1"
-                                       Margin="5" />
+                                       Margin="3" />
 
                             <TextBlock Text="Population"
                                        Grid.Row="3"
                                        Grid.Column="0"
-                                       Margin="5" />
+                                       Margin="3" />
                             <TextBlock Text="{Binding SelectedSystem.Population}"
                                        Grid.Row="3"
                                        Grid.Column="1"
-                                       Margin="5" />
+                                       Margin="3" />
 
                             <TextBlock Text="System Allegiance"
                                        Grid.Row="4"
                                        Grid.Column="0"
-                                       Margin="5" />
+                                       Margin="3" />
                             <TextBlock Text="{Binding SelectedSystem.SystemAllegiance}"
                                        Grid.Row="4"
                                        Grid.Column="1"
-                                       Margin="5" />
+                                       Margin="3" />
 
                             <TextBlock Text="System Security"
                                        Grid.Row="5"
                                        Grid.Column="0"
-                                       Margin="5" />
+                                       Margin="3"/>
                             <TextBlock Text="{Binding SelectedSystem.Security}"
                                        Grid.Row="5"
                                        Grid.Column="1"
-                                       Margin="5" />
-
+                                       Margin="3" />
+                            
                             <Image Source="{Binding SelectedSystem.SystemAllegiance, Converter={StaticResource AllegianceToImage}}"
                                    HorizontalAlignment="Right"
-                                   Margin="10"
+                                   Margin="3"
                                    Width="100"
                                    Stretch="Uniform"
                                    Grid.Column="3"
-                                   Grid.RowSpan="3" />
+                                   Grid.RowSpan="6" />
 
                             <TextBlock Grid.Row="6"
                                        Text="Conflicts"
+                                       Margin="3"
                                        Visibility="{Binding SelectedSystem.HasConflict, Converter={StaticResource BoolToVis}}"
                                        VerticalAlignment="Center"
                                        Foreground="{DynamicResource Header}"
@@ -539,9 +554,31 @@
                 </TabControl>
 
                 <Border Background="{DynamicResource CardBackground}"
-                        DataContext="{Binding SelectedSystem}"
                         CornerRadius="5"
                         Grid.Row="1"
+                        HorizontalAlignment="Stretch"
+                        Margin="5"
+                        Padding="5">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Text="Powerplay"
+                                   FontSize="20"
+                                   Margin="5"
+                                   Foreground="{DynamicResource Header}" />
+                        <Control Grid.Row="1" 
+                             DataContext="{Binding SelectedSystem}"
+                             Style="{DynamicResource PowerStateContent}" />
+                    </Grid>
+                </Border>
+                
+                <Border Background="{DynamicResource CardBackground}"
+                        DataContext="{Binding SelectedSystem}"
+                        CornerRadius="5"
+                        Grid.Row="2"
                         Margin="5"
                         Padding="5">
                     <DataGrid  ItemsSource="{Binding Factions}"

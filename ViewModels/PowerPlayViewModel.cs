@@ -22,6 +22,7 @@ namespace ODEliteTracker.ViewModels
             this.dataStore.SystemAdded += OnSystemAdded;
             this.dataStore.SystemUpdated += OnSystemUpdated;
             this.dataStore.MeritsEarned += OnMeritsEarned;
+            this.dataStore.SystemCycleUpdated += OnSystemUpdated;
 
             SetSelectedSystemCommand = new ODRelayCommand<PowerPlaySystemVM>(OnSetSelectedSystem);
             CreateDiscordPostCommand = new ODRelayCommand(OnCreateDiscordPost);
@@ -288,6 +289,7 @@ namespace ODEliteTracker.ViewModels
             this.dataStore.SystemAdded -= OnSystemAdded;
             this.dataStore.SystemUpdated -= OnSystemUpdated;
             this.dataStore.MeritsEarned -= OnMeritsEarned;
+            this.dataStore.SystemCycleUpdated -= OnSystemUpdated;
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using EliteJournalReader;
 using EliteJournalReader.Events;
+using System.Windows.Forms;
 
 namespace ODEliteTracker.Models.BGS
 {
@@ -16,6 +17,14 @@ namespace ODEliteTracker.Models.BGS
             {
                 Factions = [.. evt.Factions.Select(x => x.Clone())];
             }
+
+            ControllingPower = evt.ControllingPower;
+            PowerState = evt.PowerplayState;
+            PowerplayStateControlProgress = evt.PowerplayStateControlProgress;
+            PowerplayStateReinforcement = evt.PowerplayStateReinforcement;
+            PowerplayStateUndermining = evt.PowerplayStateUndermining;
+            PowerConflict = evt.PowerplayConflictProgress?.Select(x => x.Copy()).ToList();
+            Powers = evt.Powers?.ToList();
         }
 
         public SystemTickData(FSDJumpEvent.FSDJumpEventArgs evt)
@@ -29,6 +38,14 @@ namespace ODEliteTracker.Models.BGS
             {
                 Factions = [.. evt.Factions.Select(x => x.Clone())];
             }
+
+            ControllingPower = evt.ControllingPower;
+            PowerState = evt.PowerplayState;
+            PowerplayStateControlProgress = evt.PowerplayStateControlProgress;
+            PowerplayStateReinforcement = evt.PowerplayStateReinforcement;
+            PowerplayStateUndermining = evt.PowerplayStateUndermining;
+            PowerConflict = evt.PowerplayConflictProgress?.Select(x => x.Copy()).ToList();
+            Powers = evt.Powers?.ToList();
         }
 
         public SystemTickData(CarrierJumpEvent.CarrierJumpEventArgs evt)
@@ -42,6 +59,14 @@ namespace ODEliteTracker.Models.BGS
             {
                 Factions = [.. evt.Factions.Select(x => x.Clone())];
             }
+
+            ControllingPower = evt.ControllingPower;
+            PowerState = evt.PowerplayState;
+            PowerplayStateControlProgress = evt.PowerplayStateControlProgress;
+            PowerplayStateReinforcement = evt.PowerplayStateReinforcement;
+            PowerplayStateUndermining = evt.PowerplayStateUndermining;
+            PowerConflict = evt.PowerplayConflictProgress?.Select(x => x.Copy()).ToList();
+            Powers = evt.Powers?.ToList();
         }
 
         public List<DateTime> VisitedTimes { get; }
@@ -50,6 +75,13 @@ namespace ODEliteTracker.Models.BGS
         public string SystemAllegiance { get;  }
         public long Population { get; }
         public List<Faction> Factions { get; } = [];
+        public string? ControllingPower { get; set; }
+        public PowerplayState PowerState { get; set; }
+        public double PowerplayStateControlProgress { get; set; }
+        public int PowerplayStateReinforcement { get; set; }
+        public int PowerplayStateUndermining { get; set; }
+        public List<PowerConflict>? PowerConflict { get; set; }
+        public List<string>? Powers { get; set; }
 
         public bool NewData(SystemTickData other)
         {
@@ -77,6 +109,14 @@ namespace ODEliteTracker.Models.BGS
                 }
             }
 
+            //Update Powerplay data
+            ControllingPower = other.ControllingPower;
+            PowerState = other.PowerState;
+            PowerplayStateControlProgress = other.PowerplayStateControlProgress;
+            PowerplayStateReinforcement = other.PowerplayStateReinforcement;
+            PowerplayStateUndermining = other.PowerplayStateUndermining;
+            PowerConflict = other.PowerConflict?.Select(x => x.Copy()).ToList();
+            Powers = other.Powers?.ToList();
             //Data is unchanged so add another visit to this
             VisitedTimes.AddRange(other.VisitedTimes);
             return false;

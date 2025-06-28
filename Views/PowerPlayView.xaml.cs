@@ -11,5 +11,13 @@ namespace ODEliteTracker.Views
         {
             InitializeComponent();
         }
+
+        private void ThisCycleList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (sender is ListBox box && box.SelectedItem != null)
+            {
+                box.ScrollIntoView(box.SelectedItem);
+            }
+        }
     }
 }

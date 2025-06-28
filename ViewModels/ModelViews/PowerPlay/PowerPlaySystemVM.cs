@@ -6,15 +6,15 @@ namespace ODEliteTracker.ViewModels.ModelViews.PowerPlay
     public sealed class PowerPlaySystemVM : ODObservableObject
     {
         private readonly PowerPlaySystem system;
-      
 
-        public PowerPlaySystemVM(PowerPlaySystem system) 
+
+        public PowerPlaySystemVM(PowerPlaySystem system)
         {
             this.system = system;
 
-            foreach(var kvp in system.CycleData)
+            foreach (var kvp in system.CycleData)
             {
-                _= Data.TryAdd(kvp.Key, new(kvp.Value));   
+                _ = Data.TryAdd(kvp.Key, new(kvp.Value));
             }
         }
         public long Address => system.Address;

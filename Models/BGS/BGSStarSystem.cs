@@ -2,6 +2,7 @@
 using EliteJournalReader.Events;
 using ODEliteTracker.Extensions;
 using ODEliteTracker.Models.Galaxy;
+using ODEliteTracker.ViewModels.ModelViews.Galaxy;
 
 namespace ODEliteTracker.Models.BGS
 {

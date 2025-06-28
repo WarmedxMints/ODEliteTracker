@@ -72,9 +72,9 @@ namespace ODEliteTracker.Database
             known.LastFile = cmdr.LastFile ?? string.Empty;
             known.JournalDir = cmdr.JournalPath ?? string.Empty;
             known.Name = cmdr.Name;
-            if(updateHidden)
+            if (updateHidden)
                 known.IsHidden = cmdr.IsHidden;
-            if(updateCAPI)
+            if (updateCAPI)
                 known.UseCAPI = cmdr.UseCAPI;
             context.SaveChanges();
             context.Database.CloseConnection();
@@ -261,7 +261,7 @@ namespace ODEliteTracker.Database
             using var context = _contextFactory.CreateDbContext();
 
             var entries = context.JournalEntries
-                .Where(x => x.EventTypeId == (int)JournalTypeEnum.Shutdown && x.TimeStamp >= fourWeeks 
+                .Where(x => x.EventTypeId == (int)JournalTypeEnum.Shutdown && x.TimeStamp >= fourWeeks
                 || x.EventTypeId == (int)JournalTypeEnum.Fileheader && x.TimeStamp < fourWeeks)
                 .Select(x => x.Filename)
                 .Distinct()
@@ -459,6 +459,14 @@ namespace ODEliteTracker.Database
         #endregion
 
         #region Compass Bookmarks
+        public List<SystemBookmarkDTO> GetBookmarkDTOs()
+        {
+            using var context = _contextFactory.CreateDbContext();
+
+            return [.. context.SystemBookmarks.Include(x => x.Bookmarks)
+                                              .Where(x => string.IsNullOrEmpty(x.Notes) == false || x.Bookmarks.Count > 0)];
+        }
+
         public async Task<int> AddBookmark(SystemBookmarkVM system, BookmarkVM bookmark)
         {
             using var context = _contextFactory.CreateDbContext();
@@ -478,7 +486,7 @@ namespace ODEliteTracker.Database
 
             if (known == null)
             {
-               
+
                 context.SystemBookmarks.Add(new SystemBookmarkDTO()
                 {
                     Address = system.Address,
@@ -511,7 +519,7 @@ namespace ODEliteTracker.Database
                 return knownBookmark.Id;
             }
 
-            var newBkmark = new BookMarkDTO() 
+            var newBkmark = new BookMarkDTO()
             {
                 BodyId = bookmark.BodyId,
                 BodyName = bookmark.BodyName,
@@ -527,6 +535,58 @@ namespace ODEliteTracker.Database
 
             await context.SaveChangesAsync(true);
             return newBkmark.Id;
+        }
+
+        public async Task AddImportedBookmarks(List<SystemBookmarkDTO> systemBookmarks)
+        {
+            using var context = _contextFactory.CreateDbContext();
+
+            foreach (var system in systemBookmarks)
+            {
+                var knownSystem = context.SystemBookmarks.Include(x => x.Bookmarks).FirstOrDefault(x => x.Address == system.Address);
+
+                if (knownSystem == null)
+                {
+                    knownSystem = new SystemBookmarkDTO()
+                    {
+                        Address = system.Address,
+                        Name = system.Name,
+                        Notes = system.Notes,
+                        X = system.X,
+                        Y = system.Y,
+                        Z = system.Z,
+                        Bookmarks = []
+                    };
+                    context.SystemBookmarks.Add(knownSystem);
+                }
+
+                foreach (var bookmark in system.Bookmarks)
+                {
+                    var knownBookMark = knownSystem.Bookmarks.FirstOrDefault(x => x.BodyId == bookmark.BodyId
+                                                                            && x.Latitude == bookmark.Latitude
+                                                                            && x.Longitude == bookmark.Longitude);
+
+                    if (knownBookMark != null)
+                    {
+                        continue;
+                    }
+
+                    knownBookMark = new BookMarkDTO()
+                    {
+                        BodyId = bookmark.BodyId,
+                        BodyName = bookmark.BodyName,
+                        BodyNameLocal = bookmark.BodyNameLocal,
+                        BookmarkName = bookmark.BookmarkName,
+                        Description = bookmark.Description,
+                        Latitude = bookmark.Latitude,
+                        Longitude = bookmark.Longitude,
+                    };
+
+                    knownSystem.Bookmarks.Add(knownBookMark);
+                }
+            }
+
+            await context.SaveChangesAsync(true);
         }
 
         public async Task<List<SystemBookmark>> GetAllBookmarks()
@@ -592,7 +652,7 @@ namespace ODEliteTracker.Database
 
             var known = context.SpanshCsvs.Where(x => x.CsvType == (int)csvType && x.CommanderID == commanderID).FirstOrDefault();
 
-            if(known != null)
+            if (known != null)
             {
                 context.SpanshCsvs.Remove(known);
                 context.SaveChanges();

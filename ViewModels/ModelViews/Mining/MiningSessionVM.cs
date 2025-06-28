@@ -13,7 +13,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Mining
         {
             get
             {
-                if(Session.HasData == false)
+                if(Session.Started == false)
                 {
                     return "00:00:00 │ 0 t/hr";
                 }

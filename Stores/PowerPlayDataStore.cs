@@ -23,6 +23,7 @@ namespace ODEliteTracker.Stores
         private DateTime previousCycle;
         private DateTime currentCycle;
         private DateTime nextCycle;
+        private DateTime? lastActivity;
         private string currentActivity = "Unknown";
 
         private long currentSystemAddress;
@@ -46,6 +47,7 @@ namespace ODEliteTracker.Stores
                 { JournalTypeEnum.PowerplayRank,true },
                 { JournalTypeEnum.ShipTargeted,true },
                 { JournalTypeEnum.Bounty, true },
+                { JournalTypeEnum.FactionKillBond, true },
                 { JournalTypeEnum.MissionCompleted,true },
                 { JournalTypeEnum.DatalinkScan,true },
                 { JournalTypeEnum.SearchAndRescue, true },
@@ -89,6 +91,12 @@ namespace ODEliteTracker.Stores
 
         public override void ParseJournalEvent(JournalEntry evt)
         {
+            //If it has been more than 5 seconds since an activity, reset the current
+            if (lastActivity != null && evt.TimeStamp - lastActivity >= TimeSpan.FromSeconds(5))
+            {
+                currentActivity = "Unknown";
+            }
+
             if (EventsToParse.ContainsKey(evt.EventType) == false)
                 return;
 
@@ -215,7 +223,7 @@ namespace ODEliteTracker.Stores
                 case PowerplayDeliverEvent.PowerplayDeliverEventArgs powerplayDeliver:
                     if (systems.TryGetValue(currentSystemAddress, out system))
                     {
-                        SetActivity(cycle, "Powerplay Deliveries");
+                        SetActivity(cycle, "Powerplay Deliveries", evt.TimeStamp);
                         var itemName = powerplayDeliver.GetTypeCollected();
 
                         if (system.CycleData.TryGetValue(cycle, out var ppData))
@@ -237,42 +245,48 @@ namespace ODEliteTracker.Stores
                     break;
                 case ShipTargetedEvent.ShipTargetedEventArgs shipTargeted:
                     if (shipTargeted.ScanStage > 2)
-                        SetActivity(cycle, "Ship Scans");
+                        SetActivity(cycle, "Ship Scans", evt.TimeStamp);
                     break;
                 case BountyEvent.BountyEventArgs:
-                    SetActivity(cycle, "Bounties");
+                    SetActivity(cycle, "Bounties", evt.TimeStamp);
+                    break;
+                case FactionKillBondEvent.FactionKillBondEventArgs factionKillBond:
+                    if(string.Equals(factionKillBond.AwardingFaction, pledgeData?.Power))
+                    {
+                        SetActivity(cycle, "Enemy CZ Kills", evt.TimeStamp);
+                    }
                     break;
                 case MissionCompletedEvent.MissionCompletedEventArgs missionCompleted:
                     if (missionCompleted.Name.Contains("Mission_Altruism"))
-                        SetActivity(cycle, "Donations");
+                        SetActivity(cycle, "Donations", evt.TimeStamp);
                     break;
                 case DatalinkScanEvent.DatalinkScanEventArgs datalink:
                     if(datalink.Message.Contains("$Datascan_ShipUplink;"))
-                        SetActivity(cycle, "Data Link Scans");
+                        SetActivity(cycle, "Data Link Scans", evt.TimeStamp);
                     break;
                 case SearchAndRescueEvent.SearchAndRescueEventArgs:
-                    SetActivity(cycle, "Search & Rescue");
+                    SetActivity(cycle, "Search & Rescue", evt.TimeStamp);
                     break;
                 case MarketSellEvent.MarketSellEventArgs sell:
-                    SetActivity(cycle, "Market Sales");
+                    SetActivity(cycle, "Market Sales", evt.TimeStamp);
 
                     if (sell.AvgPricePaid == 0)
-                        SetActivity(cycle, "Mined Ore Sales");
+                        SetActivity(cycle, "Mined Ore Sales", evt.TimeStamp);
 
                     if (EliteCommodityHelpers.IsRare(sell.Type))
                     {
-                        SetActivity(cycle, "Rare Good Sales");
+                        SetActivity(cycle, "Rare Good Sales", evt.TimeStamp);
                     }
                     break;
                 case SellExplorationDataEvent.SellExplorationDataEventArgs:
                 case MultiSellExplorationDataEvent.MultiSellExplorationDataEventArgs:
-                    SetActivity(cycle, "Cartographic Data Sales");
+                    SetActivity(cycle, "Cartographic Data Sales", evt.TimeStamp);
                     break;
                 case SellOrganicDataEvent.SellOrganicDataEventArgs:
-                    SetActivity(cycle, "Exobiology Sales");
+                    SetActivity(cycle, "Exobiology Sales", evt.TimeStamp);
                     break;
                 case HoloscreenHackedEvent.HoloscreenHackedEventArgs:
-                    SetActivity(cycle, "Holoscreen Hacks");
+                    SetActivity(cycle, "Holoscreen Hacks", evt.TimeStamp);
                     break;
                 case DiedEvent.DiedEventArgs:
                     currentActivity = "Unknown";
@@ -280,7 +294,10 @@ namespace ODEliteTracker.Stores
 
             }
         }
-
+        public override void RunAfterParsingHistory()
+        {
+            base.RunAfterParsingHistory();
+        }
         private void UpdatePledgeData(PowerplayMeritsEvent.PowerplayMeritsEventArgs merits)
         {
             if (PledgeData != null)
@@ -335,10 +352,10 @@ namespace ODEliteTracker.Stores
             }
         }
 
-        private void SetActivity(DateTime cycle, string activity)
+        private void SetActivity(DateTime cycle, string activity, DateTime eventTime)
         {
             currentActivity = activity;
-
+            lastActivity = eventTime;
             if (storedMerits == 0 || string.Equals(currentActivity, "Unknown"))
             {
                 return;
@@ -349,6 +366,7 @@ namespace ODEliteTracker.Stores
                 if (system.CycleData.TryGetValue(cycle, out var ppData))
                 {
                     AddMerits(ppData, storedMerits);
+                    currentActivity = "Unknown";
                     storedMerits = 0;
                     UpdateSystemIfLive(system);
                     return;
@@ -359,6 +377,8 @@ namespace ODEliteTracker.Stores
                 AddMerits(data, storedMerits);
                 system.CycleData.Add(cycle, data);
                 storedMerits = 0;
+                currentActivity = "Unknown";
+                UpdateSystemIfLive(system);
             }
         }
 
@@ -368,7 +388,7 @@ namespace ODEliteTracker.Stores
             //So we store the value and apply it next time the activity is set
             if (string.Equals(currentActivity, "Unknown"))
             {
-                storedMerits = value;
+                storedMerits += value;
                 return;
             }
 

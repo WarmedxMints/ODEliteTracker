@@ -30,7 +30,8 @@
                 "MegaShipCivilian" => "Civilian Mega Ship",
                 "CraterOutpost" => "Crater Port",
                 "CraterPort" => "Crater Port",
-                "PlanetaryConstructionDepot" => "Construction Depot",
+                "PlanetaryConstructionDepot" => "Surface Construction Depot",
+                "SpaceConstructionDepot" => "Orbital Construction Depot",
                 _ => stationType,
             };
         }

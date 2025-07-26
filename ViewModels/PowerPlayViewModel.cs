@@ -11,11 +11,12 @@ namespace ODEliteTracker.ViewModels
 {
     public sealed class PowerPlayViewModel : ODViewModel
     {
-        public PowerPlayViewModel(PowerPlayDataStore dataStore, SettingsStore settings, NotificationService notification)
+        public PowerPlayViewModel(PowerPlayDataStore dataStore, SettingsStore settings, NotificationService notification, SharedDataStore sharedData)
         {
             this.dataStore = dataStore;
             this.settings = settings;
             this.notification = notification;
+            this.sharedData = sharedData;
             this.dataStore.StoreLive += OnStoreLive;
             this.dataStore.PledgeDataUpdated += OnPledgeDataUpdated;
             this.dataStore.CyclesUpdated += OnCyclesUpdated;
@@ -37,6 +38,7 @@ namespace ODEliteTracker.ViewModels
         private readonly PowerPlayDataStore dataStore;
         private readonly SettingsStore settings;
         private readonly NotificationService notification;
+        private readonly SharedDataStore sharedData;
         private int currentCycleNo;
 
         private PledgeDataVM? pledgeData;
@@ -107,7 +109,7 @@ namespace ODEliteTracker.ViewModels
             {
                 if (HideSystemsWithoutMerits)
                 {
-                    return thisCycleSystems?.Where(x => x.MeritsEarned(dataStore.CurrentCycle));
+                    return thisCycleSystems?.Where(x => x.Address == sharedData.CurrentSystem?.Address ||  x.MeritsEarned(dataStore.CurrentCycle));
                 }
                 return thisCycleSystems;
             }

@@ -6,6 +6,8 @@ namespace ODEliteTracker.ViewModels.ModelViews.Mining
     {
         public MiningProspectorVM(MiningProspector prospector)
         {
+            Prospector = prospector;
+
             if (prospector.Remaining <= 0)
             {
                 Items = [new("Asteroid Depleted", string.Empty)];
@@ -27,9 +29,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Mining
             {
                 var ore = ODMVVM.Helpers.EliteCommodityHelpers.GetCommodityFromPartial(prospector.MotherlodeMaterial, prospector.MotherlodeMaterial);
                 MotherLoadContent = $"Core Detected : {ore.EnglishName}";
-            }
-
-            Prospector = prospector;
+            }         
         }
 
         public List<ProspectorItemVM> Items { get; }

@@ -2,6 +2,7 @@
 using ODEliteTracker.Models;
 using ODEliteTracker.Models.Spansh;
 using System.Globalization;
+using System.Runtime.InteropServices.JavaScript;
 
 namespace ODEliteTracker.Services
 {
@@ -23,7 +24,8 @@ namespace ODEliteTracker.Services
             ["System Name", "Body Name", "Distance To Arrival", "Jumps"], //worldTypeRoute
             ["System Name", "Jumps"], //touristRoute
             ["System Name","Body Name","Body Subtype","Distance To Arrival","Landmark Subtype","Value","Count","Jumps"], //ExoBiology    
-            ["System Name", "Body Name", "Body Subtype", "Distance To Arrival", "Landmark Type", "Value", "Jumps"] //ExoBiologyold
+            ["System Name", "Body Name", "Body Subtype", "Distance To Arrival", "Landmark Type", "Value", "Jumps"], //ExoBiologyold
+            ["System Name", "Distance", "Distance Remaining"] //Colonisation Plotter
         ];
 
         public static CsvParserReturn? ForceParse(string filename, CsvType type)
@@ -49,6 +51,7 @@ namespace ODEliteTracker.Services
                     CsvType.TouristRoute => ProcessTouristRoute(parser),
                     CsvType.ExobiologyOld => ProcessExoRoute(parser, CsvType.ExobiologyOld),
                     CsvType.Exobiology => ProcessExoRoute(parser, CsvType.Exobiology),
+                    CsvType.Colonisation => ProcessColonisation(parser),
                     _ => null,
                 };
             }
@@ -88,6 +91,7 @@ namespace ODEliteTracker.Services
                     CsvType.TouristRoute => ProcessTouristRoute(parser),
                     CsvType.ExobiologyOld => ProcessExoRoute(parser, CsvType.ExobiologyOld),
                     CsvType.Exobiology => ProcessExoRoute(parser, CsvType.Exobiology),
+                    CsvType.Colonisation => ProcessColonisation(parser),
                     _ => null,
                 };
             }
@@ -95,6 +99,50 @@ namespace ODEliteTracker.Services
             {
                 return null;
             }
+        }
+
+        private static CsvParserReturn ProcessColonisation(TextFieldParser parser)
+        {
+            CsvParserReturn ret = new()
+            {
+                CsvType = CsvType.Colonisation,
+                Targets = []
+            };
+
+            while (!parser.EndOfData)
+            {
+                //Process row
+                string[]? fields = parser.ReadFields();
+
+                if (fields is null || fields.Length == 0)
+                    continue;
+
+                string systemName = fields[0];
+
+                ExplorationTarget? target = ret.Targets.Find(x => x.SystemName.Contains(systemName, StringComparison.OrdinalIgnoreCase));
+
+                if (target == null)
+                {
+                    target = new ExplorationTarget
+                    {
+                        SystemName = systemName.ToUpperInvariant(),
+                    };
+
+                    ret.Targets.Add(target);
+                }
+
+                if (double.TryParse(fields[1], out var distance))
+                {
+                    target.Property1 = distance.ToString("N2");
+                }
+
+                if (double.TryParse(fields[2], out var remaining))
+                {
+                    target.Property2 = remaining.ToString("N2");
+                }
+            }
+
+            return ret;
         }
 
         private static CsvParserReturn ProcessExoRoute(TextFieldParser parser, CsvType csvType)

@@ -161,7 +161,10 @@ namespace ODEliteTracker.Models
         Exobiology,
         [Description("Exobiology Route (Old Format)")]
         ExobiologyOld,
+        [Description("Colonisation Plotter")]
+        Colonisation
     }
+
     public enum CsvTypeComboBox
     {
         [Description("Road To Riches")]
@@ -178,5 +181,7 @@ namespace ODEliteTracker.Models
         TouristRoute,
         [Description("Exobiology Route")]
         Exobiology,
+        [Description("Colonisation Plotter")]
+        Colonisation
     }
 }

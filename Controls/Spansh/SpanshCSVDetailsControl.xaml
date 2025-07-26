@@ -353,5 +353,38 @@
             </DataGrid>
         </Grid>
         <!--#endregion-->
+
+        <!--#region Colonisation Plotter-->
+        <Grid Grid.Column="2"
+              MinWidth="300"
+              Visibility="{Binding CurrentType, Converter={StaticResource VisConverter}, ConverterParameter={x:Static models:CsvType.Colonisation}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30" />
+                <RowDefinition Height="30" />
+                <RowDefinition Height="30" />
+                <RowDefinition Height="30" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <StackPanel Orientation="Horizontal"
+                        Grid.Row="0">
+                <TextBlock Text="Distance"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Center"
+                           Width="180" />
+                <TextBlock Text="{Binding CurrentTarget.Property1, StringFormat={}{0} ly}"
+                           VerticalAlignment="Center" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal"
+                        Grid.Row="1">
+                <TextBlock Text="Remaing Distance"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Center"
+                           Width="180" />
+                <TextBlock Text="{Binding CurrentTarget.Property2, StringFormat={}{0} ly}"
+                           VerticalAlignment="Center" />
+            </StackPanel>
+        </Grid>
+        <!--#endregion-->
     </Grid>
 </UserControl>

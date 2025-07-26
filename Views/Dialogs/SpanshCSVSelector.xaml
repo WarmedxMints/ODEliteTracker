@@ -141,6 +141,13 @@
                             Width="150"
                             Height="30"
                             Margin="10" />
+                    <Button Content="Colonisation"
+                            Style="{DynamicResource EliteStyleButton}"
+                            Command="{Binding SetCSVType}"
+                            CommandParameter="{x:Static models:CsvType.Colonisation}"
+                            Width="150"
+                            Height="30"
+                            Margin="10" />
                 </WrapPanel>
 
                 <Button Width="150"

@@ -8,10 +8,14 @@
              xmlns:models="clr-namespace:ODEliteTracker.Models"
              xmlns:controls="clr-namespace:ODEliteTracker.Controls.Spansh"
              xmlns:busyIndicator="https://github.com/moh3ngolshani/BusyIndicator"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              d:DataContext="{d:DesignInstance viewmodels:SpanshViewModel}"
              mc:Ignorable="d"
              d:DesignHeight="450"
              d:DesignWidth="800">
+    <UserControl.Resources>
+        <sys:Double x:Key="ButtonWidth">130</sys:Double>
+    </UserControl.Resources>
     <busyIndicator:BusyMask x:Name="BusyIndicator"
                             IsBusy="{Binding IsBusy}"
                             Background="{DynamicResource IndicatorBackground}"
@@ -41,7 +45,7 @@
                                    Foreground="{DynamicResource Header}"
                                    FontSize="22"
                                    VerticalAlignment="Center"
-                                   Margin="10,0,30,0" />
+                                   Margin="10,0,20,0" />
 
                         <Button Content="Import CSV"
                                 Style="{DynamicResource EliteStyleButton}"
@@ -60,31 +64,31 @@
                                     Command="{Binding SetCurrentCSVType}"
                                     CommandParameter="{x:Static models:CsvType.RoadToRiches}"
                                     Style="{DynamicResource TabButton}"
-                                    Width="140" />
+                                    Width="{StaticResource ButtonWidth}" />
                             <Button Content="Neutron Plotter"
                                     FontSize="18"
                                     Command="{Binding SetCurrentCSVType}"
                                     CommandParameter="{x:Static models:CsvType.NeutronRoute}"
                                     Style="{DynamicResource TabButton}"
-                                    Width="140" />
+                                    Width="{StaticResource ButtonWidth}"/>
                             <Button Content="World Type"
                                     FontSize="18"
                                     Command="{Binding SetCurrentCSVType}"
                                     CommandParameter="{x:Static models:CsvType.WorldTypeRoute}"
                                     Style="{DynamicResource TabButton}"
-                                    Width="140" />
+                                    Width="{StaticResource ButtonWidth}" />
                             <Button Content="Tourist Planner"
                                     FontSize="18"
                                     Command="{Binding SetCurrentCSVType}"
                                     CommandParameter="{x:Static models:CsvType.TouristRoute}"
                                     Style="{DynamicResource TabButton}"
-                                    Width="140" />
+                                    Width="{StaticResource ButtonWidth}" />
                             <Button Content="Fleet Carrier"
                                     FontSize="18"
                                     Command="{Binding SetCurrentCSVType}"
                                     CommandParameter="{x:Static models:CsvType.FleetCarrier}"
                                     Style="{DynamicResource TabButton}"
-                                    Width="140" />
+                                    Width="{StaticResource ButtonWidth}" />
                             <Button Content="Galaxy Plotter"
                                     FontSize="18"
                                     Command="{Binding SetCurrentCSVType}"
@@ -96,23 +100,23 @@
                                     Command="{Binding SetCurrentCSVType}"
                                     CommandParameter="{x:Static models:CsvType.Exobiology}"
                                     Style="{DynamicResource TabButton}"
-                                    Width="140" />
+                                    Width="{StaticResource ButtonWidth}" />
                             <Button Content="Colonisation"
                                     FontSize="18"
                                     Command="{Binding SetCurrentCSVType}"
                                     CommandParameter="{x:Static models:CsvType.Colonisation}"
                                     Style="{DynamicResource TabButton}"
-                                    Width="140" />
+                                    Width="{StaticResource ButtonWidth}" />
                         </StackPanel>
                     </ScrollViewer>
-                    <CheckBox Content="Auto Copy Next System To Clipboard"
-                              Style="{DynamicResource EliteStyleCheckBox}"
+                    <CheckBox Style="{DynamicResource EliteStyleCheckBox}"
+                              Content="Auto Copy Next System&#10;To Clipboard"
                               Foreground="{DynamicResource PrimaryControlForeground}"
                               IsChecked="{Binding AutoCopyNextSystem}"
                               Margin="10,0"
                               VerticalAlignment="Center"
-                              HorizontalAlignment="Right"
-                              Grid.Column="2" />
+                              Grid.Column="2">
+                    </CheckBox>
                 </Grid>
             </Border>
 

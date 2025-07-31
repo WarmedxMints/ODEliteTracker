@@ -1,5 +1,6 @@
 ﻿using ODEliteTracker.Models;
 using ODEliteTracker.Models.Missions;
+using ODEliteTracker.Models.Settings;
 using ODEliteTracker.Stores;
 using ODEliteTracker.ViewModels.ModelViews.Massacre;
 using ODMVVM.Extensions;
@@ -67,6 +68,8 @@ namespace ODEliteTracker.ViewModels
                 OnPropertyChanged(nameof(Stacks));
             }
         }
+
+        public GridSize ActiveMissionsGridSize => settings.MassacreSettings.ActiveMissionsGridSize;
 
         private readonly List<MassacreStackVM> stacks = [];
         public IEnumerable<MassacreStackVM> Stacks
@@ -202,11 +205,16 @@ namespace ODEliteTracker.ViewModels
 
             if (stacks.Count != 0)
             {
-                var maxKills = stacks.Max(x => x.ActiveKills);
+                var targets = stacks.GroupBy(x => new { x.TargetFaction, x.TargetSystem }).ToDictionary(x => x.Key, x => x.ToList());
 
-                foreach (var stack in stacks)
+                foreach(var target in targets)
                 {
-                    stack.KillDifference = maxKills - stack.ActiveKills;
+                    var maxKills = target.Value.Max(x => x.Kills);
+
+                    foreach (var stack in target.Value)
+                    {
+                        stack.KillDifference = maxKills - stack.Kills;
+                    }
                 }
             }
             OnPropertyChanged(nameof(ActiveMissions));

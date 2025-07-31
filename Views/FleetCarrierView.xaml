@@ -288,137 +288,148 @@
                 </Grid>
             </Border>
 
-            <Border Background="{DynamicResource CardBackground}"
-                    Grid.Column="1"
-                    Grid.RowSpan="3"
-                    CornerRadius="5"
-                    Margin="5"
-                    Padding="5">
-                <Grid Margin="5">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Text="Commodities"
-                               FontSize="22"
-                               Foreground="{DynamicResource Header}" />
+            <Grid Grid.Column="1"
+                  Grid.RowSpan="4">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="{Binding GridSize[0], Mode=TwoWay}" />
+                    <RowDefinition Height="{Binding GridSize[1], Mode=TwoWay}" />
+                    <RowDefinition Height="{Binding GridSize[2], Mode=TwoWay}" />
+                </Grid.RowDefinitions>
 
-                    <StackPanel Orientation="Horizontal"
-                                Grid.Column="1">
-                        <TextBlock Text="Commodity Sorting "
-                                   VerticalAlignment="Center" />
-                        <ComboBox ItemsSource="{Binding Source={StaticResource CarrierCommoditySorting}}"
-                                  SelectedItem="{Binding CommoditySorting}"
-                                  Margin="5,0,10,0"
-                                  MinWidth="180"
-                                  FontSize="18"
-                                  HorizontalAlignment="Right"
-                                  VerticalAlignment="Center"
-                                  IsReadOnly="True"
-                                  IsSynchronizedWithCurrentItem="False" />
-                    </StackPanel>
-                    <DataGrid ItemsSource="{Binding CarrierStock}"
-                              Grid.Row="1"
-                              Grid.ColumnSpan="2"
-                              Margin="5"
-                              Style="{DynamicResource ConstructionResourcesDataGrid}"
-                              RowStyle="{DynamicResource NoSelectRowStyle}"
-                              CellStyle="{DynamicResource NoSelectCellNoMargin}"
-                              Foreground="{DynamicResource PrimaryForeground}"
-                              FontSize="20"
-                              ScrollViewer.HorizontalScrollBarVisibility="Visible"
-                              ScrollViewer.VerticalScrollBarVisibility="Visible"
-                              AlternatingRowBackground="{DynamicResource RowAlternationColour}"
-                              HeadersVisibility="Column"
-                              AutoGenerateColumns="False"
-                              HorizontalAlignment="Center">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="Commodity"
-                                                Width="*"
-                                                MinWidth="250"
-                                                HeaderStyle="{DynamicResource DataGridHeaderLeft}"
-                                                ElementStyle="{DynamicResource DataGridElementLeftMarginBody}"
-                                                Binding="{Binding Name}" />
-                            <DataGridTextColumn Header="Category"
-                                                MinWidth="180"
-                                                HeaderStyle="{DynamicResource DataGridHeaderLeft}"
-                                                ElementStyle="{DynamicResource DataGridElementLeftMarginBody}"
-                                                Binding="{Binding Category}" />
-                            <DataGridTextColumn Header="Demand"
-                                                MinWidth="100"
-                                                HeaderStyle="{DynamicResource DataGridHeaderRight}"
-                                                ElementStyle="{DynamicResource DataGridElementRightMargin}"
-                                                Binding="{Binding Demand}" />
-                            <DataGridTextColumn Header="Stock"
-                                                MinWidth="100"
-                                                HeaderStyle="{DynamicResource DataGridHeaderRight}"
-                                                ElementStyle="{DynamicResource DataGridElementRightMargin}"
-                                                Binding="{Binding Stock}" />
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </Grid>
-            </Border>
+                <Border Background="{DynamicResource CardBackground}"
+                        CornerRadius="5"
+                        Margin="5"
+                        Padding="5">
+                    <Grid Margin="5">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Commodities"
+                                   FontSize="22"
+                                   Foreground="{DynamicResource Header}" />
 
-            <Border Background="{DynamicResource CardBackground}"
-                    Grid.Column="1"
-                    Grid.Row="4"
-                    CornerRadius="5"
-                    Margin="5"
-                    Padding="5">
-                <Grid Margin="5">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition />
-                    </Grid.RowDefinitions>
-                    <TextBlock Text="Sell Orders"
-                               FontSize="22"
-                               Foreground="{DynamicResource Header}" />
+                        <StackPanel Orientation="Horizontal"
+                                    Grid.Column="1">
+                            <TextBlock Text="Commodity Sorting "
+                                       VerticalAlignment="Center" />
+                            <ComboBox ItemsSource="{Binding Source={StaticResource CarrierCommoditySorting}}"
+                                      SelectedItem="{Binding CommoditySorting}"
+                                      Margin="5,0,10,0"
+                                      MinWidth="180"
+                                      FontSize="18"
+                                      HorizontalAlignment="Right"
+                                      VerticalAlignment="Center"
+                                      IsReadOnly="True"
+                                      IsSynchronizedWithCurrentItem="False" />
+                        </StackPanel>
+                        <DataGrid ItemsSource="{Binding CarrierStock}"
+                                  Grid.Row="1"
+                                  Grid.ColumnSpan="2"
+                                  Margin="5"
+                                  Style="{DynamicResource ConstructionResourcesDataGrid}"
+                                  RowStyle="{DynamicResource NoSelectRowStyle}"
+                                  CellStyle="{DynamicResource NoSelectCellNoMargin}"
+                                  Foreground="{DynamicResource PrimaryForeground}"
+                                  FontSize="20"
+                                  ScrollViewer.HorizontalScrollBarVisibility="Visible"
+                                  ScrollViewer.VerticalScrollBarVisibility="Visible"
+                                  AlternatingRowBackground="{DynamicResource RowAlternationColour}"
+                                  HeadersVisibility="Column"
+                                  AutoGenerateColumns="False"
+                                  HorizontalAlignment="Center">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Commodity"
+                                                    Width="*"
+                                                    MinWidth="250"
+                                                    HeaderStyle="{DynamicResource DataGridHeaderLeft}"
+                                                    ElementStyle="{DynamicResource DataGridElementLeftMarginBody}"
+                                                    Binding="{Binding Name}" />
+                                <DataGridTextColumn Header="Category"
+                                                    MinWidth="180"
+                                                    HeaderStyle="{DynamicResource DataGridHeaderLeft}"
+                                                    ElementStyle="{DynamicResource DataGridElementLeftMarginBody}"
+                                                    Binding="{Binding Category}" />
+                                <DataGridTextColumn Header="Demand"
+                                                    MinWidth="100"
+                                                    HeaderStyle="{DynamicResource DataGridHeaderRight}"
+                                                    ElementStyle="{DynamicResource DataGridElementRightMargin}"
+                                                    Binding="{Binding Demand}" />
+                                <DataGridTextColumn Header="Stock"
+                                                    MinWidth="100"
+                                                    HeaderStyle="{DynamicResource DataGridHeaderRight}"
+                                                    ElementStyle="{DynamicResource DataGridElementRightMargin}"
+                                                    Binding="{Binding Stock}" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </Border>
 
-                    <DataGrid ItemsSource="{Binding SellOrders}"
-                              Grid.Row="1"
-                              Margin="5"
-                              Style="{DynamicResource ConstructionResourcesDataGrid}"
-                              RowStyle="{DynamicResource NoSelectRowStyle}"
-                              CellStyle="{DynamicResource NoSelectCellNoMargin}"
-                              Foreground="{DynamicResource PrimaryForeground}"
-                              FontSize="20"
-                              ScrollViewer.HorizontalScrollBarVisibility="Visible"
-                              ScrollViewer.VerticalScrollBarVisibility="Visible"
-                              AlternatingRowBackground="{DynamicResource RowAlternationColour}"
-                              HeadersVisibility="Column"
-                              AutoGenerateColumns="False"
-                              HorizontalAlignment="Center">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="Commodity"
-                                                Width="SizeToCells"
-                                                MinWidth="250"
-                                                HeaderStyle="{DynamicResource DataGridHeaderLeft}"
-                                                ElementStyle="{DynamicResource DataGridElementLeftMarginBody}"
-                                                Binding="{Binding Name}" />
-                            <DataGridTextColumn Header="Category"
-                                                MinWidth="180"
-                                                Width="*"
-                                                HeaderStyle="{DynamicResource DataGridHeaderLeft}"
-                                                ElementStyle="{DynamicResource DataGridElementLeftMarginBody}"
-                                                Binding="{Binding Category}" />
-                            <DataGridTextColumn Header="Stock"
-                                                MinWidth="100"
-                                                HeaderStyle="{DynamicResource DataGridHeaderCenter}"
-                                                ElementStyle="{DynamicResource DataGridElementRightMargin}"
-                                                Binding="{Binding SellOrderStockString}" />
-                            <DataGridTextColumn Header="Sale Price"
-                                                MinWidth="100"
-                                                HeaderStyle="{DynamicResource DataGridHeaderRight}"
-                                                ElementStyle="{DynamicResource DataGridElementRightMargin}"
-                                                Binding="{Binding SalePrice}" />
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </Grid>
-            </Border>
+                <GridSplitter Grid.Row="1"
+                              Height="4"
+                              Background="{DynamicResource ScrollBarLine}"
+                              HorizontalAlignment="Stretch" />
+                
+                <Border Background="{DynamicResource CardBackground}"
+                        Grid.Row="2"
+                        CornerRadius="5"
+                        Margin="5"
+                        Padding="5">
+                    <Grid Margin="5">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="Sell Orders"
+                                   FontSize="22"
+                                   Foreground="{DynamicResource Header}" />
+
+                        <DataGrid ItemsSource="{Binding SellOrders}"
+                                  Grid.Row="1"
+                                  Margin="5"
+                                  Style="{DynamicResource ConstructionResourcesDataGrid}"
+                                  RowStyle="{DynamicResource NoSelectRowStyle}"
+                                  CellStyle="{DynamicResource NoSelectCellNoMargin}"
+                                  Foreground="{DynamicResource PrimaryForeground}"
+                                  FontSize="20"
+                                  ScrollViewer.HorizontalScrollBarVisibility="Visible"
+                                  ScrollViewer.VerticalScrollBarVisibility="Visible"
+                                  AlternatingRowBackground="{DynamicResource RowAlternationColour}"
+                                  HeadersVisibility="Column"
+                                  AutoGenerateColumns="False"
+                                  HorizontalAlignment="Center">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Commodity"
+                                                    Width="SizeToCells"
+                                                    MinWidth="250"
+                                                    HeaderStyle="{DynamicResource DataGridHeaderLeft}"
+                                                    ElementStyle="{DynamicResource DataGridElementLeftMarginBody}"
+                                                    Binding="{Binding Name}" />
+                                <DataGridTextColumn Header="Category"
+                                                    MinWidth="180"
+                                                    Width="*"
+                                                    HeaderStyle="{DynamicResource DataGridHeaderLeft}"
+                                                    ElementStyle="{DynamicResource DataGridElementLeftMarginBody}"
+                                                    Binding="{Binding Category}" />
+                                <DataGridTextColumn Header="Stock"
+                                                    MinWidth="100"
+                                                    HeaderStyle="{DynamicResource DataGridHeaderCenter}"
+                                                    ElementStyle="{DynamicResource DataGridElementRightMargin}"
+                                                    Binding="{Binding SellOrderStockString}" />
+                                <DataGridTextColumn Header="Sale Price"
+                                                    MinWidth="100"
+                                                    HeaderStyle="{DynamicResource DataGridHeaderRight}"
+                                                    ElementStyle="{DynamicResource DataGridElementRightMargin}"
+                                                    Binding="{Binding SalePrice}" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </Border>
+            </Grid>
         </Grid>
     </busyIndicator:BusyMask>
 </UserControl>

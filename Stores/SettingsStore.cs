@@ -53,6 +53,8 @@ namespace ODEliteTracker.Stores
         public ODWindowPosition MainWindowPosition { get; set; } = new();
         public NotificationSettings NotificationSettings { get; set; } = NotificationSettings.GetDefault();
         public MassacreSettings MassacreSettings { get; set; } = MassacreSettings.GetDefault();
+        public TradeSettings TradeSettings { get; set; } = TradeSettings.GetDefault();
+
         public DateTime JournalAgeDateTime
         {
             get
@@ -98,6 +100,7 @@ namespace ODEliteTracker.Stores
                 NotificationSettings = SettingsDTOHelpers.SettingDtoToObject(settings.GetSettingDTO(nameof(NotificationSettings)), NotificationSettings.GetDefault());
                 CarrierSettings = SettingsDTOHelpers.SettingDtoToObject(settings.GetSettingDTO(nameof(CarrierSettings)), CarrierSettings.GetDefault());
                 MassacreSettings = SettingsDTOHelpers.SettingDtoToObject(settings.GetSettingDTO(nameof(MassacreSettings)), MassacreSettings.GetDefault());
+                TradeSettings = SettingsDTOHelpers.SettingDtoToObject(settings.GetSettingDTO(nameof(TradeSettings)), TradeSettings.GetDefault());
                 PopOutParams = SettingsDTOHelpers.SettingDtoToObject(settings.GetSettingDTO(nameof(PopOutParams)), new Dictionary<int, List<PopOutParams>>());
                 OverlaySettings = SettingsDTOHelpers.SettingDtoToObject(settings.GetSettingDTO(nameof(OverlaySettings)), OverlaySettings);
                 SpanshCSVSettings = SettingsDTOHelpers.SettingDtoToObject(settings.GetSettingDTO(nameof(SpanshCSVSettings)), SpanshCSVSettings);
@@ -131,6 +134,7 @@ namespace ODEliteTracker.Stores
                 SettingsDTOHelpers.ObjectToJsonStringDto(nameof(NotificationSettings), NotificationSettings),
                 SettingsDTOHelpers.ObjectToJsonStringDto(nameof(CarrierSettings), CarrierSettings),
                 SettingsDTOHelpers.ObjectToJsonStringDto(nameof(MassacreSettings), MassacreSettings),
+                SettingsDTOHelpers.ObjectToJsonStringDto(nameof(TradeSettings), TradeSettings),
                 SettingsDTOHelpers.ObjectToJsonStringDto(nameof(PopOutParams), PopOutParams),
                 SettingsDTOHelpers.ObjectToJsonStringDto(nameof(OverlaySettings), OverlaySettings),
                 SettingsDTOHelpers.ObjectToJsonStringDto(nameof(SpanshCSVSettings), SpanshCSVSettings),

@@ -4,6 +4,7 @@ using ODEliteTracker.Models.Colonisation;
 using ODEliteTracker.Models.FleetCarrier;
 using ODEliteTracker.Models.Galaxy;
 using ODEliteTracker.Models.Market;
+using ODEliteTracker.Models.Settings;
 using ODEliteTracker.Models.Ship;
 using ODEliteTracker.Services;
 using ODEliteTracker.Stores;
@@ -117,6 +118,7 @@ namespace ODEliteTracker.ViewModels
         #region Public properties
         public override bool IsLive { get => colonisationStore.IsLive; }
 
+        public GridSize ColonisationGridSize => settings.ColonisationSettings.ColonisationGridSize;
         public string ActiveButtonText
         {
             get
@@ -362,7 +364,7 @@ namespace ODEliteTracker.ViewModels
             SelectedDepot = newDepot;
 
             var cmdrSystem = commanderSystems.FirstOrDefault(x => x.SystemAddress == newDepot.SystemAddress);
-            cmdrSystem?.Depots.Add(newDepot);
+            cmdrSystem?.Depots.AddItem(newDepot);
 
             OnPropertyChanged(nameof(Depots));
         }

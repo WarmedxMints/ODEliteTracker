@@ -41,8 +41,9 @@
             <TabItem Header="Active Missions">
                 <Grid TextBlock.FontSize="18">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="1.3*" />
-                        <RowDefinition />
+                        <RowDefinition Height="{Binding ActiveMissionsGridSize[0], Mode=TwoWay}" />
+                        <RowDefinition Height="{Binding ActiveMissionsGridSize[1], Mode=TwoWay}" />
+                        <RowDefinition Height="{Binding ActiveMissionsGridSize[2], Mode=TwoWay}" />
                     </Grid.RowDefinitions>
                     <Border Background="{DynamicResource CardBackground}"
                             CornerRadius="5"
@@ -113,7 +114,12 @@
                         </DataGrid>
                     </Border>
 
-                    <Grid Grid.Row="1">
+                    <GridSplitter Grid.Row="1"
+                                  Height="4"
+                                  Background="{DynamicResource ScrollBarLine}"
+                                  HorizontalAlignment="Stretch" />
+                    
+                    <Grid Grid.Row="2">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="0.8*" />
                             <ColumnDefinition Width="0.4*" />

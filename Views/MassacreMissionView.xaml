@@ -44,11 +44,102 @@
             <TabItem Header="Active Missions">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition />
-                        <RowDefinition />
+                        <RowDefinition Height="{Binding ActiveMissionsGridSize[0], Mode=TwoWay}"/>
+                        <RowDefinition Height="{Binding ActiveMissionsGridSize[1], Mode=TwoWay}" />
+                        <RowDefinition Height="{Binding ActiveMissionsGridSize[2], Mode=TwoWay}"/>
                     </Grid.RowDefinitions>
 
-                    <Grid Grid.Row="1">
+                    <Border Background="{DynamicResource CardBackground}"
+                            Grid.Row="0"
+                            MinHeight="180"
+                            CornerRadius="5"
+                            Margin="5"
+                            Padding="5">
+                        <DataGrid ItemsSource="{Binding ActiveMissions}"
+                                  Style="{DynamicResource DisabledSelectGrid}"
+                                  HeadersVisibility="Column"
+                                  AlternationCount="1"
+                                  AlternatingRowBackground="{DynamicResource RowAlternationColour}"
+                                  RowStyle="{DynamicResource MasscreMissionRowStyle}"
+                                  CellStyle="{DynamicResource MassacreGridCell}"
+                                  Grid.Row="2">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Origin System"
+                                                    MinWidth="120"
+                                                    HeaderStyle="{DynamicResource DataGridHeaderLeft}"
+                                                    Binding="{Binding OriginSystemName}" />
+                                <DataGridTextColumn Header="Origin Station"
+                                                    MinWidth="120"
+                                                    HeaderStyle="{DynamicResource DataGridHeaderLeft}"
+                                                    Binding="{Binding OriginStationName}" />
+                                <DataGridTextColumn Header="Issuing Faction"
+                                                    Width="*"
+                                                    HeaderStyle="{DynamicResource DataGridHeaderLeft}"
+                                                    Binding="{Binding IssuingFaction}" />
+                                <DataGridTextColumn Header="Target Faction"
+                                                    HeaderStyle="{DynamicResource DataGridHeaderLeft}"
+                                                    Binding="{Binding TargetFaction}" />
+                                <DataGridTextColumn Header="Target System"
+                                                    MinWidth="120"
+                                                    HeaderStyle="{DynamicResource DataGridHeaderLeft}"
+                                                    Binding="{Binding TargetSystem}" />
+                                <DataGridTemplateColumn Header="Kills"
+                                                        Width="100"
+                                                        HeaderStyle="{DynamicResource DataGridHeaderCenter}">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Grid HorizontalAlignment="Center">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="30" />
+                                                    <ColumnDefinition Width="25" />
+                                                    <ColumnDefinition Width="30" />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="{Binding Kills}"
+                                                           HorizontalAlignment="Right"
+                                                           Grid.Column="0" />
+                                                <TextBlock Text="/"
+                                                           HorizontalAlignment="Center"
+                                                           Grid.Column="1" />
+                                                <TextBlock Text="{Binding KillCount}"
+                                                           HorizontalAlignment="Left"
+                                                           Grid.Column="2" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTextColumn Header="Expires"
+                                                    HeaderStyle="{DynamicResource DataGridHeaderCenter}"
+                                                    ElementStyle="{DynamicResource DataGridElementRightMargin}"
+                                                    Width="100"
+                                                    Binding="{Binding ExpiryRelativeTime}" />
+                                <DataGridTextColumn Header="Reward"
+                                                    MinWidth="120"
+                                                    HeaderStyle="{DynamicResource DataGridHeaderCenter}"
+                                                    ElementStyle="{DynamicResource DataGridElementRightMargin}"
+                                                    Binding="{Binding Reward, StringFormat=N0}" />
+                                <DataGridTemplateColumn Header="Wing"
+                                                        HeaderStyle="{DynamicResource DataGridHeaderCenter}"
+                                                        Width="SizeToCells"
+                                                        MinWidth="45">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Image Source="/Assets/Icons/Wing.png"
+                                                   Width="18"
+                                                   Height="18"
+                                                   Visibility="{Binding Wing, Converter={StaticResource BoolToVis}}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Border>
+
+                    <GridSplitter Grid.Row="1"
+                                  Height="4"
+                                  Background="{DynamicResource ScrollBarLine}"
+                                  HorizontalAlignment="Stretch" />
+                    
+                    <Grid Grid.Row="2">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="1.4*" />
                             <ColumnDefinition Width="2*" />
@@ -494,90 +585,7 @@
                     </Grid>
 
 
-                    <Border Background="{DynamicResource CardBackground}"
-                            Grid.Row="0"
-                            MinHeight="180"
-                            CornerRadius="5"
-                            Margin="5"
-                            Padding="5">
-                        <DataGrid ItemsSource="{Binding ActiveMissions}"
-                                  Style="{DynamicResource DisabledSelectGrid}"
-                                  HeadersVisibility="Column"
-                                  AlternationCount="1"
-                                  AlternatingRowBackground="{DynamicResource RowAlternationColour}"
-                                  RowStyle="{DynamicResource MasscreMissionRowStyle}"
-                                  CellStyle="{DynamicResource MassacreGridCell}"
-                                  Grid.Row="2">
-                            <DataGrid.Columns>
-                                <DataGridTextColumn Header="Origin System"
-                                                    MinWidth="120"
-                                                    HeaderStyle="{DynamicResource DataGridHeaderLeft}"
-                                                    Binding="{Binding OriginSystemName}" />
-                                <DataGridTextColumn Header="Origin Station"
-                                                    MinWidth="120"
-                                                    HeaderStyle="{DynamicResource DataGridHeaderLeft}"
-                                                    Binding="{Binding OriginStationName}" />                   
-                                <DataGridTextColumn Header="Issuing Faction"
-                                                    Width="*"
-                                                    HeaderStyle="{DynamicResource DataGridHeaderLeft}"
-                                                    Binding="{Binding IssuingFaction}" />
-                                <DataGridTextColumn Header="Target Faction"
-                                                    HeaderStyle="{DynamicResource DataGridHeaderLeft}"
-                                                    Binding="{Binding TargetFaction}" />
-                                <DataGridTextColumn Header="Target System"
-                                                    MinWidth="120"
-                                                    HeaderStyle="{DynamicResource DataGridHeaderLeft}"
-                                                    Binding="{Binding TargetSystem}" />
-                                <DataGridTemplateColumn Header="Kills"
-                                                        Width="100"
-                                                        HeaderStyle="{DynamicResource DataGridHeaderCenter}">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <Grid HorizontalAlignment="Center">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="30" />
-                                                    <ColumnDefinition Width="25" />
-                                                    <ColumnDefinition Width="30" />
-                                                </Grid.ColumnDefinitions>
-                                                <TextBlock Text="{Binding Kills}"
-                                                           HorizontalAlignment="Right"
-                                                           Grid.Column="0" />
-                                                <TextBlock Text="/"
-                                                           HorizontalAlignment="Center"
-                                                           Grid.Column="1" />
-                                                <TextBlock Text="{Binding KillCount}"
-                                                           HorizontalAlignment="Left"
-                                                           Grid.Column="2" />
-                                            </Grid>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>           
-                                <DataGridTextColumn Header="Expires"
-                                                    HeaderStyle="{DynamicResource DataGridHeaderCenter}"
-                                                    ElementStyle="{DynamicResource DataGridElementRightMargin}"
-                                                    Width="100"
-                                                    Binding="{Binding ExpiryRelativeTime}" />
-                                <DataGridTextColumn Header="Reward"
-                                                    MinWidth="120"
-                                                    HeaderStyle="{DynamicResource DataGridHeaderCenter}"
-                                                    ElementStyle="{DynamicResource DataGridElementRightMargin}"
-                                                    Binding="{Binding Reward, StringFormat=N0}" />
-                                <DataGridTemplateColumn Header="Wing"
-                                                        HeaderStyle="{DynamicResource DataGridHeaderCenter}"
-                                                        Width="SizeToCells"
-                                                        MinWidth="45">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <Image Source="/Assets/Icons/Wing.png"
-                                                   Width="18"
-                                                   Height="18"
-                                                   Visibility="{Binding Wing, Converter={StaticResource BoolToVis}}" />
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                            </DataGrid.Columns>
-                        </DataGrid>
-                    </Border>
+         
                 </Grid>
             </TabItem>
             <TabItem Header="Completed Missions">

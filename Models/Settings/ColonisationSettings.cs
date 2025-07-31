@@ -1,4 +1,6 @@
-﻿namespace ODEliteTracker.Models.Settings
+﻿using System.Windows;
+
+namespace ODEliteTracker.Models.Settings
 {
     public sealed class ColonisationSettings
     {
@@ -34,5 +36,6 @@
         }
 
         public int SelectedDepotTab { get; set; }
+        public GridSize ColonisationGridSize { get; set; } = new() { GridLengths = [new(1, GridUnitType.Star), new(15, GridUnitType.Pixel), new(292.5, GridUnitType.Pixel)] };
     }
 }

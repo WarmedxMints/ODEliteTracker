@@ -1,5 +1,6 @@
 ﻿using ODEliteTracker.Models;
 using ODEliteTracker.Models.FleetCarrier;
+using ODEliteTracker.Models.Settings;
 using ODEliteTracker.Stores;
 using ODEliteTracker.ViewModels.ModelViews.FleetCarrier;
 using ODMVVM.Commands;
@@ -46,6 +47,8 @@ namespace ODEliteTracker.ViewModels
         private CountdownTimer? capiTimer;
         public override bool IsLive => dataStore.IsLive;
         private bool CanCallCAPI => dataStore.CanCallCAPI;
+
+        public GridSize GridSize => settings.CarrierSettings.GridSize;
         public CarrierCommoditySorting CommoditySorting
         {
             get => settings.CarrierSettings.Sorting;

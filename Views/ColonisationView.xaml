@@ -381,8 +381,9 @@
                 <Grid Grid.Column="1"
                       Height="Auto">
                     <Grid.RowDefinitions>
-                        <RowDefinition />
-                        <RowDefinition Height="300" />
+                        <RowDefinition Height="{Binding ColonisationGridSize[0], Mode=TwoWay}" />
+                        <RowDefinition Height="{Binding ColonisationGridSize[1], Mode=TwoWay}" />
+                        <RowDefinition Height="{Binding ColonisationGridSize[2], Mode=TwoWay}" />
                     </Grid.RowDefinitions>
                     <Border Background="{DynamicResource CardBackground}"
                             CornerRadius="5"
@@ -763,13 +764,19 @@
                         </TabControl>
                     </Border>
 
+                    <GridSplitter Grid.Row="1"
+                                  Height="4"
+                                  Margin="5,0"
+                                  Background="{DynamicResource ScrollBarLine}"
+                                  HorizontalAlignment="Stretch" />
+                    
                     <Border Background="{DynamicResource CardBackground}"
                             CornerRadius="5"
                             MinHeight="180"
                             Height="Auto"
                             VerticalAlignment="Stretch"
                             Margin="5,5,5,5"
-                            Grid.Row="1"
+                            Grid.Row="2"
                             Padding="5">
                         <Grid>
                             <Grid.RowDefinitions>

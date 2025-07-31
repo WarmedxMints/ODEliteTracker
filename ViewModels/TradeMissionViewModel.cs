@@ -1,4 +1,5 @@
 ﻿using ODEliteTracker.Models.Missions;
+using ODEliteTracker.Models.Settings;
 using ODEliteTracker.Models.Ship;
 using ODEliteTracker.Stores;
 using ODEliteTracker.ViewModels.ModelViews;
@@ -11,10 +12,11 @@ namespace ODEliteTracker.ViewModels
 {
     public sealed class TradeMissionViewModel : ODViewModel
     { 
-        public TradeMissionViewModel(TradeMissionStore missionStore, SharedDataStore sharedDatastore) 
+        public TradeMissionViewModel(TradeMissionStore missionStore, SharedDataStore sharedDatastore, SettingsStore settings) 
         {
             this.missionStore = missionStore;
             this.sharedData = sharedDatastore;
+            this.settings = settings;
             this.missionStore.StoreLive += OnStoreLive;
             this.missionStore.OnMissionAddedEvent += OnMissionAdded;
             this.missionStore.OnMissionUpdatedEvent += OnMissionUpdated;
@@ -34,9 +36,10 @@ namespace ODEliteTracker.ViewModels
 
         private readonly TradeMissionStore missionStore;
         private readonly SharedDataStore sharedData;
+        private readonly SettingsStore settings;
         private readonly Timer expiryTimeUpdateTimer;
         public override bool IsLive => missionStore.IsLive;
-
+        public GridSize ActiveMissionsGridSize => settings.TradeSettings.ActiveMissionsGridSize;
         public List<TradeMissionVM> missions { get; } = [];
         public IEnumerable<TradeMissionVM> ActiveMissions { get; private set; } = [];
         public IEnumerable<TradeMissionVM> CompletedMissions { get; private set; } = [];

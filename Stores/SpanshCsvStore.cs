@@ -229,7 +229,7 @@ namespace ODEliteTracker.Stores
                 {
                     CurrentIndex = index;
 
-                    if (settingsStore.SpanshCSVSettings.AutoCopySystemToClipboard)
+                    if (settingsStore.SpanshCSVSettings.AutoCopySystemToClipboard && string.IsNullOrEmpty(NextTarget?.SystemName) == false)
                     {
                         notificationService.SetClipboard(NextTarget.SystemName);
                     }

@@ -112,12 +112,12 @@ namespace ODEliteTracker.ViewModels.ModelViews.BGS
 
         public bool HasData()
         {
-            return infPlus > 0
+            return infPlus != 0
                 || bounties > 0
                 || bonds > 0
                 || failed > 0
-                || sales != null && sales.Value > 0
-                || purchases != null && purchases.Value > 0
+                || sales != null && sales.Value != 0
+                || purchases != null && purchases.Value != 0
                 || FootMurders > 0
                 || ShipMurders > 0
                 || CartoDataValue > 0

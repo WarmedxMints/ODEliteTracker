@@ -278,7 +278,7 @@
                             Margin="5"
                             Grid.Row="2" />
 
-                    <TextBlock Text="Note that CAPI data can be outdated.&#x0a;It is not recommend to update if your carrier cargo has canged in the last 15 minutes&#x0a;&#x0a;Using this option will replace all carrier stock data with that from Frontiers servers&#x0a;&#x0a;This option is only available once every 10 minutes"
+                    <TextBlock Text="Note that CAPI data can be outdated.&#x0a;It is not recommend to update if your carrier cargo has changed in the last 15 minutes&#x0a;&#x0a;Using this option will replace all carrier stock data with that from Frontiers servers&#x0a;&#x0a;This option is only available once every 10 minutes"
                                TextWrapping="Wrap"
                                TextAlignment="Center"
                                Foreground="{DynamicResource Header}"

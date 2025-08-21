@@ -7,6 +7,7 @@ using ODEliteTracker.Services;
 using ODJournalDatabase.JournalManagement;
 using ODMVVM.Helpers;
 using ODMVVM.Utils;
+using System.Threading;
 
 namespace ODEliteTracker.Stores
 {
@@ -112,6 +113,10 @@ namespace ODEliteTracker.Stores
             switch (evt.EventData)
             {
                 case CarrierStatsEvent.CarrierStatsEventArgs carrier:
+                    if (string.Equals(carrier.CarrierType, "FleetCarrier", StringComparison.OrdinalIgnoreCase) == false)
+                    {
+                        return;
+                    }
                     carrierData ??= new(carrier);
                     carrierData.FuelLevel = carrier.FuelLevel;
                     carrierData.Name = carrier.Name;
@@ -130,7 +135,7 @@ namespace ODEliteTracker.Stores
                     }
                     break;
                 case CarrierLocationEvent.CarrierLocationEventArgs cLocation:
-                    if(carrierData != null)
+                    if(carrierData != null && string.Equals(cLocation.CarrierType, "FleetCarrier", StringComparison.OrdinalIgnoreCase) == false)
                     {
                         carrierData.StarSystem = cLocation.StarSystem;
                         carrierData.SystemAddress = cLocation.SystemAddress;
@@ -144,7 +149,12 @@ namespace ODEliteTracker.Stores
                     break;
                 case CarrierJumpRequestEvent.CarrierJumpRequestEventArgs jumpRequest:
                     if (carrierData is null)
-                        break;
+                        return;
+
+                    if (string.Equals(jumpRequest.CarrierType, "FleetCarrier", StringComparison.OrdinalIgnoreCase) == false)
+                    {
+                        return;
+                    }
                     carrierData.Destination = new(jumpRequest.SystemName, jumpRequest.Body, jumpRequest.SystemAddress, jumpRequest.DepartureTime);
 
                     var span = (jumpRequest.DepartureTime - DateTime.UtcNow) + TimeSpan.FromMinutes(5);
@@ -160,9 +170,14 @@ namespace ODEliteTracker.Stores
                         CarrierDestinationUpdated?.Invoke(this, carrierData);
                     }
                     break;
-                case CarrierJumpCancelledEvent.CarrierJumpCancelledEventArgs:
+                case CarrierJumpCancelledEvent.CarrierJumpCancelledEventArgs jCancelled:
                     if (carrierData is null)
                         break;
+
+                    if (string.Equals(jCancelled.CarrierType, "FleetCarrier", StringComparison.OrdinalIgnoreCase) == false)
+                    {
+                        return;
+                    }
                     carrierData.Destination = new();
                     fleetCarrierTimer.Stop();
                     if (IsLive)

@@ -117,7 +117,6 @@ namespace ODEliteTracker.ViewModels
 
         #region Public properties
         public override bool IsLive { get => colonisationStore.IsLive; }
-
         public GridSize ColonisationGridSize => settings.ColonisationSettings.ColonisationGridSize;
         public string ActiveButtonText
         {
@@ -321,10 +320,25 @@ namespace ODEliteTracker.ViewModels
 
         private void CreatePost(ColonisationPostType type)
         {
-            if (SelectedDepot is null)
+            //Single Depot
+            if (SelectedDepotTab == 0)
+            {
+                if (SelectedDepot is null)
+                    return;
+
+                if (DiscordPostCreator.CreateColonisationPost(SelectedDepot, SelectedDepotResources, type))
+                {
+                    DiscordButtonText = "Post Created";
+                    notification.ShowBasicNotification(new("Clipboard", ["Construction Post", "Copied To Clipboard"], Models.Settings.NotificationOptions.CopyToClipboard));
+                    Task.Delay(4000).ContinueWith(e => { DiscordButtonText = "Create Post"; });
+                }
+                return;
+            }
+            //Shopping List
+            if (ShoppingList is null || ShoppingList.Depots.Count == 0)
                 return;
 
-            if (DiscordPostCreator.CreateColonisationPost(SelectedDepot, SelectedDepotResources, type))
+            if (DiscordPostCreator.CreateColonisationPost(ShoppingList, type))
             {
                 DiscordButtonText = "Post Created";
                 notification.ShowBasicNotification(new("Clipboard", ["Construction Post", "Copied To Clipboard"], Models.Settings.NotificationOptions.CopyToClipboard));

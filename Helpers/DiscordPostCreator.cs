@@ -1,6 +1,8 @@
-﻿using ODEliteTracker.ViewModels.ModelViews.BGS;
+﻿using NetTopologySuite.GeometriesGraph;
+using ODEliteTracker.ViewModels.ModelViews.BGS;
 using ODEliteTracker.ViewModels.ModelViews.Colonisation;
 using ODEliteTracker.ViewModels.ModelViews.PowerPlay;
+using System;
 using System.Data;
 using System.Text;
 
@@ -270,6 +272,47 @@ namespace ODEliteTracker.Helpers
             TimeSpan t = time.ToUniversalTime() - new DateTime(1970, 1, 1);
             int secondsSinceEpoch = (int)t.TotalSeconds;
             return $"<t:{secondsSinceEpoch}>";
+        }
+
+        internal static bool CreateColonisationPost(ColonisationShoppingList shoppingList, ColonisationPostType type)
+        {
+            //If we have no resources require, no need to make a post
+            if (shoppingList.Resources.Any(x => x.RemainingCount > 0) == false)
+                return false;
+
+            var sb = new StringBuilder();
+
+            if (type == ColonisationPostType.DiscordTable)
+            {
+                sb.AppendLine("```");
+
+            }
+
+            foreach (var depot in shoppingList.Depots)
+            {
+                sb.AppendLine($"{depot.SystemNameText} | {depot.StationNameSplit} | Progress { depot.Progress}");           
+            }
+
+            sb.AppendLine();
+            switch (type)
+            {
+                case ColonisationPostType.List:
+                    sb.AppendLine(CreateDepotResourceList(shoppingList.Resources));
+                    break;
+                default:
+                    sb.AppendLine(CreateDepotResourceTable(shoppingList.Resources));
+                    break;
+            }
+
+            if (type == ColonisationPostType.DiscordTable)
+            {
+                sb.AppendLine("```");
+
+            }
+
+            var result = sb.ToString().TrimEnd('\r', '\n');
+
+            return ODMVVM.Helpers.OperatingSystem.SetStringToClipboard(result);
         }
     }
 }

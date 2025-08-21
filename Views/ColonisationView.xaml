@@ -649,6 +649,80 @@
 
                                         <StackPanel Grid.Column="1"
                                                     Orientation="Horizontal">
+                                            <ToggleButton Name="button2"
+                                                          Width="120"
+                                                          FontSize="12"
+                                                          BorderBrush="#FF707BF3"
+                                                          Content="{Binding DiscordButtonText}"
+                                                          FontFamily="Unispace"
+                                                          Margin="10,0">
+                                                <ToggleButton.Resources>
+                                                    <Style TargetType="Border">
+                                                        <Setter Property="CornerRadius"
+                                                                Value="5" />
+                                                    </Style>
+                                                    <Style TargetType="{x:Type ToggleButton}">
+                                                        <Style.Triggers>
+                                                            <Trigger Property="IsMouseOver"
+                                                                     Value="False">
+                                                                <Setter Property="Foreground"
+                                                                        Value="White" />
+                                                                <Setter Property="Background"
+                                                                        Value="#FF5865F2" />
+                                                            </Trigger>
+                                                            <Trigger Property="IsMouseOver"
+                                                                     Value="True">
+                                                                <Setter Property="Background"
+                                                                        Value="White" />
+                                                                <Setter Property="Foreground"
+                                                                        Value="#FF5865F2" />
+                                                            </Trigger>
+                                                            <Trigger Property="IsPressed"
+                                                                     Value="True">
+                                                                <Setter Property="Background"
+                                                                        Value="White" />
+                                                                <Setter Property="Foreground"
+                                                                        Value="#FF5865F2" />
+                                                            </Trigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </ToggleButton.Resources>
+                                            </ToggleButton>
+                                            <Popup IsOpen="{Binding IsChecked, ElementName=button2}"
+                                                   Closed="Popup_Closed"
+                                                   ButtonBase.Click="Popup_Click"
+                                                   Placement="Mouse"
+                                                   StaysOpen="False">
+                                                <Border Background="{DynamicResource ViewBackground}"
+                                                        BorderBrush="{DynamicResource PrimaryControlBorder}"
+                                                        Padding="5"
+                                                        BorderThickness="1">
+                                                    <StackPanel>
+                                                        <Button Content="Table in Discord Code Block"
+                                                                HorizontalAlignment="Stretch"
+                                                                Margin="0,2"
+                                                                HorizontalContentAlignment="Left"
+                                                                Command="{Binding CreatePostCommand}"
+                                                                CommandParameter="{x:Static helpers:ColonisationPostType.DiscordTable}"
+                                                                Style="{DynamicResource CartoSelectionBtn}" />
+                                                        <Button Content="Table"
+                                                                HorizontalAlignment="Stretch"
+                                                                Margin="0,2"
+                                                                HorizontalContentAlignment="Left"
+                                                                Command="{Binding CreatePostCommand}"
+                                                                CommandParameter="{x:Static helpers:ColonisationPostType.Table}"
+                                                                Style="{DynamicResource CartoSelectionBtn}" />
+                                                        <Button Content="List"
+                                                                HorizontalAlignment="Stretch"
+                                                                Margin="0,2"
+                                                                HorizontalContentAlignment="Left"
+                                                                Command="{Binding CreatePostCommand}"
+                                                                CommandParameter="{x:Static helpers:ColonisationPostType.List}"
+                                                                Style="{DynamicResource CartoSelectionBtn}" />
+
+                                                    </StackPanel>
+                                                </Border>
+                                            </Popup>
                                             <TextBlock Text="Commodity Sorting "
                                                        VerticalAlignment="Center" />
                                             <ComboBox ItemsSource="{Binding Source={StaticResource CommodityEnum}}"

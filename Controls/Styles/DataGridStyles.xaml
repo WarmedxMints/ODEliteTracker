@@ -222,6 +222,31 @@
             </Trigger>
         </Style.Triggers>
     </Style>
+
+    <Style x:Key="MarketWatchlistRowStyle"
+           TargetType="{x:Type DataGridRow}">
+        <Setter Property="BorderThickness"
+                Value="0" />
+        <Setter Property="OverridesDefaultStyle"
+                Value="False" />
+        <Setter Property="IsHitTestVisible"
+                Value="True" />
+        <Setter Property="IsManipulationEnabled"
+                Value="False" />
+        <Setter Property="FocusVisualStyle"
+                Value="{x:Null}" />
+        <Setter Property="Background"
+                Value="{x:Null}" />
+        <Style.Triggers>
+            <Trigger Property="IsSelected"
+                     Value="True">
+                <Setter Property="Background"
+                        Value="Transparent" />
+                <Setter Property="FontWeight"
+                        Value="Bold" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
     
     <Style x:Key="DataGridElementRightMargin"
            TargetType="{x:Type TextBlock}">

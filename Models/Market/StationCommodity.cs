@@ -4,6 +4,7 @@ namespace ODEliteTracker.Models.Market
 {
     public sealed class StationCommodity
     {
+        public StationCommodity() { }
         public StationCommodity(MarketItem item)
         {
             Name = item.Name;
@@ -16,10 +17,10 @@ namespace ODEliteTracker.Models.Market
             Demand = item.Demand;
         }
 
-        public string Name { get; set; }
-        public string Name_Localised { get; set; }
-        public string Category { get; set; }
-        public string Category_Localised { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Name_Localised { get; set; } = string.Empty;
+        public string Category { get; set; } = string.Empty;
+        public string Category_Localised { get; set; } = string.Empty;
         public int BuyPrice { get; set; }
         public int SellPrice { get; set; }
         public int Stock { get; set; }

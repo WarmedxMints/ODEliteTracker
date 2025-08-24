@@ -5,11 +5,13 @@ using Newtonsoft.Json;
 using ODEliteTracker.Database.DTOs;
 using ODEliteTracker.Models;
 using ODEliteTracker.Models.Bookmarks;
+using ODEliteTracker.Models.Colonisation;
 using ODEliteTracker.Models.Spansh;
 using ODEliteTracker.ViewModels.ModelViews.Bookmarks;
 using ODJournalDatabase.Database.DTOs;
 using ODJournalDatabase.Database.Interfaces;
 using ODJournalDatabase.JournalManagement;
+using ODMVVM.Helpers.IO;
 
 namespace ODEliteTracker.Database
 {
@@ -325,6 +327,33 @@ namespace ODEliteTracker.Database
         #endregion
 
         #region Colonisation
+
+        public List<WatchedMarket> GetWatchedMarkets()
+        {
+            using var context = _contextFactory.CreateDbContext();
+
+            return [.. context.WatchedMarkets.Select(x => new WatchedMarket(x))];
+        }
+
+        public void UpdateWatchedMarkets(List<WatchedMarket> markets)
+        {
+            using var context = _contextFactory.CreateDbContext();
+
+            foreach (var market in context.WatchedMarkets)
+            {
+                context.WatchedMarkets.Remove(market);                        
+            }
+
+            if (markets.Count > 0)
+            {
+                foreach (var market in markets)
+                {
+                    context.WatchedMarkets.Add(new WatchedMarketDTO(market.Name, market.MarketID, Json.SerialiseJsonToString(market.ItemsForPurchase)));
+                }
+            }
+            context.SaveChanges();
+        }
+
         public HashSet<Tuple<long, long, string>> GetInactiveDepots()
         {
             using var context = _contextFactory.CreateDbContext();

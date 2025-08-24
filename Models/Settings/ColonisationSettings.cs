@@ -6,6 +6,7 @@ namespace ODEliteTracker.Models.Settings
     {
         public event EventHandler<CommoditySorting>? CommoditySortingChanged;
         public event EventHandler<CommoditySorting>? ShoppingListSortingChanged;
+        public event EventHandler<CommoditySorting>? WatchedMarketSortingChanged;
 
         private CommoditySorting colonisationCommoditySorting = CommoditySorting.Category;
         public CommoditySorting ColonisationCommoditySorting
@@ -33,6 +34,21 @@ namespace ODEliteTracker.Models.Settings
                     ShoppingListSortingChanged?.Invoke(this, ShoppingListSorting);
                 }
             }
+        }
+
+        private CommoditySorting watchedMarketSorting = CommoditySorting.Category;
+        public CommoditySorting WatchedMarketSorting
+        {
+            get => watchedMarketSorting;
+            internal set
+            {
+                if (value != watchedMarketSorting)
+                {
+                    watchedMarketSorting = value;
+                    WatchedMarketSortingChanged?.Invoke(this, WatchedMarketSorting);
+                }
+            }
+
         }
 
         public int SelectedDepotTab { get; set; }

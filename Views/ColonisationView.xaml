@@ -13,8 +13,8 @@
              d:DataContext="{d:DesignInstance viewmodels:ColonisationViewModel}"
              mc:Ignorable="d"
              x:Name="Root"
-             d:DesignHeight="450"
-             d:DesignWidth="800">
+             d:DesignHeight="1920"
+             d:DesignWidth="1080">
     <busyIndicator:BusyMask x:Name="BusyIndicator"
                             IsBusy="{Binding IsBusy}"
                             Background="{DynamicResource IndicatorBackground}"
@@ -835,6 +835,119 @@
                                     </DataGrid>
                                 </Grid>
                             </TabItem>
+                            <TabItem Header="Market Watchlist">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Text="Markets"
+                                                   FontSize="22"
+                                                   Margin="5"
+                                                   Foreground="{DynamicResource Header}" />
+
+                                        <StackPanel Grid.Column="1"
+                                                    Orientation="Horizontal">                                         
+                                            <TextBlock Text="Commodity Sorting "
+                                                       VerticalAlignment="Center" />
+                                            <ComboBox ItemsSource="{Binding Source={StaticResource CommodityEnum}}"
+                                                      SelectedItem="{Binding WatchedMarketSorting}"
+                                                      Margin="5,0,10,0"
+                                                      Grid.Column="2"
+                                                      MinWidth="180"
+                                                      FontSize="18"
+                                                      HorizontalAlignment="Right"
+                                                      VerticalAlignment="Center"
+                                                      IsReadOnly="True"
+                                                      IsSynchronizedWithCurrentItem="False" />
+                                        </StackPanel>
+                                    </Grid>
+
+                                    <DataGrid ItemsSource="{Binding WatchedMarkets}"
+                                              SelectedItem="{Binding SelectedWatchedMarket}"
+                                              Grid.Row="1"
+                                              Margin="10"
+                                              Style="{DynamicResource ConstructionResourcesDataGrid}"
+                                              RowStyle="{DynamicResource MarketWatchlistRowStyle}"
+                                              CellStyle="{DynamicResource NoSelectCellNoMargin}"
+                                              Foreground="{DynamicResource PrimaryForeground}"
+                                              FontSize="20"
+                                              IsReadOnly="True"
+                                              SelectionMode="Single"
+                                              ScrollViewer.HorizontalScrollBarVisibility="Visible"
+                                              ScrollViewer.VerticalScrollBarVisibility="Visible"
+                                              AlternatingRowBackground="{DynamicResource RowAlternationColour}"
+                                              HeadersVisibility="Column"
+                                              AutoGenerateColumns="False"
+                                              HorizontalAlignment="Center">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Station Name"
+                                                                MinWidth="250"
+                                                                Width="*"
+                                                                HeaderStyle="{DynamicResource DataGridHeaderLeft}"
+                                                                ElementStyle="{DynamicResource DataGridElementLeftMarginBody}"
+                                                                Binding="{Binding Name}" />
+                                            <DataGridTemplateColumn Width="30">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <Button Command="{Binding ElementName=Root, Path=DataContext.AddRemoveWatchedMarketsCommand}"
+                                                                CommandParameter="{Binding MarketId}"
+                                                                Style="{DynamicResource EliteStyleButton}"
+                                                                Content="X"
+                                                                Margin="2"
+                                                                Width="25"
+                                                                Height="25"
+                                                                ToolTip="Remove From Watched List"
+                                                                FontSize="16" />
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+
+                                    <DataGrid ItemsSource="{Binding SelectedWatchedMarketCommodities}"
+                                              Grid.Row="3"
+                                              Margin="10"
+                                              Style="{DynamicResource ConstructionResourcesDataGrid}"
+                                              RowStyle="{DynamicResource NoSelectRowStyle}"
+                                              CellStyle="{DynamicResource NoSelectCellNoMargin}"
+                                              Foreground="{DynamicResource PrimaryForeground}"
+                                              SelectedItem="{Binding SelectedResource, Mode=TwoWay}"
+                                              FontSize="20"
+                                              IsReadOnly="True"
+                                              SelectionMode="Single"
+                                              ScrollViewer.HorizontalScrollBarVisibility="Visible"
+                                              ScrollViewer.VerticalScrollBarVisibility="Visible"
+                                              AlternatingRowBackground="{DynamicResource RowAlternationColour}"
+                                              HeadersVisibility="Column"
+                                              AutoGenerateColumns="False">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Commodity"
+                                                                MinWidth="250"
+                                                                HeaderStyle="{DynamicResource DataGridHeaderLeft}"
+                                                                ElementStyle="{DynamicResource DataGridElementLeftMarginBody}"
+                                                                Binding="{Binding Name_Localised}" />
+                                            <DataGridTextColumn Header="Category"
+                                                                Width="*"
+                                                                HeaderStyle="{DynamicResource DataGridHeaderLeft}"
+                                                                ElementStyle="{DynamicResource DataGridElementLeftMarginBody}"
+                                                                Binding="{Binding Category_Localised}" />
+                                            <DataGridTextColumn Header="Demand"
+                                                                MinWidth="100"
+                                                                HeaderStyle="{DynamicResource DataGridHeaderCenter}"
+                                                                ElementStyle="{DynamicResource DataGridElementRightMargin}"
+                                                                Binding="{Binding DemandString}" />
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </Grid>
+                            </TabItem>
                         </TabControl>
                     </Border>
 
@@ -875,6 +988,15 @@
                                            Grid.Row="0"
                                            Foreground="{DynamicResource Header}"
                                            Grid.ColumnSpan="2" />
+
+                                <Button Style="{DynamicResource EliteStyleButton}"
+                                        Command="{Binding AddRemoveWatchedMarketsCommand}"
+                                        CommandParameter="{Binding CurrentMarket.MarketID}"
+                                        Content="Watchlist Add/Remove"
+                                        Width="200"
+                                        Grid.Column="3"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center" />
 
                                 <TextBlock Text="{Binding CurrentMarket.StationName}"
                                            FontSize="30"

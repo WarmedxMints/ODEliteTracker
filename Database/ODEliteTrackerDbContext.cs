@@ -12,7 +12,7 @@ namespace ODEliteTracker.Database
         public DbSet<IgnoredBounties> IgnoredBounties { get; set; }
         public DbSet<SystemBookmarkDTO> SystemBookmarks { get; set; }
         public DbSet<SpanshCsvDTO> SpanshCsvs { get; set; }
-
+        public DbSet<WatchedMarketDTO> WatchedMarkets { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder

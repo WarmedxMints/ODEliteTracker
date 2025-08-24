@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ODEliteTracker.Database;
 
@@ -10,9 +11,11 @@ using ODEliteTracker.Database;
 namespace ODEliteTracker.Migrations
 {
     [DbContext(typeof(ODEliteTrackerDbContext))]
-    partial class ODEliteTrackerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250824165439_WatchedMarketsUpdate")]
+    partial class WatchedMarketsUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.4");

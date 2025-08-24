@@ -43,6 +43,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Market
         public int SellPrice { get; set; }
         public int Stock { get; set; }
         public int Demand { get; set; }
+        public string DemandString => $"{Demand:N0} t";
         public int Required { get; set; }
         public long CarrierStockValue { get; set; }
         public string CarrierStock => CarrierStockValue > 0 ? $"{CarrierStockValue:N0} t" : string.Empty;

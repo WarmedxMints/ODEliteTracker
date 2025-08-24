@@ -274,10 +274,10 @@ namespace ODEliteTracker.Helpers
             return $"<t:{secondsSinceEpoch}>";
         }
 
-        internal static bool CreateColonisationPost(ColonisationShoppingList shoppingList, ColonisationPostType type)
+        internal static bool CreateColonisationPost(ColonisationShoppingList shoppingList, IEnumerable<ConstructionResourceVM>? resources, ColonisationPostType type)
         {
             //If we have no resources require, no need to make a post
-            if (shoppingList.Resources.Any(x => x.RemainingCount > 0) == false)
+            if (resources is null || resources.Any() == false)
                 return false;
 
             var sb = new StringBuilder();
@@ -297,10 +297,10 @@ namespace ODEliteTracker.Helpers
             switch (type)
             {
                 case ColonisationPostType.List:
-                    sb.AppendLine(CreateDepotResourceList(shoppingList.Resources));
+                    sb.AppendLine(CreateDepotResourceList(resources));
                     break;
                 default:
-                    sb.AppendLine(CreateDepotResourceTable(shoppingList.Resources));
+                    sb.AppendLine(CreateDepotResourceTable(resources));
                     break;
             }
 

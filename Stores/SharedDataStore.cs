@@ -1,8 +1,10 @@
 ﻿using EliteJournalReader;
 using EliteJournalReader.Events;
+using ODEliteTracker.Database;
 using ODEliteTracker.Helpers;
 using ODEliteTracker.Managers;
 using ODEliteTracker.Models.BGS;
+using ODEliteTracker.Models.Colonisation;
 using ODEliteTracker.Models.Galaxy;
 using ODEliteTracker.Models.Market;
 using ODEliteTracker.Models.Settings;
@@ -25,6 +27,7 @@ namespace ODEliteTracker.Stores
         {
             this.journalManager = journalManager;
             this.notificationService = notificationService;
+            this.databaseProvider = (ODEliteTrackerDatabaseProvider)databaseProvider;
             this.settings = settings;
             this.journalManager.RegisterLogProcessor(this);
 
@@ -35,6 +38,7 @@ namespace ODEliteTracker.Stores
         #region Private fields
         private readonly IManageJournalEvents journalManager;
         private readonly NotificationService notificationService;
+        private readonly ODEliteTrackerDatabaseProvider databaseProvider;
         private readonly SettingsStore settings;
         private readonly Dictionary<string, FactionData> factions = [];
         private readonly Dictionary<long, StarSystem> Systems = [];
@@ -65,6 +69,7 @@ namespace ODEliteTracker.Stores
                 { JournalTypeEnum.Bounty, true },
                 { JournalTypeEnum.RedeemVoucher, true},
                 { JournalTypeEnum.MarketBuy, true},
+                { JournalTypeEnum.MarketSell, true},
                 { JournalTypeEnum.Scan, true},
                 { JournalTypeEnum.SupercruiseEntry, true},
             };
@@ -73,6 +78,7 @@ namespace ODEliteTracker.Stores
         public StarSystem? CurrentSystem { get; private set; }
         public SystemBody? CurrentBody { get; private set; }
         public StationMarket? CurrentMarket { get; private set; }
+        public List<WatchedMarket> WatchedMarkets { get; private set; } = [];
         public string? CurrentBody_Station { get; private set; }
         public ulong CurrentMarketID { get; private set; } = 0;
 
@@ -89,6 +95,8 @@ namespace ODEliteTracker.Stores
         public EventHandler<IEnumerable<ShipCargo>?>? ShipCargoUpdatedEvent;
         public EventHandler? BountiesUpdated;
         public EventHandler<CommodityPurchase>? PurchasesUpdated;
+        public EventHandler<WatchedMarket>? WatchedMarketUpdated;
+        public EventHandler<List<WatchedMarket>>? WatchedMarketsUpdated;
         #endregion
 
         public override void ClearData()
@@ -202,6 +210,7 @@ namespace ODEliteTracker.Stores
                     UpdateCurrentBody_Station(string.IsNullOrEmpty(docked.StationName_Localised) ? docked.StationName : docked.StationName_Localised);
                     if (CurrentSystem != null)
                         currentStation = new(docked, new(CurrentSystem), CurrentSystem);
+
                     if (IsLive == false)
                         break;
 
@@ -324,12 +333,12 @@ namespace ODEliteTracker.Stores
 
                     if (marketPurchases.TryGetValue(commodity, out var list))
                     {
-                        var known = list.FirstOrDefault(x => x.Commodity == commodity && x.Station.MarketID == currentStation.MarketID);
+                        var knownCommodity = list.FirstOrDefault(x => x.Commodity == commodity && x.Station.MarketID == currentStation.MarketID);
 
-                        if (known != null)
+                        if (knownCommodity != null)
                         {
                             //Remove the older entry
-                            list.Remove(known);
+                            list.Remove(knownCommodity);
                         }
                         list.Add(purchase);
                         if (IsLive)
@@ -341,6 +350,35 @@ namespace ODEliteTracker.Stores
                     if (IsLive)
                         PurchasesUpdated?.Invoke(this, purchase);
                     break;
+                case MarketSellEvent.MarketSellEventArgs sell:
+                    if (IsLive == false)
+                        break;
+
+                    var known = WatchedMarkets.FirstOrDefault(x => x.MarketID == sell.MarketID);
+
+                    if (known == null)
+                        break;
+
+                    var commod = EliteCommodityHelpers.GetCommodityFromPartial(sell.Type, string.IsNullOrEmpty(sell.Type_Localised) ? sell.Type : sell.Type_Localised);
+
+                    var item = known.ItemsForPurchase.FirstOrDefault(x => string.Equals(x.Category, commod.FdevCategory));
+
+                    if (item != null)
+                    {
+                        item.Stock += sell.Count;
+                        item.Demand -= sell.Count;
+
+                        if (item.Demand <= 0)
+                        {
+                            known.ItemsForPurchase.Remove(item);
+                        }
+
+                        if (IsLive)
+                        {
+                            WatchedMarketUpdated?.Invoke(this, known);
+                        }
+                    }
+                    break;
                 case EliteJournalReader.Events.MarketEvent.MarketEventArgs:
                     var market = journalManager.GetMarketInfo();
 
@@ -348,6 +386,14 @@ namespace ODEliteTracker.Stores
                     {
                         CurrentMarket = new(market);
                         MarketEvent?.Invoke(this, CurrentMarket);
+
+                        var watched = WatchedMarkets.FirstOrDefault(x => x.MarketID == market.MarketID);
+
+                        if (watched != null)
+                        {
+                            watched.UpdatePurchaseOrders(market);
+                            WatchedMarketUpdated?.Invoke(this, watched);
+                        }
                     }
                     break;
                 case PowerplayEvent.PowerplayEventArgs powerPlay:
@@ -419,6 +465,26 @@ namespace ODEliteTracker.Stores
             }
         }
 
+        #region Watched Markets
+        public void AddRemoveWatchedMarket(ulong marketId)
+        {
+            var known = WatchedMarkets.FirstOrDefault(x => x.MarketID == marketId);
+
+            if (known != null)
+            {
+                WatchedMarkets.Remove(known);
+                WatchedMarketsUpdated?.Invoke(this,WatchedMarkets);
+                return;
+            }
+
+            if (CurrentMarket != null && marketId == CurrentMarket.MarketID)
+            {
+                WatchedMarkets.Add(new WatchedMarket(CurrentMarket));
+                WatchedMarketsUpdated?.Invoke(this, WatchedMarkets);
+            }
+        }
+        #endregion
+
         private void SystemNotification(string name, string[] fields)
         {
             if (IsLive == false)
@@ -484,6 +550,8 @@ namespace ODEliteTracker.Stores
         public override void RunBeforeParsingHistory(int currentCmdrId)
         {
             bountiesManager.Initialise(currentCmdrId);
+            CurrentMarket = null;
+            WatchedMarkets.Clear();
         }
 
         public void AddIgnoredBountyFaction(string factionName)
@@ -513,7 +581,6 @@ namespace ODEliteTracker.Stores
 
         public override void RunAfterParsingHistory()
         {
-            IsLive = true;
             var cargo = journalManager.GetCargo();
 
             if (cargo != null && cargo.Vessel.Equals("Ship", StringComparison.OrdinalIgnoreCase))
@@ -533,6 +600,20 @@ namespace ODEliteTracker.Stores
                 CurrentMarket = new(market);
                 MarketEvent?.Invoke(this, CurrentMarket);
             }
+
+            var watchedMarkets = databaseProvider.GetWatchedMarkets();
+
+            if (watchedMarkets != null)
+            {
+                WatchedMarkets = watchedMarkets;
+            }
+
+            IsLive = true;
+        }
+
+        public void Save()
+        {
+            databaseProvider.UpdateWatchedMarkets(WatchedMarkets);
         }
 
         public Tuple<IEnumerable<MaterialTrader>, IEnumerable<MaterialTrader>, IEnumerable<MaterialTrader>> GetNearestTraders()

@@ -34,6 +34,7 @@ namespace ODEliteTracker.ViewModels
             this.dataStore.SystemUpdated += OnSystemUpdated;
             this.dataStore.VouchersClaimedEvent += OnVoucherClaimed;
             this.dataStore.OnNewTickDetected += OnNewTick;
+            this.dataStore.SettlementActivityUpdated += DataStore_SettlementActivityUpdated;
 
             this.sharedDataStore.StoreLive += OnSharedDataLive;
             this.sharedDataStore.CurrentSystemChanged += OnCurrentSystemChanged;
@@ -45,7 +46,7 @@ namespace ODEliteTracker.ViewModels
 
             missionExpiryUpdateTimer = new Timer(OnUpdateExpiry, null, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
 
-            bountyManager = new(this.sharedDataStore);
+            bountyManager = new(this.sharedDataStore, this);
             bountyManager.TopFactionSet += OnTopFactionSet;
             bountyManager.TopFaction = settings.BGSViewSettings.TopMostBountyFaction;
 
@@ -68,6 +69,8 @@ namespace ODEliteTracker.ViewModels
             this.dataStore.SystemUpdated -= OnSystemUpdated;
             this.dataStore.VouchersClaimedEvent -= OnVoucherClaimed;
             this.dataStore.OnNewTickDetected -= OnNewTick;
+            this.dataStore.SettlementActivityUpdated -= DataStore_SettlementActivityUpdated;
+
             missionExpiryUpdateTimer.Dispose();
             bountyManager.TopFactionSet -= OnTopFactionSet;
             bountyManager.Dispose();
@@ -80,9 +83,8 @@ namespace ODEliteTracker.ViewModels
         private readonly SharedDataStore sharedDataStore;
         private readonly SettingsStore settings;
         private readonly NotificationService notification;
-
         public override bool IsLive => dataStore.IsLive;
-
+        public SettingsStore Settings => settings;
         public ICommand SetSelectedSystemCommand { get; }
         public ICommand AddNewTickCommand { get; }
         public ICommand DeletedTickCommand { get; }
@@ -117,6 +119,7 @@ namespace ODEliteTracker.ViewModels
             set
             {
                 selectedSystem = value;
+                bountyManager.OnSelectedSystemChanged();
                 OnPropertyChanged(nameof(SelectedSystem));
             }
         }
@@ -150,6 +153,16 @@ namespace ODEliteTracker.ViewModels
             }
         }
 
+        private SettlementActivityVM? settlementActivityVM;
+        public SettlementActivityVM? SettlementActivityVM
+        {
+            get => settlementActivityVM;
+            set
+            {
+                settlementActivityVM = value;
+                OnPropertyChanged(nameof(SettlementActivityVM));    
+            }
+        }
         private string discordButtonText = "Create Post";
         public string DiscordButtonText
         {
@@ -197,6 +210,7 @@ namespace ODEliteTracker.ViewModels
                 OnPropertyChanged(nameof(Ticks));
                 missionExpiryUpdateTimer.Change(new TimeSpan(0, 1, 0), new TimeSpan(0, 1, 0));
                 OnModelLive(true);
+                SettlementActivityVM = new(dataStore.SettlementActivity);
             }
         }
 
@@ -417,6 +431,14 @@ namespace ODEliteTracker.ViewModels
             if (e)
             {
                 OnCurrentSystemChanged(sender, sharedDataStore.CurrentSystem);
+            }
+        }
+
+        private void DataStore_SettlementActivityUpdated(object? sender, SettlementActivity e)
+        {
+            if(dataStore.IsLive)
+            {
+                SettlementActivityVM?.Update();
             }
         }
     }

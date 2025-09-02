@@ -2,6 +2,7 @@
 using ODMVVM.Commands;
 using ODMVVM.Services.MessageBox;
 using ODMVVM.ViewModels;
+using System.ComponentModel;
 using System.Windows.Input;
 
 namespace ODEliteTracker.ViewModels.ModelViews.Shared
@@ -9,18 +10,21 @@ namespace ODEliteTracker.ViewModels.ModelViews.Shared
     public enum BountySorting
     {
         Name,
-        Value
+        Value,
+        [Description("System Factions")]
+        SystemFactions
     }
 
     public sealed class BountyManagerVM : ODObservableObject, IDisposable
     {
-        public BountyManagerVM(SharedDataStore sharedData) 
+        public BountyManagerVM(SharedDataStore sharedData, BGSViewModel bGSViewModel)
         {
             this.sharedData = sharedData;
+            this.bGSViewModel = bGSViewModel;
             this.sharedData.BountiesUpdated += OnBountiesUpdated;
             this.sharedData.StoreLive += OnStoreLive;
 
-            if(this.sharedData.IsLive)
+            if (this.sharedData.IsLive)
             {
                 OnStoreLive(null, true);
             }
@@ -32,7 +36,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Shared
         }
 
         private readonly SharedDataStore sharedData;
-
+        private readonly BGSViewModel bGSViewModel;
         public EventHandler<string>? TopFactionSet;
 
         public ICommand SetTopMostFaction { get; }
@@ -42,13 +46,12 @@ namespace ODEliteTracker.ViewModels.ModelViews.Shared
 
         private IEnumerable<BountyVM> _bounties = [];
 
-        private BountySorting sorting = BountySorting.Name; 
         public BountySorting Sorting
         {
-            get => sorting;
+            get => bGSViewModel.Settings.BGSViewSettings.Sorting;
             set
             {
-                sorting = value;
+                bGSViewModel.Settings.BGSViewSettings.Sorting = value;
                 OnPropertyChanged(nameof(Sorting));
                 OnPropertyChanged(nameof(Bounties));
             }
@@ -74,11 +77,23 @@ namespace ODEliteTracker.ViewModels.ModelViews.Shared
         {
             get
             {
-                return sorting switch
+                switch (Sorting)
                 {
-                    BountySorting.Value => _bounties.OrderByDescending(x => string.Equals(x.Name, TopFaction)).ThenBy(x => x.Value),
-                    _ => _bounties.OrderByDescending(x => string.Equals(x.Name, TopFaction)).ThenBy(x => x.Name),
-                };
+                    case BountySorting.Value:
+                        return _bounties.OrderByDescending(x => string.Equals(x.Name, TopFaction)).ThenBy(x => x.Value);
+                    case BountySorting.SystemFactions:
+                        if (bGSViewModel.SelectedSystem == null || bGSViewModel.SelectedSystem.Factions == null)
+                            return _bounties.OrderByDescending(x => string.Equals(x.Name, TopFaction)).ThenBy(x => x.Value);
+
+                        var factions = bGSViewModel.SelectedSystem.Factions.Select(x => x.Name).ToList();
+
+                        return _bounties.OrderByDescending(x => string.Equals(x.Name, TopFaction))
+                            .ThenByDescending(x => factions.Contains(x.Name))
+                            .ThenBy(x => factions.IndexOf(x.Name));
+                    default:
+                    case BountySorting.Name:
+                        return _bounties.OrderByDescending(x => string.Equals(x.Name, TopFaction)).ThenBy(x => x.Name);
+                }
             }
         }
 
@@ -90,6 +105,12 @@ namespace ODEliteTracker.ViewModels.ModelViews.Shared
             OnPropertyChanged(nameof(Bounties));
             OnPropertyChanged(nameof(TotalBVCount));
             OnPropertyChanged(nameof(TotalBVValue));
+        }
+
+        public void OnSelectedSystemChanged()
+        {
+            if (Sorting == BountySorting.SystemFactions)
+                OnPropertyChanged(nameof(Bounties));
         }
 
         private void OnBountiesUpdated(object? sender, EventArgs e)
@@ -112,6 +133,18 @@ namespace ODEliteTracker.ViewModels.ModelViews.Shared
 
         private void OnAddIgnoredBounty(string obj)
         {
+            if (string.IsNullOrEmpty(obj))
+                return;
+
+            if (string.Equals(obj, "All"))
+            {
+                var mb = ODDialogService.ShowWithOwner(null, "Add To Ignored Bounties?", $"Ignore all current bounties?", System.Windows.MessageBoxButton.YesNo);
+                if (mb == System.Windows.MessageBoxResult.Yes)
+                {
+                    sharedData.IgnoreAllBounties();
+                }
+                return;
+            }
             var messageBox = ODDialogService.ShowWithOwner(null, "Add To Ignored Bounties?", $"Ignore bounties from {obj} before now?", System.Windows.MessageBoxButton.YesNo);
             if (messageBox == System.Windows.MessageBoxResult.Yes)
             {

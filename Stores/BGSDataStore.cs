@@ -45,13 +45,14 @@ namespace ODEliteTracker.Stores
         private BGSStarSystem? currentSystem;
         private Station? currentStation;
         private SystemWarManager czManager = new();
+        private SettlementActivity settlementActivity = new();
         public BGSStarSystem? CurrentSystem => currentSystem;
         public TickData? SelectedTick => selectedTick;
         public List<BGSTickData> TickData => tickContainer.TickData;
         public IEnumerable<BGSStarSystem> Systems => systems.Values;
         public IEnumerable<MegaShipScan> MegaShipScans => megaShipScans;
         public IEnumerable<BGSMission> Missions => missions;
-
+        internal SettlementActivity SettlementActivity => settlementActivity;
         #region Events
         public EventHandler<BGSMission>? MissionAddedEvent;
         public EventHandler<BGSMission>? MissionUpdatedEvent;
@@ -63,6 +64,11 @@ namespace ODEliteTracker.Stores
         public EventHandler<BGSStarSystem>? SystemAdded;
         public EventHandler? MegaShipScansUpdated;
         public EventHandler? OnNewTickDetected;
+        internal event EventHandler<SettlementActivity>? SettlementActivityUpdated
+        {
+            add { settlementActivity.ActivityUpdated  += value; }
+            remove { settlementActivity.ActivityUpdated -= value;}
+        }
         #endregion
 
         #region LogProcessor Implementation
@@ -113,6 +119,7 @@ namespace ODEliteTracker.Stores
                     break;
                 case LoadGameEvent.LoadGameEventArgs load:
                     odyssey = load.Odyssey;
+                    settlementActivity.Reset();
                     CheckForCZ(load.Timestamp);
                     if (IsLive)
                         UpdatePreviousThursday();
@@ -145,6 +152,7 @@ namespace ODEliteTracker.Stores
                     break;
                 case FSDJumpEvent.FSDJumpEventArgs fsdJump:
                     shipTargets.Clear();
+                    settlementActivity.Reset();
                     CurrentSystemAddress = fsdJump.SystemAddress;
                     CurrentSystemName = fsdJump.StarSystem;
                     CheckForCZ(fsdJump.Timestamp);
@@ -289,6 +297,7 @@ namespace ODEliteTracker.Stores
                     break;
                 case FactionKillBondEvent.FactionKillBondEventArgs factionKillBond:
                     czManager.OnEarnedBonds(factionKillBond.Reward, factionKillBond.AwardingFaction);
+                    settlementActivity.OnFactionKillBond(factionKillBond);
                     break;
                 case RedeemVoucherEvent.RedeemVoucherEventArgs redeemVoucher:
                     if (currentSystem == null)
@@ -345,6 +354,7 @@ namespace ODEliteTracker.Stores
                         currentSystem.Crimes.Add(crime);
                         UpdateSystemIfLive(currentSystem);
                     }
+                    settlementActivity.OnCommitCrime(commitCrime);
                     break;
                 case SellExplorationDataEvent.SellExplorationDataEventArgs sellData:
                     if (currentSystem == null || currentStation == null)
@@ -386,6 +396,7 @@ namespace ODEliteTracker.Stores
                 case SupercruiseEntryEvent.SupercruiseEntryEventArgs scEntry:
                     currentSuperCruiseDestination = null;
                     shipTargets.Clear();
+                    settlementActivity.Reset();
                     CheckForCZ(scEntry.Timestamp);
                     break;
                 case ShipTargetedEvent.ShipTargetedEventArgs shipTargetedData:
@@ -413,6 +424,7 @@ namespace ODEliteTracker.Stores
                     break;
                 case ApproachSettlementEvent.ApproachSettlementEventArgs approachSettlement:
                     czManager.OnApproachSettlement(approachSettlement.Name);
+                    settlementActivity.OnApproachSettlement(approachSettlement);
                     break;
                 case DataScannedEvent.DataScannedEventArgs scannedData:
                     if (currentSystem is null || string.IsNullOrEmpty(currentSuperCruiseDestination))
@@ -437,6 +449,7 @@ namespace ODEliteTracker.Stores
                     break;
                 case DiedEvent.DiedEventArgs died:
                     czManager.Reset();
+                    settlementActivity.Reset();
                     break;
 
             }

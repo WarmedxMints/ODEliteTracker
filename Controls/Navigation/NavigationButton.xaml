@@ -51,6 +51,14 @@
                    Margin="2"
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center" />
+            <Button.ToolTip>
+                <ToolTip Placement="Right"
+                         VerticalOffset="3"
+                         HorizontalOffset="5"
+                         Content="{Binding ToolTip}">
+                    
+                </ToolTip>
+            </Button.ToolTip>
         </Button>
     </Grid>
 </controls:ODNavigationButton>

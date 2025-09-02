@@ -24,7 +24,7 @@ namespace ODEliteTracker.Stores
         private readonly Dictionary<long, CommanderSystem> commanderSystems = [];
         private HashSet<Tuple<long, long, string>> inactiveDepots = [];
         private HashSet<Tuple<long, long, string>> shoppingListDepots = [];
-
+        private readonly Dictionary<string, long> constructionTotals = [];
         //When the colonisation events were added to the game
         private readonly DateTime colonisationEventUpdate = new(2025, 4, 7);
 
@@ -37,7 +37,7 @@ namespace ODEliteTracker.Stores
         public IEnumerable<ConstructionDepot> Depots => depots.Values.OrderBy(x => x.SystemName);
         public HashSet<Tuple<long, long, string>> ShoppingList => shoppingListDepots;
         public IEnumerable<CommanderSystem> CommanderSystems => commanderSystems.Values.OrderBy(x => x.SystemName);
-
+        public Dictionary<string, long> ConstructionTotals => constructionTotals;
         public override Dictionary<JournalTypeEnum, bool> EventsToParse
         {
             get => new()
@@ -47,6 +47,7 @@ namespace ODEliteTracker.Stores
                 { JournalTypeEnum.CarrierJump, true},
                 { JournalTypeEnum.ColonisationBeaconDeployed, true},
                 { JournalTypeEnum.ColonisationConstructionDepot, true},
+                { JournalTypeEnum.ColonisationContribution, true},
                 { JournalTypeEnum.ColonisationSystemClaim, true},
                 { JournalTypeEnum.ColonisationSystemClaimRelease, true},
                 { JournalTypeEnum.Docked, true},
@@ -82,6 +83,7 @@ namespace ODEliteTracker.Stores
         {
             inactiveDepots = databaseProvider.GetInactiveDepots();
             shoppingListDepots = databaseProvider.GetDepotShoppingList();
+            constructionTotals.Clear();
         }
 
         public override DateTime GetJournalAge(DateTime defaultAge)
@@ -152,6 +154,23 @@ namespace ODEliteTracker.Stores
                         TriggerNewDepotIfLive(newDepot);
                     }
                     break;
+                case ColonisationContributionEvent.ColonisationContributionEventArgs contribution:
+                    if (currentSystem == null)
+                        break;
+
+                    long delivered = 0;
+
+                    foreach (var item in contribution.Contributions)
+                    {
+                        delivered += item.Amount;
+                    }
+                    if (constructionTotals.ContainsKey(currentSystem.Name))
+                    {
+                        constructionTotals[currentSystem.Name] += delivered;
+                        break;
+                    }
+                    constructionTotals.TryAdd(currentSystem.Name, delivered);
+                    break;
                 case DockedEvent.DockedEventArgs docked:
                     CurrentStationName = string.IsNullOrEmpty(docked.StationName_Localised) ? docked.StationName : docked.StationName_Localised;
                     break;
@@ -208,7 +227,7 @@ namespace ODEliteTracker.Stores
         {
             var tuple = Tuple.Create(vM.MarketID, vM.SystemAddress, vM.StationName);
             var add = !shoppingListDepots.Contains(tuple);
-            SetDepotShopping(vM,add);
+            SetDepotShopping(vM, add);
             shoppingListDepots = databaseProvider.GetDepotShoppingList();
             ShoppingListUpdated?.Invoke(this, add);
             return add;

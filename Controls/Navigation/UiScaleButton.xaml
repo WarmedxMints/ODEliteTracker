@@ -29,6 +29,13 @@
                    Margin="2"
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center" />
+            <ToggleButton.ToolTip>
+                <ToolTip Placement="Right"
+                         VerticalOffset="3"
+                         HorizontalOffset="5"
+                         Content="UI Scale Settings">
+                </ToolTip>
+            </ToggleButton.ToolTip>
         </ToggleButton>
         <Popup IsOpen="{Binding IsChecked, ElementName=button}"
                PlacementTarget="{Binding ElementName=button}"

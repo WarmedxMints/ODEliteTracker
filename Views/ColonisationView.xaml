@@ -521,7 +521,7 @@
                                                     Width="35"
                                                     Margin="5,0"
                                                     Padding="2,0,0,0"
-                                                    ToolTip="Add/Remove From Shopping List" >
+                                                    ToolTip="Add/Remove From Shopping List">
                                                 <Image Source="/Assets/Icons/ShoppingCart.png" />
                                             </Button>
                                             <Button Content="{Binding ActiveButtonText}"
@@ -610,7 +610,7 @@
                                                                 ElementStyle="{DynamicResource DataGridElementRightMargin}"
                                                                 Binding="{Binding CarrierStock}" />
                                             <DataGridTextColumn Header="Carrier Diff"
-                                                                MinWidth="100"                                                               
+                                                                MinWidth="100"
                                                                 HeaderStyle="{DynamicResource DataGridHeaderCenter}"
                                                                 ElementStyle="{DynamicResource DataGridElementRightMargin}"
                                                                 Binding="{Binding CarrierStockDiff}" />
@@ -633,10 +633,12 @@
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
                                         <RowDefinition />
                                     </Grid.RowDefinitions>
 
-                                    <Grid>
+                                    <Grid Grid.Row="0">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition />
                                             <ColumnDefinition Width="Auto" />
@@ -736,7 +738,8 @@
                                                       IsReadOnly="True"
                                                       IsSynchronizedWithCurrentItem="False" />
                                         </StackPanel>
-                                    </Grid>
+                                    </Grid>                              
+                                    
                                     <DataGrid ItemsSource="{Binding ShoppingList.Depots}"
                                               Grid.Row="1"
                                               Margin="10"
@@ -746,7 +749,7 @@
                                               Foreground="{DynamicResource PrimaryForeground}"
                                               FontSize="20"
                                               IsReadOnly="True"
-                                              SelectionMode="Single"                                             
+                                              SelectionMode="Single"
                                               ScrollViewer.HorizontalScrollBarVisibility="Visible"
                                               ScrollViewer.VerticalScrollBarVisibility="Visible"
                                               AlternatingRowBackground="{DynamicResource RowAlternationColour}"
@@ -783,6 +786,13 @@
                                         </DataGrid.Columns>
                                     </DataGrid>
 
+                                    <TextBlock Text="{Binding ShoppingList.TotalRemaining}"
+                                               HorizontalAlignment="Right"
+                                               FontSize="20"
+                                               Margin="0,0,30,0"
+                                               Grid.Row="2"
+                                               Grid.Column="3" />
+                                    
                                     <DataGrid ItemsSource="{Binding ShoppingListResources}"
                                               Grid.Row="3"
                                               Margin="10"
@@ -792,7 +802,7 @@
                                               Foreground="{DynamicResource PrimaryForeground}"
                                               SelectedItem="{Binding SelectedResource, Mode=TwoWay}"
                                               FontSize="20"
-                                              IsReadOnly="True"                        
+                                              IsReadOnly="True"
                                               SelectionMode="Single"
                                               ScrollViewer.HorizontalScrollBarVisibility="Visible"
                                               ScrollViewer.VerticalScrollBarVisibility="Visible"
@@ -804,7 +814,7 @@
                                                                 MinWidth="250"
                                                                 HeaderStyle="{DynamicResource DataGridHeaderLeft}"
                                                                 ElementStyle="{DynamicResource DataGridElementLeftMarginBody}"
-                                                                Binding="{Binding LocalName}" />                         
+                                                                Binding="{Binding LocalName}" />
                                             <DataGridTextColumn Header="Category"
                                                                 MinWidth="180"
                                                                 HeaderStyle="{DynamicResource DataGridHeaderLeft}"
@@ -854,7 +864,7 @@
                                                    Foreground="{DynamicResource Header}" />
 
                                         <StackPanel Grid.Column="1"
-                                                    Orientation="Horizontal">                                         
+                                                    Orientation="Horizontal">
                                             <TextBlock Text="Commodity Sorting "
                                                        VerticalAlignment="Center" />
                                             <ComboBox ItemsSource="{Binding Source={StaticResource CommodityEnum}}"
@@ -948,6 +958,48 @@
                                     </DataGrid>
                                 </Grid>
                             </TabItem>
+                            <TabItem Header="Construction Totals">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Text="Total volume of goods delivered to depots per system"
+                                               Foreground="{DynamicResource Header}"
+                                               FontSize="18"
+                                               Margin="0,5" />
+                                    <DataGrid ItemsSource="{Binding ConstructionTotals}"
+                                              Style="{DynamicResource ConstructionResourcesDataGrid}"
+                                              RowStyle="{DynamicResource NoSelectRowStyle}"
+                                              CellStyle="{DynamicResource NoSelectCellNoMargin}"
+                                              Foreground="{DynamicResource PrimaryForeground}"
+                                              FontSize="18"
+                                              Grid.Row="1"
+                                              ScrollViewer.HorizontalScrollBarVisibility="Visible"
+                                              ScrollViewer.VerticalScrollBarVisibility="Visible"
+                                              AlternatingRowBackground="{DynamicResource RowAlternationColour}"
+                                              HeadersVisibility="Column"
+                                              AutoGenerateColumns="False"
+                                              HorizontalAlignment="Stretch"
+                                              VerticalAlignment="Stretch">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Name"
+                                                                MinWidth="250"
+                                                                HeaderStyle="{DynamicResource DataGridHeaderLeft}"
+                                                                ElementStyle="{DynamicResource DataGridElementLeftMarginBody}"
+                                                                Binding="{Binding SystemName}" />
+                                            <DataGridTextColumn Header="Total"
+                                                                MinWidth="100"
+                                                                HeaderStyle="{DynamicResource DataGridHeaderCenter}"
+                                                                ElementStyle="{DynamicResource DataGridElementRightMargin}"
+                                                                Binding="{Binding Total}" />
+                                            <DataGridTextColumn Width="*"
+                                                                HeaderStyle="{DynamicResource DataGridHeaderRight}" />
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </Grid>
+                            </TabItem>
                         </TabControl>
                     </Border>
 
@@ -956,7 +1008,7 @@
                                   Margin="5,0"
                                   Background="{DynamicResource ScrollBarLine}"
                                   HorizontalAlignment="Stretch" />
-                    
+
                     <Border Background="{DynamicResource CardBackground}"
                             CornerRadius="5"
                             MinHeight="180"
@@ -1035,7 +1087,7 @@
                                                         MinWidth="100"
                                                         HeaderStyle="{DynamicResource DataGridHeaderLeft}"
                                                         ElementStyle="{DynamicResource DataGridElementLeftMarginBody}"
-                                                        Binding="{Binding Category_Localised}" />                        
+                                                        Binding="{Binding Category_Localised}" />
                                     <DataGridTextColumn Header="Stock"
                                                         MinWidth="100"
                                                         HeaderStyle="{DynamicResource DataGridHeaderCenter}"

@@ -72,6 +72,7 @@ namespace ODEliteTracker.Stores
                 { JournalTypeEnum.MarketSell, true},
                 { JournalTypeEnum.Scan, true},
                 { JournalTypeEnum.SupercruiseEntry, true},
+                { JournalTypeEnum.Died, true }
             };
         }
         public Dictionary<string, FactionData> Factions => factions;
@@ -462,6 +463,9 @@ namespace ODEliteTracker.Stores
                     currentStation = null;
                     UpdateCurrentBody_Station(null);
                     break;
+                case DiedEvent.DiedEventArgs died:
+                    bountiesManager.Reset();
+                    break;
             }
         }
 
@@ -552,6 +556,15 @@ namespace ODEliteTracker.Stores
             bountiesManager.Initialise(currentCmdrId);
             CurrentMarket = null;
             WatchedMarkets.Clear();
+        }
+
+        public void IgnoreAllBounties()
+        {
+            foreach (var bounty in bountiesManager.GetBounties())
+            {
+                bountiesManager.AddIgnoredBounty(settings.SelectedCommanderID, bounty.FactionName);
+            }
+            FireBountiesChangedIfLive();
         }
 
         public void AddIgnoredBountyFaction(string factionName)

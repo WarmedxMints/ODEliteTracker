@@ -102,6 +102,11 @@ namespace ODEliteTracker.Managers
 
             return ret;
         }
+
+        internal void Reset()
+        {
+            bounties.Clear();
+        }
     }
 
 }

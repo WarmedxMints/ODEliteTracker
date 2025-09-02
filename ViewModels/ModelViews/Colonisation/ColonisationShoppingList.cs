@@ -12,6 +12,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Colonisation
 
         public List<ConstructionResourceVM> Resources { get; set; } = [];
 
+        public string TotalRemaining => $"Total {Resources.Sum(x => x.RemainingCount):N0} t";
         public void AddDepots(IEnumerable<ConstructionDepotVM> depots, Models.FleetCarrier.FleetCarrier? e, Dictionary<ODMVVM.Helpers.Commodity, List<CommodityPurchase>> purchases)
         {
             Depots.ClearCollection();

@@ -17,6 +17,7 @@ using ODMVVM.ViewModels;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace ODEliteTracker.ViewModels
 {
@@ -176,7 +177,7 @@ namespace ODEliteTracker.ViewModels
                 OnPropertyChanged(nameof(TabIndex));
             }
         }
-
+        public ObservableCollection<ConstructionTotalsVM> ConstructionTotals { get; } = [];
         public ObservableCollection<ConstructionDepotVM> Depots { get; } = [];
         public ColonisationShoppingList ShoppingList { get; } = new();
         public IEnumerable<ConstructionDepotVM> ActiveDepots => Depots.Where(x => x.Inactive == false);
@@ -454,6 +455,18 @@ namespace ODEliteTracker.ViewModels
         {
             if (e == null)
                 return;
+            //Update Totals
+            ConstructionTotals.ClearCollection();
+
+            var sortedDict = from entry in colonisationStore.ConstructionTotals orderby entry.Key ascending select entry;
+
+            foreach (var kvp in sortedDict)
+            {
+                ConstructionTotals.AddItem(new(kvp.Key, kvp.Value));
+            }
+
+            ConstructionTotals.AddItem(new("Total", sortedDict.Sum(x => x.Value)));
+
             var known = Depots.FirstOrDefault(x => x.MarketID == e.MarketID);
 
             if (known != null)
@@ -486,7 +499,19 @@ namespace ODEliteTracker.ViewModels
             if (e == false)
                 return;
 
-            if(colonisationStore.CommanderSystems.Any())
+            //Update Totals
+            ConstructionTotals.ClearCollection();
+
+            var sortedDict = from entry in colonisationStore.ConstructionTotals orderby entry.Key ascending select entry;
+
+            foreach (var kvp in sortedDict)
+            {
+                ConstructionTotals.AddItem(new(kvp.Key, kvp.Value));
+            }
+
+            ConstructionTotals.AddItem(new("Total", sortedDict.Sum(x => x.Value)));
+
+            if (colonisationStore.CommanderSystems.Any())
             {
                 foreach (var system in colonisationStore.CommanderSystems)
                 {

@@ -42,19 +42,26 @@
                       SelectedItem="{Binding Sorting}"
                       VerticalAlignment="Center"
                       Height="25"
-                      Width="80" />
+                      Width="160">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
             <TextBlock Text="Top Most Faction :"
                        VerticalAlignment="Center"
                        Margin="20,0,0,0" />
             <TextBox Text="{Binding TopFaction}"
                      Margin="10,0"
                      Width="300"
+                     MaxLines="1"
                      BorderThickness="1"
                      BorderBrush="{DynamicResource EliteBtnBorder}"
                      Background="{DynamicResource ViewBackground}"
                      CaretBrush="{DynamicResource PrimaryControlForeground}"
-                     Foreground="{DynamicResource PrimaryForeground}"
-                     VerticalContentAlignment="Center" />
+                     Foreground="{DynamicResource PrimaryForeground}"                     
+                     VerticalContentAlignment="Center"/>
             <Button Content="Set Faction"
                     Style="{DynamicResource EliteStyleButton}"
                     Command="{Binding SetTopMostFaction}"
@@ -80,7 +87,19 @@
             <DataGrid.Columns>
                 <DataGridTemplateColumn HeaderStyle="{DynamicResource DataGridHeaderCenter}"
                                         CellStyle="{DynamicResource ButtonGridCell}"
-                                        Width="25">
+                                        Width="30">
+                    <DataGridTemplateColumn.Header>
+                        <Button FontFamily="Segoe MDL2 Assets"
+                                Style="{DynamicResource EliteStyleButton}"
+                                Content="&#xE74D;"
+                                Command="{Binding ElementName=Root, Path=DataContext.AddIgnoredBounties}"
+                                CommandParameter="All"
+                                Margin="0,0,2,0"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                IsHitTestVisible="True"
+                                BorderThickness="0" />
+                    </DataGridTemplateColumn.Header>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Button FontFamily="Segoe MDL2 Assets"

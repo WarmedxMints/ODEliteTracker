@@ -42,7 +42,7 @@
                         <DataTemplate>
                             <Button FontFamily="Segoe MDL2 Assets"
                                     Style="{DynamicResource EliteStyleButton}"
-                                    Content="&#xE74D;"
+                                    Content="&#xE77F;"
                                     Command="{Binding CopyToClipboardCommand}"
                                     CommandParameter="{Binding SystemName}"
                                     HorizontalAlignment="Center"
@@ -93,7 +93,7 @@
                         <DataTemplate>
                             <Button FontFamily="Segoe MDL2 Assets"
                                     Style="{DynamicResource EliteStyleButton}"
-                                    Content="&#xE74D;"
+                                    Content="&#xE77F;;"
                                     Command="{Binding CopyToClipboardCommand}"
                                     CommandParameter="{Binding SystemName}"
                                     HorizontalAlignment="Center"
@@ -144,7 +144,7 @@
                         <DataTemplate>
                             <Button FontFamily="Segoe MDL2 Assets"
                                     Style="{DynamicResource EliteStyleButton}"
-                                    Content="&#xE74D;"
+                                    Content="&#xE77F;"
                                     Command="{Binding CopyToClipboardCommand}"
                                     CommandParameter="{Binding SystemName}"
                                     HorizontalAlignment="Center"

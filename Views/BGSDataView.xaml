@@ -548,6 +548,80 @@
                              DataContext="{Binding BountyManager}">
                         <bounties:BountyViewControl />
                     </TabItem>
+                    <TabItem Header="Settlement Activity">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="Settlement Name" 
+                                       Margin="0,5"
+                                       Grid.Column="0"
+                                       Grid.Row="0"/>
+                            <TextBlock Text="{Binding SettlementActivityVM.SettlementName}"
+                                       Margin="0,5"
+                                       Grid.Column="1"
+                                       Grid.Row="0" />
+
+                            <TextBlock Text="Kills"
+                                       Margin="0,5"
+                                       Grid.Column="0"
+                                       Grid.Row="1" />
+                            <TextBlock Text="{Binding SettlementActivityVM.KillCount}"
+                                       Margin="0,5"
+                                       Grid.Column="1"
+                                       Grid.Row="1" />
+
+                            <TextBlock Text="Activity Type"
+                                       Margin="0,5"
+                                       Grid.Column="0"
+                                       Grid.Row="2" />
+                            <TextBlock Text="{Binding SettlementActivityVM.Activity}"
+                                       Margin="0,5"
+                                       Grid.Column="1"
+                                       Grid.Row="2" />
+
+                            <TextBlock Text="Victim Faction"
+                                       Margin="0,5"
+                                       Grid.Column="0"
+                                       Grid.Row="3" />
+                            <TextBlock Text="{Binding SettlementActivityVM.VictimFaction}"
+                                       Margin="0,5"
+                                       Grid.Column="1"
+                                       Grid.Row="3" />
+
+                            <TextBlock Text="Supprting Faction"
+                                       Margin="0,5"
+                                       Visibility="{Binding SettlementActivityVM.DisplayBonds}"
+                                       Grid.Column="0"
+                                       Grid.Row="4" />
+                            <TextBlock Text="{Binding SettlementActivityVM.SupportingFaction}"
+                                       Margin="0,5"
+                                       Visibility="{Binding SettlementActivityVM.DisplayBonds}"
+                                       Grid.Column="1"
+                                       Grid.Row="4" />
+
+                            <TextBlock Text="Total Bonds"
+                                       Margin="0,5"
+                                       Visibility="{Binding SettlementActivityVM.DisplayBonds}"
+                                       Grid.Column="0"
+                                       Grid.Row="5" />
+                            <TextBlock Text="{Binding SettlementActivityVM.TotalBonds}"
+                                       Margin="0,5"
+                                       Visibility="{Binding SettlementActivityVM.DisplayBonds}"
+                                       Grid.Column="1"
+                                       Grid.Row="5" />
+                        </Grid>
+                    </TabItem>
                     <TabItem Header="Material Traders">
                         <materialtraders:MaterialTradersControl DataContext="{Binding MaterialTraders}" />
                     </TabItem>

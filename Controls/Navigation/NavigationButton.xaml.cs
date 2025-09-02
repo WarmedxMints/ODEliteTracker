@@ -29,6 +29,7 @@ namespace ODEliteTracker.Controls.Navigation
         public static readonly DependencyProperty ButtonImageProperty =
             DependencyProperty.Register("ButtonImage", typeof(ImageSource), typeof(EliteStyleNavigationButton), new PropertyMetadata());
 
+
         public EliteStyleNavigationButton()
         {
             DataContext = this;

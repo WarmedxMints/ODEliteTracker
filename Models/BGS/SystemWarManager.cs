@@ -63,7 +63,7 @@
             }
         }
 
-        private static ConflictType GroundBondToConflictType(int bondValue)
+        internal static ConflictType GroundBondToConflictType(int bondValue)
         {
             if (bondValue > 35000)
             {

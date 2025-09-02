@@ -252,6 +252,7 @@ namespace ODEliteTracker.Helpers
                 table.Rows.Add(item.LocalName, item.Category, item.Remaining);
             }
 
+            table.Rows.Add("Total", string.Empty, $"{items.Sum(x => x.RemainingCount):N0} t");
             return ODMVVM.Helpers.AsciiTableGenerator.CreateAsciiTableFromDataTable(table, [2]).ToString().TrimEnd('\r', '\n');
         }
 
@@ -264,6 +265,7 @@ namespace ODEliteTracker.Helpers
                 sb.AppendLine($"{item.LocalName} | {item.Category} | {item.Remaining}");
             }
 
+            sb.AppendLine($"Total | {items.Sum(x => x.RemainingCount):N0} t");
             return sb.ToString().TrimEnd('\r', '\n');
         }
         #endregion

@@ -53,7 +53,7 @@ namespace ODEliteTracker.ViewModels
         private readonly IODNavigationService navigationService;
         private readonly IManageJournalEvents journalManager;
         private readonly SharedDataStore sharedData;
-        private readonly NotificationService notificationService;
+        private readonly NotificationService notificationService;       
         private readonly SpanshCsvStore spanshCsv;
         private readonly SettingsStore settings;
         private readonly TickDataStore tickDataStore;
@@ -68,46 +68,54 @@ namespace ODEliteTracker.ViewModels
             new EliteStyleNavigationButton()
             {
                 ButtonImage = new BitmapImage(new Uri("/Assets/Icons/assassin.png", UriKind.Relative)),
-                TargetView = typeof(MassacreMissionsViewModel),            
+                TargetView = typeof(MassacreMissionsViewModel),
+                ToolTip = "Massacre Mission Stacker"
             },
             new EliteStyleNavigationButton()
             {
                 ButtonImage = new BitmapImage(new Uri("/Assets/Icons/trade.png", UriKind.Relative)),
-                TargetView = typeof(TradeMissionViewModel)
+                TargetView = typeof(TradeMissionViewModel),
+                ToolTip = "Trade Mission Stacker"
             },
-            new EliteStyleNavigationButton() 
-            { 
-                ButtonImage = new BitmapImage(new Uri("/Assets/Icons/ColonisationBtn.png", UriKind.Relative)), 
-                TargetView = typeof(ColonisationViewModel)
-            },            
+            new EliteStyleNavigationButton()
+            {
+                ButtonImage = new BitmapImage(new Uri("/Assets/Icons/ColonisationBtn.png", UriKind.Relative)),
+                TargetView = typeof(ColonisationViewModel),
+                ToolTip = "Colonisation Tracker"
+            },
             new EliteStyleNavigationButton()
             {
                 ButtonImage = new BitmapImage(new Uri("/Assets/Icons/bgs.png", UriKind.Relative)),
-                TargetView = typeof(BGSViewModel)
+                TargetView = typeof(BGSViewModel),
+                ToolTip = "BGS Tracker"
             },
             new EliteStyleNavigationButton()
             {
                 ButtonImage = new BitmapImage(new Uri("/Assets/Icons/powerplay.png", UriKind.Relative)),
-                TargetView = typeof(PowerPlayViewModel)
+                TargetView = typeof(PowerPlayViewModel),
+                ToolTip = "Powerplay Tracker"
             },
             new EliteStyleNavigationButton()
             {
                 ButtonImage = new BitmapImage(new Uri("/Assets/Icons/Asteroid.png", UriKind.Relative)),
-                TargetView = typeof(MiningViewModel)
+                TargetView = typeof(MiningViewModel),
+                ToolTip = "Mining Tracker"
             },
             new EliteStyleNavigationButton()
             {
                 ButtonImage = new BitmapImage(new Uri("/Assets/Icons/fleetcarrier.png", UriKind.Relative)),
-                TargetView = typeof(FleetCarrierViewModel)
+                TargetView = typeof(FleetCarrierViewModel),
+                ToolTip = "Fleet Carrier Tracker"
             },
-             new EliteStyleNavigationButton()
+            new EliteStyleNavigationButton()
             {
                 ButtonImage = new BitmapImage(new Uri("/Assets/Icons/spanshbtn.png", UriKind.Relative)),
-                TargetView = typeof(SpanshViewModel)
+                TargetView = typeof(SpanshViewModel),
+                ToolTip = "Spansh CSV Parser"
             },
         ];
 
-        public ObservableCollection<UtilNavigationButton> UtilButtons { get; } = 
+        public ObservableCollection<UtilNavigationButton> UtilButtons { get; } =
         [
             new UiScaleButton()
         ];
@@ -118,17 +126,20 @@ namespace ODEliteTracker.ViewModels
             {
                 ButtonImage = new BitmapImage(new Uri("/Assets/Icons/PopOutBtn.png", UriKind.Relative)),
                 TargetView = typeof(PopOutControlViewModel),
+                ToolTip = "Overlays"
             },
             new EliteStyleNavigationButton()
             {
                 ButtonImage = new BitmapImage(new Uri("/Assets/Notifications/monitor.png", UriKind.Relative)),
                 TargetView = typeof(NotificationSettingsViewModel),
+                ToolTip = "Notification Settings"
             },
-            new EliteStyleNavigationButton() 
-            { 
+            new EliteStyleNavigationButton()
+            {
                 ButtonImage = new BitmapImage(new Uri("/Assets/Icons/settings.png", UriKind.Relative)),
-                TargetView = typeof(SettingsViewModel), 
-            },            
+                TargetView = typeof(SettingsViewModel),
+                ToolTip = "Settings"
+            },
         ];
 
         public ObservableCollection<JournalCommanderVM> JournalCommanders { get; set; } = [];
@@ -170,7 +181,7 @@ namespace ODEliteTracker.ViewModels
             get => uiEnabled;
             set
             {
-                if(uiEnabled == value) return;
+                if (uiEnabled == value) return;
                 uiEnabled = value;
                 OnPropertyChanged(nameof(UiEnabled));
             }
@@ -192,12 +203,12 @@ namespace ODEliteTracker.ViewModels
             }
         }
 
-        public double UiScale 
+        public double UiScale
         {
             get => settings.UiScale;
             set
             {
-                if(settings.UiScale == value) 
+                if (settings.UiScale == value)
                     return;
                 settings.UiScale = value;
                 OnPropertyChanged(nameof(UiScale));
@@ -237,10 +248,10 @@ namespace ODEliteTracker.ViewModels
             OnPropertyChanged(nameof(CurrentBody_Station));
             UiEnabled = true;
         }
-        
+
         public async Task ChangeCommander()
         {
-            UiEnabled = false;           
+            UiEnabled = false;
             navigationService.NavigateTo<LoadingViewModel>();
             if (navigationService.CurrentView is LoadingViewModel loadingViewModel)
             {
@@ -255,7 +266,7 @@ namespace ODEliteTracker.ViewModels
 
         private void OnStoreLive(object? sender, bool e)
         {
-            if(e && journalManager is JournalManager manager)
+            if (e && journalManager is JournalManager manager)
             {
                 Dispatcher.CurrentDispatcher.Invoke(new Action(() =>
                 {

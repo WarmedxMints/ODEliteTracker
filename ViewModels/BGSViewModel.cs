@@ -43,6 +43,7 @@ namespace ODEliteTracker.ViewModels
             DeletedTickCommand = new ODAsyncRelayCommand(OnDeleteTick, () => SelectedTick?.ManualTick == true);
             CreateDiscordPostCommand = new ODRelayCommand(OnCreateDiscordPost);
             OpenInaraCommand = new ODRelayCommand(OnOpenInara);
+            SetExcludedSystem = new ODRelayCommand<BGSTickSystemVM>(OnSetIgnored);
 
             missionExpiryUpdateTimer = new Timer(OnUpdateExpiry, null, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
 
@@ -90,7 +91,7 @@ namespace ODEliteTracker.ViewModels
         public ICommand DeletedTickCommand { get; }
         public ICommand CreateDiscordPostCommand { get; }
         public ICommand OpenInaraCommand { get; }
-
+        public ICommand SetExcludedSystem { get; }
         public bool HideSystemsWithoutBGSData
         {
             get => settings.BGSViewSettings.HideSystemsWithoutData;
@@ -298,7 +299,7 @@ namespace ODEliteTracker.ViewModels
         {
             var tickData = dataStore.GetTickInfo(SelectedTick?.ID);
 
-            var systems = tickData.Item1.OrderBy(x => x.Name).Select(x => new BGSTickSystemVM(x)).ToList();
+            var systems = tickData.Item1.OrderBy(x => x.Name).Select(x => new BGSTickSystemVM(x, dataStore.BGSIgnoredSystems.FirstOrDefault(i => i.Address == x.Address) == null)).ToList();
 
             foreach (var mission in tickData.Item2)
             {
@@ -440,6 +441,14 @@ namespace ODEliteTracker.ViewModels
             {
                 SettlementActivityVM?.Update();
             }
+        }
+
+        private void OnSetIgnored(BGSTickSystemVM vM)
+        {
+            var include = !vM.IncludeInPost;
+            vM.IncludeInPost = include;
+
+            dataStore.AddIgnoredSystem(vM.Address, vM.Name, !include);
         }
     }
 }

@@ -126,6 +126,7 @@
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*" />
                                             <ColumnDefinition Width="40" />
+                                            <ColumnDefinition Width="40" />
                                         </Grid.ColumnDefinitions>
                                         <Grid.RowDefinitions>
                                             <RowDefinition />
@@ -145,9 +146,18 @@
                                                    Grid.Row="1"
                                                    FontSize="14"
                                                    Margin="5,1" />
+                                        <CheckBox Style="{DynamicResource DiscordCheckBoxStyle}"
+                                                  IsChecked="{Binding IncludeInPost, Mode=OneWay}"
+                                                  Command="{Binding ElementName=Root, Path=DataContext.SetExcludedSystem}"
+                                                  CommandParameter="{Binding }"
+                                                  Grid.Column="1"
+                                                  Grid.RowSpan="3"
+                                                  VerticalAlignment="Center"
+                                                  HorizontalAlignment="Center"
+                                                  ToolTip="Include In Post" />
                                         <Image Source="{Binding SystemAllegiance, Converter={StaticResource AllegianceToImage}}"
                                                Stretch="Uniform"
-                                               Grid.Column="1"
+                                               Grid.Column="2"
                                                Height="38"
                                                Grid.RowSpan="3"
                                                VerticalAlignment="Center"
@@ -314,12 +324,12 @@
                             <TextBlock Text="System Security"
                                        Grid.Row="5"
                                        Grid.Column="0"
-                                       Margin="3"/>
+                                       Margin="3" />
                             <TextBlock Text="{Binding SelectedSystem.Security}"
                                        Grid.Row="5"
                                        Grid.Column="1"
                                        Margin="3" />
-                            
+
                             <Image Source="{Binding SelectedSystem.SystemAllegiance, Converter={StaticResource AllegianceToImage}}"
                                    HorizontalAlignment="Right"
                                    Margin="3"
@@ -551,22 +561,22 @@
                     <TabItem Header="Settlement Activity">
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="150" />
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
-                            <TextBlock Text="Settlement Name" 
+                            <TextBlock Text="Settlement Name"
                                        Margin="0,5"
                                        Grid.Column="0"
-                                       Grid.Row="0"/>
+                                       Grid.Row="0" />
                             <TextBlock Text="{Binding SettlementActivityVM.SettlementName}"
                                        Margin="0,5"
                                        Grid.Column="1"
@@ -643,12 +653,12 @@
                                    FontSize="20"
                                    Margin="5"
                                    Foreground="{DynamicResource Header}" />
-                        <Control Grid.Row="1" 
-                             DataContext="{Binding SelectedSystem}"
-                             Style="{DynamicResource PowerStateContent}" />
+                        <Control Grid.Row="1"
+                                 DataContext="{Binding SelectedSystem}"
+                                 Style="{DynamicResource PowerStateContent}" />
                     </Grid>
                 </Border>
-                
+
                 <Border Background="{DynamicResource CardBackground}"
                         DataContext="{Binding SelectedSystem}"
                         CornerRadius="5"

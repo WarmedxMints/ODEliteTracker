@@ -20,7 +20,7 @@ namespace ODEliteTracker.Helpers
         #region BGS
         public static bool CreateBGSPost(IEnumerable<BGSTickSystemVM> systems, TickDataVM data)
         {
-            systems = systems.Where(x => x.HasData).OrderBy(x => x.Name);
+            systems = systems.Where(x => x.HasData && x.IncludeInPost).OrderBy(x => x.Name);
 
             if (systems is null || systems.Any() == false)
                 return false;

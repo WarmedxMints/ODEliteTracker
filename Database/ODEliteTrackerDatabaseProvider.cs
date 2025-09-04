@@ -3,7 +3,9 @@ using EliteJournalReader;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using ODEliteTracker.Database.DTOs;
+using ODEliteTracker.Migrations;
 using ODEliteTracker.Models;
+using ODEliteTracker.Models.BGS;
 using ODEliteTracker.Models.Bookmarks;
 using ODEliteTracker.Models.Colonisation;
 using ODEliteTracker.Models.Spansh;
@@ -12,6 +14,7 @@ using ODJournalDatabase.Database.DTOs;
 using ODJournalDatabase.Database.Interfaces;
 using ODJournalDatabase.JournalManagement;
 using ODMVVM.Helpers.IO;
+using BGSIgnoredSystems = ODEliteTracker.Models.BGS.BGSIgnoredSystems;
 
 namespace ODEliteTracker.Database
 {
@@ -478,7 +481,7 @@ namespace ODEliteTracker.Database
 
             if (known == null)
             {
-                known = new IgnoredBounties(commanderID, factionName, beforeDate);
+                known = new DTOs.IgnoredBounties(commanderID, factionName, beforeDate);
                 context.IgnoredBounties.Add(known);
             }
 
@@ -710,6 +713,37 @@ namespace ODEliteTracker.Database
             context.SpanshCsvs.UpsertRange(csvList)
                 .On(e => new { e.CsvType, e.CommanderID })
                 .Run();
+
+            context.SaveChanges();
+        }
+        #endregion
+
+        #region BGS
+        public List<BGSIgnoredSystems> GetIgnoredSystems()
+        {
+            using var context = _contextFactory.CreateDbContext();
+
+            var ret = context.BGSIgnoredSystems.Select(x => new BGSIgnoredSystems(x.SystemAddress, x.SystemName));
+
+            return [.. ret];
+        }
+
+        public void SetIgnoredBGSSystems(List<BGSIgnoredSystems> systems)
+        {
+            using var context = _contextFactory.CreateDbContext();
+
+            foreach (var ignored in context.BGSIgnoredSystems)
+            {
+                context.BGSIgnoredSystems.Remove(ignored);
+            }
+
+            if (systems.Count > 0)
+            {
+                foreach (var system in systems)
+                {
+                    context.BGSIgnoredSystems.Add(new BGSIgnoredSystemsDTO(system.Address, system.Name));
+                }
+            }
 
             context.SaveChanges();
         }

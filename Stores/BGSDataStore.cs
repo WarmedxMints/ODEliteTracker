@@ -1,17 +1,21 @@
-﻿using EliteJournalReader.Events;
-using EliteJournalReader;
-using ODEliteTracker.Models.Missions;
-using ODJournalDatabase.JournalManagement;
-using ODEliteTracker.Models.Galaxy;
+﻿using EliteJournalReader;
+using EliteJournalReader.Events;
+using ODEliteTracker.Database;
 using ODEliteTracker.Database.DTOs;
 using ODEliteTracker.Models.BGS;
+using ODEliteTracker.Models.Galaxy;
+using ODEliteTracker.Models.Missions;
+using ODJournalDatabase.Database.Interfaces;
+using ODJournalDatabase.JournalManagement;
 using ODMVVM.Helpers;
+using System.Windows.Navigation;
 
 namespace ODEliteTracker.Stores
 {
     public sealed class BGSDataStore : LogProcessorBase
     {
         public BGSDataStore(IManageJournalEvents journalManager,
+            IODDatabaseProvider databaseProvider,
             TickDataStore tickData,
             SharedDataStore sharedData)
         {
@@ -20,6 +24,7 @@ namespace ODEliteTracker.Stores
             this.sharedData = sharedData;
             this.tickDataStore.NewTick += OnNewTick;
             this.tickContainer = new(tickDataStore.BGSTickData);
+            this.databaseProvider = (ODEliteTrackerDatabaseProvider)databaseProvider;
             lastThursday = EliteHelpers.PreviousThursday();
 
             this.journalManager.RegisterLogProcessor(this);
@@ -28,6 +33,7 @@ namespace ODEliteTracker.Stores
         private IManageJournalEvents journalManager;
         private readonly TickDataStore tickDataStore;
         private readonly SharedDataStore sharedData;
+        private readonly ODEliteTrackerDatabaseProvider databaseProvider;
         private long CurrentSystemAddress;
         private string CurrentSystemName = "Unknown";
         private ulong CurrentMarketID;
@@ -41,12 +47,14 @@ namespace ODEliteTracker.Stores
         private readonly Dictionary<long, BGSStarSystem> systems = [];
         private readonly List<MegaShipScan> megaShipScans = [];
         private readonly Dictionary<string, string> shipTargets = new(StringComparer.OrdinalIgnoreCase);
+        private readonly List<BGSIgnoredSystems> bGSIgnoredSystems = [];
         private TickData? selectedTick;
         private BGSStarSystem? currentSystem;
         private Station? currentStation;
         private SystemWarManager czManager = new();
         private SettlementActivity settlementActivity = new();
         public BGSStarSystem? CurrentSystem => currentSystem;
+        public List<BGSIgnoredSystems> BGSIgnoredSystems => bGSIgnoredSystems;
         public TickData? SelectedTick => selectedTick;
         public List<BGSTickData> TickData => tickContainer.TickData;
         public IEnumerable<BGSStarSystem> Systems => systems.Values;
@@ -107,7 +115,7 @@ namespace ODEliteTracker.Stores
                 { JournalTypeEnum.ApproachSettlement, true},
             };
         }
-        public override void ParseJournalEvent(JournalEntry evt)
+        public override void ParseJournalEvent(ODJournalDatabase.JournalManagement.JournalEntry evt)
         {
             if (EventsToParse.ContainsKey(evt.EventType) == false)
                 return;
@@ -467,6 +475,8 @@ namespace ODEliteTracker.Stores
                 return value;
             }
 
+            if (string.IsNullOrEmpty(e.Faction) == false)
+                return e.Faction;
             //Commander didn't get a level 3 scan so we don't know the faction
             return string.Empty;
         }
@@ -555,9 +565,18 @@ namespace ODEliteTracker.Stores
         {
             var task = Task.Run(async () => { await tickDataStore.UpdateTickFromDatabase(); });
             task.Wait();
+            var systems = databaseProvider.GetIgnoredSystems();
+            bGSIgnoredSystems.Clear();
+            if (systems.Count > 0)
+            {
+         
+                foreach( var system in systems)
+                {
+                    bGSIgnoredSystems.Add(system);
+                }
+            }
             this.tickContainer.UpdateTickData(tickDataStore.BGSTickData);     
         }
-
         public override void RunAfterParsingHistory()
         {
             CheckForNewTick();
@@ -571,10 +590,16 @@ namespace ODEliteTracker.Stores
             IsLive = false;
             megaShipScans.Clear();
             shipTargets.Clear();
+            bGSIgnoredSystems.Clear();
         }
         public override void Dispose()
         {
             this.journalManager.UnregisterLogProcessor(this);
+        }
+
+        public override void SaveData()
+        {
+            databaseProvider.SetIgnoredBGSSystems(bGSIgnoredSystems);
         }
         #endregion
 
@@ -628,6 +653,24 @@ namespace ODEliteTracker.Stores
                 return;
             }
             _ = Task.Factory.StartNew(tickDataStore.CheckForNewTick);
+        }
+
+        internal void AddIgnoredSystem(long address, string name, bool add)
+        {
+            var known = bGSIgnoredSystems.FirstOrDefault(x => x.Address == address);
+            if (add)
+            {
+                if (known != null)
+                    return;
+
+                bGSIgnoredSystems.Add(new(address, name));
+                return;
+            }
+
+            if (known != null)
+            {
+                bGSIgnoredSystems.Remove(known);
+            }
         }
     }
 }

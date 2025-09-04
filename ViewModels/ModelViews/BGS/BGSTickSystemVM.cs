@@ -10,7 +10,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.BGS
 {
     public sealed class BGSTickSystemVM : ODObservableObject
     {
-        public BGSTickSystemVM(BGSTickSystem system) 
+        public BGSTickSystemVM(BGSTickSystem system, bool include) 
         { 
    
             this.system = system;
@@ -141,6 +141,8 @@ namespace ODEliteTracker.ViewModels.ModelViews.BGS
             {
                 SetConflict(system.PowerConflict);
             }
+
+            includeInPost = include;
         }
 
         private readonly BGSTickSystem system;
@@ -184,6 +186,16 @@ namespace ODEliteTracker.ViewModels.ModelViews.BGS
         public bool HasData => Factions.Any(x => x.HasData());
         public bool HasConflict => Conflicts.Count > 0;
 
+        private bool includeInPost;
+        public bool IncludeInPost
+        {
+            get => includeInPost;
+            set
+            {
+                includeInPost = value;
+                OnPropertyChanged(nameof(IncludeInPost));
+            }
+        }
         private void SetConflict(List<PowerConflict> data)
         {
             var ordered = data.OrderByDescending(x => x.ConflictProgress).ToList();

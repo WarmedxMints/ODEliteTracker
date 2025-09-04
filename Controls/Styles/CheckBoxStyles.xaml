@@ -72,4 +72,75 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <Style TargetType="CheckBox"
+           x:Key="DiscordCheckBoxStyle">
+        <Setter Property="SnapsToDevicePixels"
+                Value="True" />
+        <Setter Property="OverridesDefaultStyle"
+                Value="True" />
+        <Setter Property="FocusVisualStyle"
+                Value="{x:Null}" />
+        <Setter Property="Focusable"
+                Value="False" />
+        <Setter Property="BorderBrush"
+                Value="{DynamicResource PrimaryControlBorder}" />
+        <Setter Property="VerticalAlignment"
+                Value="Center" />
+        <Setter Property="HorizontalAlignment"
+                Value="Center" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="CheckBox">
+                    <BulletDecorator Background="Transparent">
+                        <BulletDecorator.Bullet>
+                            <Rectangle Fill="{TemplateBinding Foreground}"
+                                       Margin="0"
+                                       x:Name="CheckMark"
+                                       Width="30"
+                                       Height="22"
+                                       HorizontalAlignment="Center"
+                                       SnapsToDevicePixels="True"
+                                       VerticalAlignment="Center">
+                                <Rectangle.OpacityMask>
+                                    <VisualBrush Stretch="Uniform">
+                                        <VisualBrush.Visual>
+                                            <Image Source="/Assets/Icons/Discord-Symbol-White.png"
+                                                   />
+                                        </VisualBrush.Visual>
+                                    </VisualBrush>
+                                </Rectangle.OpacityMask>
+                            </Rectangle>
+                        </BulletDecorator.Bullet>
+                        <ContentPresenter Margin="0,0,0,0"
+                                          x:Name="ContentPresenter"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          RecognizesAccessKey="True" />
+                    </BulletDecorator>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked"
+                                 Value="False">
+                            <Setter TargetName="CheckMark"
+                                    Property="Fill"
+                                    Value="{DynamicResource NavBtnForegroundDisabled}" />
+                        </Trigger>
+                        <Trigger Property="IsChecked"
+                                 Value="True">
+                            <Setter TargetName="CheckMark"
+                                    Property="Fill"
+                                    Value="#FF707BF3" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled"
+                                 Value="False">
+                            <Setter Property="BorderBrush"
+                                    Value="{DynamicResource PrimaryDisabled}" />
+                            <Setter Property="Foreground"
+                                    Value="{DynamicResource PrimaryDisabled}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 </ResourceDictionary>

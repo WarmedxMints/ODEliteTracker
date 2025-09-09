@@ -1,5 +1,6 @@
 ﻿using EliteJournalReader;
 using EliteJournalReader.Events;
+using NetTopologySuite.Geometries;
 using ODEliteTracker.Database;
 using ODEliteTracker.Database.DTOs;
 using ODEliteTracker.Models.BGS;
@@ -144,7 +145,10 @@ namespace ODEliteTracker.Stores
 
                     //Ignore systems with less than 2 factions
                     if (location.Factions is null || location.Factions.Count < 2)
+                    {
+                        currentSystem = null;
                         break;
+                    }
 
                     var system = new BGSStarSystem(location);
                     TryAddSystem(system, location.Timestamp);
@@ -166,7 +170,10 @@ namespace ODEliteTracker.Stores
                     CheckForCZ(fsdJump.Timestamp);
                     //Ignore systems with less than 2 factions
                     if (fsdJump.Factions is null || fsdJump.Factions.Count < 2)
+                    {
+                        currentSystem = null;
                         break;
+                    }
                     var nSystem = new BGSStarSystem(fsdJump);
 
                     TryAddSystem(nSystem, fsdJump.Timestamp);
@@ -183,7 +190,10 @@ namespace ODEliteTracker.Stores
 
                     //Ignore systems with less than 2 factions
                     if (carrierJump.Factions is null || carrierJump.Factions.Count < 2)
+                    {
+                        currentSystem = null;
                         break;
+                    }
 
                     var cSystem = new BGSStarSystem(carrierJump);
                     TryAddSystem(cSystem, carrierJump.Timestamp);

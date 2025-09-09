@@ -19,6 +19,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Colonisation
             Depots.AddRange(depots);
             PopulateResources(e, purchases);
             OnPropertyChanged(nameof(Depots));
+            OnPropertyChanged(nameof(TotalRemaining));
         }
 
         public void AddDepot(ConstructionDepotVM depot,Models.FleetCarrier.FleetCarrier? e, Dictionary<ODMVVM.Helpers.Commodity, List<CommodityPurchase>> purchases)
@@ -26,6 +27,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Colonisation
             Depots.AddItem(depot);
             PopulateResources(e, purchases);
             OnPropertyChanged(nameof(Depots));
+            OnPropertyChanged(nameof(TotalRemaining));
         }
 
         public void RemoveDepot(ConstructionDepotVM depot, Models.FleetCarrier.FleetCarrier? e, Dictionary<ODMVVM.Helpers.Commodity, List<CommodityPurchase>> purchases)
@@ -34,6 +36,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Colonisation
             {
                 PopulateResources(e, purchases);
                 OnPropertyChanged(nameof(Depots));
+                OnPropertyChanged(nameof(TotalRemaining));
             }
         }
 
@@ -70,6 +73,8 @@ namespace ODEliteTracker.ViewModels.ModelViews.Colonisation
 
             if (purchases != null)
                 UpdateMostRecentPurchase(purchases);
+
+            OnPropertyChanged(nameof(TotalRemaining));
         }
 
         public void UpdateCarrierStock(Models.FleetCarrier.FleetCarrier? e)
@@ -113,6 +118,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Colonisation
             {
                 known.Update(e);
                 PopulateResources(carrier, null);
+                OnPropertyChanged(nameof(TotalRemaining));
             }
         }
     }

@@ -35,7 +35,7 @@ namespace ODEliteTracker.Models.Missions
             Reputation = args.Reputation.MissionPlusCount();
             Reward = args.Reward;
             Wing = args.Wing;
-            Expiry = args.Expiry ?? DateTime.MinValue;
+            Expiry = args.Expiry ?? args.Timestamp.AddMinutes(15);
             CurrentState = MissionState.Active;
             AcceptedTime = args.Timestamp;
             DestinationSystem = args.DestinationSystem;

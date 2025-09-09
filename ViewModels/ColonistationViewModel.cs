@@ -250,7 +250,7 @@ namespace ODEliteTracker.ViewModels
                 return WatchedMarketSorting switch
                 {
                     CommoditySorting.Name => selectedWatchedMarket?.Commodities.OrderBy(x => x.Name),
-                    CommoditySorting.Category => selectedWatchedMarket?.Commodities.OrderBy(x => x.Category),
+                    CommoditySorting.Category => selectedWatchedMarket?.Commodities.OrderBy(x => x.Category).ThenBy(x => x.Name),
                     CommoditySorting.Remaining => selectedWatchedMarket?.Commodities.OrderByDescending(x => x.Demand),
                     _ => selectedWatchedMarket?.Commodities,
                 };

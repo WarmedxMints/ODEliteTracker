@@ -631,10 +631,9 @@
                             <TabItem Header="Shopping List">
                                 <Grid>
                                     <Grid.RowDefinitions>
+                                        <RowDefinition Height="35" />
                                         <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="25" />
                                         <RowDefinition />
                                     </Grid.RowDefinitions>
 

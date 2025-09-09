@@ -362,7 +362,7 @@ namespace ODEliteTracker.Stores
 
                     var commod = EliteCommodityHelpers.GetCommodityFromPartial(sell.Type, string.IsNullOrEmpty(sell.Type_Localised) ? sell.Type : sell.Type_Localised);
 
-                    var item = known.ItemsForPurchase.FirstOrDefault(x => string.Equals(x.Category, commod.FdevCategory));
+                    var item = known.ItemsForPurchase.FirstOrDefault(x => string.Equals(x.Name, commod.FdevName));
 
                     if (item != null)
                     {

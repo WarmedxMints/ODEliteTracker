@@ -1,6 +1,7 @@
 ﻿using ODEliteTracker.Models;
 using ODEliteTracker.Models.FleetCarrier;
 using ODEliteTracker.Models.Settings;
+using ODEliteTracker.Services;
 using ODEliteTracker.Stores;
 using ODEliteTracker.ViewModels.ModelViews.FleetCarrier;
 using ODMVVM.Commands;
@@ -13,17 +14,22 @@ namespace ODEliteTracker.ViewModels
 {
     public sealed class FleetCarrierViewModel : ODViewModel
     {
-        public FleetCarrierViewModel(FleetCarrierDataStore dataStore, SettingsStore settings)
+        public FleetCarrierViewModel(FleetCarrierDataStore dataStore, SettingsStore settings, NotificationService notificationService)
         {
             this.dataStore = dataStore;
             this.settings = settings;
+            this.notificationService = notificationService;
             this.dataStore.StoreLive += OnStoreLive;
             this.dataStore.CarrierUpdated += OnCarrierUpdated;
+            this.dataStore.SquadCarrierUpdated += OnSquadCarrierUpdated;
             this.dataStore.CarrierStockUpdated += OnCarrierStockUpdated;
             this.dataStore.OnCarrierTimeTick += DataStore_OnCarrierTimeTick;
+            this.dataStore.OnSquadCarrierTimeTick += DataStore_OnSquadCarrierTimeTick;
             this.dataStore.CarrierDestinationUpdated += OnCarrierDestinationUpdated;
+            this.dataStore.SquadCarrierDestinationUpdated += OnSquadCarrierDestinationUpdated;
 
             RefreshCarrierStockCommand = new ODAsyncRelayCommand(OnRefreshCarrierStock, () => CanCallCAPI);
+            CopyToClipboard = new ODRelayCommand<string>(OnCopyToClipboard);
 
             if (this.dataStore.CanCallCAPI == false)
             {
@@ -37,13 +43,17 @@ namespace ODEliteTracker.ViewModels
         {
             this.dataStore.StoreLive -= OnStoreLive;
             this.dataStore.CarrierUpdated -= OnCarrierUpdated;
+            this.dataStore.SquadCarrierUpdated -= OnSquadCarrierUpdated;
             this.dataStore.CarrierStockUpdated -= OnCarrierStockUpdated;
             this.dataStore.OnCarrierTimeTick -= DataStore_OnCarrierTimeTick;
+            this.dataStore.OnSquadCarrierTimeTick -= DataStore_OnSquadCarrierTimeTick;
             this.dataStore.CarrierDestinationUpdated -= OnCarrierDestinationUpdated;
+            this.dataStore.SquadCarrierDestinationUpdated -= OnSquadCarrierDestinationUpdated;
         }
 
         private readonly FleetCarrierDataStore dataStore;
         private readonly SettingsStore settings;
+        private readonly NotificationService notificationService;
         private CountdownTimer? capiTimer;
         public override bool IsLive => dataStore.IsLive;
         private bool CanCallCAPI => dataStore.CanCallCAPI;
@@ -61,6 +71,7 @@ namespace ODEliteTracker.ViewModels
         }
 
         public FleetCarrierVM? CarrierData { get; set; } = null;
+        public FleetCarrierVM? SquadCarrierData { get; set; } = null;
 
         public IEnumerable<CarrierCommodityVM>? CarrierStock
         {
@@ -93,11 +104,20 @@ namespace ODEliteTracker.ViewModels
 
         }
         public ICommand RefreshCarrierStockCommand { get; }
+        public ICommand CopyToClipboard { get; }
 
         private async Task OnRefreshCarrierStock()
         {
             StartCAPITimer();
             await dataStore.UpdateCarrierCargo();
+        }
+
+        private void OnCopyToClipboard(string obj)
+        {
+            if (string.IsNullOrEmpty(obj))
+                return;
+
+            notificationService.SetClipboard(obj);
         }
 
         private void OnStoreLive(object? sender, bool e)
@@ -109,6 +129,11 @@ namespace ODEliteTracker.ViewModels
                     if (dataStore.CarrierData != null)
                     {
                         CarrierData = new(dataStore.CarrierData);
+                    }
+
+                    if (dataStore.SquadCarrierData != null)
+                    {
+                        SquadCarrierData = new(dataStore.SquadCarrierData);
                     }
                     OnPropertyChanged(nameof(CarrierData));
                     OnModelLive(true);
@@ -122,6 +147,13 @@ namespace ODEliteTracker.ViewModels
                 return;
 
             CarrierData.UpdateData(e);
+        }
+        private void OnSquadCarrierUpdated(object? sender, FleetCarrier e)
+        {
+            if (SquadCarrierData == null)
+                return;
+
+            SquadCarrierData.UpdateData(e);
         }
 
         private void OnCarrierStockUpdated(object? sender, FleetCarrier e)
@@ -143,12 +175,28 @@ namespace ODEliteTracker.ViewModels
             CarrierData.UpdateTimes();
         }
 
+        private void DataStore_OnSquadCarrierTimeTick(object? sender, string e)
+        {
+            if (SquadCarrierData == null)
+                return;
+
+            SquadCarrierData.UpdateTimes();
+        }
+
         private void OnCarrierDestinationUpdated(object? sender, FleetCarrier e)
         {
             if (CarrierData == null)
                 return;
 
             CarrierData.UpdateDestination(e);
+        }
+
+        private void OnSquadCarrierDestinationUpdated(object? sender, FleetCarrier e)
+        {
+            if (SquadCarrierData == null)
+                return;
+
+            SquadCarrierData.UpdateDestination(e);
         }
 
         private void StartCAPITimer()

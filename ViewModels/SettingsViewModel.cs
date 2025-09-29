@@ -91,7 +91,35 @@ namespace ODEliteTracker.ViewModels
                 _ = ChangeJournalAge();
             }
         }
-        
+
+        public SystemWebSite SystemPreference
+        {
+            get => setting.StatusBarSettings.SystemSitePreference;
+            set
+            {
+                setting.StatusBarSettings.SystemSitePreference = value;
+                OnPropertyChanged(nameof(SystemPreference));
+            }
+        }
+        public SystemWebSite StationBodyPreference
+        {
+            get => setting.StatusBarSettings.StationBodyPreference;
+            set
+            {
+                setting.StatusBarSettings.StationBodyPreference = value;
+                OnPropertyChanged(nameof(StationBodyPreference));
+            }
+        }
+        public ShipyardWebSite ShipyardPrefence
+        {
+            get => setting.StatusBarSettings.ShipyardPreference;
+            set
+            {
+                setting.StatusBarSettings.ShipyardPreference = value;
+                OnPropertyChanged(nameof(ShipyardPrefence));
+            }
+        }
+
         private ObservableCollection<JournalCommanderVM> journalCommanderViewModelCollection = [];
         public ObservableCollection<JournalCommanderVM> JournalCommanderViews
         {

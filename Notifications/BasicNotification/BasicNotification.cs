@@ -56,6 +56,9 @@ namespace ODEliteTracker.Notifications
                 case NotificationOptions.FleetCarrierReady:
                     ImageSource = "/Assets/Icons/fleetcarrier.png";
                     break;
+                case NotificationOptions.SqaudCarrierReady:
+                    ImageSource = "/Assets/Icons/squadfleetcarrier.png";
+                    break;
             }            
 
             var thinBorder = 2;

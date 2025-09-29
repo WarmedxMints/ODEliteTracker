@@ -6,18 +6,21 @@ using ODEliteTracker.Models.Spansh;
 using ODEliteTracker.Services;
 using ODJournalDatabase.Database.Interfaces;
 using ODJournalDatabase.JournalManagement;
-using System.Windows;
 
 namespace ODEliteTracker.Stores
 {
     public sealed class SpanshCsvStore : LogProcessorBase
     {
-        public SpanshCsvStore(IManageJournalEvents parserStore, IODDatabaseProvider odToolsDatabase, SettingsStore settingsStore, NotificationService notificationService)
+        public SpanshCsvStore(IManageJournalEvents parserStore,
+                              IODDatabaseProvider odToolsDatabase,
+                              SettingsStore settingsStore,
+                              NotificationService notificationService,
+                              SharedDataStore sharedData)
         {
             this.parserStore = parserStore;
             this.settingsStore = settingsStore;
             this.notificationService = notificationService;
-
+            this.sharedData = sharedData;
             databaseProvider = (ODEliteTrackerDatabaseProvider)odToolsDatabase;
 
             this.settingsStore.SpanshCSVSettings.CSVChanged += OnCSVChanged;
@@ -27,6 +30,7 @@ namespace ODEliteTracker.Stores
         private readonly IManageJournalEvents parserStore;
         private readonly SettingsStore settingsStore;
         private readonly NotificationService notificationService;
+        private readonly SharedDataStore sharedData;
         private readonly ODEliteTrackerDatabaseProvider databaseProvider;
         private Dictionary<CsvType, SpanshCsvContainer> containers = [];
 
@@ -147,8 +151,9 @@ namespace ODEliteTracker.Stores
             {
                 { JournalTypeEnum.Fileheader, true },
                 { JournalTypeEnum.Location, false },
+                { JournalTypeEnum.CarrierLocation, false },
                 { JournalTypeEnum.FSDJump, false},
-                { JournalTypeEnum.CarrierJump, false},                
+                { JournalTypeEnum.CarrierJump, false},
             };
         }
 
@@ -193,6 +198,12 @@ namespace ODEliteTracker.Stores
             {
                 case LocationEvent.LocationEventArgs location:
                     OnCurrentSystemChanged(location.StarSystem);
+                    break;
+                case CarrierLocationEvent.CarrierLocationEventArgs carrierLocation:
+                    //Carrier location event is fired when logging in so check that isn't the case
+                    if (sharedData.LastLoginTime - carrierLocation.Timestamp < TimeSpan.FromSeconds(10))
+                        break;
+                    OnCurrentSystemChanged(carrierLocation.StarSystem);
                     break;
                 case FSDJumpEvent.FSDJumpEventArgs fsdJump:
                     OnCurrentSystemChanged(fsdJump.StarSystem);
@@ -300,6 +311,6 @@ namespace ODEliteTracker.Stores
                 return true;
             }
             return false;
-        } 
+        }
     }
 }

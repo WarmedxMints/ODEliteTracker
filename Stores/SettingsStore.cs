@@ -28,18 +28,6 @@ namespace ODEliteTracker.Stores
             this.navigationService.CurrentViewChanged += NavigationService_CurrentViewChanged;
         }
 
-        private void NavigationService_CurrentViewChanged(object? sender, ODViewModel? e)
-        {
-            if (e == null)
-            {
-                return;
-            }
-            if (e is not LoadingViewModel)
-            {
-                CurrentViewModel = e.GetType();
-            }
-        }
-
         private readonly IODDatabaseProvider databaseProvider;
         private readonly ThemeManager themeManager;
         private readonly IODNavigationService navigationService;
@@ -54,7 +42,7 @@ namespace ODEliteTracker.Stores
         public NotificationSettings NotificationSettings { get; set; } = NotificationSettings.GetDefault();
         public MassacreSettings MassacreSettings { get; set; } = MassacreSettings.GetDefault();
         public TradeSettings TradeSettings { get; set; } = TradeSettings.GetDefault();
-
+        public StatusBarSettings StatusBarSettings { get; set; } = new();
         public DateTime JournalAgeDateTime
         {
             get
@@ -70,7 +58,6 @@ namespace ODEliteTracker.Stores
                 };
             }
         }
-
         public double UiScale { get; set; } = 1;
         public BGSViewSettings BGSViewSettings { get; internal set; } = new();
         public PowerPlaySettings PowerPlaySettings { get; internal set; } = new();
@@ -78,7 +65,6 @@ namespace ODEliteTracker.Stores
         public CarrierSettings CarrierSettings { get; internal set; } = new();
         public OverlaySettings OverlaySettings { get; internal set; } = new();
         public Dictionary<int, List<PopOutParams>> PopOutParams { get; set; } = [];
-
         public SpanshCSVSettings SpanshCSVSettings { get; set; } = new();
 
         #region Persistance
@@ -104,6 +90,7 @@ namespace ODEliteTracker.Stores
                 PopOutParams = SettingsDTOHelpers.SettingDtoToObject(settings.GetSettingDTO(nameof(PopOutParams)), new Dictionary<int, List<PopOutParams>>());
                 OverlaySettings = SettingsDTOHelpers.SettingDtoToObject(settings.GetSettingDTO(nameof(OverlaySettings)), OverlaySettings);
                 SpanshCSVSettings = SettingsDTOHelpers.SettingDtoToObject(settings.GetSettingDTO(nameof(SpanshCSVSettings)), SpanshCSVSettings);
+                StatusBarSettings = SettingsDTOHelpers.SettingDtoToObject(settings.GetSettingDTO(nameof(StatusBarSettings)), StatusBarSettings);
             }
 
             //Apply Themes
@@ -138,6 +125,7 @@ namespace ODEliteTracker.Stores
                 SettingsDTOHelpers.ObjectToJsonStringDto(nameof(PopOutParams), PopOutParams),
                 SettingsDTOHelpers.ObjectToJsonStringDto(nameof(OverlaySettings), OverlaySettings),
                 SettingsDTOHelpers.ObjectToJsonStringDto(nameof(SpanshCSVSettings), SpanshCSVSettings),
+                SettingsDTOHelpers.ObjectToJsonStringDto(nameof(StatusBarSettings), StatusBarSettings),
             };
 
             databaseProvider.AddSettings(settings);
@@ -219,5 +207,17 @@ namespace ODEliteTracker.Stores
             OnSystemGridSettingsUpdatedEvent?.Invoke(this, EventArgs.Empty);
         }
         #endregion
+
+        private void NavigationService_CurrentViewChanged(object? sender, ODViewModel? e)
+        {
+            if (e == null)
+            {
+                return;
+            }
+            if (e is not LoadingViewModel)
+            {
+                CurrentViewModel = e.GetType();
+            }
+        }
     }
 }

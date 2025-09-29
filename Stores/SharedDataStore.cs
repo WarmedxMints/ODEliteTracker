@@ -1,5 +1,7 @@
 ﻿using EliteJournalReader;
 using EliteJournalReader.Events;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using Newtonsoft.Json.Linq;
 using ODEliteTracker.Database;
 using ODEliteTracker.Helpers;
 using ODEliteTracker.Managers;
@@ -55,6 +57,7 @@ namespace ODEliteTracker.Stores
         {
             get => new()
             {
+                { JournalTypeEnum.Commander, true },
                 { JournalTypeEnum.Powerplay, true },
                 { JournalTypeEnum.Location, true },
                 { JournalTypeEnum.FSDJump, true},
@@ -62,6 +65,7 @@ namespace ODEliteTracker.Stores
                 { JournalTypeEnum.Docked, true},
                 { JournalTypeEnum.Undocked, true},
                 { JournalTypeEnum.ApproachBody, true},
+                { JournalTypeEnum.LeaveBody, true},
                 { JournalTypeEnum.Market, false },
                 { JournalTypeEnum.Loadout, true },
                 { JournalTypeEnum.Cargo, false },
@@ -82,10 +86,10 @@ namespace ODEliteTracker.Stores
         public List<WatchedMarket> WatchedMarkets { get; private set; } = [];
         public string? CurrentBody_Station { get; private set; }
         public ulong CurrentMarketID { get; private set; } = 0;
-
         public ShipInfo? CurrentShipInfo { get; private set; }
         public IEnumerable<ShipCargo>? CurrentShipCargo { get; private set; }
         public Dictionary<ODMVVM.Helpers.Commodity, List<CommodityPurchase>> MarketPurchases => marketPurchases;
+        public DateTime LastLoginTime { get; private set; }
         #endregion
 
         #region Events
@@ -137,12 +141,19 @@ namespace ODEliteTracker.Stores
 
             switch (evt.EventData)
             {
+                case CommanderEvent.CommanderEventArgs commander:
+                    LastLoginTime = commander.Timestamp;
+                    break;
                 case ApproachBodyEvent.ApproachBodyEventArgs approachBody:
                     CurrentBody = CurrentSystem?.Bodies.FirstOrDefault(x => x.Key == approachBody.BodyID).Value;
 
                     if (CurrentBody != null)
                         CurrentBody.Landable = true;
                     UpdateCurrentBody_Station(approachBody.Body);
+                    break;
+                case LeaveBodyEvent.LeaveBodyEventArgs leaveBody:
+                    CurrentBody = null;
+                    UpdateCurrentBody_Station(null);
                     break;
                 case BountyEvent.BountyEventArgs bounty:
 
@@ -215,12 +226,19 @@ namespace ODEliteTracker.Stores
                     if (IsLive == false)
                         break;
 
+                    //var capimarket = ((JournalManager)journalManager).GetCAPIMarket().Result;
                     var stationName = docked.StationName_Localised ?? docked.StationName;
                     stationName = stationName.Replace("$EXT_PANEL_ColonisationShip;", "Colonisation Ship -");
+                    var stationFaction = docked.StationFaction.Name;
+
+                    if (stationFaction.Equals("FleetCarrier", StringComparison.OrdinalIgnoreCase))
+                    {
+                        stationFaction = docked.StationServices.Contains("squadronBank") ? "Squadron Carrier" : "Personal Carrier";
+                    }
                     var args = new NotificationArgs(stationName,
                         [
                             $"{EliteJournalReaderHelpers.StationTypeText(docked.StationType)}",
-                            $"{docked.StationFaction.Name}",
+                            $"{stationFaction}",
                             $"{docked.StationGovernment_Localised ?? docked.StationGovernment}",
                             $"{docked.StationEconomy_Localised ?? docked.StationEconomy}",
                             $"{docked.LandingPads.LandPadText()}"
@@ -255,8 +273,7 @@ namespace ODEliteTracker.Stores
                     break;
                 case LoadoutEvent.LoadoutEventArgs loadOut:
                     //Sometimes the ship name comes though as a string with a single space so we trim it
-                    CurrentShipInfo = new ShipInfo(string.IsNullOrEmpty(loadOut.ShipName.Trim()) ? EliteHelpers.ConvertShipName(loadOut.Ship) : loadOut.ShipName, loadOut.ShipIdent, loadOut.CargoCapacity);
-
+                    CurrentShipInfo = new ShipInfo(string.IsNullOrEmpty(loadOut.ShipName.Trim()) ? EliteHelpers.ConvertShipName(loadOut.Ship) : loadOut.ShipName, loadOut.ShipIdent, loadOut.CargoCapacity, (JObject)loadOut.OriginalEvent.DeepClone());
                     if (IsLive)
                         ShipChangedEvent?.Invoke(this, CurrentShipInfo);
                     break;
@@ -461,7 +478,7 @@ namespace ODEliteTracker.Stores
                 case UndockedEvent.UndockedEventArgs:
                     CurrentMarketID = 0;
                     currentStation = null;
-                    UpdateCurrentBody_Station(null);
+                    UpdateCurrentBody_Station(CurrentBody?.BodyName);
                     break;
                 case DiedEvent.DiedEventArgs died:
                     bountiesManager.Reset();
@@ -477,7 +494,7 @@ namespace ODEliteTracker.Stores
             if (known != null)
             {
                 WatchedMarkets.Remove(known);
-                WatchedMarketsUpdated?.Invoke(this,WatchedMarkets);
+                WatchedMarketsUpdated?.Invoke(this, WatchedMarkets);
                 return;
             }
 

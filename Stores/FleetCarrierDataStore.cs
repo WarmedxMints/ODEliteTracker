@@ -7,13 +7,13 @@ using ODEliteTracker.Services;
 using ODJournalDatabase.JournalManagement;
 using ODMVVM.Helpers;
 using ODMVVM.Utils;
-using System.Threading;
+using System;
 
 namespace ODEliteTracker.Stores
 {
     public sealed class FleetCarrierDataStore : LogProcessorBase
     {
-        public FleetCarrierDataStore(IManageJournalEvents journalManager, SharedDataStore sharedData, NotificationService notificationService) 
+        public FleetCarrierDataStore(IManageJournalEvents journalManager, SharedDataStore sharedData, NotificationService notificationService)
         {
             this.journalManager = (JournalManager)journalManager;
 
@@ -26,20 +26,27 @@ namespace ODEliteTracker.Stores
             this.notificationService = notificationService;
             this.sharedData.MarketEvent += OnMarketEvent;
             fleetCarrierTimer.CountDownFinishedEvent += FleetCarrierTimer_CountDownFinishedEvent;
+            squadFleetCarrierTimer.CountDownFinishedEvent += SquadFleetCarrierTimer_CountDownFinishedEvent;
         }
 
         private readonly JournalManager? journalManager;
         private readonly SharedDataStore sharedData;
         private readonly NotificationService notificationService;
         private readonly CountdownTimer fleetCarrierTimer = new(new(0, 20, 0), new(0, 0, 1));
+        private readonly CountdownTimer squadFleetCarrierTimer = new(new(0, 20, 0), new(0, 0, 1));
         private FleetCarrier? carrierData;
+        private FleetCarrier? squadCarrierData;
+
         private bool dockedOnCarrier = false;
 
         public FleetCarrier? CarrierData => carrierData;
+        public FleetCarrier? SquadCarrierData => squadCarrierData;
 
         public EventHandler<FleetCarrier>? CarrierUpdated;
+        public EventHandler<FleetCarrier>? SquadCarrierUpdated;
         public EventHandler<FleetCarrier>? CarrierStockUpdated;
         public EventHandler<FleetCarrier>? CarrierDestinationUpdated;
+        public EventHandler<FleetCarrier>? SquadCarrierDestinationUpdated;
 
         public bool CanCallCAPI => journalManager?.CanCallCAPI ?? false;
 
@@ -60,6 +67,24 @@ namespace ODEliteTracker.Stores
         {
             add { fleetCarrierTimer.CountDownFinishedEvent += value; }
             remove { fleetCarrierTimer.CountDownFinishedEvent -= value; }
+        }
+
+        public event EventHandler<string>? OnSquadCarrierTimeTick
+        {
+            add { squadFleetCarrierTimer.OnTick += value; }
+            remove { squadFleetCarrierTimer.OnTick -= value; }
+        }
+
+        public event EventHandler<bool>? OnSquadCarrierTimerRunning
+        {
+            add { squadFleetCarrierTimer.OnTimerRunning += value; }
+            remove { squadFleetCarrierTimer.OnTimerRunning -= value; }
+        }
+
+        public event EventHandler? OnSquadCarrierTimerFinished
+        {
+            add { squadFleetCarrierTimer.CountDownFinishedEvent += value; }
+            remove { squadFleetCarrierTimer.CountDownFinishedEvent -= value; }
         }
         #endregion
 
@@ -100,7 +125,7 @@ namespace ODEliteTracker.Stores
         {
             if (this.journalManager != null)
             {
-                this.journalManager.CAPILive -= async (s, e) => await OnCAPILive(s, e);             
+                this.journalManager.CAPILive -= async (s, e) => await OnCAPILive(s, e);
             }
             this.sharedData.MarketEvent -= OnMarketEvent;
         }
@@ -113,8 +138,24 @@ namespace ODEliteTracker.Stores
             switch (evt.EventData)
             {
                 case CarrierStatsEvent.CarrierStatsEventArgs carrier:
-                    if (string.Equals(carrier.CarrierType, "FleetCarrier", StringComparison.OrdinalIgnoreCase) == false)
+                    if (string.Equals(carrier.CarrierType, "SquadronCarrier", StringComparison.OrdinalIgnoreCase))
                     {
+                        squadCarrierData ??= new(carrier);
+                        squadCarrierData.FuelLevel = carrier.FuelLevel;
+                        squadCarrierData.Name = carrier.Name;
+                        squadCarrierData.DockingAccess = carrier.DockingAccess;
+                        squadCarrierData.AllowNotorious = carrier.AllowNotorious;
+                        squadCarrierData.FuelLevel = carrier.FuelLevel;
+                        squadCarrierData.Balance = carrier.Finance.CarrierBalance;
+                        squadCarrierData.CarrierID = carrier.CarrierID;
+                        squadCarrierData.Callsign = carrier.Callsign;
+
+                        squadCarrierData.AssignCrew(carrier.Crew);
+
+                        if (IsLive)
+                        {
+                            SquadCarrierUpdated?.Invoke(this, squadCarrierData);
+                        }
                         return;
                     }
                     carrierData ??= new(carrier);
@@ -129,13 +170,13 @@ namespace ODEliteTracker.Stores
 
                     carrierData.AssignCrew(carrier.Crew);
 
-                    if(IsLive)
+                    if (IsLive)
                     {
                         CarrierUpdated?.Invoke(this, carrierData);
                     }
                     break;
                 case CarrierLocationEvent.CarrierLocationEventArgs cLocation:
-                    if(carrierData != null && string.Equals(cLocation.CarrierType, "FleetCarrier", StringComparison.OrdinalIgnoreCase) == false)
+                    if (carrierData != null && string.Equals(cLocation.CarrierType, "FleetCarrier", StringComparison.OrdinalIgnoreCase))
                     {
                         carrierData.StarSystem = cLocation.StarSystem;
                         carrierData.SystemAddress = cLocation.SystemAddress;
@@ -145,16 +186,62 @@ namespace ODEliteTracker.Stores
                         {
                             CarrierUpdated?.Invoke(this, carrierData);
                         }
+                        break;
+                    }
+
+                    if (squadCarrierData != null && string.Equals(cLocation.CarrierType, "SquadronCarrier", StringComparison.OrdinalIgnoreCase))
+                    {
+                        squadCarrierData.StarSystem = cLocation.StarSystem;
+                        squadCarrierData.SystemAddress = cLocation.SystemAddress;
+                        squadCarrierData.BodyID = cLocation.BodyID;
+                        squadCarrierData.Destination.Reset();
+                       
+                        if (IsLive)
+                        {
+                            SquadCarrierUpdated?.Invoke(this, squadCarrierData);
+                        }
+
+                        //Carrier location event is fired when logging in so check that isn't the case
+                        if (squadFleetCarrierTimer.TimerRunning || sharedData.LastLoginTime - cLocation.Timestamp < TimeSpan.FromSeconds(10))
+                            break;
+
+                        var notificationTime = (cLocation.Timestamp - DateTime.UtcNow) + TimeSpan.FromMinutes(5); 
+
+                        if (notificationTime <= TimeSpan.Zero)
+                            break;
+
+                        //Jump request only fires for the person who set the jump
+                        //So if we get a new location for the 
+                        squadFleetCarrierTimer.UpdateRuntime(notificationTime);
+                        squadFleetCarrierTimer.Start();
                     }
                     break;
                 case CarrierJumpRequestEvent.CarrierJumpRequestEventArgs jumpRequest:
-                    if (carrierData is null)
-                        return;
 
-                    if (string.Equals(jumpRequest.CarrierType, "FleetCarrier", StringComparison.OrdinalIgnoreCase) == false)
+                    if (string.Equals(jumpRequest.CarrierType, "SquadronCarrier", StringComparison.OrdinalIgnoreCase))
                     {
+                        if (squadCarrierData is null)
+                            return;
+                        squadCarrierData.Destination = new(jumpRequest.SystemName, jumpRequest.Body, jumpRequest.SystemAddress, jumpRequest.DepartureTime);
+
+                        var timespan = (jumpRequest.DepartureTime - DateTime.UtcNow) + TimeSpan.FromMinutes(5);
+
+                        if (timespan > TimeSpan.Zero)
+                        {
+                            squadFleetCarrierTimer.UpdateRuntime(timespan);
+                            squadFleetCarrierTimer.Start();
+                        }
+
+                        if (IsLive)
+                        {
+                            SquadCarrierDestinationUpdated?.Invoke(this, squadCarrierData);
+                        }
+
                         return;
                     }
+
+                    if (carrierData is null)
+                        return;
                     carrierData.Destination = new(jumpRequest.SystemName, jumpRequest.Body, jumpRequest.SystemAddress, jumpRequest.DepartureTime);
 
                     var span = (jumpRequest.DepartureTime - DateTime.UtcNow) + TimeSpan.FromMinutes(5);
@@ -171,13 +258,22 @@ namespace ODEliteTracker.Stores
                     }
                     break;
                 case CarrierJumpCancelledEvent.CarrierJumpCancelledEventArgs jCancelled:
-                    if (carrierData is null)
-                        break;
-
-                    if (string.Equals(jCancelled.CarrierType, "FleetCarrier", StringComparison.OrdinalIgnoreCase) == false)
+                    if (string.Equals(jCancelled.CarrierType, "SquadronCarrier", StringComparison.OrdinalIgnoreCase))
                     {
+                        if (squadCarrierData is null)
+                            break;
+
+                        squadCarrierData.Destination = new();
+                        squadFleetCarrierTimer.Stop();
+                        if (IsLive)
+                        {
+                            SquadCarrierDestinationUpdated?.Invoke(this, squadCarrierData);
+                        }
                         return;
                     }
+
+                    if (carrierData is null)
+                        break;
                     carrierData.Destination = new();
                     fleetCarrierTimer.Stop();
                     if (IsLive)
@@ -200,7 +296,7 @@ namespace ODEliteTracker.Stores
                             known.BuyOrderCount = 0;
                             known.SalePrice = 0;
                             if (known.StockCount <= 0)
-                            { 
+                            {
                                 carrierData.Stock.Remove(known);
                             }
                             if (IsLive)
@@ -219,7 +315,7 @@ namespace ODEliteTracker.Stores
                     known.SalePrice = salePrice;
                     known.BuyOrderCount = carrierTradeOrder.PurchaseOrder;
 
-                    if(IsLive)
+                    if (IsLive)
                     {
                         CarrierStockUpdated?.Invoke(this, carrierData);
                     }
@@ -274,7 +370,7 @@ namespace ODEliteTracker.Stores
                         var direction = 1;
 
                         switch (transfer.Direction)
-                        {                                
+                        {
                             case CargoTransferDirection.ToCarrier:
                                 direction = 1;
                                 break;
@@ -288,7 +384,7 @@ namespace ODEliteTracker.Stores
                         cargoMoved = TransferCargo(transfer.Type, transfer.Type, transfer.Count * direction, stolen: false) || cargoMoved;
                     }
 
-                    if(IsLive && cargoMoved)
+                    if (IsLive && cargoMoved)
                         CarrierStockUpdated?.Invoke(this, CarrierData);
                     break;
                 case MarketSellEvent.MarketSellEventArgs sell:
@@ -299,7 +395,7 @@ namespace ODEliteTracker.Stores
 
                     var inStock = CarrierData.Stock.FirstOrDefault(x => x.commodity == commod && x.Stolen == false);
 
-                    if(inStock != null)
+                    if (inStock != null)
                     {
                         inStock.StockCount += sell.Count;
                         inStock.BuyOrderCount -= sell.Count;
@@ -323,9 +419,9 @@ namespace ODEliteTracker.Stores
                 {
                     _ = OnCAPILive(null, true);
                 }
-            }            
+            }
 
-            if(carrierData != null && carrierData.Destination.Arrived)
+            if (carrierData != null && carrierData.Destination.Arrived)
             {
                 carrierData.Destination = new();
             }
@@ -337,6 +433,13 @@ namespace ODEliteTracker.Stores
         private void FleetCarrierTimer_CountDownFinishedEvent(object? sender, EventArgs e)
         {
             var args = new NotificationArgs("Fleet Carrier", ["Carrier Cooldown Complete"], Models.Settings.NotificationOptions.FleetCarrierReady);
+
+            notificationService.ShowBasicNotification(args);
+        }
+
+        private void SquadFleetCarrierTimer_CountDownFinishedEvent(object? sender, EventArgs e)
+        {
+            var args = new NotificationArgs("Sqaudron Fleet Carrier", ["Carrier Cooldown Complete"], Models.Settings.NotificationOptions.SqaudCarrierReady);
 
             notificationService.ShowBasicNotification(args);
         }
@@ -418,7 +521,7 @@ namespace ODEliteTracker.Stores
 
                 var known = cargo.FirstOrDefault(x => x.commodity == value);
 
-                if(known == null)
+                if (known == null)
                 {
                     known = new(value, false, 0);
                     cargo.Add(known);
@@ -456,7 +559,7 @@ namespace ODEliteTracker.Stores
             //If we are still null then check for stolen shite on board as the transfere event doesn't tell us if it is
             known = carrierData.Stock.FirstOrDefault(x => x.commodity == commodity && x.Stolen == true);
             if (known != null)
-            {               
+            {
                 known.StockCount += value;
                 if (known.StockCount <= 0)
                     CarrierData?.Stock.Remove(known);
@@ -467,9 +570,9 @@ namespace ODEliteTracker.Stores
 
         private void OnMarketEvent(object? sender, StationMarket? e)
         {
-            if(carrierData == null || e == null || e.MarketID != carrierData.CarrierID) 
-            { 
-                return; 
+            if (carrierData == null || e == null || e.MarketID != carrierData.CarrierID)
+            {
+                return;
             }
 
             var stockUpdated = false;
@@ -532,7 +635,7 @@ namespace ODEliteTracker.Stores
 
             //If we still have outstanding purchases that were not found in the market event
             //then another commander must have filled the order
-            if(carrierPurchases.Count > 0)
+            if (carrierPurchases.Count > 0)
             {
                 foreach (var item in carrierPurchases)
                 {

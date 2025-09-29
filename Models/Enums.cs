@@ -184,4 +184,16 @@ namespace ODEliteTracker.Models
         [Description("Colonisation Plotter")]
         Colonisation
     }
+
+    public enum SystemWebSite
+    {
+        Inara,
+        Spansh
+    }
+
+    public enum  ShipyardWebSite
+    {
+        EDSY,
+        Coriolis
+    }
 }

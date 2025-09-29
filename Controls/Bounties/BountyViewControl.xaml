@@ -105,7 +105,7 @@
                             <Button FontFamily="Segoe MDL2 Assets"
                                     Style="{DynamicResource EliteStyleButton}"
                                     Content="&#xE74D;"
-                                    Command="{Binding ElementName=Grid, Path=DataContext.AddIgnoredBounties}"
+                                    Command="{Binding ElementName=Root, Path=DataContext.AddIgnoredBounties}"
                                     CommandParameter="{Binding Name}"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"

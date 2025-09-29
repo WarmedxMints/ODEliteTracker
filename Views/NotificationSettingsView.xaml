@@ -435,6 +435,7 @@
                             <RowDefinition />
                             <RowDefinition />
                             <RowDefinition />
+                            <RowDefinition />
                         </Grid.RowDefinitions>
                         
                         <CheckBox Style="{DynamicResource EliteStyleCheckBox}"
@@ -520,6 +521,22 @@
                                    VerticalAlignment="Center"
                                    FontSize="16"
                                    Grid.Row="4"
+                                   Grid.Column="1" />
+
+                        <CheckBox Style="{DynamicResource EliteStyleCheckBox}"
+                                  Content="Squadron Fleet Carrier Jump Complete"
+                                  Grid.Row="5"
+                                  Margin="10"
+                                  VerticalAlignment="Center"
+                                  VerticalContentAlignment="Center"
+                                  Command="{Binding SetOptions}"
+                                  CommandParameter="{x:Static settings:NotificationOptions.SqaudCarrierReady}"
+                                  IsChecked="{Binding NotificationSettings.Options, Converter={StaticResource EnumFlagConverter}, ConverterParameter={x:Static settings:NotificationOptions.SqaudCarrierReady}, Mode=OneWay}" />
+                        <TextBlock Text="Notification when the cooldown has finished and the squadron carrier is ready to jump again"
+                                   Margin="10"
+                                   VerticalAlignment="Center"
+                                   FontSize="16"
+                                   Grid.Row="5"
                                    Grid.Column="1" />
                     </Grid>
                 </Grid>

@@ -6,8 +6,8 @@
              xmlns:local="clr-namespace:ODEliteTracker.Controls"
              xmlns:viewmodels="clr-namespace:ODEliteTracker.ViewModels"
              mc:Ignorable="d"
-             FontSize="20"
-             Foreground="{DynamicResource EliteBtnFG}"
+             FontSize="19"
+             Foreground="{DynamicResource PrimaryForeground}"
              d:DataContext="{d:DesignInstance viewmodels:MainViewModel}"
              d:DesignHeight="450"
              d:DesignWidth="800">
@@ -16,24 +16,40 @@
             <ColumnDefinition  MinWidth="230"
                                Width="Auto" />
             <ColumnDefinition  Width="*" />
+            <ColumnDefinition  Width="*" />
             <ColumnDefinition  MinWidth="230"
                                Width="Auto" />
         </Grid.ColumnDefinitions>
 
-        <TextBlock Text="{Binding CurrentSystemName}"
-                   Margin="15,0"
-                   Grid.Column="0"
-                   HorizontalAlignment="Left"
-                   VerticalAlignment="Center" />
+        <Button Content="{Binding CurrentSystemName}"
+                Style="{DynamicResource StatusBarBtn}"
+                IsEnabled="{Binding UiEnabled, Mode=OneWay}"
+                Command="{Binding OpenSystemCommand}"
+                Margin="15,0"
+                Grid.Column="0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center" />
 
-        <TextBlock Text="{Binding CurrentBody_Station}"
-                   Margin="5,0"
-                   Grid.Column="1"
-                   HorizontalAlignment="Center"
-                   VerticalAlignment="Center" />
+        <Button Content="{Binding CurrentBody_Station}"
+                Style="{DynamicResource StatusBarBtn}"
+                IsEnabled="{Binding UiEnabled, Mode=OneWay}"
+                Command="{Binding OpenStationCommand}"
+                Margin="5,0"
+                Grid.Column="1"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center" />
+
+        <Button Content="{Binding CurrentShipName}"
+                Style="{DynamicResource StatusBarBtn}"
+                IsEnabled="{Binding UiEnabled, Mode=OneWay}"
+                Command="{Binding OpenShipyardCommand}"
+                Margin="5,0"
+                Grid.Column="2"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center" />
 
         <StackPanel  Margin="5,5"
-                     Grid.Column="2"
+                     Grid.Column="3"
                      Orientation="Horizontal"
                      HorizontalAlignment="Right"
                      VerticalAlignment="Center">

@@ -1,11 +1,13 @@
 ﻿using ODEliteTracker.Controls.Navigation;
 using ODEliteTracker.Models.Galaxy;
+using ODEliteTracker.Models.Ship;
 using ODEliteTracker.Services;
 using ODEliteTracker.Stores;
 using ODEliteTracker.ViewModels.ModelViews;
 using ODJournalDatabase.JournalManagement;
 using ODMVVM.Commands;
 using ODMVVM.Extensions;
+using ODMVVM.Helpers;
 using ODMVVM.Navigation;
 using ODMVVM.Navigation.Controls;
 using ODMVVM.ViewModels;
@@ -40,6 +42,7 @@ namespace ODEliteTracker.ViewModels
             this.sharedData.StoreLive += OnStoreLive;
             this.sharedData.CurrentSystemChanged += OnCurrentSystemChanged;
             this.sharedData.CurrentBody_StationChanged += OnCurrentBody_StationChanged;
+            this.sharedData.ShipChangedEvent += OnCurrentShipChanged;
 
             this.journalManager.CommandersUpdated += OnCommandersUpdated;
 
@@ -47,7 +50,12 @@ namespace ODEliteTracker.ViewModels
 
             ResetWindowPositionCommand = new ODRelayCommand(OnResetWindow);
             RefreshCommanderCommand = new ODRelayCommand(OnRefreshCommander);
+            OpenSystemCommand = new ODRelayCommand(OnOpenSystemCommand);
+            OpenStationCommand = new ODRelayCommand(OnOpenStationCommand);
+            OpenShipyardCommand = new ODRelayCommand(OnOpenShipyardCommand);
         }
+
+
 
         public override bool IsLive => true;
         private readonly IODNavigationService navigationService;
@@ -203,6 +211,13 @@ namespace ODEliteTracker.ViewModels
             }
         }
 
+        public string CurrentShipName
+        {
+            get
+            {
+                return sharedData.CurrentShipInfo?.Name ?? string.Empty;
+            }
+        }
         public double UiScale
         {
             get => settings.UiScale;
@@ -217,9 +232,67 @@ namespace ODEliteTracker.ViewModels
 
         public ICommand ResetWindowPositionCommand { get; }
         public ICommand RefreshCommanderCommand { get; }
+        public ICommand OpenSystemCommand { get; }
+        public ICommand OpenStationCommand { get; }
+        public ICommand OpenShipyardCommand { get; }
 
-        private void OnResetWindow(object? obj)
+        private void OnOpenShipyardCommand(object? obj)
         {
+            if (sharedData.CurrentShipInfo == null)
+                return;
+
+            sharedData.CurrentShipInfo.OpenShipyard(settings.StatusBarSettings.ShipyardPreference);
+        }
+        private void OnOpenStationCommand(object? obj)
+        {
+            if (sharedData.CurrentSystem == null || sharedData.CurrentBody_Station == null)
+                return;
+
+            if (sharedData.CurrentMarketID > 0)
+            {
+                switch (settings.StatusBarSettings.StationBodyPreference)
+                {
+                    case Models.SystemWebSite.Inara:
+                        ODMVVM.Helpers.OperatingSystem.OpenUrl($"https://inara.cz/station/?search={sharedData.CurrentBody_Station.Replace(' ', '+')} [{sharedData.CurrentSystem.Name.Replace(' ', '+')}]");
+                        break;
+                    case Models.SystemWebSite.Spansh:
+                        ODMVVM.Helpers.OperatingSystem.OpenUrl($"https://spansh.co.uk/station/{sharedData.CurrentMarketID}");
+                        break;
+                }
+                return;
+            }
+
+            if (sharedData.CurrentBody == null)
+                return;
+
+            switch (settings.StatusBarSettings.StationBodyPreference)
+            {
+                case Models.SystemWebSite.Inara:
+                    ODMVVM.Helpers.OperatingSystem.OpenUrl($"https://inara.cz/galaxy-starsystem/?search={sharedData.CurrentSystem.Name.Replace(' ', '+')}");
+                    break;
+                case Models.SystemWebSite.Spansh:
+                    ODMVVM.Helpers.OperatingSystem.OpenUrl($"https://spansh.co.uk/body/{sharedData.CurrentSystem.Address | (sharedData.CurrentBody.BodyID) << 55}");
+                    break;
+            }
+        }
+
+        private void OnOpenSystemCommand(object? obj)
+        {
+            if (sharedData.CurrentSystem == null)
+                return;
+
+            switch (settings.StatusBarSettings.SystemSitePreference)
+            {
+                case Models.SystemWebSite.Inara:
+                    ODMVVM.Helpers.OperatingSystem.OpenUrl($"https://inara.cz/galaxy-starsystem/?search={sharedData.CurrentSystem.Name.Replace(' ', '+')}");
+                    break;
+                case Models.SystemWebSite.Spansh:
+                    ODMVVM.Helpers.OperatingSystem.OpenUrl($"https://spansh.co.uk/system/{sharedData.CurrentSystem.Address}");
+                    break;
+            }            
+        }
+        private void OnResetWindow(object? obj)
+        {            
             ODWindowPosition.ResetWindowPosition(WindowPosition);
             WindowPositionReset?.Invoke(this, EventArgs.Empty);
         }
@@ -246,6 +319,7 @@ namespace ODEliteTracker.ViewModels
             navigationService.NavigateTo(settings.CurrentViewModel);
             OnPropertyChanged(nameof(CurrentSystemName));
             OnPropertyChanged(nameof(CurrentBody_Station));
+            OnPropertyChanged(nameof(CurrentShipName));
             UiEnabled = true;
         }
 
@@ -280,6 +354,7 @@ namespace ODEliteTracker.ViewModels
                     OnPropertyChanged(nameof(SelectedCommander));
                     OnPropertyChanged(nameof(CurrentSystemName));
                     OnPropertyChanged(nameof(CurrentBody_Station));
+                    OnPropertyChanged(nameof(CurrentShipName));
                 }), DispatcherPriority.DataBind);
             }
 
@@ -299,6 +374,11 @@ namespace ODEliteTracker.ViewModels
         private void OnCurrentBody_StationChanged(object? sender, string? e)
         {
             OnPropertyChanged(nameof(CurrentBody_Station));
+        }
+
+        private void OnCurrentShipChanged(object? sender, ShipInfo? e)
+        {
+            OnPropertyChanged(nameof(CurrentShipName));
         }
 
         internal void OnClose()

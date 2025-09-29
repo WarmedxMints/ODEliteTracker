@@ -170,6 +170,16 @@ namespace ODEliteTracker.Services
             await UpdateCommanders();
         }
 
+        public async Task<CapiMarket?> GetCAPIMarket()
+        {
+            if (capiService.IsLive == false || selectedCommander == null)
+                return null;
+            await Task.Delay(1000);
+            var market = await capiService.GetMarketAsync(selectedCommander.Name);
+
+            return market;
+        }
+
         public MarketInfo? GetMarketInfo()
         {
             if (ManagerLive == false)

@@ -35,6 +35,21 @@
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
 
+        <ObjectDataProvider x:Key="website"
+                            MethodName="GetValues"
+                            ObjectType="{x:Type System:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="models:SystemWebSite" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
+        <ObjectDataProvider x:Key="shipyard"
+                            MethodName="GetValues"
+                            ObjectType="{x:Type System:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="models:ShipyardWebSite" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
     </UserControl.Resources>
 
     <Grid>
@@ -47,13 +62,14 @@
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
         <Border Background="{DynamicResource CardBackground}"
                 Margin="5"
                 Padding="5"
-                Grid.ColumnSpan="4"
+                Grid.ColumnSpan="5"
                 CornerRadius="5">
 
             <Grid Margin="10"
@@ -387,6 +403,111 @@
                         Height="40" />
             </Grid>
         </Border>
+
+        <Border Background="{DynamicResource CardBackground}"
+                HorizontalAlignment="Left"
+                Margin="5"
+                Padding="5"
+                Grid.Row="1"
+                Grid.Column="3"
+                CornerRadius="5">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="PREFERRED WEB SITES"
+                           HorizontalAlignment="Left"
+                           Grid.ColumnSpan="3"
+                           Margin="0,0,0,10"
+                           Foreground="{DynamicResource Header}"
+                           Background="Transparent" />
+
+                <TextBlock Text="Star System"
+                           Margin="5"
+                           Grid.Row="1"
+                           TextWrapping="NoWrap"
+                           TextAlignment="Left"
+                           VerticalAlignment="Center"
+                           Grid.Column="0" />
+                <ComboBox ItemsSource="{Binding Source={StaticResource website}}"
+                          SelectedItem="{Binding SystemPreference}"
+                          IsEnabled="{Binding IsLive}"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center"
+                          Grid.Column="1"
+                          Margin="5"
+                          Tag="Down"
+                          Grid.Row="1"
+                          Height="30"
+                          Width="145">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}"
+                                       Margin="5,0,0,0" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                
+                <TextBlock Text="Station/Body"
+                           Margin="5"
+                           Grid.Row="2"
+                           TextWrapping="NoWrap"
+                           TextAlignment="Left"
+                           VerticalAlignment="Center"
+                           Grid.Column="0" />
+                <ComboBox ItemsSource="{Binding Source={StaticResource website}}"
+                          SelectedItem="{Binding StationBodyPreference}"
+                          IsEnabled="{Binding IsLive}"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center"
+                          Grid.Column="1"
+                          Margin="5"
+                          Tag="Down"
+                          Grid.Row="2"
+                          Height="30"
+                          Width="145">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}"
+                                       Margin="5,0,0,0" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                
+                <TextBlock Text="Shipyard"
+                           Margin="5"
+                           Grid.Row="3"
+                           TextWrapping="NoWrap"
+                           TextAlignment="Left"
+                           VerticalAlignment="Center"
+                           Grid.Column="0" />
+                <ComboBox ItemsSource="{Binding Source={StaticResource shipyard}}"
+                          SelectedItem="{Binding ShipyardPrefence}"
+                          IsEnabled="{Binding IsLive}"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center"
+                          Grid.Column="1"
+                          Margin="5"
+                          Tag="Down"
+                          Grid.Row="3"
+                          Height="30"
+                          Width="145">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}"
+                                       Margin="5,0,0,0" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </Grid>
+        </Border>
         
         <Border Background="{DynamicResource CardBackground}"
                 VerticalAlignment="Stretch"
@@ -394,7 +515,7 @@
                 Margin="5"
                 Padding="5"
                 Grid.Row="1"
-                Grid.Column="3"
+                Grid.Column="4"
                 CornerRadius="5">
             <Grid>
                 <Grid.RowDefinitions>

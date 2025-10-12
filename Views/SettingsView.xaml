@@ -220,20 +220,7 @@
                             Grid.Row="1"
                             Grid.Column="2" />
 
-                    <TextBox Text="{Binding SelectedCommander.LastFile}"
-                             VerticalAlignment="Center"
-                             Background="Transparent"
-                             Padding="0,8"
-                             VerticalContentAlignment="Center"
-                             Foreground="{DynamicResource PrimaryForeground}"
-                             BorderBrush="{DynamicResource PrimaryControlBorder}"
-                             BorderThickness="1"
-                             IsReadOnly="True"
-                             FontSize="16"
-                             Height="40"
-                             Grid.Row="2" />
-
-                    <Button Content="Reset Last File"
+                    <Button Content="Migrate Commander"
                             HorizontalAlignment="Center"
                             Height="40"
                             FontSize="18"
@@ -242,7 +229,7 @@
                             Grid.Row="2"
                             Grid.Column="2"
                             Style="{DynamicResource EliteStyleButton}"
-                            Command="{Binding ResetLastReadFile}" />
+                            Command="{Binding MigrateComannder}" />
 
                     <Button Content="Scan Directory"
                             x:Name="ScanDirectoryBtn"

@@ -8,6 +8,7 @@ namespace ODEliteTracker.ViewModels.ModelViews
     {
         public string Name => cmdr.Name;
         public int Id => cmdr.Id;
+        public int MigratedTo => cmdr.MigratedTo;
 
         private string journalPath = cmdr.JournalPath ?? string.Empty;
         public string JournalPath

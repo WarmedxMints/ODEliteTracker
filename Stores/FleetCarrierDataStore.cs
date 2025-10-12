@@ -7,7 +7,6 @@ using ODEliteTracker.Services;
 using ODJournalDatabase.JournalManagement;
 using ODMVVM.Helpers;
 using ODMVVM.Utils;
-using System;
 
 namespace ODEliteTracker.Stores
 {
@@ -202,7 +201,7 @@ namespace ODEliteTracker.Stores
                         }
 
                         //Carrier location event is fired when logging in so check that isn't the case
-                        if (squadFleetCarrierTimer.TimerRunning || sharedData.LastLoginTime - cLocation.Timestamp < TimeSpan.FromSeconds(10))
+                        if (squadFleetCarrierTimer.TimerRunning || cLocation.Timestamp  - sharedData.LastLoginTime < TimeSpan.FromSeconds(10))
                             break;
 
                         var notificationTime = (cLocation.Timestamp - DateTime.UtcNow) + TimeSpan.FromMinutes(5); 

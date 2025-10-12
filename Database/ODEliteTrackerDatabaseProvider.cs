@@ -14,6 +14,7 @@ using ODJournalDatabase.Database.DTOs;
 using ODJournalDatabase.Database.Interfaces;
 using ODJournalDatabase.JournalManagement;
 using ODMVVM.Helpers.IO;
+using System.Diagnostics.CodeAnalysis;
 using BGSIgnoredSystems = ODEliteTracker.Models.BGS.BGSIgnoredSystems;
 
 namespace ODEliteTracker.Database
@@ -33,7 +34,7 @@ namespace ODEliteTracker.Database
             if (includeHidden)
             {
                 var allCmdrs = await context.JournalCommanders
-                    .Select(x => new JournalCommander(x.Id, x.Name, x.JournalDir, x.LastFile, x.IsHidden, x.UseCAPI))
+                    .Select(x => new JournalCommander(x.Id, x.Name, x.JournalDir, x.LastFile, x.IsHidden, x.UseCAPI, x.MigratedTo))
                     .ToListAsync();
 
                 var reslt = allCmdrs.OrderBy(x => x.Name.Contains("(Legacy)"))
@@ -43,7 +44,7 @@ namespace ODEliteTracker.Database
 
             var cmdrs = await context.JournalCommanders
                 .Where(x => x.IsHidden == false)
-                .Select(x => new JournalCommander(x.Id, x.Name, x.JournalDir, x.LastFile, x.IsHidden, x.UseCAPI))
+                .Select(x => new JournalCommander(x.Id, x.Name, x.JournalDir, x.LastFile, x.IsHidden, x.UseCAPI, x.MigratedTo))
                 .ToListAsync();
 
             var ret = cmdrs.OrderBy(x => x.Name.Contains("(Legacy)"))
@@ -71,7 +72,7 @@ namespace ODEliteTracker.Database
                 };
                 context.JournalCommanders.Add(known);
                 context.SaveChanges();
-                return new(known.Id, known.Name, known.JournalDir, known.LastFile, known.IsHidden, known.UseCAPI);
+                return new(known.Id, known.Name, known.JournalDir, known.LastFile, known.IsHidden, known.UseCAPI, known.MigratedTo);
             }
 
             known.LastFile = cmdr.LastFile ?? string.Empty;
@@ -83,7 +84,19 @@ namespace ODEliteTracker.Database
                 known.UseCAPI = cmdr.UseCAPI;
             context.SaveChanges();
             context.Database.CloseConnection();
-            return new(known.Id, known.Name, known.JournalDir, known.LastFile, known.IsHidden, known.UseCAPI);
+
+            //If migrated, return the new commander instead
+            if (known.MigratedTo > 0)
+            {
+                var newCommander = context.JournalCommanders.FirstOrDefault(x => x.Id == known.MigratedTo);
+
+                if (newCommander != null)
+                {
+                    return new(newCommander.Id, newCommander.Name, newCommander.JournalDir, newCommander.LastFile, newCommander.IsHidden, newCommander.UseCAPI, newCommander.MigratedTo);
+                }
+            }
+
+            return new(known.Id, known.Name, known.JournalDir, known.LastFile, known.IsHidden, known.UseCAPI, known.MigratedTo);
         }
 
         public JournalCommander? GetCommander(int cmdrId)
@@ -97,7 +110,7 @@ namespace ODEliteTracker.Database
                 return null;
             }
 
-            return new(known.Id, known.Name, known.JournalDir, known.LastFile, known.IsHidden, known.UseCAPI);
+            return new(known.Id, known.Name, known.JournalDir, known.LastFile, known.IsHidden, known.UseCAPI, known.MigratedTo);
         }
 
         public async Task DeleteCommander(int commanderID)
@@ -112,10 +125,44 @@ namespace ODEliteTracker.Database
             }
 
             await context.JournalEntries.Where(x => x.CommanderID == commanderID).ExecuteDeleteAsync().ConfigureAwait(true);
+            await context.IgnoredBounties.Where(x => x.CommanderID == commanderID).ExecuteDeleteAsync().ConfigureAwait(true);
+            await context.SpanshCsvs.Where(x => x.CommanderID == commanderID).ExecuteDeleteAsync().ConfigureAwait(true);
 
             context.JournalCommanders.Remove(cmdr);
 
+            var migratedCommander = context.JournalCommanders.FirstOrDefault(x => x.MigratedTo == cmdr.Id);
+
+            if (migratedCommander != null)
+            {
+                context.JournalCommanders.Remove(migratedCommander);
+                await context.JournalEntries.Where(x => x.CommanderID == migratedCommander.Id).ExecuteDeleteAsync().ConfigureAwait(true);
+                await context.IgnoredBounties.Where(x => x.CommanderID == migratedCommander.Id).ExecuteDeleteAsync().ConfigureAwait(true);
+                await context.SpanshCsvs.Where(x => x.CommanderID == migratedCommander.Id).ExecuteDeleteAsync().ConfigureAwait(true);
+            }
             await context.SaveChangesAsync(true);
+        }
+
+        public async Task<bool> MigrateCommander(int oldID, int newID)
+        {
+            using var context = _contextFactory.CreateDbContext();
+
+            var oldCommander = context.JournalCommanders.FirstOrDefault(x => x.Id == oldID);
+            var newCommander = context.JournalCommanders.FirstOrDefault(x => x.Id == newID);
+
+            if (oldCommander == null || newCommander == null)
+                return false;
+
+
+            await context.Database.ExecuteSqlAsync(
+                @$"UPDATE JournalEntries SET CommanderID = {newCommander.Id} WHERE CommanderID = {oldCommander.Id};
+                UPDATE IgnoredBounties SET CommanderID = {newCommander.Id} WHERE CommanderID = {oldCommander.Id};
+                UPDATE SpanshCsvs SET CommanderID = {newCommander.Id} WHERE CommanderID = {oldCommander.Id};").ConfigureAwait(true);
+
+            oldCommander.MigratedTo = newCommander.Id;
+
+            await context.SaveChangesAsync();
+
+            return true;
         }
         #endregion
 

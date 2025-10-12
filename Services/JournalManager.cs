@@ -118,8 +118,8 @@ namespace ODEliteTracker.Services
                 }
 
                 var history = journalLogParserList.Where(x => x.EventsToParse.Count != 0).ToList();
-                if (SelectedCommander != null && SelectedCommander.UseCAPI && string.IsNullOrEmpty(SelectedCommander.Name) == false)
-                    _= Task.Run(() => capiService.Login(SelectedCommander.Name, SelectedCommander.Name.Contains("(Legacy)")).ConfigureAwait(false));
+                if (SelectedCommander?.UseCAPI == true && string.IsNullOrEmpty(SelectedCommander.Name) == false)
+                    _= Task.Run(() => capiService.Login(SelectedCommander.Name, SelectedCommander.Name.Contains("(Legacy)")).ConfigureAwait(true));
 
                 await eventParser.StreamJournalHistoryOfTypeAsync(settingsStore.SelectedCommanderID, history, settingsStore.JournalAgeDateTime);
             }
@@ -164,7 +164,7 @@ namespace ODEliteTracker.Services
         public async Task ReadNewDirectory(string path)
         {
             ManagerLive = false;
-            var commander = new JournalCommander(-1, "Reading History", path, "", false, false);
+            var commander = new JournalCommander(-1, "Reading History", path, "", false, false, -1);
 
             await eventParser.StartWatchingAsync(commander, false).ConfigureAwait(true);
             await UpdateCommanders();
@@ -250,7 +250,7 @@ namespace ODEliteTracker.Services
         public async Task ReadSelectedCommander()
         {
             SelectedCommander = Commanders.FirstOrDefault(cmdr => cmdr.Id == settingsStore.SelectedCommanderID)
-                ?? new(-1, string.Empty, string.Empty, string.Empty, false, false);
+                ?? new(-1, string.Empty, string.Empty, string.Empty, false, false, -1);
 
             await eventParser.StartWatchingAsync(SelectedCommander, false).ConfigureAwait(true);
         }

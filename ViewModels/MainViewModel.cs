@@ -291,6 +291,22 @@ namespace ODEliteTracker.ViewModels
                     break;
             }            
         }
+        public async Task UpdateCommanders()
+        {
+            if (journalManager is JournalManager manager)
+            {
+                await manager.UpdateCommanders();
+                var cmdrs = manager.Commanders.Select(x => new JournalCommanderVM(x));
+
+                JournalCommanders.ClearCollection();
+                JournalCommanders.AddRange(cmdrs.Where(x => x.MigratedTo < 0));
+                SelectedCommander = JournalCommanders.FirstOrDefault(x => x.Id == settings.SelectedCommanderID);
+                OnPropertyChanged(nameof(JournalCommanders));
+                OnPropertyChanged(nameof(SelectedCommander));
+                await Task.Delay(500);
+                await ChangeCommander().ConfigureAwait(true);
+            }
+        }
         private void OnResetWindow(object? obj)
         {            
             ODWindowPosition.ResetWindowPosition(WindowPosition);
@@ -347,7 +363,7 @@ namespace ODEliteTracker.ViewModels
                     var cmdrs = manager.Commanders.Select(x => new JournalCommanderVM(x));
 
                     JournalCommanders.ClearCollection();
-                    JournalCommanders.AddRange(cmdrs);
+                    JournalCommanders.AddRange(cmdrs.Where(x => x.MigratedTo < 0));
                     SelectedCommander = JournalCommanders.FirstOrDefault(x => x.Id == settings.SelectedCommanderID);
                     popOutService.OpenSavedViews(settings.SelectedCommanderID);
                     OnPropertyChanged(nameof(JournalCommanders));

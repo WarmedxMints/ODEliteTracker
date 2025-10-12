@@ -2,7 +2,9 @@
 using ODEliteTracker.Models;
 using ODEliteTracker.Stores;
 using ODEliteTracker.Themes;
+using ODEliteTracker.ViewModels.Dialogs;
 using ODEliteTracker.ViewModels.ModelViews;
+using ODEliteTracker.Views.Dialogs;
 using ODJournalDatabase.Database.Interfaces;
 using ODJournalDatabase.JournalManagement;
 using ODMVVM.Commands;
@@ -23,7 +25,8 @@ namespace ODEliteTracker.ViewModels
                                  IODNavigationService navigationService,
                                  IODDatabaseProvider databaseProvider,
                                  IManageJournalEvents journalManager,
-                                 CAPIService capiService)
+                                 CAPIService capiService,
+                                 MainViewModel mainViewModel)
         {
             this.themeManager = themeManager;
             this.setting = setting;
@@ -31,11 +34,12 @@ namespace ODEliteTracker.ViewModels
             this.databaseProvider = databaseProvider;
             this.journalManager = journalManager;
             this.capiService = capiService;
+            this.mainViewModel = mainViewModel;
 
             SetTheme = new ODRelayCommand<Theme>(OnChangeTheme);
             OpenUrlCommand = new ODRelayCommand<string>(OpenUrl);
 
-            ResetLastReadFile = new ODRelayCommand(OnResetLastFile, (_) => SelectedCommander != null && SelectedCommander?.Id != setting.SelectedCommanderID);
+            MigrateComannder = new ODRelayCommand(OnMigrate);
             ChangeJourneyDirectoryCommand = new ODRelayCommand(OnChangeJournalDirectory, (_) => SelectedCommander != null && SelectedCommander?.Id != setting.SelectedCommanderID);
             SaveCommanderChanges = new ODAsyncRelayCommand(OnSaveCommanderChanges, () => SelectedCommander != null);
             ReadNewDirectoryCommand = new ODAsyncRelayCommand(OnReadNewDirectory);
@@ -60,6 +64,7 @@ namespace ODEliteTracker.ViewModels
         private readonly IODDatabaseProvider databaseProvider;
         private readonly IManageJournalEvents journalManager;
         private readonly CAPIService capiService;
+        private readonly MainViewModel mainViewModel;
 
         public override bool IsLive => true;
 
@@ -141,7 +146,7 @@ namespace ODEliteTracker.ViewModels
         #region Commands
         public ICommand SetTheme { get; }
         public ICommand OpenUrlCommand { get; }
-        public ICommand ResetLastReadFile { get; }
+        public ICommand MigrateComannder { get; }
         public ICommand ChangeJourneyDirectoryCommand { get; }
         public ICommand SaveCommanderChanges { get; }
         public ICommand DeleteCommander { get; }
@@ -201,6 +206,7 @@ namespace ODEliteTracker.ViewModels
             {
                 return;
             }
+
             var directory = ODDialogService.DirectorySelectDialog(SelectedCommander.JournalPath);
 
             if (string.IsNullOrEmpty(directory) == false && SelectedCommander != null)
@@ -211,10 +217,32 @@ namespace ODEliteTracker.ViewModels
             }
         }
 
-        private void OnResetLastFile(object? obj)
+        private void OnMigrate(object? obj)
         {
-            if (SelectedCommander != null)
-                SelectedCommander.LastFile = string.Empty;
+            var currentCommander = databaseProvider.GetCommander(setting.SelectedCommanderID);
+
+            if (currentCommander == null)
+            {
+                return;
+            }
+
+            var currentCMDRVM = new JournalCommanderVM(currentCommander);
+
+            var vm = new MigrationDialogViewModel(databaseProvider, currentCMDRVM);
+
+            var dialog = new MigrationDialogView()
+            {
+                Owner = Application.Current.MainWindow,
+                DataContext = vm,
+            };
+
+            var result = dialog.ShowDialog();
+
+            if (result == true)
+            {
+                _= mainViewModel.UpdateCommanders();
+                return;
+            }
         }
 
         private async Task OnDeleteCommander(Window? window)
@@ -252,7 +280,7 @@ namespace ODEliteTracker.ViewModels
 
             foreach (var commander in JournalCommanderViews)
             {
-                databaseProvider.AddCommander(new(commander.Id, commander.Name, commander.JournalPath, commander.LastFile, commander.IsHidden, commander.UseCAPI), true, true);
+                databaseProvider.AddCommander(new(commander.Id, commander.Name, commander.JournalPath, commander.LastFile, commander.IsHidden, commander.UseCAPI, commander.MigratedTo), true, true);
             }
             await journalManager.UpdateCommanders();
         }
@@ -300,7 +328,7 @@ namespace ODEliteTracker.ViewModels
         {
             var commanders = await databaseProvider.GetAllJournalCommanders(true);
 
-            var vms = commanders.Select(x => new JournalCommanderVM(x));
+            var vms = commanders.Where(x => x.MigratedTo < 0).Select(x => new JournalCommanderVM(x));
 
             JournalCommanderViews.ClearCollection();
 

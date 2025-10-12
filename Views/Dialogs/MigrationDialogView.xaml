@@ -1,0 +1,101 @@
+﻿<views:ODWindowBase  xmlns:views="clr-namespace:ODMVVM.Views;assembly=ODMVVM"
+                     x:Class="ODEliteTracker.Views.Dialogs.MigrationDialogView"
+                     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                     xmlns:local="clr-namespace:ODEliteTracker.Views.Dialogs"
+                     xmlns:dialogs="clr-namespace:ODEliteTracker.ViewModels.Dialogs"
+                     mc:Ignorable="d"
+                     Background="{DynamicResource ViewBackground}"
+                     Foreground="{DynamicResource PrimaryForeground}"
+                     d:DataContext="{d:DesignInstance dialogs:MigrationDialogViewModel}"
+                     WindowStartupLocation="CenterOwner"
+                     Title="Migrate Commander"
+                     Width="550"
+                     Height="300"
+                     FontFamily="{DynamicResource Eurostile}"
+                     FontSize="18">
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="25"
+                      GlassFrameThickness="1"
+                      ResizeBorderThickness="10" />
+    </WindowChrome.WindowChrome>
+    <Border BorderThickness="{Binding ElementName=Root, Path=MainWindowBorderThickness}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <views:ODTitleBar TitleBarIcon="/Assets/Images/elite-dangerous-clean.png"
+                              ColourImageIcon="True"
+                              TitleBarForeground="{DynamicResource TitlebarForeGround}"
+                              TitleBarBackground="{DynamicResource TitleBarBackGround}"
+                              TitleBarMouseOver="{DynamicResource TitlebarMouseOver}" />
+
+            <Grid Margin="10"
+                  Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+
+                <TextBlock Text="Select Commander to migrate"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"/>
+
+                <ComboBox ItemsSource="{Binding JournalCommanders}"
+                          SelectedItem="{Binding SelectCommander}"
+                          Grid.Row="1"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center"
+                          DisplayMemberPath="Name"
+                          MinWidth="230"
+                          Tag="Down"
+                          FontSize="18"
+                          IsReadOnly="True"
+                          IsSynchronizedWithCurrentItem="False" />
+
+                <TextBlock Grid.Row="2"
+                           Text="{Binding MigrationMessage}"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center" />
+                <TextBlock Grid.Row="3"
+                           Text="{Binding CurrentCommander.Name}"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center" />
+
+                <TextBlock Grid.Row="4"
+                           Text="WARNING : Undoing this action requires deleting the new commander"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center" />
+
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            Grid.Row="5">
+                    <Button Style="{DynamicResource EliteStyleButton}"
+                            Content="Migrate"
+                            Margin="5,0"
+                            Width="80"
+                            IsEnabled="{Binding UiEnabled}"
+                            Command="{Binding MigrateCommander}" />
+
+                    <Button Style="{DynamicResource EliteStyleButton}"
+                            Content="Cancel"
+                            Margin="5,0"
+                            Width="80"
+                            IsEnabled="{Binding UiEnabled}"
+                            Click="CancelButton_Click" />
+                </StackPanel>
+
+            </Grid>
+        </Grid>
+    </Border>
+
+</views:ODWindowBase>

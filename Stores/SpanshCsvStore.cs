@@ -201,7 +201,7 @@ namespace ODEliteTracker.Stores
                     break;
                 case CarrierLocationEvent.CarrierLocationEventArgs carrierLocation:
                     //Carrier location event is fired when logging in so check that isn't the case
-                    if (sharedData.LastLoginTime - carrierLocation.Timestamp < TimeSpan.FromSeconds(10))
+                    if (carrierLocation.Timestamp - sharedData.LastLoginTime < TimeSpan.FromSeconds(10))
                         break;
                     OnCurrentSystemChanged(carrierLocation.StarSystem);
                     break;

@@ -10,6 +10,7 @@
              xmlns:colonisation="clr-namespace:ODEliteTracker.Controls.Colonisation"
              xmlns:models="clr-namespace:ODEliteTracker.Models"
              xmlns:helpers="clr-namespace:ODEliteTracker.Helpers"
+             xmlns:popouts="clr-namespace:ODEliteTracker.ViewModels.PopOuts"
              d:DataContext="{d:DesignInstance viewmodels:ColonisationViewModel}"
              mc:Ignorable="d"
              x:Name="Root"
@@ -515,6 +516,15 @@
                                                       VerticalAlignment="Center"
                                                       IsReadOnly="True"
                                                       IsSynchronizedWithCurrentItem="False" />
+                                            <Button Command="{Binding OpenPopOut}"
+                                                    CommandParameter="{x:Type popouts:ColonisationPopOut}"
+                                                    Style="{DynamicResource EliteStyleImageButton}"
+                                                    Width="35"
+                                                    Margin="5,0"
+                                                    Padding="5"
+                                                    ToolTip="Open Overlay">
+                                                <Image Source="/Assets/Icons/PopOutBtn.png" />
+                                            </Button>
                                             <Button Command="{Binding AddShoppingListCommand}"
                                                     CommandParameter="{Binding SelectedDepot}"
                                                     Style="{DynamicResource EliteStyleImageButton}"
@@ -736,6 +746,15 @@
                                                       VerticalAlignment="Center"
                                                       IsReadOnly="True"
                                                       IsSynchronizedWithCurrentItem="False" />
+                                            <Button Command="{Binding OpenPopOut}"
+                                                    CommandParameter="{x:Type popouts:ShoppingListPopOutVM}"
+                                                    Style="{DynamicResource EliteStyleImageButton}"
+                                                    Width="35"
+                                                    Margin="5,0"
+                                                    Padding="5"
+                                                    ToolTip="Open Overlay">
+                                                <Image Source="/Assets/Icons/PopOutBtn.png" />
+                                            </Button>
                                         </StackPanel>
                                     </Grid>                              
                                     
@@ -876,6 +895,15 @@
                                                       VerticalAlignment="Center"
                                                       IsReadOnly="True"
                                                       IsSynchronizedWithCurrentItem="False" />
+                                            <Button Command="{Binding OpenPopOut}"
+                                                    CommandParameter="{x:Type popouts:MarketWatchListPopOutViewModel}"
+                                                    Style="{DynamicResource EliteStyleImageButton}"
+                                                    Width="35"
+                                                    Margin="5,0"
+                                                    Padding="5"
+                                                    ToolTip="Open Overlay">
+                                                <Image Source="/Assets/Icons/PopOutBtn.png" />
+                                            </Button>
                                         </StackPanel>
                                     </Grid>
 

@@ -45,6 +45,7 @@
     <None Remove="Assets\Icons\TopMost.png" />
     <None Remove="Assets\Icons\trade.png" />
     <None Remove="Assets\Icons\Transparency.png" />
+    <None Remove="Assets\Icons\watchlist.png" />
     <None Remove="Assets\Icons\Wing.png" />
     <None Remove="Assets\Icons\zoom.png" />
     <None Remove="Assets\Images\elite-dangerous-clean.png" />
@@ -148,6 +149,9 @@
     <Resource Include="Assets\Icons\TopMost.png" />
     <Resource Include="Assets\Icons\trade.png" />
     <Resource Include="Assets\Icons\Transparency.png" />
+    <Resource Include="Assets\Icons\watchlist.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Assets\Icons\Wing.png" />
     <Resource Include="Assets\Icons\zoom.png" />
     <Resource Include="Assets\Images\elite-dangerous-clean.png" />

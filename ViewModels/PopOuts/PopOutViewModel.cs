@@ -36,7 +36,7 @@ namespace ODEliteTracker.ViewModels.PopOuts
 
         public int Count { get; set; }
 
-        private double opacityWhenMouseOver = 1;
+        private readonly double opacityWhenMouseOver = 1;
 
 		private double opacity = 1d; 
 		public double Opacity

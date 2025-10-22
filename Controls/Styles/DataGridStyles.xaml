@@ -385,6 +385,29 @@
     </Style>
 
     <Style TargetType="{x:Type DataGridCell}"
+           x:Key="NoSelectCellNoMarginPopOut">
+        <Setter Property="BorderThickness"
+                Value="0" />
+        <Setter Property="IsHitTestVisible"
+                Value="True" />
+        <Setter Property="Background"
+                Value="Transparent" />
+        <Setter Property="BorderBrush"
+                Value="Transparent" />
+        <Setter Property="FocusVisualStyle"
+                Value="{x:Null}" />
+        <Style.Triggers>
+            <Trigger Property="IsSelected"
+                     Value="True">
+                <Setter Property="Foreground"
+                        Value="{DynamicResource Overlay_ForegroundBrush}" />
+                <Setter Property="Background"
+                        Value="Transparent" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    
+    <Style TargetType="{x:Type DataGridCell}"
            x:Key="OverlayCell">
         <Setter Property="BorderThickness"
                 Value="0" />

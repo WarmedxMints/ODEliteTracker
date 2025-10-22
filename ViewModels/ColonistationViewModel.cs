@@ -17,7 +17,6 @@ using ODMVVM.ViewModels;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace ODEliteTracker.ViewModels
 {
@@ -27,13 +26,15 @@ namespace ODEliteTracker.ViewModels
                                      SharedDataStore sharedDataStore,
                                      FleetCarrierDataStore fcDataStore,
                                      SettingsStore settings,
-                                     NotificationService notification)
+                                     NotificationService notification,
+                                     PopOutService popOutService)
         {
             this.colonisationStore = colonisationStore;
             this.sharedData = sharedDataStore;
             this.fcDataStore = fcDataStore;
             this.settings = settings;
             this.notification = notification;
+            this.popOutService = popOutService;
             this.colonisationStore.StoreLive += OnStoreLive;
             this.colonisationStore.DepotUpdated += OnDepotUpdated;
             this.colonisationStore.NewDepot += OnNewDepot;
@@ -63,6 +64,7 @@ namespace ODEliteTracker.ViewModels
             SetClipboardCommand = new ODRelayCommand<string>(CopyToClipboard);
             AddShoppingListCommand = new ODRelayCommand<ConstructionDepotVM?>(OnAddShoppingList);
             AddRemoveWatchedMarketsCommand = new ODRelayCommand<ulong>(OnAddRemoveWatchedMarket);
+            OpenPopOut = new ODRelayCommand<Type>(OnOpenPopOut);
 
             Depots.CollectionChanged += Depots_CollectionChanged;
 
@@ -110,6 +112,7 @@ namespace ODEliteTracker.ViewModels
         private readonly FleetCarrierDataStore fcDataStore;
         private readonly SettingsStore settings;
         private readonly NotificationService notification;
+        private readonly PopOutService popOutService;
         #endregion
 
         #region Commands
@@ -120,6 +123,7 @@ namespace ODEliteTracker.ViewModels
         public ICommand SetClipboardCommand { get; }
         public ICommand AddShoppingListCommand { get; }
         public ICommand AddRemoveWatchedMarketsCommand { get; }
+        public ICommand OpenPopOut { get; }
         #endregion
 
         #region Public properties
@@ -541,7 +545,7 @@ namespace ODEliteTracker.ViewModels
 
                 WatchedMarkets.ClearCollection();
                 WatchedMarkets.AddRange(sharedData.WatchedMarkets.Select(x => new WatchedMarketVM(x)));
-
+                SelectedWatchedMarket = WatchedMarkets.FirstOrDefault();
                 OnPropertyChanged(nameof(ActiveDepots));
                 OnPropertyChanged(nameof(InactiveDepots));
             }
@@ -750,7 +754,6 @@ namespace ODEliteTracker.ViewModels
 
         private void OnAddRemoveWatchedMarket(ulong obj)
         {
-
             sharedData.AddRemoveWatchedMarket(obj);
         }
 
@@ -767,6 +770,11 @@ namespace ODEliteTracker.ViewModels
         private void OnCurrentSystemChanged(object? sender, StarSystem? e)
         {
             OnPropertyChanged(nameof(Purchases));
+        }
+
+        private void OnOpenPopOut(Type type)
+        {
+            popOutService.OpenPopOut(type, settings.SelectedCommanderID);
         }
     }
 }

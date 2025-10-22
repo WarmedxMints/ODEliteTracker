@@ -8,6 +8,7 @@
              xmlns:overlay="clr-namespace:ODEliteTracker.Themes.Overlay"
              xmlns:viewmodels="clr-namespace:ODEliteTracker.ViewModels"
              xmlns:wpfconverters="clr-namespace:ODEliteTracker.WPFConverters"
+             xmlns:core="clr-namespace:System;assembly=mscorlib"
              d:DataContext="{d:DesignInstance viewmodels:PopOutControlViewModel}"
              mc:Ignorable="d"
              d:DesignHeight="1920"
@@ -59,6 +60,9 @@
             <Setter Property="Content"
                     Value="&#xE106;" />
         </Style>
+
+        <core:Double x:Key="BtnSize">155</core:Double>
+        <core:Double x:Key="BtnGridSize">145</core:Double>
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -90,14 +94,14 @@
                            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                            ScrollViewer.VerticalScrollBarVisibility="Disabled">
 
-                    <Button Style="{DynamicResource EliteStyleButton}"
-                            Height="140"
-                            Width="140"
+                    <Button Style="{DynamicResource EliteStyleButton}"                          
                             Command="{Binding OpenPopOut}"
                             CommandParameter="{x:Type popouts:MassacrePopOutViewModel}"
-                            Margin="5">
-                        <Grid Height="120"
-                              Width="120">
+                            Margin="5"
+                            Height="{StaticResource BtnSize}"
+                            Width="{StaticResource BtnSize}">
+                        <Grid Height="{StaticResource BtnGridSize}"
+                              Width="{StaticResource BtnGridSize}">
                             <Grid.RowDefinitions>
                                 <RowDefinition />
                                 <RowDefinition Height="Auto" />
@@ -113,7 +117,7 @@
                                     </VisualBrush>
                                 </Rectangle.OpacityMask>
                             </Rectangle>
-                            <TextBlock Text="Massacre Overlay"
+                            <TextBlock Text="Massacre&#x0a;Overlay"
                                        TextWrapping="Wrap"
                                        Margin="5"
                                        TextAlignment="Center"
@@ -122,13 +126,13 @@
                     </Button>
 
                     <Button Style="{DynamicResource EliteStyleButton}"
-                            Height="140"
-                            Width="140"
                             Command="{Binding OpenPopOut}"
                             CommandParameter="{x:Type popouts:TradePopoutViewModel}"
-                            Margin="5">
-                        <Grid Height="120"
-                              Width="120">
+                            Margin="5"
+                            Height="{StaticResource BtnSize}"
+                            Width="{StaticResource BtnSize}">
+                        <Grid Height="{StaticResource BtnGridSize}"
+                              Width="{StaticResource BtnGridSize}">
                             <Grid.RowDefinitions>
                                 <RowDefinition />
                                 <RowDefinition Height="Auto" />
@@ -153,13 +157,13 @@
                     </Button>
 
                     <Button Style="{DynamicResource EliteStyleButton}"
-                            Height="140"
-                            Width="140"
                             Command="{Binding OpenPopOut}"
                             CommandParameter="{x:Type popouts:ColonisationPopOut}"
-                            Margin="5">
-                        <Grid Height="120"
-                              Width="120">
+                            Margin="5"
+                            Height="{StaticResource BtnSize}"
+                            Width="{StaticResource BtnSize}">
+                        <Grid Height="{StaticResource BtnGridSize}"
+                              Width="{StaticResource BtnGridSize}">
                             <Grid.RowDefinitions>
                                 <RowDefinition />
                                 <RowDefinition Height="Auto" />
@@ -175,7 +179,7 @@
                                     </VisualBrush>
                                 </Rectangle.OpacityMask>
                             </Rectangle>
-                            <TextBlock Text="Colonisation Overlay"
+                            <TextBlock Text="Colonisation&#x0a;Overlay"
                                        TextWrapping="Wrap"
                                        Margin="5"
                                        TextAlignment="Center"
@@ -184,13 +188,13 @@
                     </Button>
 
                     <Button Style="{DynamicResource EliteStyleButton}"
-                            Height="140"
-                            Width="140"
                             Command="{Binding OpenPopOut}"
                             CommandParameter="{x:Type popouts:ShoppingListPopOutVM}"
-                            Margin="5">
-                        <Grid Height="120"
-                              Width="120">
+                            Margin="5"
+                            Height="{StaticResource BtnSize}"
+                            Width="{StaticResource BtnSize}">
+                        <Grid Height="{StaticResource BtnGridSize}"
+                              Width="{StaticResource BtnGridSize}">
                             <Grid.RowDefinitions>
                                 <RowDefinition />
                                 <RowDefinition Height="Auto" />
@@ -206,7 +210,38 @@
                                     </VisualBrush>
                                 </Rectangle.OpacityMask>
                             </Rectangle>
-                            <TextBlock Text="Shopping List Overlay"
+                            <TextBlock Text="Shopping List&#x0a;Overlay"
+                                       TextWrapping="Wrap"
+                                       Margin="5"
+                                       TextAlignment="Center"
+                                       Grid.Row="1" />
+                        </Grid>
+                    </Button>
+
+                    <Button Style="{DynamicResource EliteStyleButton}"
+                            Command="{Binding OpenPopOut}"
+                            CommandParameter="{x:Type popouts:MarketWatchListPopOutViewModel}"
+                            Margin="5"
+                            Height="{StaticResource BtnSize}"
+                            Width="{StaticResource BtnSize}">
+                        <Grid Height="{StaticResource BtnGridSize}"
+                              Width="{StaticResource BtnGridSize}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Rectangle Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
+                                       Height="48"
+                                       Width="48">
+                                <Rectangle.OpacityMask>
+                                    <VisualBrush>
+                                        <VisualBrush.Visual>
+                                            <Image Source="/Assets/Icons/watchlist.png" />
+                                        </VisualBrush.Visual>
+                                    </VisualBrush>
+                                </Rectangle.OpacityMask>
+                            </Rectangle>
+                            <TextBlock Text="Market Watchlist&#x0a;Overlay"
                                        TextWrapping="Wrap"
                                        Margin="5"
                                        TextAlignment="Center"
@@ -215,13 +250,13 @@
                     </Button>
                     
                     <Button Style="{DynamicResource EliteStyleButton}"
-                            Height="140"
-                            Width="140"
                             Command="{Binding OpenPopOut}"
                             CommandParameter="{x:Type popouts:CompassPopOutViewModel}"
-                            Margin="5">
-                        <Grid Height="120"
-                              Width="120">
+                            Margin="5"
+                            Height="{StaticResource BtnSize}"
+                            Width="{StaticResource BtnSize}">
+                        <Grid Height="{StaticResource BtnGridSize}"
+                              Width="{StaticResource BtnGridSize}">
                             <Grid.RowDefinitions>
                                 <RowDefinition />
                                 <RowDefinition Height="Auto" />
@@ -237,7 +272,7 @@
                                     </VisualBrush>
                                 </Rectangle.OpacityMask>
                             </Rectangle>
-                            <TextBlock Text="Compass Overlay"
+                            <TextBlock Text="Compass&#x0a;Overlay"
                                        TextWrapping="Wrap"
                                        Margin="5"
                                        TextAlignment="Center"
@@ -246,13 +281,13 @@
                     </Button>
 
                     <Button Style="{DynamicResource EliteStyleButton}"
-                            Height="140"
-                            Width="140"
                             Command="{Binding OpenPopOut}"
                             CommandParameter="{x:Type popouts:SpanshPopOutViewModel}"
-                            Margin="5">
-                        <Grid Height="120"
-                              Width="120">
+                            Margin="5"
+                            Height="{StaticResource BtnSize}"
+                            Width="{StaticResource BtnSize}">
+                        <Grid Height="{StaticResource BtnGridSize}"
+                              Width="{StaticResource BtnGridSize}">
                             <Grid.RowDefinitions>
                                 <RowDefinition />
                                 <RowDefinition Height="Auto" />
@@ -268,7 +303,7 @@
                                     </VisualBrush>
                                 </Rectangle.OpacityMask>
                             </Rectangle>
-                            <TextBlock Text="Spansh Overlay"
+                            <TextBlock Text="Spansh&#x0a;Overlay"
                                        TextWrapping="Wrap"
                                        Margin="5"
                                        TextAlignment="Center"
@@ -277,13 +312,13 @@
                     </Button>
 
                     <Button Style="{DynamicResource EliteStyleButton}"
-                            Height="140"
-                            Width="140"
                             Command="{Binding OpenPopOut}"
                             CommandParameter="{x:Type popouts:MiningTablePopOut}"
-                            Margin="5">
-                        <Grid Height="120"
-                              Width="120">
+                            Margin="5"
+                            Height="{StaticResource BtnSize}"
+                            Width="{StaticResource BtnSize}">
+                        <Grid Height="{StaticResource BtnGridSize}"
+                              Width="{StaticResource BtnGridSize}">
                             <Grid.RowDefinitions>
                                 <RowDefinition />
                                 <RowDefinition Height="Auto" />
@@ -299,7 +334,7 @@
                                     </VisualBrush>
                                 </Rectangle.OpacityMask>
                             </Rectangle>
-                            <TextBlock Text="Mining Table Overlay"
+                            <TextBlock Text="Mining Table&#x0a;Overlay"
                                        TextWrapping="Wrap"
                                        Margin="5"
                                        TextAlignment="Center"
@@ -308,13 +343,13 @@
                     </Button>
 
                     <Button Style="{DynamicResource EliteStyleButton}"
-                            Height="140"
-                            Width="140"
                             Command="{Binding OpenPopOut}"
                             CommandParameter="{x:Type popouts:ProspectorPopOutViewModel}"
-                            Margin="5">
-                        <Grid Height="120"
-                              Width="120">
+                            Margin="5"
+                            Height="{StaticResource BtnSize}"
+                            Width="{StaticResource BtnSize}">
+                        <Grid Height="{StaticResource BtnGridSize}"
+                              Width="{StaticResource BtnGridSize}">
                             <Grid.RowDefinitions>
                                 <RowDefinition />
                                 <RowDefinition Height="Auto" />
@@ -330,7 +365,7 @@
                                     </VisualBrush>
                                 </Rectangle.OpacityMask>
                             </Rectangle>
-                            <TextBlock Text="Prospector Overlay"
+                            <TextBlock Text="Prospector&#x0a;Overlay"
                                        TextWrapping="Wrap"
                                        Margin="5"
                                        TextAlignment="Center"

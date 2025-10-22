@@ -367,6 +367,9 @@ namespace ODEliteTracker.Database
                 "DELETE FROM JournalCommanders;" +
                 "DELETE FROM JournalEntries;" +
                 "DELETE FROM InactiveDepots;" +
+                "DELETE FROM BGSIgnoredSystems;" +
+                "DELETE FROM IgnoredBounties;" +
+                "DELETE FROM SpanshCsvs;" +
                 "DELETE FROM SQLITE_SEQUENCE WHERE name='CommanderIgnoredSystems';" +
                 "DELETE FROM SQLITE_SEQUENCE WHERE name='CartoIgnoredSystems';" +
                 "DELETE FROM SQLITE_SEQUENCE WHERE name='InactiveDepots';");

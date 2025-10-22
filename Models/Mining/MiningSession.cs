@@ -131,7 +131,7 @@ namespace ODEliteTracker.Models.Mining
 
             if (known == null)
             {
-                known = new(item.EnglishName, MiningItemType.Ore);
+                known = new MiningItem(item.EnglishName, MiningItemType.Ore);
                 Items.Add(known);
             }
 
@@ -146,7 +146,7 @@ namespace ODEliteTracker.Models.Mining
 
             if (known == null)
             {
-                known = new(mat.EnglishName, MiningItemType.Material);
+                known = new MiningItem(mat.EnglishName, MiningItemType.Material);
                 Items.Add(known);
             }
 

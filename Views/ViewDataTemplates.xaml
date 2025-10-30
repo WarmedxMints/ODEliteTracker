@@ -68,4 +68,7 @@
     <DataTemplate DataType="{x:Type popoutsVMs:ProspectorPopOutViewModel}">
         <popouts:ProspectorPopOutView />
     </DataTemplate>
+    <DataTemplate DataType="{x:Type popoutsVMs:SettlementActivityPopOutVM}">
+        <popouts:SettlementActivityPopOutView />
+    </DataTemplate>
 </ResourceDictionary>

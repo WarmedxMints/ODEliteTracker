@@ -20,12 +20,14 @@ namespace ODEliteTracker.ViewModels
         public BGSViewModel(BGSDataStore dataStore,
                             SharedDataStore sharedDataStore,
                             SettingsStore settings,
-                            NotificationService notification)
+                            NotificationService notification,
+                            PopOutService popOutService)
         {
             this.dataStore = dataStore;
             this.sharedDataStore = sharedDataStore;
             this.settings = settings;
             this.notification = notification;
+            this.popOutService = popOutService;
             this.dataStore.StoreLive += OnStoreLive;
             this.dataStore.MissionAddedEvent += OnMissionAdded;
             this.dataStore.MissionUpdatedEvent += OnMissionUpdated;
@@ -44,6 +46,7 @@ namespace ODEliteTracker.ViewModels
             CreateDiscordPostCommand = new ODRelayCommand(OnCreateDiscordPost);
             OpenInaraCommand = new ODRelayCommand(OnOpenInara);
             SetExcludedSystem = new ODRelayCommand<BGSTickSystemVM>(OnSetIgnored);
+            OpenPopOut = new ODRelayCommand<Type>(OnOpenPopOut);
 
             missionExpiryUpdateTimer = new Timer(OnUpdateExpiry, null, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
 
@@ -84,6 +87,8 @@ namespace ODEliteTracker.ViewModels
         private readonly SharedDataStore sharedDataStore;
         private readonly SettingsStore settings;
         private readonly NotificationService notification;
+        private readonly PopOutService popOutService;
+
         public override bool IsLive => dataStore.IsLive;
         public SettingsStore Settings => settings;
         public ICommand SetSelectedSystemCommand { get; }
@@ -92,6 +97,8 @@ namespace ODEliteTracker.ViewModels
         public ICommand CreateDiscordPostCommand { get; }
         public ICommand OpenInaraCommand { get; }
         public ICommand SetExcludedSystem { get; }
+        public ICommand OpenPopOut { get; }
+
         public bool HideSystemsWithoutBGSData
         {
             get => settings.BGSViewSettings.HideSystemsWithoutData;
@@ -196,6 +203,7 @@ namespace ODEliteTracker.ViewModels
                 OnPropertyChanged(nameof(MaterialTraders));
             }
         }
+
         private void OnStoreLive(object? sender, bool e)
         {
             if (e)
@@ -449,6 +457,11 @@ namespace ODEliteTracker.ViewModels
             vM.IncludeInPost = include;
 
             dataStore.AddIgnoredSystem(vM.Address, vM.Name, !include);
+        }
+
+        private void OnOpenPopOut(Type type)
+        {
+            popOutService.OpenPopOut(type, settings.SelectedCommanderID);
         }
     }
 }

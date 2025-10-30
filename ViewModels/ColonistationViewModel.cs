@@ -484,6 +484,12 @@ namespace ODEliteTracker.ViewModels
                     OnPropertyChanged(nameof(ActiveDepots));
                     OnPropertyChanged(nameof(InactiveDepots));
                 }
+
+                if (known.Complete == false && known.Inactive)
+                {
+                    SetDepotActiveState(known);
+                }
+
                 OnPropertyChanged(nameof(SelectedDepotResources));
                 CheckMarket();
                 if (colonisationStore.ShoppingList.Contains(Tuple.Create(known.MarketID, known.SystemAddress, known.StationName)))

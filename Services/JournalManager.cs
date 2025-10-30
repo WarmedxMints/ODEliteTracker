@@ -121,7 +121,7 @@ namespace ODEliteTracker.Services
                 if (SelectedCommander?.UseCAPI == true && string.IsNullOrEmpty(SelectedCommander.Name) == false)
                     _= Task.Run(() => capiService.Login(SelectedCommander.Name, SelectedCommander.Name.Contains("(Legacy)")).ConfigureAwait(true));
 
-                await eventParser.StreamJournalHistoryOfTypeAsync(settingsStore.SelectedCommanderID, history, settingsStore.JournalAgeDateTime);
+                await eventParser.StreamJournalHistoryOfTypeAsync(settingsStore.SelectedCommanderID, history, settingsStore.JournalAgeDateTime).ConfigureAwait(true);
             }
         }
         #endregion
@@ -157,6 +157,10 @@ namespace ODEliteTracker.Services
         public async Task ChangeCommander()
         {
             ManagerLive = false;
+            foreach (var parser in journalLogParserList)
+            {
+                parser.ClearData();
+            }
             lastCAPICall = DateTime.MinValue;
             await ReadSelectedCommander();
         }

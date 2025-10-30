@@ -15,8 +15,9 @@ namespace ODEliteTracker
     /// </summary>
     public partial class App
     {
-        public static Version AppVersion { get; } = new Version(1, 5, 11);
+        public static Version AppVersion { get; } = new Version(1, 5, 12);
 
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 #if INSTALL || DEBUG
         public readonly static string BaseDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ODEliteTracker");
 #else
@@ -48,8 +49,6 @@ namespace ODEliteTracker
                 //http clients
                 services.AddHttpClients(CAPIAppName);
             }).Build();
-
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// Gets services.

@@ -59,6 +59,7 @@ namespace ODEliteTracker.Extensions
             services.AddTransient<MiningTablePopOut>();
             services.AddTransient<ProspectorPopOutViewModel>();
             services.AddTransient<MarketWatchListPopOutViewModel>();
+            services.AddTransient<SettlementActivityPopOutVM>();
         }
 
         public static void AddViewModels(this IServiceCollection services)

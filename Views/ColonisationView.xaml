@@ -529,7 +529,7 @@
                                                     CommandParameter="{Binding SelectedDepot}"
                                                     Style="{DynamicResource EliteStyleImageButton}"
                                                     Width="35"
-                                                    Margin="5,0"
+                                                    Margin="0,0,5,0"
                                                     Padding="2,0,0,0"
                                                     ToolTip="Add/Remove From Shopping List">
                                                 <Image Source="/Assets/Icons/ShoppingCart.png" />
@@ -750,7 +750,7 @@
                                                     CommandParameter="{x:Type popouts:ShoppingListPopOutVM}"
                                                     Style="{DynamicResource EliteStyleImageButton}"
                                                     Width="35"
-                                                    Margin="5,0"
+                                                    Margin="0,0,5,0"
                                                     Padding="5"
                                                     ToolTip="Open Overlay">
                                                 <Image Source="/Assets/Icons/PopOutBtn.png" />
@@ -899,7 +899,7 @@
                                                     CommandParameter="{x:Type popouts:MarketWatchListPopOutViewModel}"
                                                     Style="{DynamicResource EliteStyleImageButton}"
                                                     Width="35"
-                                                    Margin="5,0"
+                                                    Margin="0,0,5,0"
                                                     Padding="5"
                                                     ToolTip="Open Overlay">
                                                 <Image Source="/Assets/Icons/PopOutBtn.png" />

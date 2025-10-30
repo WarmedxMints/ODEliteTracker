@@ -9,6 +9,7 @@
              xmlns:wpfconverters="clr-namespace:ODMVVM.WpfConverters;assembly=ODMVVM"
              xmlns:bounties="clr-namespace:ODEliteTracker.Controls.Bounties"
              xmlns:materialtraders="clr-namespace:ODEliteTracker.Controls.MaterialTraders"
+             xmlns:popouts="clr-namespace:ODEliteTracker.ViewModels.PopOuts"
              d:DataContext="{d:DesignInstance viewmodels:BGSViewModel}"
              mc:Ignorable="d"
              x:Name="Root"
@@ -563,6 +564,7 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="150" />
                                 <ColumnDefinition />
+                                <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
@@ -630,6 +632,20 @@
                                        Visibility="{Binding SettlementActivityVM.DisplayBonds}"
                                        Grid.Column="1"
                                        Grid.Row="5" />
+
+                            <Button Command="{Binding OpenPopOut}"
+                                    CommandParameter="{x:Type popouts:SettlementActivityPopOutVM}"
+                                    Style="{DynamicResource EliteStyleImageButton}"
+                                    Width="35"
+                                    Margin="5"
+                                    Padding="5"
+                                    Grid.Column="2"
+                                    Grid.RowSpan="5"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Top"
+                                    ToolTip="Open Overlay">
+                                <Image Source="/Assets/Icons/PopOutBtn.png" />
+                            </Button>
                         </Grid>
                     </TabItem>
                     <TabItem Header="Material Traders">

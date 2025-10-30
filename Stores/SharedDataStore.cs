@@ -1,6 +1,5 @@
 ﻿using EliteJournalReader;
 using EliteJournalReader.Events;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using Newtonsoft.Json.Linq;
 using ODEliteTracker.Database;
 using ODEliteTracker.Helpers;
@@ -252,7 +251,7 @@ namespace ODEliteTracker.Stores
                     UpdateCurrentSystem(new(fsdJump));
                     UpdateCurrentBody_Station(null);
                     AddFactions(fsdJump.Factions);
-                    if (fsdJump.Population == 0 || fsdJump.SystemFaction is null || fsdJump.Factions is null || fsdJump.Factions.Count == 0)
+                    if (fsdJump.SystemFaction is null || fsdJump.Factions is null || fsdJump.Factions.Count == 0)
                     {
                         SystemNotification(fsdJump.StarSystem,
                         [
@@ -465,7 +464,8 @@ namespace ODEliteTracker.Stores
                         break;
                     }
 
-                    notificationService.ShowShipTargetedNotification(pilotName, EliteHelpers.ConvertShipName(shipTargeted.Ship), targetType, shipTargeted.Bounty, shipTargeted.Faction, shipTargeted.Power);
+                    if (IsLive)
+                        notificationService.ShowShipTargetedNotification(pilotName, EliteHelpers.ConvertShipName(shipTargeted.Ship), targetType, shipTargeted.Bounty, shipTargeted.Faction, shipTargeted.Power);
                     break;
                 case ScanEvent.ScanEventArgs scan:
                     if (CurrentSystem is null)

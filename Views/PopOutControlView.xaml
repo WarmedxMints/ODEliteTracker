@@ -61,8 +61,8 @@
                     Value="&#xE106;" />
         </Style>
 
-        <core:Double x:Key="BtnSize">155</core:Double>
-        <core:Double x:Key="BtnGridSize">145</core:Double>
+        <core:Double x:Key="BtnSize">160</core:Double>
+        <core:Double x:Key="BtnGridSize">150</core:Double>
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -372,6 +372,37 @@
                                        Grid.Row="1" />
                         </Grid>
                     </Button>
+
+                    <Button Style="{DynamicResource EliteStyleButton}"
+                            Command="{Binding OpenPopOut}"
+                            CommandParameter="{x:Type popouts:SettlementActivityPopOutVM}"
+                            Margin="5"
+                            Height="{StaticResource BtnSize}"
+                            Width="{StaticResource BtnSize}">
+                        <Grid Height="{StaticResource BtnGridSize}"
+                              Width="{StaticResource BtnGridSize}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Rectangle Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
+                                       Height="48"
+                                       Width="48">
+                                <Rectangle.OpacityMask>
+                                    <VisualBrush>
+                                        <VisualBrush.Visual>
+                                            <Image Source="/Assets/Notifications/Stations/settlement_sm.png" />
+                                        </VisualBrush.Visual>
+                                    </VisualBrush>
+                                </Rectangle.OpacityMask>
+                            </Rectangle>
+                            <TextBlock Text="Settlement Activity&#x0a;Overlay"
+                                       TextWrapping="Wrap"
+                                       Margin="5"
+                                       TextAlignment="Center"
+                                       Grid.Row="1" />
+                        </Grid>
+                    </Button>
                 </WrapPanel>
             </Border>
 
@@ -432,7 +463,6 @@
                                             RenderOptions.ClearTypeHint="Auto"
                                             TextOptions.TextRenderingMode="Aliased"
                                             TextOptions.TextFormattingMode="Display"
-                                            Margin="5,0"
                                             Width="35">
                                         <Button.ToolTip>
                                             <TextBlock Text="Close Overlay"

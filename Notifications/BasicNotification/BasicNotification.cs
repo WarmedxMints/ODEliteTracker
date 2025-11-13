@@ -41,6 +41,7 @@ namespace ODEliteTracker.Notifications
                         "Mega Ship" or "Civilian Mega Ship" => "/Assets/Notifications/Stations/Mega-Ship_Icon.png",
                         "Construction Depot" => "/Assets/Notifications/Stations/Construction.png",
                         "Asteroid Base" => "/assets/Notifications/Stations/Asteroid_Station_Icon.png",
+                        "Dodec" => "/assets/Notifications/Stations/Dodec.png",
                         _ => "/Assets/Icons/Coriolis_sm.png",
                     };
                     break;

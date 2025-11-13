@@ -1,12 +1,15 @@
-﻿using ODEliteTracker.Models;
+﻿using ODEliteTracker.Helpers;
+using ODEliteTracker.Models;
 using ODEliteTracker.Models.FleetCarrier;
 using ODEliteTracker.Models.Settings;
 using ODEliteTracker.Services;
 using ODEliteTracker.Stores;
 using ODEliteTracker.ViewModels.ModelViews.FleetCarrier;
 using ODMVVM.Commands;
+using ODMVVM.Services.MessageBox;
 using ODMVVM.Utils;
 using ODMVVM.ViewModels;
+using System.IO;
 using System.Windows;
 using System.Windows.Input;
 
@@ -30,14 +33,18 @@ namespace ODEliteTracker.ViewModels
 
             RefreshCarrierStockCommand = new ODAsyncRelayCommand(OnRefreshCarrierStock, () => CanCallCAPI);
             CopyToClipboard = new ODRelayCommand<string>(OnCopyToClipboard);
+            SetAudioFile = new ODRelayCommand(OnSetAudioFile);
+            ClearAudioFile = new ODRelayCommand(OnClearAudioFile);
+            PlayAudioFile = new ODAsyncRelayCommand(OnPlayAudioFile, () => CanPlay);
 
             if (this.dataStore.CanCallCAPI == false)
             {
                 StartCAPITimer();
             }
+
             if (this.dataStore.IsLive)
                 OnStoreLive(null, true);
-        }
+        }       
 
         public override void Dispose()
         {
@@ -67,6 +74,51 @@ namespace ODEliteTracker.ViewModels
                 settings.CarrierSettings.Sorting = value;
                 OnPropertyChanged(nameof(CarrierStock));
                 OnPropertyChanged(nameof(SellOrders));
+            }
+        }
+
+        public bool PlayOnPeronalCarrierCooldown
+        {
+            get => settings.FleetCarrierSettings.PlayOnPersonalCarrierCooldown;
+            set
+            {
+                settings.FleetCarrierSettings.PlayOnPersonalCarrierCooldown = value;
+                OnPropertyChanged(nameof(PlayOnPeronalCarrierCooldown));
+            }
+        }
+
+        public string? AudioFile => string.IsNullOrEmpty(settings.FleetCarrierSettings.TimerAudioFile) ?
+            "System Beep" :
+            Path.GetFileName(settings.FleetCarrierSettings.TimerAudioFile);
+
+        public bool PlayOnSquadronCarrierCooldown
+        {
+            get => settings.FleetCarrierSettings.PlayOnSquadronCarrierCooldown;
+            set
+            {
+                settings.FleetCarrierSettings.PlayOnSquadronCarrierCooldown = value;
+                OnPropertyChanged(nameof(PlayOnSquadronCarrierCooldown));
+            }
+        }
+
+        public float Volume
+        {
+            get => settings.FleetCarrierSettings.Volume;
+            set
+            {
+                settings.FleetCarrierSettings.Volume = value;
+                OnPropertyChanged(nameof(Volume));
+            }
+        }
+
+        private bool canPlay = true;
+        public bool CanPlay
+        {
+            get => canPlay;
+            set
+            {
+                canPlay = value;
+                OnPropertyChanged(nameof(CanPlay));
             }
         }
 
@@ -105,6 +157,9 @@ namespace ODEliteTracker.ViewModels
         }
         public ICommand RefreshCarrierStockCommand { get; }
         public ICommand CopyToClipboard { get; }
+        public ICommand SetAudioFile { get; }
+        public ICommand ClearAudioFile { get; }
+        public ICommand PlayAudioFile { get; }
 
         private async Task OnRefreshCarrierStock()
         {
@@ -120,6 +175,31 @@ namespace ODEliteTracker.ViewModels
             notificationService.SetClipboard(obj);
         }
 
+        private void OnSetAudioFile(object? obj)
+        {
+            var file = ODDialogService.OpenFileDialog("Select wave or mp3 file", "wav | mp3", "Sound files (*.wav, *.mp3)|*.wav;*.mp3");
+
+            if (string.IsNullOrEmpty(file))
+                return;
+
+            settings.FleetCarrierSettings.TimerAudioFile = file;
+            
+            OnPropertyChanged(nameof(AudioFile));
+        }
+
+        private void OnClearAudioFile(object? obj)
+        {
+            settings.FleetCarrierSettings.TimerAudioFile = null;
+
+            OnPropertyChanged(nameof(AudioFile));
+        }
+
+        private async Task OnPlayAudioFile()
+        {
+            CanPlay = false;
+            await AudioPlayer.PlayFile(settings.FleetCarrierSettings.TimerAudioFile, settings.FleetCarrierSettings.Volume).ConfigureAwait(true);
+            CanPlay = true;
+        }
         private void OnStoreLive(object? sender, bool e)
         {
             if (e)

@@ -22,18 +22,29 @@ namespace ODEliteTracker.ViewModels.ModelViews.FleetCarrier
         public string DestinationBody => carrier.Destination.BodyName;
         public string DepartTime => carrier.Destination.DepartureTime.RelativeCarrierTime(DateTime.UtcNow);
 
-        public string Bartender => carrier.Crew[EliteJournalReader.CarrierCrewRole.Bartender].GetEnumDescription();
-        public string BlackMarket => carrier.Crew[EliteJournalReader.CarrierCrewRole.BlackMarket].GetEnumDescription();
-        public string Outfitting => carrier.Crew[EliteJournalReader.CarrierCrewRole.Outfitting].GetEnumDescription();
-        public string PioneerSupplies => carrier.Crew[EliteJournalReader.CarrierCrewRole.PioneerSupplies].GetEnumDescription();
-        public string Rearm => carrier.Crew[EliteJournalReader.CarrierCrewRole.Rearm].GetEnumDescription();
-        public string Refuel => carrier.Crew[EliteJournalReader.CarrierCrewRole.Refuel].GetEnumDescription();
-        public string Repair => carrier.Crew[EliteJournalReader.CarrierCrewRole.Repair].GetEnumDescription();
-        public string Shipyard => carrier.Crew[EliteJournalReader.CarrierCrewRole.Shipyard].GetEnumDescription();
-        public string VoucherRedemption => carrier.Crew[EliteJournalReader.CarrierCrewRole.VoucherRedemption].GetEnumDescription();
-        public string Vista => carrier.Crew[EliteJournalReader.CarrierCrewRole.VistaGenomics].GetEnumDescription();
+        public string Bartender => GetCrew(EliteJournalReader.CarrierCrewRole.Bartender);
+        public string BlackMarket => GetCrew(EliteJournalReader.CarrierCrewRole.BlackMarket);
+        public string Outfitting => GetCrew(EliteJournalReader.CarrierCrewRole.Outfitting);
+        public string PioneerSupplies => GetCrew(EliteJournalReader.CarrierCrewRole.PioneerSupplies);
+        public string Rearm => GetCrew(EliteJournalReader.CarrierCrewRole.Rearm);
+        public string Refuel => GetCrew(EliteJournalReader.CarrierCrewRole.Refuel);
+        public string Repair => GetCrew(EliteJournalReader.CarrierCrewRole.Repair);
+        public string Shipyard => GetCrew(EliteJournalReader.CarrierCrewRole.Shipyard);
+        public string VoucherRedemption => GetCrew(EliteJournalReader.CarrierCrewRole.VoucherRedemption);
+        public string Vista => GetCrew(EliteJournalReader.CarrierCrewRole.VistaGenomics);
 
         public IEnumerable<CarrierCommodityVM> Stock => carrier.Stock.Select(x => new CarrierCommodityVM(x));
+
+        private string GetCrew(EliteJournalReader.CarrierCrewRole role)
+        {
+            if(carrier.Crew.TryGetValue(role, out var value))
+            {
+                var ret = value.GetEnumDescription();
+                return ret;
+            }
+
+            return "Inactive";
+        }
 
         public void UpdateStock(Models.FleetCarrier.FleetCarrier carrier)
         {

@@ -1,5 +1,6 @@
 ﻿using EliteJournalReader;
 using EliteJournalReader.Events;
+using ODEliteTracker.Helpers;
 using ODEliteTracker.Models.FleetCarrier;
 using ODEliteTracker.Models.Market;
 using ODEliteTracker.Notifications;
@@ -12,7 +13,10 @@ namespace ODEliteTracker.Stores
 {
     public sealed class FleetCarrierDataStore : LogProcessorBase
     {
-        public FleetCarrierDataStore(IManageJournalEvents journalManager, SharedDataStore sharedData, NotificationService notificationService)
+        public FleetCarrierDataStore(IManageJournalEvents journalManager,
+                                     SharedDataStore sharedData,
+                                     NotificationService notificationService,
+                                     SettingsStore settings)
         {
             this.journalManager = (JournalManager)journalManager;
 
@@ -23,6 +27,7 @@ namespace ODEliteTracker.Stores
 
             this.sharedData = sharedData;
             this.notificationService = notificationService;
+            this.settings = settings;
             this.sharedData.MarketEvent += OnMarketEvent;
             fleetCarrierTimer.CountDownFinishedEvent += FleetCarrierTimer_CountDownFinishedEvent;
             squadFleetCarrierTimer.CountDownFinishedEvent += SquadFleetCarrierTimer_CountDownFinishedEvent;
@@ -31,6 +36,7 @@ namespace ODEliteTracker.Stores
         private readonly JournalManager? journalManager;
         private readonly SharedDataStore sharedData;
         private readonly NotificationService notificationService;
+        private readonly SettingsStore settings;
         private readonly CountdownTimer fleetCarrierTimer = new(new(0, 20, 0), new(0, 0, 1));
         private readonly CountdownTimer squadFleetCarrierTimer = new(new(0, 20, 0), new(0, 0, 1));
         private FleetCarrier? carrierData;
@@ -434,6 +440,11 @@ namespace ODEliteTracker.Stores
             var args = new NotificationArgs("Fleet Carrier", ["Carrier Cooldown Complete"], Models.Settings.NotificationOptions.FleetCarrierReady);
 
             notificationService.ShowBasicNotification(args);
+
+            if (settings.FleetCarrierSettings.PlayOnPersonalCarrierCooldown)
+            {
+                _ = AudioPlayer.PlayFile(settings.FleetCarrierSettings.TimerAudioFile, settings.FleetCarrierSettings.Volume);
+            }
         }
 
         private void SquadFleetCarrierTimer_CountDownFinishedEvent(object? sender, EventArgs e)
@@ -441,6 +452,11 @@ namespace ODEliteTracker.Stores
             var args = new NotificationArgs("Sqaudron Fleet Carrier", ["Carrier Cooldown Complete"], Models.Settings.NotificationOptions.SqaudCarrierReady);
 
             notificationService.ShowBasicNotification(args);
+
+            if (settings.FleetCarrierSettings.PlayOnSquadronCarrierCooldown)
+            {
+                _ = AudioPlayer.PlayFile(settings.FleetCarrierSettings.TimerAudioFile, settings.FleetCarrierSettings.Volume);
+            }
         }
 
 #if DEBUG

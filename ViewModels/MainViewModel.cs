@@ -7,11 +7,11 @@ using ODEliteTracker.ViewModels.ModelViews;
 using ODJournalDatabase.JournalManagement;
 using ODMVVM.Commands;
 using ODMVVM.Extensions;
-using ODMVVM.Helpers;
 using ODMVVM.Navigation;
 using ODMVVM.Navigation.Controls;
 using ODMVVM.ViewModels;
 using System.Collections.ObjectModel;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
@@ -332,11 +332,11 @@ namespace ODEliteTracker.ViewModels
             {
                 await Task.Run(journalManager.Initialise).ConfigureAwait(true);
             }
-            navigationService.NavigateTo(settings.CurrentViewModel);
-            OnPropertyChanged(nameof(CurrentSystemName));
-            OnPropertyChanged(nameof(CurrentBody_Station));
-            OnPropertyChanged(nameof(CurrentShipName));
-            UiEnabled = true;
+            //navigationService.NavigateTo(settings.CurrentViewModel);
+            //OnPropertyChanged(nameof(CurrentSystemName));
+            //OnPropertyChanged(nameof(CurrentBody_Station));
+            //OnPropertyChanged(nameof(CurrentShipName));
+            //UiEnabled = true;
         }
 
         public async Task ChangeCommander()
@@ -358,8 +358,11 @@ namespace ODEliteTracker.ViewModels
         {
             if (e && journalManager is JournalManager manager)
             {
-                Dispatcher.CurrentDispatcher.Invoke(new Action(() =>
+              
+                Application.Current.Dispatcher.Invoke(() => 
                 {
+                    navigationService.NavigateTo(settings.CurrentViewModel);
+                    
                     var cmdrs = manager.Commanders.Select(x => new JournalCommanderVM(x));
 
                     JournalCommanders.ClearCollection();
@@ -371,7 +374,11 @@ namespace ODEliteTracker.ViewModels
                     OnPropertyChanged(nameof(CurrentSystemName));
                     OnPropertyChanged(nameof(CurrentBody_Station));
                     OnPropertyChanged(nameof(CurrentShipName));
-                }), DispatcherPriority.DataBind);
+                    OnPropertyChanged(nameof(CurrentSystemName));
+                    OnPropertyChanged(nameof(CurrentBody_Station));
+                    OnPropertyChanged(nameof(CurrentShipName));
+                    UiEnabled = true;
+                }, DispatcherPriority.DataBind);
             }
 
         }

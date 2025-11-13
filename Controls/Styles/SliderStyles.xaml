@@ -21,19 +21,19 @@
                      Value="true">
                 <Setter Property="Fill"
                         TargetName="grip"
-                        Value="{DynamicResource PrimaryControlMouseOver}" />
+                        Value="{DynamicResource EliteBtnBG}" />
                 <Setter Property="Stroke"
                         TargetName="grip"
-                        Value="{DynamicResource PrimaryControlBorder}" />
+                        Value="{DynamicResource EliteBtnBG}" />
             </Trigger>
             <Trigger Property="IsDragging"
                      Value="true">
                 <Setter Property="Fill"
                         TargetName="grip"
-                        Value="{DynamicResource PrimaryControlMouseOver}" />
+                        Value="{DynamicResource EliteBtnFG}" />
                 <Setter Property="Stroke"
                         TargetName="grip"
-                        Value="{DynamicResource PrimaryControlBorder}" />
+                        Value="{DynamicResource EliteBtnFG}" />
             </Trigger>
             <Trigger Property="IsEnabled"
                      Value="false">
@@ -183,10 +183,10 @@
                      Value="False">
                 <Setter Property="Background"
                         TargetName="TrackBackground"
-                        Value="{DynamicResource PrimaryDisabled}" />
+                        Value="{DynamicResource PrimaryForegroundDisabled}" />
                 <Setter Property="BorderBrush"
                         TargetName="TrackBackground"
-                        Value="{DynamicResource PrimaryDisabled}" />
+                        Value="{DynamicResource PrimaryForegroundDisabled}" />
             </Trigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
@@ -302,6 +302,15 @@
                         TargetName="Thumb"
                         Value="Blue" />
             </Trigger>
+            <Trigger Property="IsEnabled"
+                     Value="False">
+                <Setter Property="Background"
+                        TargetName="TrackBackground"
+                        Value="{DynamicResource PrimaryForegroundDisabled}" />
+                <Setter Property="BorderBrush"
+                        TargetName="TrackBackground"
+                        Value="{DynamicResource PrimaryForegroundDisabled}" />
+            </Trigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
     
@@ -340,4 +349,102 @@
             </GradientStopCollection>
         </GradientBrush.GradientStops>
     </LinearGradientBrush>
+
+    <Style TargetType="{x:Type Slider}"
+           x:Key="VolumeSlider">
+        <Setter Property="Background"
+                Value="{DynamicResource PrimaryControlBackground}" />
+        <Setter Property="Height"
+                Value="20" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Slider}">
+                    <ControlTemplate.Resources>
+                        <Style TargetType="{x:Type RepeatButton}">
+                            <Setter Property="OverridesDefaultStyle"
+                                    Value="true" />
+                            <Setter Property="IsTabStop"
+                                    Value="false" />
+                            <Setter Property="Focusable"
+                                    Value="false" />
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type RepeatButton}">
+                                        <Border Background="{TemplateBinding Background}" />
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                        <PathGeometry x:Key="Triangle">
+                            <PathFigure StartPoint="0,1">
+                                <LineSegment Point="1,1" />
+                                <LineSegment Point="1,0" />
+                                <LineSegment Point="0,1" />
+                            </PathFigure>
+                        </PathGeometry>
+                    </ControlTemplate.Resources>
+                    <Grid>
+                        <Grid>
+                            <Grid.OpacityMask>
+                                <DrawingBrush>
+                                    <DrawingBrush.Drawing>
+                                        <GeometryDrawing Brush="Black"
+                                                         Geometry="{StaticResource Triangle}" />
+                                    </DrawingBrush.Drawing>
+                                </DrawingBrush>
+                            </Grid.OpacityMask>
+                            <Track Name="PART_Track"
+                                   Value="{TemplateBinding Value}">
+                                <Track.Thumb>
+                                    <Thumb Width="10"
+                                           Background="{DynamicResource EliteBtnFG}">
+                                        <Thumb.Template>
+                                            <ControlTemplate TargetType="{x:Type Thumb}">
+                                                <Border Background="{DynamicResource EliteBtnFG}"
+                                                        x:Name="Fill"/>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsEnabled"
+                                                             Value="false">
+                                                        <Setter Property="Background"
+                                                                TargetName="Fill"
+                                                                Value="{DynamicResource PrimaryControlForegroundDisabled}" />
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Thumb.Template>
+                                    </Thumb>
+                                </Track.Thumb>
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Background="{DynamicResource EliteBtnFG}"
+                                                  x:Name="Slider"
+                                                  Command="Slider.DecreaseLarge" />
+                                </Track.DecreaseRepeatButton>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Background="Transparent"
+                                                  Command="Slider.IncreaseLarge" />
+                                </Track.IncreaseRepeatButton>
+                            </Track>
+                        </Grid>
+                        <Path Data="{StaticResource Triangle}"
+                              Stretch="Fill"
+                              x:Name="Triangle"
+                              Stroke="{DynamicResource PrimaryForeground}"
+                              StrokeThickness="1" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsEnabled"
+                                 Value="false">
+                            <Setter Property="Background"
+                                    TargetName="Slider"
+                                    Value="{DynamicResource PrimaryForegroundDisabled}" />
+                            <Setter TargetName="Triangle"
+                                    Property="Stroke"
+                                    Value="{DynamicResource PrimaryForegroundDisabled}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>                
+            </Setter.Value>
+        </Setter>
+    </Style>
+
 </ResourceDictionary>

@@ -74,7 +74,10 @@ namespace ODEliteTracker.ViewModels
             {
                 StatusText = "Error Getting Update";
                 Logger.Error(ex.Message);
-                Logger.Error(ex.StackTrace);
+                if (ex?.StackTrace != null)
+                {
+                    Logger.Error(ex.StackTrace);
+                }
                 await Task.Delay(1000);
             }
             StatusText = "Migrating Database";
@@ -88,7 +91,10 @@ namespace ODEliteTracker.ViewModels
             {
                 StatusText = "Error Accessing Database\nApplication will now close";
                 Logger.Error(ex.Message);
-                Logger.Error(ex.StackTrace);
+                if (ex?.StackTrace != null)
+                {
+                    Logger.Error(ex.StackTrace);
+                }               
                 await Task.Delay(2000);
                 InitialiseComplete?.Invoke(this, false);
                 return;
@@ -97,7 +103,10 @@ namespace ODEliteTracker.ViewModels
             {
                 StatusText = "Error Loading\nApplication will now close";
                 Logger.Error(ex.Message);
-                Logger.Error(ex.StackTrace);
+                if (ex?.StackTrace != null)
+                {
+                    Logger.Error(ex.StackTrace);
+                }
                 await Task.Delay(2000);
                 InitialiseComplete?.Invoke(this, false);
                 return;

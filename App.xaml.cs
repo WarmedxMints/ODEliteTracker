@@ -15,7 +15,7 @@ namespace ODEliteTracker
     /// </summary>
     public partial class App
     {
-        public static Version AppVersion { get; } = new Version(1, 5, 12);
+        public static Version AppVersion { get; } = new Version(1, 5, 13);
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 #if INSTALL || DEBUG
@@ -107,8 +107,11 @@ namespace ODEliteTracker
         private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
             // For more info see https://docs.microsoft.com/en-us/dotnet/api/system.windows.application.dispatcherunhandledexception?view=windowsdesktop-6.0
-            Logger.Fatal(e.Exception.Message);   
-            Logger.Fatal(e.Exception.StackTrace);     
+            Logger.Fatal(e.Exception.Message);
+            if (e.Exception?.StackTrace != null)
+            {
+                Logger.Fatal(e.Exception.StackTrace);
+            }
         }
     }
 }

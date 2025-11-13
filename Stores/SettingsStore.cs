@@ -66,6 +66,7 @@ namespace ODEliteTracker.Stores
         public OverlaySettings OverlaySettings { get; internal set; } = new();
         public Dictionary<int, List<PopOutParams>> PopOutParams { get; set; } = [];
         public SpanshCSVSettings SpanshCSVSettings { get; set; } = new();
+        public FleetCarrierSettings FleetCarrierSettings { get; set; } = new();
 
         #region Persistance
         public void LoadSettings()
@@ -91,6 +92,7 @@ namespace ODEliteTracker.Stores
                 OverlaySettings = SettingsDTOHelpers.SettingDtoToObject(settings.GetSettingDTO(nameof(OverlaySettings)), OverlaySettings);
                 SpanshCSVSettings = SettingsDTOHelpers.SettingDtoToObject(settings.GetSettingDTO(nameof(SpanshCSVSettings)), SpanshCSVSettings);
                 StatusBarSettings = SettingsDTOHelpers.SettingDtoToObject(settings.GetSettingDTO(nameof(StatusBarSettings)), StatusBarSettings);
+                FleetCarrierSettings = SettingsDTOHelpers.SettingDtoToObject(settings.GetSettingDTO(nameof(FleetCarrierSettings)), new FleetCarrierSettings());
             }
 
             //Apply Themes
@@ -126,6 +128,7 @@ namespace ODEliteTracker.Stores
                 SettingsDTOHelpers.ObjectToJsonStringDto(nameof(OverlaySettings), OverlaySettings),
                 SettingsDTOHelpers.ObjectToJsonStringDto(nameof(SpanshCSVSettings), SpanshCSVSettings),
                 SettingsDTOHelpers.ObjectToJsonStringDto(nameof(StatusBarSettings), StatusBarSettings),
+                SettingsDTOHelpers.ObjectToJsonStringDto(nameof(FleetCarrierSettings), FleetCarrierSettings),
             };
 
             databaseProvider.AddSettings(settings);

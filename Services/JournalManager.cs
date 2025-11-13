@@ -41,7 +41,7 @@ namespace ODEliteTracker.Services
         private DateTime lastCAPICall = DateTime.MinValue;
         private readonly List<IWatchStatus> statusWatchers = [];
         private bool ManagerLive { get; set; }
-
+        private bool Processing { get; set; }
         public bool CanCallCAPI => capiService.CurrentState == ODCapi.Services.State.Authorised && DateTime.UtcNow - lastCAPICall > TimeSpan.FromMinutes(10);
 
         public List<JournalCommander> Commanders { get; private set; } = [];
@@ -94,6 +94,7 @@ namespace ODEliteTracker.Services
         {
             if (e)
             {
+                Processing = true;
                 if (settingsStore.SelectedCommanderID <= 0)
                 {
                     Commanders = await oDDatabase.GetAllJournalCommanders();
@@ -110,7 +111,7 @@ namespace ODEliteTracker.Services
                     settingsStore.SelectedCommanderID = SelectedCommander.Id;
                 }
 
-                ManagerLive = true;
+                
                 foreach (var parser in journalLogParserList)
                 {
                     parser.ClearData();
@@ -122,6 +123,8 @@ namespace ODEliteTracker.Services
                     _= Task.Run(() => capiService.Login(SelectedCommander.Name, SelectedCommander.Name.Contains("(Legacy)")).ConfigureAwait(true));
 
                 await eventParser.StreamJournalHistoryOfTypeAsync(settingsStore.SelectedCommanderID, history, settingsStore.JournalAgeDateTime).ConfigureAwait(true);
+                ManagerLive = true;
+                Processing = false;
             }
         }
         #endregion
@@ -132,6 +135,10 @@ namespace ODEliteTracker.Services
         public async Task RegisterLogProcessor(IProcessJournalLogs logProcesser)
         {
             journalLogParserList.Add(logProcesser);
+            while (Processing) 
+            {
+                await Task.Delay(100);
+            }
 
             if (IsLive)
             {
@@ -238,7 +245,7 @@ namespace ODEliteTracker.Services
         {
             statusWatchers.Remove(watcher);
             if (statusWatchers.Count == 0)
-                eventParser.StopWatcher();
+                eventParser.StopStatusWatcher();
         }
 
         public void Shutdown()

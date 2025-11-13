@@ -8,6 +8,7 @@
              xmlns:busyIndicator="https://github.com/moh3ngolshani/BusyIndicator"
              xmlns:System="clr-namespace:System;assembly=netstandard"
              xmlns:models="clr-namespace:ODEliteTracker.Models"
+             xmlns:sliders="clr-namespace:ODEliteTracker.Controls.Sliders"
              d:DataContext="{d:DesignInstance viewmodels:FleetCarrierViewModel}"
              mc:Ignorable="d"
              d:DesignHeight="450"
@@ -634,6 +635,123 @@
                                Margin="5"
                                Grid.Column="1"
                                Grid.Row="8" />
+                </Grid>
+            </Border>
+
+            <Border Background="{DynamicResource CardBackground}"
+                    Grid.Row="3"
+                    Grid.Column="2"
+                    CornerRadius="5"
+                    Margin="5"
+                    Padding="5">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="10" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Carrier Cooldown Audio Notification"
+                               FontSize="22"
+                               Foreground="{DynamicResource Header}" />
+
+                    <Grid Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <CheckBox Margin="5,10"
+                                  Grid.ColumnSpan="2"
+                                  Content="Play on Personal Carrier Cooldown"                                  
+                                  IsChecked="{Binding PlayOnPeronalCarrierCooldown}"
+                                  Style="{DynamicResource EliteStyleCheckBox}" />
+
+                        <CheckBox Grid.Row="1"
+                                  Grid.ColumnSpan="2"
+                                  Margin="5,10"
+                                  Content="Play on Squadron Carrier Cooldown"
+                                  IsChecked="{Binding PlayOnSquadronCarrierCooldown}"
+                                  Style="{DynamicResource EliteStyleCheckBox}" />
+
+                        <TextBlock Grid.Row="2"
+                                   Margin="5"
+                                   VerticalAlignment="Center"
+                                   Text="Audio File" />
+
+                        <TextBox Text="{Binding AudioFile, Mode=OneWay}"
+                                 Style="{DynamicResource PopOutTextBox}"
+                                 TextWrapping="NoWrap"
+                                 TextAlignment="Center"
+                                 IsReadOnly="True"
+                                 IsHitTestVisible="False"
+                                 HorizontalAlignment="Stretch"
+                                 Padding="5"
+                                 Foreground="{DynamicResource Header}"
+                                 FontSize="16"
+                                 Margin="5"
+                                 Grid.Row="2" 
+                                 Grid.Column="1"/>
+
+                        <TextBlock Grid.Row="3"
+                                   Margin="5"
+                                   VerticalAlignment="Center"
+                                   Text="Volume" />
+                        
+                        <Slider Grid.Row="3"
+                                Grid.Column="1"
+                                Grid.ColumnSpan="2"
+                                Margin="5"
+                                Minimum="0"
+                                Maximum="1"
+                                SmallChange="0.1"
+                                LargeChange="0.1"
+                                TickFrequency="0.1"
+                                Style="{DynamicResource VolumeSlider}"
+                                IsEnabled="{Binding CanPlay}"
+                                VerticalAlignment="Center"
+                                Value="{Binding Volume}"/>
+                        
+                        <StackPanel Grid.Row="4"
+                                    Grid.ColumnSpan="2"
+                                    Margin="5,10"
+                                    HorizontalAlignment="Center"
+                                    Orientation="Horizontal">
+
+                            <Button Content="&#xE768;"
+                                    Command="{Binding PlayAudioFile}"
+                                    IsEnabled="{Binding CanPlay}"
+                                    FontFamily="Segoe MDL2 Assets"
+                                    Style="{DynamicResource EliteStyleButton}"
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Center"
+                                    Height="30"
+                                    Width="30"
+                                    Margin="5" />
+                            
+                            <Button Content="Select Audio File"
+                                Command="{Binding SetAudioFile}"
+                                Style="{DynamicResource EliteStyleButton}"
+                                HorizontalAlignment="Stretch"
+                                Height="30"
+                                Width="150"
+                                Margin="5" />
+
+                        <Button Content="Clear Audio File"
+                                Command="{Binding ClearAudioFile}"
+                                Style="{DynamicResource EliteStyleButton}"
+                                HorizontalAlignment="Stretch"
+                                Height="30"
+                                Width="150"
+                                Margin="5" />
+                        </StackPanel>
+                    </Grid>
                 </Grid>
             </Border>
         </Grid>

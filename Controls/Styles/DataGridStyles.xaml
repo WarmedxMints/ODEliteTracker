@@ -197,7 +197,42 @@
         <Setter Property="FocusVisualStyle"
                 Value="{x:Null}" />
         <Setter Property="Background"
-                Value="{x:Null}" />
+                Value="Transparent" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource PrimaryForeground}" />
+        <Style.Triggers>
+            <Trigger Property="ItemsControl.AlternationIndex"
+                     Value="0">
+                <Setter Property="Background"
+                        Value="{DynamicResource CardBackground}" />
+            </Trigger>
+            <Trigger Property="ItemsControl.AlternationIndex"
+                     Value="1">
+                <Setter Property="Background"
+                        Value="{DynamicResource RowAlternationColour}" />
+            </Trigger>
+            <Trigger Property="IsMouseOver"
+                     Value="True">
+                <Setter Property="Background"
+                        Value="{DynamicResource PrimaryControlMouseOver}" />
+            </Trigger>
+            <Trigger Property="IsSelected"
+                     Value="True">
+                <Setter Property="Background"
+                        Value="{x:Null}" />
+                <Setter Property="BorderBrush"
+                        Value="{x:Null}" />
+                <Setter Property="BorderThickness"
+                        Value="0" />
+            </Trigger>
+            <DataTrigger Binding="{Binding Highlight}"
+                         Value="True">
+                <Setter Property="Background"
+                        Value="{DynamicResource EliteBtnBGMouseOver}" />
+                <Setter Property="Foreground"
+                        Value="{DynamicResource EliteBtnFGMouseOver}" />
+            </DataTrigger>
+        </Style.Triggers>
     </Style>
     
     <Style x:Key="NoSelectRowStyle"
@@ -299,11 +334,9 @@
         <Setter Property="BorderThickness"
                 Value="0" />
         <Setter Property="IsHitTestVisible"
-                Value="True" />
+                Value="False" />
         <Setter Property="Margin"
                 Value="0,0,5,1" />
-        <Setter Property="Background"
-                Value="Transparent" />
         <Setter Property="BorderBrush"
                 Value="{x:Null}" />
         <Setter Property="FocusVisualStyle"
@@ -323,10 +356,17 @@
                          Value="True">
                 <Setter Property="Foreground"
                         Value="{DynamicResource MasscreMissionStationHighlight}" />
-            </DataTrigger>       
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Highlight}"
+                         Value="True">
+                <Setter Property="Foreground"
+                        Value="{DynamicResource EliteBtnFGMouseOver}" />
+            </DataTrigger>
             <Trigger Property="IsSelected"
                      Value="True">
                 <Setter Property="Background"
+                        Value="{x:Null}" />
+                <Setter Property="Foreground"
                         Value="{x:Null}" />
                 <Setter Property="BorderBrush"
                         Value="{x:Null}" />
@@ -456,7 +496,7 @@
     <Style TargetType="{x:Type DataGridCell}"
            x:Key="MassacreStackCell">
         <Setter Property="IsHitTestVisible"
-                Value="True" />
+                Value="False" />
         <Setter Property="OverridesDefaultStyle"
                 Value="False" />
         <Setter Property="BorderThickness"

@@ -59,6 +59,58 @@
     </Style>
 
     <Style TargetType="{x:Type TextBox}"
+           x:Key="NoSelectTextBox">
+        <Setter Property="FontSize"
+                Value="20" />
+        <Setter Property="Background"
+                Value="{DynamicResource PrimaryControlBackground}" />
+        <Setter Property="BorderBrush"
+                Value="{DynamicResource PrimaryControlBorder}" />
+        <Setter Property="CaretBrush"
+                Value="{DynamicResource EliteBtnBGMouseOver}" />
+        <Setter Property="IsHitTestVisible"
+                Value="False" />
+        <Setter Property="IsReadOnly"
+                Value="True" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type TextBox}">
+                    <Border x:Name="border"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Background="{TemplateBinding Background}"
+                            SnapsToDevicePixels="True">
+                        <ScrollViewer x:Name="PART_ContentHost"
+                                      Focusable="false"
+                                      HorizontalScrollBarVisibility="Hidden"
+                                      VerticalScrollBarVisibility="Hidden" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsEnabled"
+                                 Value="false">
+                            <Setter Property="Opacity"
+                                    TargetName="border"
+                                    Value="0.56" />
+                        </Trigger>
+                        <Trigger Property="IsMouseOver"
+                                 Value="true">
+                            <Setter Property="BorderBrush"
+                                    TargetName="border"
+                                    Value="{DynamicResource PrimaryControlMouseOver}" />
+                        </Trigger>
+                        <Trigger Property="IsFocused"
+                                 Value="true">
+                            <Setter Property="BorderBrush"
+                                    TargetName="border"
+                                    Value="{DynamicResource PrimaryControlBorder}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+    <Style TargetType="{x:Type TextBox}"
            x:Key="CompassTextBox">
         <Setter Property="FontSize"
                 Value="20" />

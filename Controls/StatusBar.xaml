@@ -65,6 +65,7 @@
                       IsSynchronizedWithCurrentItem="False" />
             <Button Style="{DynamicResource EliteStyleButton}"
                     Command="{Binding RefreshCommanderCommand}"
+                    IsEnabled="{Binding UiEnabled, Mode=OneWay}"
                     FontFamily="Segoe MDL2 Assets"
                     FontSize="18"
                     Content="&#xE72C;"

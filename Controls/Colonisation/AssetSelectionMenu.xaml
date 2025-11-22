@@ -1,0 +1,412 @@
+﻿<UserControl x:Class="ODEliteTracker.Controls.Colonisation.AssetSelectionMenu"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ODEliteTracker.Controls.Colonisation"
+             xmlns:colonisationVM="clr-namespace:ODEliteTracker.ViewModels.ModelViews.Colonisation"
+             mc:Ignorable="d" 
+             x:Name="Root"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <ToggleButton Style="{DynamicResource EliteSytleImageToggleBtn}"
+                      IsChecked="{Binding ElementName=Root, Path=IsChecked}"
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Center"
+                      x:Name="BuildBtn"
+                      ToolTip="Select Build"
+                      Margin="10,10"
+                      Width="35"
+                      Height="35">
+            <Image Source="/Assets/Notifications/Stations/Construction.png" />
+        </ToggleButton>
+
+        <Popup  IsOpen="{Binding IsChecked, ElementName=BuildBtn}"
+                PlacementTarget="{Binding ElementName=BuildBtn}"
+                PopupAnimation="Scroll"
+                StaysOpen="False"
+                AllowsTransparency="True"
+                HorizontalAlignment="Center"
+                VerticalOffset="5"
+                Placement="Bottom">
+
+            <Menu FontSize="18"
+                  Width="200"
+                  Background="{DynamicResource ViewBackground}"
+                  HorizontalAlignment="Left">
+                <Menu.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Vertical" />
+                    </ItemsPanelTemplate>
+                </Menu.ItemsPanel>
+                <MenuItem Header="Starport">
+                    <Separator>
+                        <Separator.Template>
+                            <ControlTemplate TargetType="Separator">
+                                <StackPanel Background="{DynamicResource ViewBackground}">
+                                    <TextBlock Text="Tier 1"
+                                               FontSize="16"
+                                               Foreground="{DynamicResource EliteBtnFG}" />
+                                </StackPanel>
+                            </ControlTemplate>
+                        </Separator.Template>
+                    </Separator>
+                    <MenuItem Header="Outpost [Primary Port]"
+                              Command="{Binding ElementName=Root, Path=Command}"
+                              CommandParameter="{x:Static colonisationVM:ColonisationBuild.OutpostP}" />
+                    <MenuItem Header="Outpost"
+                              Command="{Binding ElementName=Root, Path=Command}"
+                              CommandParameter="{x:Static colonisationVM:ColonisationBuild.Outpost}" />
+                    <Separator>
+                        <Separator.Template>
+                            <ControlTemplate TargetType="Separator">
+                                <StackPanel Background="{DynamicResource ViewBackground}">
+                                    <TextBlock Text="Tier 2"
+                                               FontSize="16"
+                                               Foreground="{DynamicResource EliteBtnFG}" />
+                                </StackPanel>
+                            </ControlTemplate>
+                        </Separator.Template>
+                    </Separator>
+                    <MenuItem Header="Coriolis / Asteroid Base [Primary Port]"
+                              Command="{Binding ElementName=Root, Path=Command}"
+                              CommandParameter="{x:Static colonisationVM:ColonisationBuild.Starport_T2P}" />
+                    <MenuItem Header="Coriolis / Asteroid Base"
+                              Command="{Binding ElementName=Root, Path=Command}"
+                              CommandParameter="{x:Static colonisationVM:ColonisationBuild.Starport_T2}" />
+                    <Separator>
+                        <Separator.Template>
+                            <ControlTemplate TargetType="Separator">
+                                <StackPanel Background="{DynamicResource ViewBackground}">
+                                    <TextBlock Text="Tier 3"
+                                               FontSize="16"
+                                               Foreground="{DynamicResource EliteBtnFG}" />
+                                </StackPanel>
+                            </ControlTemplate>
+                        </Separator.Template>
+                    </Separator>
+                    <MenuItem Header="Ocellus / Orbis [Primary Port]"
+                              Command="{Binding ElementName=Root, Path=Command}"
+                              CommandParameter="{x:Static colonisationVM:ColonisationBuild.Starport_T3P}" />
+                    <MenuItem Header="Ocellus / Orbis"
+                              Command="{Binding ElementName=Root, Path=Command}"
+                              CommandParameter="{x:Static colonisationVM:ColonisationBuild.Starport_T3}" />
+                    <MenuItem Header="Dodec [Primary Port]"
+                              Command="{Binding ElementName=Root, Path=Command}"
+                              CommandParameter="{x:Static colonisationVM:ColonisationBuild.DodecP}" />
+                    <MenuItem Header="Dodec"
+                              Command="{Binding ElementName=Root, Path=Command}"
+                              CommandParameter="{x:Static colonisationVM:ColonisationBuild.Dodec}" />
+                </MenuItem>
+                <MenuItem Header="Installation">
+                    <Separator>
+                        <Separator.Template>
+                            <ControlTemplate TargetType="Separator">
+                                <StackPanel Background="{DynamicResource ViewBackground}">
+                                    <TextBlock Text="Tier 1"
+                                               FontSize="16"
+                                               Foreground="{DynamicResource EliteBtnFG}" />
+                                </StackPanel>
+                            </ControlTemplate>
+                        </Separator.Template>
+                    </Separator>
+                    <MenuItem Header="Satellite / Communication Station"
+                              Command="{Binding ElementName=Root, Path=Command}"
+                              CommandParameter="{x:Static colonisationVM:ColonisationBuild.Satellite_Comms}" />
+                    <MenuItem Header="Space Farm"
+                              Command="{Binding ElementName=Root, Path=Command}"
+                              CommandParameter="{x:Static colonisationVM:ColonisationBuild.SpaceFarm}" />
+                    <MenuItem Header="Pirate Base"
+                              Command="{Binding ElementName=Root, Path=Command}"
+                              CommandParameter="{x:Static colonisationVM:ColonisationBuild.PirateInstallation}" />
+                    <MenuItem Header="Mining Outpost"
+                              Command="{Binding ElementName=Root, Path=Command}"
+                              CommandParameter="{x:Static colonisationVM:ColonisationBuild.MiningOutpost}" />
+                    <MenuItem Header="Relay Station"
+                              Command="{Binding ElementName=Root, Path=Command}"
+                              CommandParameter="{x:Static colonisationVM:ColonisationBuild.RelayStation}" />
+                    <Separator>
+                        <Separator.Template>
+                            <ControlTemplate TargetType="Separator">
+                                <StackPanel Background="{DynamicResource ViewBackground}">
+                                    <TextBlock Text="Tier 2"
+                                               FontSize="16"
+                                               Foreground="{DynamicResource EliteBtnFG}" />
+                                </StackPanel>
+                            </ControlTemplate>
+                        </Separator.Template>
+                    </Separator>
+                    <MenuItem Header="Military"
+                              Command="{Binding ElementName=Root, Path=Command}"
+                              CommandParameter="{x:Static colonisationVM:ColonisationBuild.MilitaryInstallation}" />
+                    <MenuItem Header="Security Station"
+                              Command="{Binding ElementName=Root, Path=Command}"
+                              CommandParameter="{x:Static colonisationVM:ColonisationBuild.SecurityStation}" />
+                    <MenuItem Header="Government"
+                              Command="{Binding ElementName=Root, Path=Command}"
+                              CommandParameter="{x:Static colonisationVM:ColonisationBuild.GovernmentInstallation}" />
+                    <MenuItem Header="Medical"
+                              Command="{Binding ElementName=Root, Path=Command}"
+                              CommandParameter="{x:Static colonisationVM:ColonisationBuild.MedicalInstallation}" />
+                    <MenuItem Header="Research Station"
+                              Command="{Binding ElementName=Root, Path=Command}"
+                              CommandParameter="{x:Static colonisationVM:ColonisationBuild.ResearchStation}" />
+                    <MenuItem Header="Tourist"
+                              Command="{Binding ElementName=Root, Path=Command}"
+                              CommandParameter="{x:Static colonisationVM:ColonisationBuild.TouristInstallation}" />
+                    <MenuItem Header="Bar"
+                              Command="{Binding ElementName=Root, Path=Command}"
+                              CommandParameter="{x:Static colonisationVM:ColonisationBuild.BarInstallation}" />
+                </MenuItem>
+                <MenuItem Header="Planetary Port">
+                    <Separator>
+                        <Separator.Template>
+                            <ControlTemplate TargetType="Separator">
+                                <StackPanel Background="{DynamicResource ViewBackground}">
+                                    <TextBlock Text="Tier 1"
+                                               FontSize="16"
+                                               Foreground="{DynamicResource EliteBtnFG}" />
+                                </StackPanel>
+                            </ControlTemplate>
+                        </Separator.Template>
+                    </Separator>
+                    <MenuItem Header="Outpost"
+                              Command="{Binding ElementName=Root, Path=Command}"
+                              CommandParameter="{x:Static colonisationVM:ColonisationBuild.SurfaceOutpostT1}" />
+                    <Separator>
+                        <Separator.Template>
+                            <ControlTemplate TargetType="Separator">
+                                <StackPanel Background="{DynamicResource ViewBackground}">
+                                    <TextBlock Text="Tier 3"
+                                               FontSize="16"
+                                               Foreground="{DynamicResource EliteBtnFG}" />
+                                </StackPanel>
+                            </ControlTemplate>
+                        </Separator.Template>
+                    </Separator>
+                    <MenuItem Header="Outpost"
+                              Command="{Binding ElementName=Root, Path=Command}"
+                              CommandParameter="{x:Static colonisationVM:ColonisationBuild.SurfaceOutpostT3}" />
+                </MenuItem>
+                <MenuItem Header="Settlement">
+                    <Separator>
+                        <Separator.Template>
+                            <ControlTemplate TargetType="Separator">
+                                <StackPanel Background="{DynamicResource ViewBackground}">
+                                    <TextBlock Text="Tier 1"
+                                               FontSize="16"
+                                               Foreground="{DynamicResource EliteBtnFG}" />
+                                </StackPanel>
+                            </ControlTemplate>
+                        </Separator.Template>
+                    </Separator>
+                    <MenuItem Header="Agriculture">
+                        <Separator>
+                            <Separator.Template>
+                                <ControlTemplate TargetType="Separator">
+                                    <StackPanel Background="{DynamicResource ViewBackground}">
+                                        <TextBlock Text="Tier 1"
+                                                   FontSize="16"
+                                                   Foreground="{DynamicResource EliteBtnFG}" />
+                                    </StackPanel>
+                                </ControlTemplate>
+                            </Separator.Template>
+                        </Separator>
+                        <MenuItem Header="Small"
+                                  Command="{Binding ElementName=Root, Path=Command}"
+                                  CommandParameter="{x:Static colonisationVM:ColonisationBuild.SettlementAgriSmall}" />
+                        <MenuItem Header="Medium"
+                                  Command="{Binding ElementName=Root, Path=Command}"
+                                  CommandParameter="{x:Static colonisationVM:ColonisationBuild.SettlementAgriMedium}" />
+                        <Separator>
+                            <Separator.Template>
+                                <ControlTemplate TargetType="Separator">
+                                    <StackPanel Background="{DynamicResource ViewBackground}">
+                                        <TextBlock Text="Tier 2"
+                                                   FontSize="16"
+                                                   Foreground="{DynamicResource EliteBtnFG}" />
+                                    </StackPanel>
+                                </ControlTemplate>
+                            </Separator.Template>
+                        </Separator>
+                        <MenuItem Header="Large"
+                                  Command="{Binding ElementName=Root, Path=Command}"
+                                  CommandParameter="{x:Static colonisationVM:ColonisationBuild.SettlementAgriLarge}" />
+                    </MenuItem>
+                    <MenuItem Header="Extraction">
+                        <Separator>
+                            <Separator.Template>
+                                <ControlTemplate TargetType="Separator">
+                                    <StackPanel Background="{DynamicResource ViewBackground}">
+                                        <TextBlock Text="Tier 1"
+                                                   FontSize="16"
+                                                   Foreground="{DynamicResource EliteBtnFG}" />
+                                    </StackPanel>
+                                </ControlTemplate>
+                            </Separator.Template>
+                        </Separator>
+                        <MenuItem Header="Small"
+                                  Command="{Binding ElementName=Root, Path=Command}"
+                                  CommandParameter="{x:Static colonisationVM:ColonisationBuild.SettlementExtractionSmall}" />
+                        <MenuItem Header="Medium"
+                                  Command="{Binding ElementName=Root, Path=Command}"
+                                  CommandParameter="{x:Static colonisationVM:ColonisationBuild.SettlementExtractionMedium}" />
+                        <Separator>
+                            <Separator.Template>
+                                <ControlTemplate TargetType="Separator">
+                                    <StackPanel Background="{DynamicResource ViewBackground}">
+                                        <TextBlock Text="Tier 2"
+                                                   FontSize="16"
+                                                   Foreground="{DynamicResource EliteBtnFG}" />
+                                    </StackPanel>
+                                </ControlTemplate>
+                            </Separator.Template>
+                        </Separator>
+                        <MenuItem Header="Large"
+                                  Command="{Binding ElementName=Root, Path=Command}"
+                                  CommandParameter="{x:Static colonisationVM:ColonisationBuild.SettlementExtractionLarge}" />
+                    </MenuItem>
+                    <MenuItem Header="Industrial">
+                        <Separator>
+                            <Separator.Template>
+                                <ControlTemplate TargetType="Separator">
+                                    <StackPanel Background="{DynamicResource ViewBackground}">
+                                        <TextBlock Text="Tier 1"
+                                                   FontSize="16"
+                                                   Foreground="{DynamicResource EliteBtnFG}" />
+                                    </StackPanel>
+                                </ControlTemplate>
+                            </Separator.Template>
+                        </Separator>
+                        <MenuItem Header="Small"
+                                  Command="{Binding ElementName=Root, Path=Command}"
+                                  CommandParameter="{x:Static colonisationVM:ColonisationBuild.SettlementIndustrialSmall}" />
+                        <MenuItem Header="Medium"
+                                  Command="{Binding ElementName=Root, Path=Command}"
+                                  CommandParameter="{x:Static colonisationVM:ColonisationBuild.SettlementIndustrialMedium}" />
+                        <Separator>
+                            <Separator.Template>
+                                <ControlTemplate TargetType="Separator">
+                                    <StackPanel Background="{DynamicResource ViewBackground}">
+                                        <TextBlock Text="Tier 2"
+                                                   FontSize="16"
+                                                   Foreground="{DynamicResource EliteBtnFG}" />
+                                    </StackPanel>
+                                </ControlTemplate>
+                            </Separator.Template>
+                        </Separator>
+                        <MenuItem Header="Large"
+                                  Command="{Binding ElementName=Root, Path=Command}"
+                                  CommandParameter="{x:Static colonisationVM:ColonisationBuild.SettlementIndustrialLarge}" />
+                    </MenuItem>
+                    <MenuItem Header="Military">
+                        <Separator>
+                            <Separator.Template>
+                                <ControlTemplate TargetType="Separator">
+                                    <StackPanel Background="{DynamicResource ViewBackground}">
+                                        <TextBlock Text="Tier 1"
+                                                   FontSize="16"
+                                                   Foreground="{DynamicResource EliteBtnFG}" />
+                                    </StackPanel>
+                                </ControlTemplate>
+                            </Separator.Template>
+                        </Separator>
+                        <MenuItem Header="Small"
+                                  Command="{Binding ElementName=Root, Path=Command}"
+                                  CommandParameter="{x:Static colonisationVM:ColonisationBuild.SettlementMiltarySmall}" />
+                        <MenuItem Header="Medium"
+                                  Command="{Binding ElementName=Root, Path=Command}"
+                                  CommandParameter="{x:Static colonisationVM:ColonisationBuild.SettlementMiltaryMedium}" />
+                        <Separator>
+                            <Separator.Template>
+                                <ControlTemplate TargetType="Separator">
+                                    <StackPanel Background="{DynamicResource ViewBackground}">
+                                        <TextBlock Text="Tier 2"
+                                                   FontSize="16"
+                                                   Foreground="{DynamicResource EliteBtnFG}" />
+                                    </StackPanel>
+                                </ControlTemplate>
+                            </Separator.Template>
+                        </Separator>
+                        <MenuItem Header="Large"
+                                  Command="{Binding ElementName=Root, Path=Command}"
+                                  CommandParameter="{x:Static colonisationVM:ColonisationBuild.SettlementMiltaryLarge}" />
+                    </MenuItem>
+                    <Separator>
+                        <Separator.Template>
+                            <ControlTemplate TargetType="Separator">
+                                <StackPanel Background="{DynamicResource ViewBackground}">
+                                    <TextBlock Text="Tier 2"
+                                               FontSize="16"
+                                               Foreground="{DynamicResource EliteBtnFG}" />
+                                </StackPanel>
+                            </ControlTemplate>
+                        </Separator.Template>
+                    </Separator>
+                    <MenuItem Header="Research Bio">
+                        <MenuItem Header="Small"
+                                  Command="{Binding ElementName=Root, Path=Command}"
+                                  CommandParameter="{x:Static colonisationVM:ColonisationBuild.SettlementResearchBioSmall}" />
+                        <MenuItem Header="Medium"
+                                  Command="{Binding ElementName=Root, Path=Command}"
+                                  CommandParameter="{x:Static colonisationVM:ColonisationBuild.SettlementResearchBioMedium}" />
+                        <MenuItem Header="Large"
+                                  Command="{Binding ElementName=Root, Path=Command}"
+                                  CommandParameter="{x:Static colonisationVM:ColonisationBuild.SettlementResearchBioLarge}" />
+                    </MenuItem>
+                    <MenuItem Header="Tourism">
+                        <MenuItem Header="Small"
+                                  Command="{Binding ElementName=Root, Path=Command}"
+                                  CommandParameter="{x:Static colonisationVM:ColonisationBuild.SettlementTourismSmall}" />
+                        <MenuItem Header="Medium"
+                                  Command="{Binding ElementName=Root, Path=Command}"
+                                  CommandParameter="{x:Static colonisationVM:ColonisationBuild.SettlementTourismMedium}" />
+                        <MenuItem Header="Large"
+                                  Command="{Binding ElementName=Root, Path=Command}"
+                                  CommandParameter="{x:Static colonisationVM:ColonisationBuild.SettlementTourismLarge}" />
+                    </MenuItem>
+                </MenuItem>
+                <MenuItem Header="Hub">
+                    <Separator>
+                        <Separator.Template>
+                            <ControlTemplate TargetType="Separator">
+                                <StackPanel Background="{DynamicResource ViewBackground}">
+                                    <TextBlock Text="Tier 2"
+                                               FontSize="16"
+                                               Foreground="{DynamicResource EliteBtnFG}" />
+                                </StackPanel>
+                            </ControlTemplate>
+                        </Separator.Template>
+                    </Separator>
+                    <MenuItem Header="Extraction"
+                              Command="{Binding ElementName=Root, Path=Command}"
+                              CommandParameter="{x:Static colonisationVM:ColonisationBuild.HubExtraction}" />
+                    <MenuItem Header="Civilian"
+                              Command="{Binding ElementName=Root, Path=Command}"
+                              CommandParameter="{x:Static colonisationVM:ColonisationBuild.HubCivilian}" />
+                    <MenuItem Header="Exploration"
+                              Command="{Binding ElementName=Root, Path=Command}"
+                              CommandParameter="{x:Static colonisationVM:ColonisationBuild.HubExploration}" />
+                    <MenuItem Header="Outpost"
+                              Command="{Binding ElementName=Root, Path=Command}"
+                              CommandParameter="{x:Static colonisationVM:ColonisationBuild.HubOutpost}" />
+                    <MenuItem Header="Scientific"
+                              Command="{Binding ElementName=Root, Path=Command}"
+                              CommandParameter="{x:Static colonisationVM:ColonisationBuild.HubScientific}" />
+                    <MenuItem Header="Military"
+                              Command="{Binding ElementName=Root, Path=Command}"
+                              CommandParameter="{x:Static colonisationVM:ColonisationBuild.HubMilitary}" />
+                    <MenuItem Header="Refinery"
+                              Command="{Binding ElementName=Root, Path=Command}"
+                              CommandParameter="{x:Static colonisationVM:ColonisationBuild.HubRefinery}" />
+                    <MenuItem Header="High Tech"
+                              Command="{Binding ElementName=Root, Path=Command}"
+                              CommandParameter="{x:Static colonisationVM:ColonisationBuild.HubHighTech}" />
+                    <MenuItem Header="Industrial"
+                              Command="{Binding ElementName=Root, Path=Command}"
+                              CommandParameter="{x:Static colonisationVM:ColonisationBuild.HubIndustrial}" />
+                </MenuItem>
+            </Menu>
+        </Popup>
+    </Grid>
+</UserControl>

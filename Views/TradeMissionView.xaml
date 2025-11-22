@@ -50,9 +50,12 @@
                             Margin="5,5,5,5"
                             Padding="5">
                         <DataGrid ItemsSource="{Binding ActiveMissions}"
-                                  Style="{DynamicResource BaseDataGridStyle}"
+                                  Style="{DynamicResource DisabledSelectGrid}"
                                   RowStyle="{DynamicResource NoSelectRowStyle}"
                                   CellStyle="{DynamicResource NoSelectCellNoMargin}"
+                                  AlternationCount="1"
+                                  AlternatingRowBackground="{DynamicResource RowAlternationColour}"
+                                  GridLinesVisibility="Horizontal"
                                   HeadersVisibility="Column"
                                   IsHitTestVisible="True">
                             <DataGrid.Columns>
@@ -72,7 +75,7 @@
                                     <DataGridTextColumn.ElementStyle>
                                         <Style TargetType="{x:Type TextBlock}">
                                             <Setter Property="VerticalAlignment"
-                                                    Value="Center" />
+                                                    Value="Top" />
                                             <Setter Property="TextWrapping"
                                                     Value="Wrap" />
                                         </Style>
@@ -422,6 +425,14 @@
                                     <TextBlock Grid.Column="4"
                                                Grid.Row="2"
                                                Text="{Binding SharableTurnInValue}" />
+
+                                    <TextBlock Grid.Column="3"
+                                               Grid.Row="3"
+                                               Margin="0,0,10,0"
+                                               Text="Missions Progress" />
+                                    <TextBlock Grid.Column="4"
+                                               Grid.Row="3"
+                                               Text="{Binding MissionsProgress}" />
                                 </Grid>
                             </Grid>
                         </Border>

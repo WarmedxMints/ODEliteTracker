@@ -48,13 +48,12 @@ namespace ODEliteTracker.ViewModels
             this.sharedData.CurrentSystemChanged += OnCurrentSystemChanged;
             this.sharedData.WatchedMarketUpdated += OnWatchedMarketUpdated;
             this.sharedData.WatchedMarketsUpdated += OnWatchedMarketsUpdated;
-
+            this.sharedData.StoreLive += OnSharedDataLive;
+            ColonisationBuildTotals = new(this.fcDataStore, this.sharedData);
+            
             if (this.sharedData.IsLive)
             {
-                if (this.sharedData.CurrentShipInfo != null)
-                    OnShipChanged(null, this.sharedData.CurrentShipInfo);
-                if(this.sharedData.CurrentShipCargo != null)
-                    OnCargoUpdated(null, this.sharedData.CurrentShipCargo);
+                OnSharedDataLive(null, true);           
             }
 
             SetSelectedDepotCommand = new ODRelayCommand<ConstructionDepotVM?>(SetSelectedDepot);
@@ -65,6 +64,11 @@ namespace ODEliteTracker.ViewModels
             AddShoppingListCommand = new ODRelayCommand<ConstructionDepotVM?>(OnAddShoppingList);
             AddRemoveWatchedMarketsCommand = new ODRelayCommand<ulong>(OnAddRemoveWatchedMarket);
             OpenPopOut = new ODRelayCommand<Type>(OnOpenPopOut);
+            SelectBuild = new ODRelayCommand<ColonisationBuild>(OnSetBuildType);
+            AddSelectedToWishList = new ODRelayCommand(OnAddSelectedBuildToWishList);
+            RemoveSelectedFromWishList = new ODRelayCommand(OnRemoveSelectedFromWishList);
+            AddBuildToWishList = new ODRelayCommand<ColonisationBuild>(OnAddBuildToWishList);
+            RemoveBuildFromWishList = new ODRelayCommand<ColonisationBuild>(OnRemoveBuildFromWishList);
 
             Depots.CollectionChanged += Depots_CollectionChanged;
 
@@ -99,6 +103,7 @@ namespace ODEliteTracker.ViewModels
             this.sharedData.CurrentSystemChanged -= OnCurrentSystemChanged;
             this.sharedData.WatchedMarketUpdated -= OnWatchedMarketUpdated;
             this.sharedData.WatchedMarketsUpdated -= OnWatchedMarketsUpdated;
+            this.sharedData.StoreLive -= OnSharedDataLive;
 
             this.fcDataStore.CarrierStockUpdated -= OnCarrierStockUpdated;
             this.fcDataStore.StoreLive -= OnFcStoreLive;
@@ -124,6 +129,11 @@ namespace ODEliteTracker.ViewModels
         public ICommand AddShoppingListCommand { get; }
         public ICommand AddRemoveWatchedMarketsCommand { get; }
         public ICommand OpenPopOut { get; }
+        public ICommand SelectBuild { get; }
+        public ICommand AddSelectedToWishList { get; }
+        public ICommand RemoveSelectedFromWishList { get; }
+        public ICommand AddBuildToWishList { get; }
+        public ICommand RemoveBuildFromWishList { get; }
         #endregion
 
         #region Public properties
@@ -171,6 +181,22 @@ namespace ODEliteTracker.ViewModels
             }
         }
 
+        public BuildItemSorting BuildItemSorting
+        {
+            get => settings.ColonisationSettings.BuildTotalSorting;
+            set
+            {
+                settings.ColonisationSettings.BuildTotalSorting = value;
+                ColonisationBuildTotals.SortLists(value);
+            }
+        }
+
+        public ColonisationBuild SelectedBuild
+        {
+            get => settings.ColonisationSettings.SelectedBuild;
+            set => settings.ColonisationSettings.SelectedBuild = value;
+        }
+
         private int tabIndex;
         public int TabIndex
         {
@@ -181,11 +207,38 @@ namespace ODEliteTracker.ViewModels
                 OnPropertyChanged(nameof(TabIndex));
             }
         }
+
+        public string EstimatedTrips
+        {
+            get
+            {
+                if (currentShip == null || currentShip.CargoCapacity <= 0)
+                    return "∞";
+
+                var capacity = currentShip.CargoCapacity;
+                switch (SelectedDepotTab)
+                {
+                    case 0:
+                        if (selectedDepot == null)
+                            return string.Empty;
+                        return $"Estimated Trips {Math.Ceiling((double)selectedDepot.Resources.Sum(x => x.RemainingCount) / capacity)}";
+                    case 1:
+                        if (ShoppingList == null || ShoppingList.Depots.Count == 0)
+                            return string.Empty;
+                        return $"Estimated Trips {Math.Ceiling((double)ShoppingList.Resources.Sum(x => x.RemainingCount) / capacity)}";
+                    default:
+                        return string.Empty;
+
+                }
+            }
+        }
+
         public ObservableCollection<ConstructionTotalsVM> ConstructionTotals { get; } = [];
         public ObservableCollection<ConstructionDepotVM> Depots { get; } = [];
         public ColonisationShoppingList ShoppingList { get; } = new();
         public IEnumerable<ConstructionDepotVM> ActiveDepots => Depots.Where(x => x.Inactive == false);
-        public IEnumerable<ConstructionDepotVM> InactiveDepots => Depots.Where(x => x.Inactive == true);
+        public IEnumerable<ConstructionDepotVM> InactiveDepots => Depots.Where(x => x.Inactive == true && x.ProgressValue < 1);
+
         public IEnumerable<ConstructionResourceVM>? SelectedDepotResources
         {
             get
@@ -291,6 +344,7 @@ namespace ODEliteTracker.ViewModels
                 OnPropertyChanged(nameof(SelectedDepot));
                 OnPropertyChanged(nameof(ActiveButtonText));
                 OnPropertyChanged(nameof(SelectedDepotResources));
+                OnPropertyChanged(nameof(EstimatedTrips));
                 if (selectedDepot != null)
                 {
                     selectedResource = selectedDepot.Resources.FirstOrDefault();
@@ -376,8 +430,11 @@ namespace ODEliteTracker.ViewModels
                 settings.ColonisationSettings.SelectedDepotTab = value;
                 CheckMarket();
                 OnPropertyChanged(nameof(SelectedDepotTab));
+                OnPropertyChanged(nameof(EstimatedTrips));
             }
         }
+
+        public ColonisationBuildTotalsVM ColonisationBuildTotals { get; private set; }
         #endregion
 
         private void CreatePost(ColonisationPostType type)
@@ -491,8 +548,9 @@ namespace ODEliteTracker.ViewModels
                 }
 
                 OnPropertyChanged(nameof(SelectedDepotResources));
+                OnPropertyChanged(nameof(EstimatedTrips));
                 CheckMarket();
-                if (colonisationStore.ShoppingList.Contains(Tuple.Create(known.MarketID, known.SystemAddress, known.StationName)))
+                if (colonisationStore.ShoppingList.Contains(Tuple.Create(known.MarketID, known.SystemAddress)))
                 {
                     ShoppingList.PopulateResources(fcDataStore.CarrierData, sharedData.MarketPurchases);
                     OnPropertyChanged(nameof(ShoppingListResources));
@@ -504,6 +562,15 @@ namespace ODEliteTracker.ViewModels
             OnNewDepot(sender, e);
         }
 
+        private void OnSharedDataLive(object? sender, bool e)
+        {
+            if (this.sharedData.CurrentShipInfo != null)
+                OnShipChanged(null, this.sharedData.CurrentShipInfo);
+            if (this.sharedData.CurrentShipCargo != null)
+                OnCargoUpdated(null, this.sharedData.CurrentShipCargo);
+
+            ColonisationBuildTotals.OnSharedDataLive();
+        }
         private void OnStoreLive(object? sender, bool e)
         {
             if (e == false)
@@ -558,7 +625,7 @@ namespace ODEliteTracker.ViewModels
 
             if (colonisationStore.ShoppingList.Count > 0)
             {
-                var depots = Depots.Where(x => colonisationStore.ShoppingList.Contains(Tuple.Create(x.MarketID, x.SystemAddress, x.StationName)));
+                var depots = Depots.Where(x => colonisationStore.ShoppingList.Contains(Tuple.Create(x.MarketID, x.SystemAddress)));
 
                 if (depots.Any())
                 {
@@ -568,6 +635,8 @@ namespace ODEliteTracker.ViewModels
             }
             SelectedDepot = Depots.Where(x => x.Inactive == false).LastOrDefault();
             SelectedCommanderSystem = commanderSystems.LastOrDefault();
+
+            ColonisationBuildTotals.BuildItemList(SelectedBuild);
             OnModelLive(true);
         }
 
@@ -606,7 +675,7 @@ namespace ODEliteTracker.ViewModels
                     market.ItemsForSale.Add(commodity);
                     continue;
                 }
-
+                //Shopping List Tab
                 if (SelectedDepotTab == 1 && ShoppingList.Resources.Count > 0)
                 {
                     var required = ShoppingList.Resources.FirstOrDefault(x => x.FDEVName == item.Name && x.RemainingCount > 0);
@@ -622,7 +691,7 @@ namespace ODEliteTracker.ViewModels
 
                     market.ItemsForSale.Add(commodity);
                 }
-
+                //Market Wishlist Tab
                 if (SelectedDepotTab == 2 && SelectedWatchedMarket != null)
                 {
                     var required = SelectedWatchedMarketCommodities?.FirstOrDefault(x => string.Equals(x.Name, item.Name) && x.Demand > 0);
@@ -632,10 +701,46 @@ namespace ODEliteTracker.ViewModels
 
                     var commodity = new StationCommodityVM(item, true)
                     {
-                        Required = required?.Demand ?? 0
+                        Required = required?.Demand ?? 0,
+                        CarrierStockValue = required?.CarrierStockValue ?? 0
                     };
 
                     market.ItemsForSale.Add(commodity);
+                    continue;
+                }
+                //Build Totals Tab
+                if (SelectedDepotTab == 3)
+                {
+                    var required = ColonisationBuildTotals.Items?.FirstOrDefault(x => string.Equals(x.FDEVName, item.Name));
+
+                    if (required == null)
+                        continue;
+
+                    var commodity = new StationCommodityVM(item, true)
+                    {
+                        Required = required.RequiredAmount,
+                        CarrierStockValue = required?.CarrierStockValue ?? 0
+                    };
+
+                    market.ItemsForSale.Add(commodity);
+                    continue;
+                }
+                //Build Wishlist Tab
+                if (SelectedDepotTab == 4)
+                {
+                    var required = ColonisationBuildTotals.WishListItems?.FirstOrDefault(x => string.Equals(x.FDEVName, item.Name));
+
+                    if (required == null)
+                        continue;
+
+                    var commodity = new StationCommodityVM(item, true)
+                    {
+                        Required = required.RequiredAmount,
+                        CarrierStockValue = required?.CarrierStockValue ?? 0
+                    };
+
+                    market.ItemsForSale.Add(commodity);
+                    continue;
                 }
             }
 
@@ -661,6 +766,7 @@ namespace ODEliteTracker.ViewModels
         {
             CurrentShip = e == null ? null : new(e);
             OnCargoUpdated(null, sharedData.CurrentShipCargo);
+            OnPropertyChanged(nameof(EstimatedTrips));
         }
 
         private void OnCargoUpdated(object? sender, IEnumerable<ShipCargo>? e)
@@ -725,6 +831,7 @@ namespace ODEliteTracker.ViewModels
 
             ShoppingList.UpdateCarrierStock(e);
             CheckMarket();
+            ColonisationBuildTotals.OnCarrierStockUpdated(e);
             OnPropertyChanged(nameof(ShoppingListResources));
             OnPropertyChanged(nameof(SelectedDepotResources));
         }
@@ -751,11 +858,13 @@ namespace ODEliteTracker.ViewModels
             {
                 ShoppingList.AddDepot(depot, fcDataStore.CarrierData, sharedData.MarketPurchases);
                 OnPropertyChanged(nameof(ShoppingListResources));
+                OnPropertyChanged(nameof(EstimatedTrips));
                 return;
             }
 
             ShoppingList.RemoveDepot(depot, fcDataStore.CarrierData, sharedData.MarketPurchases);
             OnPropertyChanged(nameof(ShoppingListResources));
+            OnPropertyChanged(nameof(EstimatedTrips));
         }
 
         private void OnAddRemoveWatchedMarket(ulong obj)
@@ -781,6 +890,32 @@ namespace ODEliteTracker.ViewModels
         private void OnOpenPopOut(Type type)
         {
             popOutService.OpenPopOut(type, settings.SelectedCommanderID);
+        }
+
+        private void OnSetBuildType(ColonisationBuild build)
+        {
+            SelectedBuild = build;
+            ColonisationBuildTotals.BuildItemList(build);
+        }
+
+        private void OnAddSelectedBuildToWishList(object? obj)
+        {
+            ColonisationBuildTotals.AddSelectedToWishList();
+        }
+
+        private void OnRemoveSelectedFromWishList(object? obj)
+        {
+            ColonisationBuildTotals.RemoveSelectedFromWishList();
+        }
+
+        private void OnRemoveBuildFromWishList(ColonisationBuild build)
+        {
+            ColonisationBuildTotals.RemoveFromWishlist(build);
+        }
+
+        private void OnAddBuildToWishList(ColonisationBuild build)
+        {
+            ColonisationBuildTotals.AddToWishlist(build);
         }
     }
 }

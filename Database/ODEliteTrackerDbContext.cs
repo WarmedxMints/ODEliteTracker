@@ -14,6 +14,8 @@ namespace ODEliteTracker.Database
         public DbSet<SpanshCsvDTO> SpanshCsvs { get; set; }
         public DbSet<WatchedMarketDTO> WatchedMarkets { get; set; }
         public DbSet<BGSIgnoredSystemsDTO> BGSIgnoredSystems { get; set; }
+        public DbSet<ColonisationBuildWishlistItemDTO> ColonisationWishList { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder

@@ -91,7 +91,16 @@ namespace ODEliteTracker.ViewModels.ModelViews.Trade
         public int ItemsToCollectRemaining => Count - ItemsCollected;
         public int ItemsDelivered { get; set; }
         public int ItemsToDeliverRemaining => Count - ItemsDelivered;
+        public bool ReadyToTurnIn
+        {
+            get
+            {
+                if (DeliveryMission)
+                    return ItemsToCollectRemaining > 0 == false;
 
+                return ItemsToDeliverRemaining > 0 == false;
+            }
+        }
         internal void Update(TradeMission mission)
         {
             CurrentState = mission.CurrentState;

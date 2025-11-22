@@ -124,7 +124,7 @@ namespace ODEliteTracker.ViewModels.PopOuts
         private void BuildShoppingList()
         {
             ShoppingList.Depots.ClearCollection();
-            var depots = colonisationStore.Depots.Where(x => colonisationStore.ShoppingList.Contains(Tuple.Create(x.MarketID, x.SystemAddress, x.StationName)));
+            var depots = colonisationStore.Depots.Where(x => colonisationStore.ShoppingList.Contains(Tuple.Create(x.MarketID, x.SystemAddress)));
 
             if (depots.Any())
             {

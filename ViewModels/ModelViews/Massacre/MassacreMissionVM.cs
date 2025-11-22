@@ -55,6 +55,17 @@ namespace ODEliteTracker.ViewModels.ModelViews.Massacre
         public int Kills { get; set; }
         public string KillsString => $"{Kills} / {KillCount}";
         public bool AtStation { get; private set; }
+
+        private bool highlight;
+        public bool Highlight
+        {
+            get => highlight;
+            set
+            {
+                highlight = value;
+                OnPropertyChanged(nameof(Highlight));
+            }
+        }
         internal void Update(MassacreMission mission)
         {
             CurrentState = mission.CurrentState;

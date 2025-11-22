@@ -20,10 +20,10 @@ namespace ODEliteTracker.Stores
 
         private readonly IManageJournalEvents journalManager;
         private readonly ODEliteTrackerDatabaseProvider databaseProvider;
-        private readonly Dictionary<Tuple<long, long, string>, ConstructionDepot> depots = [];
+        private readonly Dictionary<Tuple<long, long>, ConstructionDepot> depots = [];
         private readonly Dictionary<long, CommanderSystem> commanderSystems = [];
-        private HashSet<Tuple<long, long, string>> inactiveDepots = [];
-        private HashSet<Tuple<long, long, string>> shoppingListDepots = [];
+        private HashSet<Tuple<long, long>> inactiveDepots = [];
+        private HashSet<Tuple<long, long>> shoppingListDepots = [];
         private readonly Dictionary<string, long> constructionTotals = [];
         //When the colonisation events were added to the game
         private readonly DateTime colonisationEventUpdate = new(2025, 4, 7);
@@ -35,7 +35,7 @@ namespace ODEliteTracker.Stores
 
         public override string StoreName => "Colonisation";
         public IEnumerable<ConstructionDepot> Depots => depots.Values.OrderBy(x => x.SystemName);
-        public HashSet<Tuple<long, long, string>> ShoppingList => shoppingListDepots;
+        public HashSet<Tuple<long, long>> ShoppingList => shoppingListDepots;
         public IEnumerable<CommanderSystem> CommanderSystems => commanderSystems.Values.OrderBy(x => x.SystemName);
         public Dictionary<string, long> ConstructionTotals => constructionTotals;
         public override Dictionary<JournalTypeEnum, bool> EventsToParse
@@ -142,7 +142,7 @@ namespace ODEliteTracker.Stores
                 case ColonisationConstructionDepotEvent.ColonisationConstructionDepotEventArgs depot:
                     if (currentSystem == null)
                         break;
-                    var key = Tuple.Create(depot.MarketID, CurrentSystemAddress, CurrentStationName);
+                    var key = Tuple.Create(depot.MarketID, CurrentSystemAddress);
                     if (depots.TryGetValue(key, out ConstructionDepot? value) && value.Update(depot, currentSystem, CurrentStationName))
                     {
                         TriggerDepotUpdateIfLive(value);
@@ -206,7 +206,7 @@ namespace ODEliteTracker.Stores
             SetDepot(vM);
             inactiveDepots = databaseProvider.GetInactiveDepots();
 
-            if (depots.TryGetValue(Tuple.Create(vM.MarketID, vM.SystemAddress, vM.StationName), out var depot))
+            if (depots.TryGetValue(Tuple.Create(vM.MarketID, vM.SystemAddress), out var depot))
             {
                 depot.Inactive = vM.Inactive;
             }
@@ -225,7 +225,7 @@ namespace ODEliteTracker.Stores
 
         internal bool SetDepotShoppingState(ConstructionDepotVM vM)
         {
-            var tuple = Tuple.Create(vM.MarketID, vM.SystemAddress, vM.StationName);
+            var tuple = Tuple.Create(vM.MarketID, vM.SystemAddress);
             var add = !shoppingListDepots.Contains(tuple);
             SetDepotShopping(vM, add);
             shoppingListDepots = databaseProvider.GetDepotShoppingList();

@@ -20,6 +20,7 @@
             <converters:FlagsEnumValueConverter x:Key="EnumFlagConverter" />
             <wpfconverters:CentreToolTipConverter x:Key="CentreToolTipConverter" />
             <wpfconverters:VisibilityToBoolConverter x:Key="VisToBoolConverter" />
+            <wpfconverters:IntToColourConverter x:Key="IntToColour" />
             <FontFamily x:Key="Eurostile">pack://application:,,,/Assets/Fonts/#Eurostile</FontFamily>
             
             <ResourceDictionary.MergedDictionaries>

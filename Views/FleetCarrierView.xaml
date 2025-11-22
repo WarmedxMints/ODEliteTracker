@@ -686,11 +686,9 @@
                                    Text="Audio File" />
 
                         <TextBox Text="{Binding AudioFile, Mode=OneWay}"
-                                 Style="{DynamicResource PopOutTextBox}"
+                                 Style="{DynamicResource NoSelectTextBox}"
                                  TextWrapping="NoWrap"
                                  TextAlignment="Center"
-                                 IsReadOnly="True"
-                                 IsHitTestVisible="False"
                                  HorizontalAlignment="Stretch"
                                  Padding="5"
                                  Foreground="{DynamicResource Header}"

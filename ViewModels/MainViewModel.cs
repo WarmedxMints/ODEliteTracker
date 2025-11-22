@@ -199,7 +199,7 @@ namespace ODEliteTracker.ViewModels
         {
             get
             {
-                return sharedData.CurrentSystem?.Name.ToUpper() ?? string.Empty;
+                return UiEnabled ? sharedData.CurrentSystem?.Name.ToUpper() ?? string.Empty : "Reading Logs...";
             }
         }
 
@@ -207,7 +207,7 @@ namespace ODEliteTracker.ViewModels
         {
             get
             {
-                return sharedData.CurrentBody_Station?.ToUpper() ?? string.Empty;
+                return UiEnabled ? sharedData.CurrentBody_Station?.ToUpper() ?? string.Empty : string.Empty;
             }
         }
 
@@ -215,7 +215,7 @@ namespace ODEliteTracker.ViewModels
         {
             get
             {
-                return sharedData.CurrentShipInfo?.Name ?? string.Empty;
+                return UiEnabled ? sharedData.CurrentShipInfo?.Name ?? string.Empty : string.Empty;
             }
         }
         public double UiScale
@@ -291,6 +291,7 @@ namespace ODEliteTracker.ViewModels
                     break;
             }            
         }
+
         public async Task UpdateCommanders()
         {
             if (journalManager is JournalManager manager)
@@ -320,7 +321,15 @@ namespace ODEliteTracker.ViewModels
 
         private void NavigationService_CurrentViewLive(object? sender, bool e)
         {
+            if (!journalManager.IsLive)
+            {
+                return;
+            }
+            
             UiEnabled = e;
+            OnPropertyChanged(nameof(CurrentSystemName));
+            OnPropertyChanged(nameof(CurrentBody_Station));
+            OnPropertyChanged(nameof(CurrentShipName));
         }
 
         public async Task Initialise()
@@ -342,14 +351,14 @@ namespace ODEliteTracker.ViewModels
         public async Task ChangeCommander()
         {
             UiEnabled = false;
+            OnPropertyChanged(nameof(CurrentSystemName));
             navigationService.NavigateTo<LoadingViewModel>();
             if (navigationService.CurrentView is LoadingViewModel loadingViewModel)
             {
                 loadingViewModel.StatusText = "Reading History";
                 await Task.Run(journalManager.ChangeCommander).ConfigureAwait(true);
             }
-            navigationService.NavigateTo(settings.CurrentViewModel);
-            UiEnabled = true;
+            navigationService.NavigateTo(settings.CurrentViewModel);            
             OnPropertyChanged(nameof(CurrentSystemName));
             OnPropertyChanged(nameof(CurrentBody_Station));
         }
@@ -369,6 +378,7 @@ namespace ODEliteTracker.ViewModels
                     JournalCommanders.AddRange(cmdrs.Where(x => x.MigratedTo < 0));
                     SelectedCommander = JournalCommanders.FirstOrDefault(x => x.Id == settings.SelectedCommanderID);
                     popOutService.OpenSavedViews(settings.SelectedCommanderID);
+                    UiEnabled = true;
                     OnPropertyChanged(nameof(JournalCommanders));
                     OnPropertyChanged(nameof(SelectedCommander));
                     OnPropertyChanged(nameof(CurrentSystemName));
@@ -377,7 +387,6 @@ namespace ODEliteTracker.ViewModels
                     OnPropertyChanged(nameof(CurrentSystemName));
                     OnPropertyChanged(nameof(CurrentBody_Station));
                     OnPropertyChanged(nameof(CurrentShipName));
-                    UiEnabled = true;
                 }, DispatcherPriority.DataBind);
             }
 

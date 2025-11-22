@@ -8,9 +8,11 @@
              xmlns:busyIndicator="https://github.com/moh3ngolshani/BusyIndicator"
              xmlns:wpfconverters="clr-namespace:ODEliteTracker.WPFConverters"
              xmlns:colonisation="clr-namespace:ODEliteTracker.Controls.Colonisation"
+             xmlns:colonisationVM="clr-namespace:ODEliteTracker.ViewModels.ModelViews.Colonisation"
              xmlns:models="clr-namespace:ODEliteTracker.Models"
              xmlns:helpers="clr-namespace:ODEliteTracker.Helpers"
              xmlns:popouts="clr-namespace:ODEliteTracker.ViewModels.PopOuts"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              d:DataContext="{d:DesignInstance viewmodels:ColonisationViewModel}"
              mc:Ignorable="d"
              x:Name="Root"
@@ -256,7 +258,7 @@
                                            Foreground="{DynamicResource Header}" />
                                 <TextBlock Text="Previously Purchased Locations"
                                            Grid.Row="3"
-                                           FontSize="14"
+                                           FontSize="15"
                                            Foreground="{DynamicResource Header}" />
                                 <DataGrid ItemsSource="{Binding Purchases, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                           RowStyle="{DynamicResource NoSelectRowStyle}"
@@ -555,6 +557,7 @@
                                                 <ColumnDefinition />
                                                 <ColumnDefinition Width="Auto" />
                                                 <ColumnDefinition  Width="Auto" />
+                                                <ColumnDefinition  Width="Auto" />
                                             </Grid.ColumnDefinitions>
                                             <TextBlock Text="Progress"
                                                        Margin="0,0,10,0"
@@ -564,14 +567,19 @@
                                                        FontSize="20"
                                                        Grid.Column="1" />
 
+                                            <TextBlock Text="{Binding EstimatedTrips}"
+                                                       FontSize="20"
+                                                       Margin="0,0,10,0"
+                                                       Grid.Column="2" />
+
                                             <TextBlock Text="Total"
                                                        Margin="0,0,10,0"
                                                        FontSize="20"
-                                                       Grid.Column="2" />
+                                                       Grid.Column="3" />
                                             <TextBlock Text="{Binding SelectedDepot.TotalRemaining}"
                                                        FontSize="20"
                                                        Margin="0,0,10,0"
-                                                       Grid.Column="3" />
+                                                       Grid.Column="4" />
                                         </Grid>
 
                                     </Grid>
@@ -756,8 +764,8 @@
                                                 <Image Source="/Assets/Icons/PopOutBtn.png" />
                                             </Button>
                                         </StackPanel>
-                                    </Grid>                              
-                                    
+                                    </Grid>
+
                                     <DataGrid ItemsSource="{Binding ShoppingList.Depots}"
                                               Grid.Row="1"
                                               Margin="10"
@@ -804,13 +812,19 @@
                                         </DataGrid.Columns>
                                     </DataGrid>
 
+                                    <StackPanel Orientation="Horizontal"
+                                                Grid.Row="2"
+                                                Grid.Column="2"
+                                                HorizontalAlignment="Right">
+                                    <TextBlock Text="{Binding EstimatedTrips}"
+                                               FontSize="20"
+                                               Margin="0,0,10,0" />
+                                    
                                     <TextBlock Text="{Binding ShoppingList.TotalRemaining}"
                                                HorizontalAlignment="Right"
                                                FontSize="20"
-                                               Margin="0,0,30,0"
-                                               Grid.Row="2"
-                                               Grid.Column="3" />
-                                    
+                                               Margin="0,0,30,0"/>
+                                    </StackPanel>
                                     <DataGrid ItemsSource="{Binding ShoppingListResources}"
                                               Grid.Row="3"
                                               Margin="10"
@@ -983,6 +997,591 @@
                                                                 Binding="{Binding DemandString}" />
                                         </DataGrid.Columns>
                                     </DataGrid>
+                                </Grid>
+                            </TabItem>
+                            <TabItem Header="Build Totals">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <colonisation:AssetSelectionMenu Command="{Binding SelectBuild}"
+                                                                         IsChecked="{Binding ColonisationBuildTotals.MenuOpen, Mode=TwoWay}" />
+
+                                        <StackPanel Orientation="Horizontal"
+                                                    Grid.Column="1">
+                                            <Button Style="{DynamicResource EliteStyleButton}"
+                                                    Command="{Binding RemoveSelectedFromWishList}"
+                                                    FontFamily="Segoe MDL2 Assets"
+                                                    FontSize="18"
+                                                    Width="35"
+                                                    Height="35"
+                                                    Content="&#xE738;"
+                                                    Margin="5,0">
+                                                <Button.ToolTip>
+                                                    <TextBlock Text="Remove From Wishlist"
+                                                               FontFamily="{StaticResource Eurostile}" />
+                                                </Button.ToolTip>
+                                            </Button>
+                                            <Button Style="{DynamicResource EliteStyleButton}"
+                                                    Command="{Binding AddSelectedToWishList}"
+                                                    FontFamily="Segoe MDL2 Assets"
+                                                    FontSize="18"
+                                                    Width="35"
+                                                    Height="35"
+                                                    Content="&#xE710;"
+                                                    Margin="5,0">
+                                                <Button.ToolTip>
+                                                    <TextBlock Text="Add To Wishlist"
+                                                               FontFamily="{StaticResource Eurostile}" />
+                                                </Button.ToolTip>
+                                            </Button>
+                                            <TextBlock Text="{Binding ColonisationBuildTotals.BuildName}"
+                                                       VerticalAlignment="Center"
+                                                       Margin="10,0"
+                                                       Foreground="{DynamicResource Header}"
+                                                       FontSize="20" />
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="2"
+                                                    Orientation="Horizontal">
+                                            <TextBlock Text="Commodity Sorting "
+                                                       VerticalAlignment="Center" />
+                                            <ComboBox ItemsSource="{Binding Source={StaticResource BuildSortingEnum}}"
+                                                      SelectedItem="{Binding BuildItemSorting}"
+                                                      Margin="5,0,10,0"
+                                                      Grid.Column="2"
+                                                      MinWidth="180"
+                                                      FontSize="18"
+                                                      HorizontalAlignment="Right"
+                                                      VerticalAlignment="Center"
+                                                      IsReadOnly="True"
+                                                      IsSynchronizedWithCurrentItem="False" />
+                                        </StackPanel>
+                                    </Grid>
+
+                                    <Grid Grid.Row="1">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="580" />
+                                            <ColumnDefinition />
+                                        </Grid.ColumnDefinitions>
+
+                                        <ListBox ItemsSource="{Binding ColonisationBuildTotals.AssetStats, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                                 ScrollViewer.VerticalScrollBarVisibility="Visible"
+                                                 ScrollViewer.HorizontalScrollBarVisibility="Visible"
+                                                 AlternationCount="2"
+                                                 Background="Transparent"
+                                                 BorderThickness="0"
+                                                 Foreground="{DynamicResource PrimaryForeground}">
+                                            <ListBox.ItemContainerStyle>
+                                                <Style TargetType="ListBoxItem">
+                                                    <Setter Property="IsHitTestVisible"
+                                                            Value="False" />
+                                                    <Setter Property="HorizontalContentAlignment"
+                                                            Value="Stretch" />
+                                                    <Style.Triggers>
+                                                        <Trigger Property="ItemsControl.AlternationIndex"
+                                                                 Value="0">
+                                                            <Setter Property="Background"
+                                                                    Value="Transparent"></Setter>
+                                                        </Trigger>
+                                                        <Trigger Property="ItemsControl.AlternationIndex"
+                                                                 Value="1">
+                                                            <Setter Property="Background"
+                                                                    Value="{DynamicResource RowAlternationColour}"></Setter>
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </ListBox.ItemContainerStyle>
+                                            <ListBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="Auto"
+                                                                           MinHeight="40" />
+                                                            <RowDefinition Height="40" />
+                                                        </Grid.RowDefinitions>
+                                                        <Grid Grid.Row="0">
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition />
+                                                                <ColumnDefinition Width="50" />
+                                                                <ColumnDefinition Width="50" />
+                                                                <ColumnDefinition Width="50" />
+                                                                <ColumnDefinition Width="50" />
+                                                                <ColumnDefinition Width="50" />
+                                                            </Grid.ColumnDefinitions>
+
+                                                            <StackPanel Orientation="Vertical"
+                                                                        Margin="0,0,10,0">
+                                                                <TextBlock Text="{Binding Type}"
+                                                                           Foreground="{DynamicResource Header}" />
+                                                                <TextBlock Text="{Binding SubType}"
+                                                                           MaxWidth="270"
+                                                                           HorizontalAlignment="Left"
+                                                                           TextWrapping="Wrap"
+                                                                           FontSize="15" />
+                                                            </StackPanel>
+
+                                                            <StackPanel Orientation="Vertical"
+                                                                        Grid.Column="1">
+                                                                <TextBlock Text="Tier"
+                                                                           FontWeight="Bold"
+                                                                           HorizontalAlignment="Center" />
+                                                                <TextBlock Text="{Binding Tier}"
+                                                                           HorizontalAlignment="Center"
+                                                                           FontSize="15" />
+                                                            </StackPanel>
+
+                                                            <StackPanel Orientation="Vertical"
+                                                                        Grid.Column="2">
+                                                                <TextBlock Text="Pads"
+                                                                           FontWeight="Bold"
+                                                                           HorizontalAlignment="Center" />
+                                                                <TextBlock Text="{Binding Pad}"
+                                                                           HorizontalAlignment="Center"
+                                                                           FontSize="15" />
+                                                            </StackPanel>
+
+                                                            <StackPanel Orientation="Vertical"
+                                                                        Grid.Column="3">
+                                                                <TextBlock Text="Cost"
+                                                                           FontWeight="Bold"
+                                                                           HorizontalAlignment="Center" />
+                                                                <TextBlock Text="{Binding PointCost}"
+                                                                           HorizontalAlignment="Center"
+                                                                           FontSize="15" />
+                                                            </StackPanel>
+
+                                                            <StackPanel Orientation="Vertical"
+                                                                        Grid.Column="4">
+                                                                <TextBlock Text="Gain"
+                                                                           FontWeight="Bold"
+                                                                           HorizontalAlignment="Center" />
+                                                                <TextBlock Text="{Binding PointGain}"
+                                                                           HorizontalAlignment="Center"
+                                                                           FontSize="15" />
+                                                            </StackPanel>
+
+                                                            <StackPanel Orientation="Vertical"
+                                                                        Grid.Column="5">
+                                                                <TextBlock Text="Score"
+                                                                           FontWeight="Bold"
+                                                                           HorizontalAlignment="Center" />
+                                                                <TextBlock Text="{Binding Score}"
+                                                                           HorizontalAlignment="Center"
+                                                                           FontSize="15" />
+                                                            </StackPanel>
+                                                        </Grid>
+
+                                                        <Grid Grid.Row="1">
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition />
+                                                                <ColumnDefinition Width="50" />
+                                                                <ColumnDefinition Width="60" />
+                                                                <ColumnDefinition Width="70" />
+                                                                <ColumnDefinition Width="60" />
+                                                                <ColumnDefinition Width="50" />
+                                                                <ColumnDefinition Width="50" />
+                                                                <ColumnDefinition Width="50" />
+                                                            </Grid.ColumnDefinitions>
+
+                                                            <StackPanel Orientation="Vertical"
+                                                                        Margin="0,0,10,0">
+                                                                <TextBlock Text="Economy"
+                                                                           FontWeight="Bold"
+                                                                           FontSize="16" />
+                                                                <StackPanel Orientation="Horizontal">
+                                                                    <Rectangle Width="10"
+                                                                               Height="10"
+                                                                               Margin="0,0,5,0">
+                                                                        <Rectangle.Style>
+                                                                            <Style TargetType="{x:Type Rectangle}">
+                                                                                <Style.Triggers>
+                                                                                    <DataTrigger Binding="{Binding Economy}"
+                                                                                                 Value="{x:Static colonisationVM:AssetEconomy.None}">
+                                                                                        <Setter Property="Visibility"
+                                                                                                Value="Collapsed" />
+                                                                                    </DataTrigger>
+                                                                                    <DataTrigger Binding="{Binding Economy}"
+                                                                                                 Value="{x:Static colonisationVM:AssetEconomy.Agriculture}">
+                                                                                        <Setter Property="Fill"
+                                                                                                Value="#FF80FF00" />
+                                                                                    </DataTrigger>
+                                                                                    <DataTrigger Binding="{Binding Economy}"
+                                                                                                 Value="{x:Static colonisationVM:AssetEconomy.Colony}">
+                                                                                        <Setter Property="Fill"
+                                                                                                Value="#FF969696" />
+                                                                                    </DataTrigger>
+                                                                                    <DataTrigger Binding="{Binding Economy}"
+                                                                                                 Value="{x:Static colonisationVM:AssetEconomy.Extraction}">
+                                                                                        <Setter Property="Fill"
+                                                                                                Value="Red" />
+                                                                                    </DataTrigger>
+                                                                                    <DataTrigger Binding="{Binding Economy}"
+                                                                                                 Value="{x:Static colonisationVM:AssetEconomy.Industrial}">
+                                                                                        <Setter Property="Fill"
+                                                                                                Value="Yellow" />
+                                                                                    </DataTrigger>
+                                                                                    <DataTrigger Binding="{Binding Economy}"
+                                                                                                 Value="{x:Static colonisationVM:AssetEconomy.HighTech}">
+                                                                                        <Setter Property="Fill"
+                                                                                                Value="Cyan" />
+                                                                                    </DataTrigger>
+                                                                                    <DataTrigger Binding="{Binding Economy}"
+                                                                                                 Value="{x:Static colonisationVM:AssetEconomy.Military}">
+                                                                                        <Setter Property="Fill"
+                                                                                                Value="#FFE500E5" />
+                                                                                    </DataTrigger>
+                                                                                    <DataTrigger Binding="{Binding Economy}"
+                                                                                                 Value="{x:Static colonisationVM:AssetEconomy.Refinery}">
+                                                                                        <Setter Property="Fill"
+                                                                                                Value="#FFFF8000" />
+                                                                                    </DataTrigger>
+                                                                                    <DataTrigger Binding="{Binding Economy}"
+                                                                                                 Value="{x:Static colonisationVM:AssetEconomy.Service}">
+                                                                                        <Setter Property="Fill"
+                                                                                                Value="#FF0045FF" />
+                                                                                    </DataTrigger>
+                                                                                    <DataTrigger Binding="{Binding Economy}"
+                                                                                                 Value="{x:Static colonisationVM:AssetEconomy.Tourism}">
+                                                                                        <Setter Property="Fill"
+                                                                                                Value="#FF6600E5" />
+                                                                                    </DataTrigger>
+                                                                                </Style.Triggers>
+                                                                            </Style>
+                                                                        </Rectangle.Style>
+                                                                    </Rectangle>
+                                                                    <TextBlock Text="{Binding Economy}"
+                                                                               FontSize="15" />
+                                                                </StackPanel>
+                                                            </StackPanel>
+
+                                                            <StackPanel Orientation="Vertical"
+                                                                        Grid.Column="1">
+                                                                <TextBlock Text="Pop"
+                                                                           FontWeight="Bold"
+                                                                           FontSize="16"
+                                                                           HorizontalAlignment="Center" />
+                                                                <TextBlock Text="{Binding Population, StringFormat={}{0:+#;-#;#}}"
+                                                                           Foreground="{Binding Population, Converter={StaticResource IntToColour}}"
+                                                                           HorizontalAlignment="Center"
+                                                                           FontSize="15" />
+                                                            </StackPanel>
+
+                                                            <StackPanel Orientation="Vertical"
+                                                                        Grid.Column="2">
+                                                                <TextBlock Text="Max Pop"
+                                                                           FontWeight="Bold"
+                                                                           FontSize="16"
+                                                                           HorizontalAlignment="Center" />
+                                                                <TextBlock Text="{Binding MaxPopulation, StringFormat={}{0:+#;-#;#}}"
+                                                                           Foreground="{Binding MaxPopulation, Converter={StaticResource IntToColour}}"
+                                                                           HorizontalAlignment="Center"
+                                                                           FontSize="15" />
+                                                            </StackPanel>
+
+                                                            <StackPanel Orientation="Vertical"
+                                                                        Grid.Column="3">
+                                                                <TextBlock Text="Security"
+                                                                           FontWeight="Bold"
+                                                                           FontSize="16"
+                                                                           HorizontalAlignment="Center" />
+                                                                <TextBlock Text="{Binding Security, StringFormat={}{0:+#;-#;#}}"
+                                                                           Foreground="{Binding Security, Converter={StaticResource IntToColour}}"
+                                                                           HorizontalAlignment="Center"
+                                                                           FontSize="15" />
+                                                            </StackPanel>
+
+                                                            <StackPanel Orientation="Vertical"
+                                                                        Grid.Column="4">
+                                                                <TextBlock Text="Wealth"
+                                                                           FontWeight="Bold"
+                                                                           FontSize="16"
+                                                                           HorizontalAlignment="Center" />
+                                                                <TextBlock Text="{Binding Wealth, StringFormat={}{0:+#;-#;#}}"
+                                                                           Foreground="{Binding Wealth, Converter={StaticResource IntToColour}}"
+                                                                           HorizontalAlignment="Center"
+                                                                           FontSize="15" />
+                                                            </StackPanel>
+
+                                                            <StackPanel Orientation="Vertical"
+                                                                        Grid.Column="5">
+                                                                <TextBlock Text="Tech"
+                                                                           FontWeight="Bold"
+                                                                           FontSize="16"
+                                                                           HorizontalAlignment="Center" />
+                                                                <TextBlock Text="{Binding TechLevel, StringFormat={}{0:+#;-#;#}}"
+                                                                           Foreground="{Binding TechLevel, Converter={StaticResource IntToColour}}"
+                                                                           HorizontalAlignment="Center"
+                                                                           FontSize="15" />
+                                                            </StackPanel>
+
+                                                            <StackPanel Orientation="Vertical"
+                                                                        Grid.Column="6">
+                                                                <TextBlock Text="SoL"
+                                                                           FontWeight="Bold"
+                                                                           FontSize="16"
+                                                                           HorizontalAlignment="Center" />
+                                                                <TextBlock Text="{Binding StandardOfLiving, StringFormat={}{0:+#;-#;#}}"
+                                                                           Foreground="{Binding StandardOfLiving, Converter={StaticResource IntToColour}}"
+                                                                           HorizontalAlignment="Center"
+                                                                           FontSize="15" />
+                                                            </StackPanel>
+
+                                                            <StackPanel Orientation="Vertical"
+                                                                        Grid.Column="7">
+                                                                <TextBlock Text="Dev"
+                                                                           FontWeight="Bold"
+                                                                           FontSize="16"
+                                                                           HorizontalAlignment="Center" />
+                                                                <TextBlock Text="{Binding Development, StringFormat={}{0:+#;-#;#}}"
+                                                                           Foreground="{Binding Development, Converter={StaticResource IntToColour}}"
+                                                                           HorizontalAlignment="Center"
+                                                                           FontSize="15" />
+                                                            </StackPanel>
+                                                        </Grid>
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ListBox.ItemTemplate>
+                                        </ListBox>
+
+                                        <DataGrid ItemsSource="{Binding ColonisationBuildTotals.Items}"
+                                                  Grid.Column="1"
+                                                  Style="{DynamicResource ConstructionResourcesDataGrid}"
+                                                  RowStyle="{DynamicResource NoSelectRowStyle}"
+                                                  CellStyle="{DynamicResource NoSelectCellNoMargin}"
+                                                  Foreground="{DynamicResource PrimaryForeground}"
+                                                  FontSize="20"
+                                                  IsReadOnly="True"
+                                                  SelectionMode="Single"
+                                                  ScrollViewer.HorizontalScrollBarVisibility="Visible"
+                                                  ScrollViewer.VerticalScrollBarVisibility="Visible"
+                                                  AlternatingRowBackground="{DynamicResource RowAlternationColour}"
+                                                  HeadersVisibility="Column"
+                                                  AutoGenerateColumns="False"
+                                                  HorizontalAlignment="Center">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="Commodity"
+                                                                    MinWidth="250"
+                                                                    HeaderStyle="{DynamicResource DataGridHeaderLeft}"
+                                                                    ElementStyle="{DynamicResource DataGridElementLeftMarginBody}"
+                                                                    Binding="{Binding Name}" />
+                                                <DataGridTextColumn Header="Category"
+                                                                    Width="*"
+                                                                    HeaderStyle="{DynamicResource DataGridHeaderLeft}"
+                                                                    ElementStyle="{DynamicResource DataGridElementLeftMarginBody}"
+                                                                    Binding="{Binding Category}" />
+                                                <DataGridTextColumn Header="Carrier Stock"
+                                                                    MinWidth="130"
+                                                                    HeaderStyle="{DynamicResource DataGridHeaderCenter}"
+                                                                    ElementStyle="{DynamicResource DataGridElementRightMargin}"
+                                                                    Binding="{Binding CarrierStock}" />
+                                                <DataGridTextColumn Header="Carrier Diff"
+                                                                    MinWidth="100"
+                                                                    HeaderStyle="{DynamicResource DataGridHeaderCenter}"
+                                                                    ElementStyle="{DynamicResource DataGridElementRightMargin}"
+                                                                    Binding="{Binding CarrierStockDifference}" />
+                                                <DataGridTextColumn Header="Required"
+                                                                    MinWidth="100"
+                                                                    HeaderStyle="{DynamicResource DataGridHeaderCenter}"
+                                                                    ElementStyle="{DynamicResource DataGridElementRightMargin}"
+                                                                    Binding="{Binding Required}" />
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </Grid>
+
+                                    <StackPanel Orientation="Horizontal"
+                                                HorizontalAlignment="Right"
+                                                VerticalAlignment="Top"
+                                                Margin="25,0"
+                                                Grid.Row="3">
+                                        <TextBlock Text="Total"
+                                                   Margin="10,0"
+                                                   FontSize="20"
+                                                   VerticalAlignment="Center" />
+                                        <TextBlock Text="{Binding ColonisationBuildTotals.Total}"
+                                                   FontSize="20"
+                                                   VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </Grid>
+                            </TabItem>
+                            <TabItem Header="Build Wishlist">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Text="Build Wishlist"
+                                                   FontSize="22"
+                                                   Margin="5"
+                                                   Foreground="{DynamicResource Header}" />
+
+                                        <StackPanel Grid.Column="2"
+                                                    Orientation="Horizontal">
+                                            <TextBlock Text="Commodity Sorting "
+                                                       VerticalAlignment="Center" />
+                                            <ComboBox ItemsSource="{Binding Source={StaticResource BuildSortingEnum}}"
+                                                      SelectedItem="{Binding BuildItemSorting}"
+                                                      Margin="5,0,10,0"
+                                                      Grid.Column="2"
+                                                      MinWidth="180"
+                                                      FontSize="18"
+                                                      HorizontalAlignment="Right"
+                                                      VerticalAlignment="Center"
+                                                      IsReadOnly="True"
+                                                      IsSynchronizedWithCurrentItem="False" />
+                                        </StackPanel>
+                                    </Grid>
+
+                                    <Grid Grid.Row="1">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="450" />
+                                            <ColumnDefinition />
+                                        </Grid.ColumnDefinitions>
+
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition />
+                                            </Grid.RowDefinitions>
+                                            <StackPanel Orientation="Horizontal"
+                                                        HorizontalAlignment="Left"
+                                                        VerticalAlignment="Center">
+                                                <colonisation:AssetSelectionMenu Command="{Binding AddBuildToWishList}"
+                                                                                 IsChecked="{Binding ColonisationBuildTotals.MenuOpen, Mode=TwoWay}"
+                                                                                 VerticalAlignment="Center" />
+                                                <TextBlock Text="Add To Wishlist"
+                                                           VerticalAlignment="Center"
+                                                           Margin="5,0" />
+                                            </StackPanel>
+                                            <DataGrid ItemsSource="{Binding ColonisationBuildTotals.WishListBuilds, Mode=OneWay}"
+                                                      Style="{DynamicResource ConstructionResourcesDataGrid}"
+                                                      RowStyle="{DynamicResource NoSelectRowStyle}"
+                                                      CellStyle="{DynamicResource NoSelectCellNoMargin}"
+                                                      Foreground="{DynamicResource PrimaryForeground}"
+                                                      FontSize="20"
+                                                      Grid.Row="1"
+                                                      IsReadOnly="True"
+                                                      SelectionMode="Single"
+                                                      ScrollViewer.HorizontalScrollBarVisibility="Visible"
+                                                      ScrollViewer.VerticalScrollBarVisibility="Visible"
+                                                      AlternatingRowBackground="{DynamicResource RowAlternationColour}"
+                                                      HeadersVisibility="Column"
+                                                      AutoGenerateColumns="False"
+                                                      HorizontalAlignment="Center">
+                                                <DataGrid.Columns>
+                                                    <DataGridTextColumn Header="Build"
+                                                                        MinWidth="250"
+                                                                        Width="*"
+                                                                        HeaderStyle="{DynamicResource DataGridHeaderLeft}"
+                                                                        ElementStyle="{DynamicResource DataGridElementLeftMarginBody}"
+                                                                        Binding="{Binding BuildName}" />
+                                                    <DataGridTextColumn Header="Qty"
+                                                                        Width="40"
+                                                                        HeaderStyle="{DynamicResource DataGridHeaderCenter}"
+                                                                        ElementStyle="{DynamicResource DataGridElementRightMargin}"
+                                                                        Binding="{Binding CountString}" />
+                                                    <DataGridTemplateColumn Width="30">
+                                                        <DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <Button Command="{Binding ElementName=Root, Path=DataContext.RemoveBuildFromWishList}"
+                                                                        CommandParameter="{Binding Build}"
+                                                                        Style="{DynamicResource EliteStyleButton}"
+                                                                        Content="-"
+                                                                        Margin="2"
+                                                                        Width="25"
+                                                                        Height="25"
+                                                                        FontSize="16" />
+                                                            </DataTemplate>
+                                                        </DataGridTemplateColumn.CellTemplate>
+                                                    </DataGridTemplateColumn>
+                                                    <DataGridTemplateColumn Width="30">
+                                                        <DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <Button Command="{Binding ElementName=Root, Path=DataContext.AddBuildToWishList}"
+                                                                        CommandParameter="{Binding Build}"
+                                                                        Style="{DynamicResource EliteStyleButton}"
+                                                                        Content="+"
+                                                                        Margin="2"
+                                                                        Width="25"
+                                                                        Height="25"
+                                                                        FontSize="16" />
+                                                            </DataTemplate>
+                                                        </DataGridTemplateColumn.CellTemplate>
+                                                    </DataGridTemplateColumn>
+                                                </DataGrid.Columns>
+                                            </DataGrid>
+                                        </Grid>
+                                        <DataGrid ItemsSource="{Binding ColonisationBuildTotals.WishListItems}"
+                                                  Grid.Column="1"
+                                                  Style="{DynamicResource ConstructionResourcesDataGrid}"
+                                                  RowStyle="{DynamicResource NoSelectRowStyle}"
+                                                  CellStyle="{DynamicResource NoSelectCellNoMargin}"
+                                                  Foreground="{DynamicResource PrimaryForeground}"
+                                                  FontSize="20"
+                                                  IsReadOnly="True"
+                                                  SelectionMode="Single"
+                                                  ScrollViewer.HorizontalScrollBarVisibility="Visible"
+                                                  ScrollViewer.VerticalScrollBarVisibility="Visible"
+                                                  AlternatingRowBackground="{DynamicResource RowAlternationColour}"
+                                                  HeadersVisibility="Column"
+                                                  AutoGenerateColumns="False">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="Commodity"
+                                                                    MinWidth="250"
+                                                                    HeaderStyle="{DynamicResource DataGridHeaderLeft}"
+                                                                    ElementStyle="{DynamicResource DataGridElementLeftMarginBody}"
+                                                                    Binding="{Binding Name}" />
+                                                <DataGridTextColumn Header="Category"
+                                                                    Width="*"
+                                                                    HeaderStyle="{DynamicResource DataGridHeaderLeft}"
+                                                                    ElementStyle="{DynamicResource DataGridElementLeftMarginBody}"
+                                                                    Binding="{Binding Category}" />
+                                                <DataGridTextColumn Header="Carrier Stock"
+                                                                    MinWidth="130"
+                                                                    HeaderStyle="{DynamicResource DataGridHeaderCenter}"
+                                                                    ElementStyle="{DynamicResource DataGridElementRightMargin}"
+                                                                    Binding="{Binding CarrierStock}" />
+                                                <DataGridTextColumn Header="Carrier Diff"
+                                                                    MinWidth="100"
+                                                                    HeaderStyle="{DynamicResource DataGridHeaderCenter}"
+                                                                    ElementStyle="{DynamicResource DataGridElementRightMargin}"
+                                                                    Binding="{Binding CarrierStockDifference}" />
+                                                <DataGridTextColumn Header="Required"
+                                                                    MinWidth="100"
+                                                                    HeaderStyle="{DynamicResource DataGridHeaderCenter}"
+                                                                    ElementStyle="{DynamicResource DataGridElementRightMargin}"
+                                                                    Binding="{Binding Required}" />
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </Grid>
+                                    <StackPanel Orientation="Horizontal"
+                                                HorizontalAlignment="Right"
+                                                VerticalAlignment="Top"
+                                                Margin="25,0"
+                                                Grid.Row="4">
+                                        <TextBlock Text="Total"
+                                                   Margin="10,0"
+                                                   FontSize="20"
+                                                   VerticalAlignment="Center" />
+                                        <TextBlock Text="{Binding ColonisationBuildTotals.WishListTotal}"
+                                                   FontSize="20"
+                                                   VerticalAlignment="Center" />
+                                    </StackPanel>
                                 </Grid>
                             </TabItem>
                             <TabItem Header="Construction Totals">

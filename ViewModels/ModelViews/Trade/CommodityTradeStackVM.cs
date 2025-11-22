@@ -20,10 +20,12 @@ namespace ODEliteTracker.ViewModels.ModelViews.Trade
 
             CalcTotals();
         }
-        private IEnumerable<TradeMissionVM> missions;
+
+        private readonly IEnumerable<TradeMissionVM> missions;
         public string TotalDelivered { get; private set; } = string.Empty;
         public string TotalCount { get; private set; } = string.Empty;
-        public string TotalMissionCount => $"{missions.Count()}";
+        public string TotalMissionCount => $"{missions?.Count() ?? 0}";
+        public string MissionsProgress => $"{missions?.Where(x => x.ReadyToTurnIn).Count() ?? 0} / {missions?.Count() ?? 0}";
         public string TotalValue { get; private set; } = string.Empty;
         public string TotalTurnInValue { get; private set; } = string.Empty;
         public string TotalRemaining { get; private set; } = string.Empty;
@@ -77,6 +79,8 @@ namespace ODEliteTracker.ViewModels.ModelViews.Trade
             SharableTurnInValue = $"{sharableTurnInValue:N0} cr";
 
             OnPropertyChanged(nameof(TotalDelivered));
+            OnPropertyChanged(nameof(TotalMissionCount));
+            OnPropertyChanged(nameof(MissionsProgress));
             OnPropertyChanged(nameof(TotalCount));
             OnPropertyChanged(nameof(TotalValue));
             OnPropertyChanged(nameof(TotalRemaining));

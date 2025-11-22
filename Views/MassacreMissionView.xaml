@@ -9,6 +9,7 @@
              xmlns:System="clr-namespace:System;assembly=mscorlib"
              xmlns:models="clr-namespace:ODEliteTracker.Models"
              d:DataContext="{d:DesignInstance viewmodels:MassacreMissionsViewModel}"
+             Foreground="{DynamicResource PrimaryControlForeground}"
              mc:Ignorable="d"
              FontSize="20"
              d:DesignHeight="450"
@@ -56,13 +57,20 @@
                             Margin="5"
                             Padding="5">
                         <DataGrid ItemsSource="{Binding ActiveMissions}"
-                                  Style="{DynamicResource DisabledSelectGrid}"
+                                  Style="{DynamicResource BaseDataGridStyle}"
                                   HeadersVisibility="Column"
-                                  AlternationCount="1"
-                                  AlternatingRowBackground="{DynamicResource RowAlternationColour}"
-                                  RowStyle="{DynamicResource MasscreMissionRowStyle}"
+                                  AlternationCount="2"
                                   CellStyle="{DynamicResource MassacreGridCell}"
                                   Grid.Row="2">
+                            <DataGrid.RowStyle>
+                                <Style TargetType="{x:Type DataGridRow}"
+                                       BasedOn="{StaticResource MasscreMissionRowStyle}">
+                                    <EventSetter Event="MouseEnter"
+                                                 Handler="MissionsDataGridRow_MouseEnter" />
+                                    <EventSetter Event="MouseLeave"
+                                                 Handler="MissionsDataGridRow_MouseLeave" />
+                                </Style>
+                            </DataGrid.RowStyle>
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Origin System"
                                                     MinWidth="120"
@@ -382,16 +390,23 @@
                                     Margin="5"
                                     Padding="5">
                                 <DataGrid ItemsSource="{Binding Stacks}"
-                                          Style="{DynamicResource DisabledSelectGrid}"
+                                          Style="{DynamicResource ConstructionResourcesDataGrid}"
                                           HeadersVisibility="Column"
                                           IsHitTestVisible="True"
-                                          AlternationCount="1"
+                                          AlternationCount="2"
                                           IsReadOnly="True"
                                           SelectionMode="Single"
-                                          AlternatingRowBackground="{DynamicResource RowAlternationColour}"
-                                          RowStyle="{DynamicResource MasscreMissionRowStyle}"
                                           CellStyle="{DynamicResource MassacreStackCell}"
                                           Grid.Row="1">
+                                    <DataGrid.RowStyle>
+                                        <Style TargetType="{x:Type DataGridRow}"
+                                               BasedOn="{StaticResource MasscreMissionRowStyle}">
+                                            <EventSetter Event="MouseEnter"
+                                                         Handler="StacksDataGridRow_MouseEnter" />
+                                            <EventSetter Event="MouseLeave"
+                                                         Handler="StacksDataGridRow_MouseLeave" />
+                                        </Style>
+                                    </DataGrid.RowStyle>
                                     <DataGrid.Columns>
                                         <DataGridTextColumn Header="Issuing Faction"
                                                             HeaderStyle="{DynamicResource DataGridHeaderLeft}"
@@ -409,7 +424,7 @@
                                                              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                                                              ScrollViewer.VerticalScrollBarVisibility="Disabled"
                                                              VerticalContentAlignment="Center"                
-                                                             Foreground="{DynamicResource PrimaryForeground}" 
+                                                             Foreground="{Binding Path=Foreground, RelativeSource={RelativeSource AncestorType=DataGridRow}}" 
                                                              VerticalAlignment="Center">
                                                         <ListBox.ItemContainerStyle>
                                                             <Style TargetType="{x:Type ListBoxItem}">

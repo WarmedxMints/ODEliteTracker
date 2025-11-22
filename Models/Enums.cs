@@ -137,6 +137,7 @@ namespace ODEliteTracker.Models
 
     public enum LandingPadSize
     {
+        None,
         Small,
         Medium,
         Large

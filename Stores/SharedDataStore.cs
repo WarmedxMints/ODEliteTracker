@@ -13,6 +13,7 @@ using ODEliteTracker.Models.Ship;
 using ODEliteTracker.Notifications;
 using ODEliteTracker.Notifications.ScanNotification;
 using ODEliteTracker.Services;
+using ODEliteTracker.ViewModels.ModelViews.Colonisation;
 using ODJournalDatabase.Database.Interfaces;
 using ODJournalDatabase.JournalManagement;
 using ODMVVM.Helpers;
@@ -48,6 +49,8 @@ namespace ODEliteTracker.Stores
         private readonly MaterialTraderService materialTraderService;
         private readonly Dictionary<ODMVVM.Helpers.Commodity, List<CommodityPurchase>> marketPurchases = [];
         private Station? currentStation;
+        private readonly Dictionary<ColonisationBuild, int> colonisationWishList = [];
+        private int currentCommanderId = -1;
         #endregion
 
         #region Public Properties
@@ -89,6 +92,7 @@ namespace ODEliteTracker.Stores
         public IEnumerable<ShipCargo>? CurrentShipCargo { get; private set; }
         public Dictionary<ODMVVM.Helpers.Commodity, List<CommodityPurchase>> MarketPurchases => marketPurchases;
         public DateTime LastLoginTime { get; private set; }
+        public Dictionary<ColonisationBuild, int> ColonisationWishList => colonisationWishList;
         #endregion
 
         #region Events
@@ -570,9 +574,16 @@ namespace ODEliteTracker.Stores
 
         public override void RunBeforeParsingHistory(int currentCmdrId)
         {
+            currentCommanderId = currentCmdrId;
             bountiesManager.Initialise(currentCmdrId);
             CurrentMarket = null;
             WatchedMarkets.Clear();
+            colonisationWishList.Clear();
+            var wishListItem = databaseProvider.GetColonisationWishList(currentCmdrId);
+            foreach (var wish in wishListItem)
+            {
+                colonisationWishList.TryAdd(wish.Key, wish.Value);
+            }
         }
 
         public void IgnoreAllBounties()
@@ -641,9 +652,16 @@ namespace ODEliteTracker.Stores
             IsLive = true;
         }
 
+        public override void SaveData()
+        {
+            Save();
+        }
+
         public void Save()
         {
             databaseProvider.UpdateWatchedMarkets(WatchedMarkets);
+            if (currentCommanderId > 0)
+                databaseProvider.UpdateColonisationWishList(currentCommanderId, colonisationWishList);
         }
 
         public Tuple<IEnumerable<MaterialTrader>, IEnumerable<MaterialTrader>, IEnumerable<MaterialTrader>> GetNearestTraders()
@@ -653,6 +671,20 @@ namespace ODEliteTracker.Stores
                 return Tuple.Create(Enumerable.Empty<MaterialTrader>(), Enumerable.Empty<MaterialTrader>(), Enumerable.Empty<MaterialTrader>());
 
             return materialTraderService.GetNearestTraders(CurrentSystem.Position);
+        }
+
+        public void UpdateColonisationWishListItem(ColonisationBuildWishListItem item)
+        {
+            if (colonisationWishList.ContainsKey(item.Build))
+            {
+                colonisationWishList[item.Build] = item.Count;
+
+                if (item.Count <= 0)
+                    colonisationWishList.Remove(item.Build);
+                return;
+            }
+
+            colonisationWishList.TryAdd(item.Build, item.Count);
         }
     }
 }

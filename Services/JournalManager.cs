@@ -166,6 +166,7 @@ namespace ODEliteTracker.Services
             ManagerLive = false;
             foreach (var parser in journalLogParserList)
             {
+                parser.SaveData();
                 parser.ClearData();
             }
             lastCAPICall = DateTime.MinValue;

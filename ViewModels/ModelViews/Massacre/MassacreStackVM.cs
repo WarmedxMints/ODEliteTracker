@@ -43,6 +43,18 @@ namespace ODEliteTracker.ViewModels.ModelViews.Massacre
         public int ActiveMissionCount => Missions.Count(x => x.CurrentState < MissionState.Completed);
         public ObservableCollection<MassacreMissionVM> Missions { get; } = [];
         public IEnumerable<MassacreMissionVM> ActiveMissions => Missions.Where(x => x.CurrentState < MissionState.Completed);
+
+        private bool highlight;
+        public bool Highlight
+        {
+            get => highlight;
+            set 
+            { 
+                highlight = value; 
+                OnPropertyChanged(nameof(Highlight));
+            }
+        }
+
         public MassacreMissionVM? AddMission(MassacreMission mission)
         {
             var newMission = Missions.FirstOrDefault(x => x.MissionID == mission.MissionID);

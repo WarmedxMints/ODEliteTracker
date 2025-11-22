@@ -54,7 +54,9 @@ namespace ODEliteTracker.Models.Galaxy
                 return LandingPadSize.Large;
             if (landingPads.Medium > 0)
                 return LandingPadSize.Medium;
-            return LandingPadSize.Small;
+            if (landingPads.Small > 0)
+                return LandingPadSize.Small;
+            return LandingPadSize.None;
         }
     }
 }

@@ -10,6 +10,7 @@ using ODEliteTracker.Models.Bookmarks;
 using ODEliteTracker.Models.Colonisation;
 using ODEliteTracker.Models.Spansh;
 using ODEliteTracker.ViewModels.ModelViews.Bookmarks;
+using ODEliteTracker.ViewModels.ModelViews.Colonisation;
 using ODJournalDatabase.Database.DTOs;
 using ODJournalDatabase.Database.Interfaces;
 using ODJournalDatabase.JournalManagement;
@@ -407,11 +408,11 @@ namespace ODEliteTracker.Database
             context.SaveChanges();
         }
 
-        public HashSet<Tuple<long, long, string>> GetInactiveDepots()
+        public HashSet<Tuple<long, long>> GetInactiveDepots()
         {
             using var context = _contextFactory.CreateDbContext();
 
-            return [.. context.InactiveDepots.Select(x => Tuple.Create(x.MarketID, x.SystemAddress, x.StationName))];
+            return [.. context.InactiveDepots.Select(x => Tuple.Create(x.MarketID, x.SystemAddress))];
         }
 
         public void AddInactiveDepot(long marketID, long systemAddress, string stationName)
@@ -437,11 +438,11 @@ namespace ODEliteTracker.Database
             }
         }
 
-        public HashSet<Tuple<long, long, string>> GetDepotShoppingList()
+        public HashSet<Tuple<long, long>> GetDepotShoppingList()
         {
             using var context = _contextFactory.CreateDbContext();
 
-            return [.. context.DepotShoppingList.Select(x => Tuple.Create(x.MarketID, x.SystemAddress, x.StationName))];
+            return [.. context.DepotShoppingList.Select(x => Tuple.Create(x.MarketID, x.SystemAddress))];
         }
 
         public void AddShoppingListDepot(long marketID, long systemAddress, string stationName)
@@ -465,6 +466,24 @@ namespace ODEliteTracker.Database
                 context.DepotShoppingList.Remove(knownDepot);
                 context.SaveChanges();
             }
+        }
+
+        public Dictionary<ColonisationBuild, int> GetColonisationWishList(int commanderId)
+        {
+            using var context = _contextFactory.CreateDbContext();
+
+            return context.ColonisationWishList.Where(x => x.CommanderID == commanderId).ToDictionary(x => x.Build, x => x.Count);
+        }
+
+        public void UpdateColonisationWishList(int commanderId, Dictionary<ColonisationBuild, int> dict)
+        {
+            using var context = _contextFactory.CreateDbContext();
+
+            context.ColonisationWishList.Where(x => x.CommanderID == commanderId).ExecuteDelete();
+
+            context.ColonisationWishList.AddRange(dict.Select(x => new ColonisationBuildWishlistItemDTO() { CommanderID = commanderId, Build = x.Key, Count = x.Value }));
+
+            context.SaveChanges();
         }
         #endregion
 

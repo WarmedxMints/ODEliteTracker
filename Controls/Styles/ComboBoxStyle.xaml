@@ -11,18 +11,18 @@
             <Border x:Name="Border"
                     Grid.ColumnSpan="2"
                     CornerRadius="0"
-                    Background="{DynamicResource EliteBtnBG}"
-                    BorderBrush="{DynamicResource EliteBtnFG}"
+                    Background="{Binding RelativeSource={RelativeSource AncestorType=ComboBox}, Path=Background}"
+                    BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=ComboBox}, Path=BorderBrush}"
                     BorderThickness="0" />
             <Border Grid.Column="0"
                     CornerRadius="0"
                     Margin="1"
-                    Background="{DynamicResource EliteBtnBG}"
-                    BorderBrush="{DynamicResource EliteBtnFG}"
+                    Background="{Binding RelativeSource={RelativeSource AncestorType=ComboBox}, Path=Background}"
+                    BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=ComboBox}, Path=BorderBrush}"
                     BorderThickness="0" />
             <Path x:Name="Arrow"
                   Grid.Column="1"
-                  Fill="{DynamicResource EliteBtnFG}"
+                  Fill="{Binding RelativeSource={RelativeSource AncestorType=ComboBox}, Path=Foreground}"
                   HorizontalAlignment="Center"
                   VerticalAlignment="Center"
                   >
@@ -136,7 +136,9 @@
                         <Trigger Property="IsEnabled"
                                  Value="false">
                             <Setter Property="Foreground"
-                                    Value="{DynamicResource PrimaryDisabled}" />
+                                    Value="Black" />
+                            <Setter Property="Background"
+                                    Value="{DynamicResource NavBtnBackgroundDisabled}" />
                         </Trigger>
                         <Trigger Property="IsGrouping"
                                  Value="true">
@@ -253,9 +255,11 @@
                                     Value="95" />
                         </Trigger>
                         <Trigger Property="IsEnabled"
-                                 Value="false">
+                                 Value="False">
                             <Setter Property="Foreground"
-                                    Value="{DynamicResource PrimaryDisabled}" />
+                                    Value="Black" />
+                            <Setter Property="Background"
+                                    Value="{DynamicResource NavBtnBackgroundDisabled}"/>
                         </Trigger>
                         <Trigger Property="IsGrouping"
                                  Value="true">
@@ -326,9 +330,9 @@
                                     Value="{DynamicResource EliteBtnFG}" />
                         </Trigger>
                         <Trigger Property="IsEnabled"
-                                 Value="false">
+                                 Value="False">
                             <Setter Property="Foreground"
-                                    Value="{DynamicResource PrimaryControlForegroundDisabled}" />
+                                    Value="Black" />
                             <Setter Property="Background"
                                     Value="{DynamicResource NavBtnBackgroundDisabled}" />
                         </Trigger>

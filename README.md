@@ -9,7 +9,7 @@ An app for tracking activities in-game.  It currently tracks;
 - Powerplay Activities
 - Mining Sessions
 - Fleet Carriers
-
+  
   ## Colonisation Depot Example
 ![ODEliteTracker_e2cGqNjgNa](https://github.com/user-attachments/assets/f3897336-aad8-4b4d-842a-7a381dee3f79)
 

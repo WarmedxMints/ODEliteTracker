@@ -92,7 +92,7 @@
             { "$insulatingmembrane_name;", 1610 },
             { "$cmmcomposite_name;", 50675 },
             { "$medicaldiagnosticequipment_name;", 63 },
-            { "$steel_name;", 66342 }
+            { "$steel_name;", 63342 }
         };
     }
 }

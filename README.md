@@ -7,7 +7,7 @@ An app for tracking activities in-game.  It currently tracks;
 - Colonisation Depot Progress
 - Background Simulation Activities
 - Powerplay Activities
-- Mining Session
+- Mining Sessions
 - Fleet Carriers
   
   ## Colonisation Depot Example

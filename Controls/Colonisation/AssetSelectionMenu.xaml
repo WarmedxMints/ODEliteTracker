@@ -158,7 +158,7 @@
                               Command="{Binding ElementName=Root, Path=Command}"
                               CommandParameter="{x:Static colonisationVM:ColonisationBuild.BarInstallation}" />
                 </MenuItem>
-                <MenuItem Header="Planetary Port">
+                <MenuItem Header="Surface Outpost">
                     <Separator>
                         <Separator.Template>
                             <ControlTemplate TargetType="Separator">

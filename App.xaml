@@ -21,6 +21,7 @@
             <wpfconverters:CentreToolTipConverter x:Key="CentreToolTipConverter" />
             <wpfconverters:VisibilityToBoolConverter x:Key="VisToBoolConverter" />
             <wpfconverters:IntToColourConverter x:Key="IntToColour" />
+            <wpfconverters:AssetFilterToBoolConverter x:Key="AssetFilterConvertor" />
             <FontFamily x:Key="Eurostile">pack://application:,,,/Assets/Fonts/#Eurostile</FontFamily>
             
             <ResourceDictionary.MergedDictionaries>

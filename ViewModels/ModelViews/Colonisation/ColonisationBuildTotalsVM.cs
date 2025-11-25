@@ -5,7 +5,6 @@ using ODMVVM.Helpers;
 using ODMVVM.ViewModels;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Header;
 
 namespace ODEliteTracker.ViewModels.ModelViews.Colonisation
 {
@@ -107,7 +106,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Colonisation
         HubRefinery,
         [Description("High Tech Hub")]
         HubHighTech,
-        [Description("Induxtrial Hub")]
+        [Description("Industrial Hub")]
         HubIndustrial,
     }
 
@@ -148,6 +147,24 @@ namespace ODEliteTracker.ViewModels.ModelViews.Colonisation
                     _ => wishListItems.OrderByDescending(x => x.RequiredAmount),
                 };
             }
+        }
+
+        private AssetFilter assetFilter = AssetFilter.All;
+        public AssetFilter AssetFilter
+        {
+            get => assetFilter;
+            set 
+            { 
+                assetFilter = value;
+                OnPropertyChanged(nameof(assetFilter));
+                OnPropertyChanged(nameof(AllAssetStats));
+            }
+        }
+
+        private readonly IEnumerable<AssetStatsVM> allAssetStats = ColonisationAssetStats.GetAll().Select(x => new AssetStatsVM(x));
+        public IEnumerable<AssetStatsVM> AllAssetStats
+        {
+            get => allAssetStats.Where(x => assetFilter.HasFlag(x.Filter));
         }
 
         private readonly ObservableCollection<AssetStatsVM> assetStats = [];

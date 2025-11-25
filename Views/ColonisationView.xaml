@@ -7,7 +7,9 @@
              xmlns:viewmodels="clr-namespace:ODEliteTracker.ViewModels"
              xmlns:busyIndicator="https://github.com/moh3ngolshani/BusyIndicator"
              xmlns:wpfconverters="clr-namespace:ODEliteTracker.WPFConverters"
+             xmlns:buttons="clr-namespace:ODEliteTracker.Controls.Buttons"
              xmlns:colonisation="clr-namespace:ODEliteTracker.Controls.Colonisation"
+             xmlns:colonisationModel="clr-namespace:ODEliteTracker.Models.Colonisation.Builds"
              xmlns:colonisationVM="clr-namespace:ODEliteTracker.ViewModels.ModelViews.Colonisation"
              xmlns:models="clr-namespace:ODEliteTracker.Models"
              xmlns:helpers="clr-namespace:ODEliteTracker.Helpers"
@@ -46,88 +48,6 @@
                                 FontSize="18"
                                 Margin="5"
                                 Padding="5">
-                        <TabControl.Resources>
-                            <Style TargetType="TabItem">
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="TabItem">
-                                            <!--The four values of CornerRadius represent the four corners of the TabItem.-->
-                                            <Border Name="Border"
-                                                    BorderThickness="0"
-                                                    CornerRadius="2,2,0,0"
-                                                    Margin="0,0,5,0">
-                                                <ContentPresenter x:Name="ContentSite"
-                                                                  VerticalAlignment="Center"
-                                                                  HorizontalAlignment="Center"
-                                                                  ContentSource="Header"
-                                                                  Margin="10,2" />
-                                            </Border>
-                                            <ControlTemplate.Triggers>
-                                                <Trigger Property="IsSelected"
-                                                         Value="True">
-                                                    <Setter TargetName="Border"
-                                                            Property="Background"
-                                                            Value="{DynamicResource CardBackground}" />
-                                                    <Setter Property="Foreground"
-                                                            Value="{DynamicResource PrimaryForeground}" />
-                                                </Trigger>
-                                                <Trigger Property="IsSelected"
-                                                         Value="False">
-                                                    <Setter TargetName="Border"
-                                                            Property="Background"
-                                                            Value="{DynamicResource CardBackgroundMouseOver}" />
-                                                    <Setter Property="Foreground"
-                                                            Value="{DynamicResource PrimaryForegroundDisabled}" />
-                                                </Trigger>
-                                            </ControlTemplate.Triggers>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                            </Style>
-                            <Style  TargetType="{x:Type TabControl}">
-                                <Setter Property="OverridesDefaultStyle"
-                                        Value="True" />
-                                <Setter Property="SnapsToDevicePixels"
-                                        Value="True" />
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="{x:Type TabControl}">
-                                            <Grid KeyboardNavigation.TabNavigation="Local">
-                                                <Grid.RowDefinitions>
-                                                    <RowDefinition Height="Auto" />
-                                                    <RowDefinition Height="*" />
-                                                </Grid.RowDefinitions>
-                                                <VisualStateManager.VisualStateGroups>
-                                                    <VisualStateGroup x:Name="CommonStates">
-                                                        <VisualState x:Name="Disabled" />
-                                                    </VisualStateGroup>
-                                                </VisualStateManager.VisualStateGroups>
-                                                <TabPanel x:Name="HeaderPanel"
-                                                          Grid.Row="0"
-                                                          Panel.ZIndex="1"
-                                                          Margin="0,0,4,-1"
-                                                          IsItemsHost="True"
-                                                          KeyboardNavigation.TabIndex="1"
-                                                          Background="Transparent" />
-                                                <Border x:Name="Border"
-                                                        Grid.Row="1"
-                                                        BorderThickness="1"
-                                                        CornerRadius="0 5 5 5"
-                                                        Background="{TemplateBinding Background}"
-                                                        BorderBrush="{TemplateBinding Background}"
-                                                        KeyboardNavigation.TabNavigation="Local"
-                                                        KeyboardNavigation.DirectionalNavigation="Contained"
-                                                        KeyboardNavigation.TabIndex="2">
-                                                    <ContentPresenter x:Name="PART_SelectedContentHost"
-                                                                      Margin="4"
-                                                                      ContentSource="SelectedContent" />
-                                                </Border>
-                                            </Grid>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                            </Style>
-                        </TabControl.Resources>
                         <TabItem Header="Active">
                             <colonisation:DepotList Depots="{Binding ActiveDepots}"
                                                     SelectedDepot="{Binding SelectedDepot}"
@@ -431,80 +351,8 @@
                                                     Orientation="Horizontal"
                                                     HorizontalAlignment="Right"
                                                     VerticalAlignment="Center">
-                                            <ToggleButton Name="button"
-                                                          Width="120"
-                                                          FontSize="12"
-                                                          BorderBrush="#FF707BF3"
-                                                          Content="{Binding DiscordButtonText}"
-                                                          FontFamily="Unispace"
-                                                          Margin="10,0">
-                                                <ToggleButton.Resources>
-                                                    <Style TargetType="Border">
-                                                        <Setter Property="CornerRadius"
-                                                                Value="5" />
-                                                    </Style>
-                                                    <Style TargetType="{x:Type ToggleButton}">
-                                                        <Style.Triggers>
-                                                            <Trigger Property="IsMouseOver"
-                                                                     Value="False">
-                                                                <Setter Property="Foreground"
-                                                                        Value="White" />
-                                                                <Setter Property="Background"
-                                                                        Value="#FF5865F2" />
-                                                            </Trigger>
-                                                            <Trigger Property="IsMouseOver"
-                                                                     Value="True">
-                                                                <Setter Property="Background"
-                                                                        Value="White" />
-                                                                <Setter Property="Foreground"
-                                                                        Value="#FF5865F2" />
-                                                            </Trigger>
-                                                            <Trigger Property="IsPressed"
-                                                                     Value="True">
-                                                                <Setter Property="Background"
-                                                                        Value="White" />
-                                                                <Setter Property="Foreground"
-                                                                        Value="#FF5865F2" />
-                                                            </Trigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </ToggleButton.Resources>
-                                            </ToggleButton>
-                                            <Popup IsOpen="{Binding IsChecked, ElementName=button}"
-                                                   Closed="Popup_Closed"
-                                                   ButtonBase.Click="Popup_Click"
-                                                   Placement="Mouse"
-                                                   StaysOpen="False">
-                                                <Border Background="{DynamicResource ViewBackground}"
-                                                        BorderBrush="{DynamicResource PrimaryControlBorder}"
-                                                        Padding="5"
-                                                        BorderThickness="1">
-                                                    <StackPanel>
-                                                        <Button Content="Table in Discord Code Block"
-                                                                HorizontalAlignment="Stretch"
-                                                                Margin="0,2"
-                                                                HorizontalContentAlignment="Left"
-                                                                Command="{Binding CreatePostCommand}"
-                                                                CommandParameter="{x:Static helpers:ColonisationPostType.DiscordTable}"
-                                                                Style="{DynamicResource CartoSelectionBtn}" />
-                                                        <Button Content="Table"
-                                                                HorizontalAlignment="Stretch"
-                                                                Margin="0,2"
-                                                                HorizontalContentAlignment="Left"
-                                                                Command="{Binding CreatePostCommand}"
-                                                                CommandParameter="{x:Static helpers:ColonisationPostType.Table}"
-                                                                Style="{DynamicResource CartoSelectionBtn}" />
-                                                        <Button Content="List"
-                                                                HorizontalAlignment="Stretch"
-                                                                Margin="0,2"
-                                                                HorizontalContentAlignment="Left"
-                                                                Command="{Binding CreatePostCommand}"
-                                                                CommandParameter="{x:Static helpers:ColonisationPostType.List}"
-                                                                Style="{DynamicResource CartoSelectionBtn}" />
-
-                                                    </StackPanel>
-                                                </Border>
-                                            </Popup>
+                                            <buttons:ColonisationDiscordButton Text="{Binding DiscordButtonText}"
+                                                                               Command="{Binding CreatePostCommand}" />
 
                                             <TextBlock Text="Commodity Sorting "
                                                        VerticalAlignment="Center" />
@@ -668,80 +516,8 @@
 
                                         <StackPanel Grid.Column="1"
                                                     Orientation="Horizontal">
-                                            <ToggleButton Name="button2"
-                                                          Width="120"
-                                                          FontSize="12"
-                                                          BorderBrush="#FF707BF3"
-                                                          Content="{Binding DiscordButtonText}"
-                                                          FontFamily="Unispace"
-                                                          Margin="10,0">
-                                                <ToggleButton.Resources>
-                                                    <Style TargetType="Border">
-                                                        <Setter Property="CornerRadius"
-                                                                Value="5" />
-                                                    </Style>
-                                                    <Style TargetType="{x:Type ToggleButton}">
-                                                        <Style.Triggers>
-                                                            <Trigger Property="IsMouseOver"
-                                                                     Value="False">
-                                                                <Setter Property="Foreground"
-                                                                        Value="White" />
-                                                                <Setter Property="Background"
-                                                                        Value="#FF5865F2" />
-                                                            </Trigger>
-                                                            <Trigger Property="IsMouseOver"
-                                                                     Value="True">
-                                                                <Setter Property="Background"
-                                                                        Value="White" />
-                                                                <Setter Property="Foreground"
-                                                                        Value="#FF5865F2" />
-                                                            </Trigger>
-                                                            <Trigger Property="IsPressed"
-                                                                     Value="True">
-                                                                <Setter Property="Background"
-                                                                        Value="White" />
-                                                                <Setter Property="Foreground"
-                                                                        Value="#FF5865F2" />
-                                                            </Trigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </ToggleButton.Resources>
-                                            </ToggleButton>
-                                            <Popup IsOpen="{Binding IsChecked, ElementName=button2}"
-                                                   Closed="Popup_Closed"
-                                                   ButtonBase.Click="Popup_Click"
-                                                   Placement="Mouse"
-                                                   StaysOpen="False">
-                                                <Border Background="{DynamicResource ViewBackground}"
-                                                        BorderBrush="{DynamicResource PrimaryControlBorder}"
-                                                        Padding="5"
-                                                        BorderThickness="1">
-                                                    <StackPanel>
-                                                        <Button Content="Table in Discord Code Block"
-                                                                HorizontalAlignment="Stretch"
-                                                                Margin="0,2"
-                                                                HorizontalContentAlignment="Left"
-                                                                Command="{Binding CreatePostCommand}"
-                                                                CommandParameter="{x:Static helpers:ColonisationPostType.DiscordTable}"
-                                                                Style="{DynamicResource CartoSelectionBtn}" />
-                                                        <Button Content="Table"
-                                                                HorizontalAlignment="Stretch"
-                                                                Margin="0,2"
-                                                                HorizontalContentAlignment="Left"
-                                                                Command="{Binding CreatePostCommand}"
-                                                                CommandParameter="{x:Static helpers:ColonisationPostType.Table}"
-                                                                Style="{DynamicResource CartoSelectionBtn}" />
-                                                        <Button Content="List"
-                                                                HorizontalAlignment="Stretch"
-                                                                Margin="0,2"
-                                                                HorizontalContentAlignment="Left"
-                                                                Command="{Binding CreatePostCommand}"
-                                                                CommandParameter="{x:Static helpers:ColonisationPostType.List}"
-                                                                Style="{DynamicResource CartoSelectionBtn}" />
-
-                                                    </StackPanel>
-                                                </Border>
-                                            </Popup>
+                                            <buttons:ColonisationDiscordButton Text="{Binding DiscordButtonText}"
+                                                                               Command="{Binding CreatePostCommand}" />
                                             <TextBlock Text="Commodity Sorting "
                                                        VerticalAlignment="Center" />
                                             <ComboBox ItemsSource="{Binding Source={StaticResource CommodityEnum}}"
@@ -816,14 +592,14 @@
                                                 Grid.Row="2"
                                                 Grid.Column="2"
                                                 HorizontalAlignment="Right">
-                                    <TextBlock Text="{Binding EstimatedTrips}"
-                                               FontSize="20"
-                                               Margin="0,0,10,0" />
-                                    
-                                    <TextBlock Text="{Binding ShoppingList.TotalRemaining}"
-                                               HorizontalAlignment="Right"
-                                               FontSize="20"
-                                               Margin="0,0,30,0"/>
+                                        <TextBlock Text="{Binding EstimatedTrips}"
+                                                   FontSize="20"
+                                                   Margin="0,0,10,0" />
+
+                                        <TextBlock Text="{Binding ShoppingList.TotalRemaining}"
+                                                   HorizontalAlignment="Right"
+                                                   FontSize="20"
+                                                   Margin="0,0,30,0" />
                                     </StackPanel>
                                     <DataGrid ItemsSource="{Binding ShoppingListResources}"
                                               Grid.Row="3"
@@ -1200,64 +976,8 @@
                                                                 <StackPanel Orientation="Horizontal">
                                                                     <Rectangle Width="10"
                                                                                Height="10"
-                                                                               Margin="0,0,5,0">
-                                                                        <Rectangle.Style>
-                                                                            <Style TargetType="{x:Type Rectangle}">
-                                                                                <Style.Triggers>
-                                                                                    <DataTrigger Binding="{Binding Economy}"
-                                                                                                 Value="{x:Static colonisationVM:AssetEconomy.None}">
-                                                                                        <Setter Property="Visibility"
-                                                                                                Value="Collapsed" />
-                                                                                    </DataTrigger>
-                                                                                    <DataTrigger Binding="{Binding Economy}"
-                                                                                                 Value="{x:Static colonisationVM:AssetEconomy.Agriculture}">
-                                                                                        <Setter Property="Fill"
-                                                                                                Value="#FF80FF00" />
-                                                                                    </DataTrigger>
-                                                                                    <DataTrigger Binding="{Binding Economy}"
-                                                                                                 Value="{x:Static colonisationVM:AssetEconomy.Colony}">
-                                                                                        <Setter Property="Fill"
-                                                                                                Value="#FF969696" />
-                                                                                    </DataTrigger>
-                                                                                    <DataTrigger Binding="{Binding Economy}"
-                                                                                                 Value="{x:Static colonisationVM:AssetEconomy.Extraction}">
-                                                                                        <Setter Property="Fill"
-                                                                                                Value="Red" />
-                                                                                    </DataTrigger>
-                                                                                    <DataTrigger Binding="{Binding Economy}"
-                                                                                                 Value="{x:Static colonisationVM:AssetEconomy.Industrial}">
-                                                                                        <Setter Property="Fill"
-                                                                                                Value="Yellow" />
-                                                                                    </DataTrigger>
-                                                                                    <DataTrigger Binding="{Binding Economy}"
-                                                                                                 Value="{x:Static colonisationVM:AssetEconomy.HighTech}">
-                                                                                        <Setter Property="Fill"
-                                                                                                Value="Cyan" />
-                                                                                    </DataTrigger>
-                                                                                    <DataTrigger Binding="{Binding Economy}"
-                                                                                                 Value="{x:Static colonisationVM:AssetEconomy.Military}">
-                                                                                        <Setter Property="Fill"
-                                                                                                Value="#FFE500E5" />
-                                                                                    </DataTrigger>
-                                                                                    <DataTrigger Binding="{Binding Economy}"
-                                                                                                 Value="{x:Static colonisationVM:AssetEconomy.Refinery}">
-                                                                                        <Setter Property="Fill"
-                                                                                                Value="#FFFF8000" />
-                                                                                    </DataTrigger>
-                                                                                    <DataTrigger Binding="{Binding Economy}"
-                                                                                                 Value="{x:Static colonisationVM:AssetEconomy.Service}">
-                                                                                        <Setter Property="Fill"
-                                                                                                Value="#FF0045FF" />
-                                                                                    </DataTrigger>
-                                                                                    <DataTrigger Binding="{Binding Economy}"
-                                                                                                 Value="{x:Static colonisationVM:AssetEconomy.Tourism}">
-                                                                                        <Setter Property="Fill"
-                                                                                                Value="#FF6600E5" />
-                                                                                    </DataTrigger>
-                                                                                </Style.Triggers>
-                                                                            </Style>
-                                                                        </Rectangle.Style>
-                                                                    </Rectangle>
+                                                                               Margin="0,0,5,0"
+                                                                               Style="{StaticResource AssetEconomyRectange}" />
                                                                     <TextBlock Text="{Binding Economy}"
                                                                                FontSize="15" />
                                                                 </StackPanel>
@@ -1582,6 +1302,328 @@
                                                    FontSize="20"
                                                    VerticalAlignment="Center" />
                                     </StackPanel>
+                                </Grid>
+                            </TabItem>
+                            <TabItem Header="Build Stats">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Text="Asset Stats"
+                                               Foreground="{DynamicResource Header}"
+                                               FontSize="20"
+                                               Margin="0,5" />
+
+                                    <Grid Grid.Row="1">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="Filters"
+                                                   Foreground="{DynamicResource Header}"
+                                                   FontSize="18"
+                                                   Margin="10,10" />
+
+                                        <StackPanel Orientation="Horizontal"
+                                                    Grid.Column="1">
+                                            <CheckBox Content="Starports T1"
+                                                      VerticalAlignment="Center"
+                                                      Margin="0,0,10,0"
+                                                      Command="{Binding AssetFilterCommand}"
+                                                      CommandParameter="{x:Static colonisationModel:AssetFilter.SpaceOutpost}"
+                                                      Style="{DynamicResource EliteStyleCheckBox}"
+                                                      IsChecked="{Binding ColonisationBuildTotals.AssetFilter,
+                                                        Converter={StaticResource AssetFilterConvertor},
+                                                        ConverterParameter={x:Static colonisationModel:AssetFilter.SpaceOutpost},
+                                                        Mode=OneWay}" />
+                                            <CheckBox Content="Starports T2/3"
+                                                      VerticalAlignment="Center"
+                                                      Margin="0,0,10,0"
+                                                      Command="{Binding AssetFilterCommand}"
+                                                      CommandParameter="{x:Static colonisationModel:AssetFilter.Starport}"
+                                                      Style="{DynamicResource EliteStyleCheckBox}"
+                                                      IsChecked="{Binding ColonisationBuildTotals.AssetFilter,
+                                                        Converter={StaticResource AssetFilterConvertor},
+                                                        ConverterParameter={x:Static colonisationModel:AssetFilter.Starport},
+                                                        Mode=OneWay}" />
+                                            <CheckBox Content="Space Installations"
+                                                      VerticalAlignment="Center"
+                                                      Margin="0,0,10,0"
+                                                      Command="{Binding AssetFilterCommand}"
+                                                      CommandParameter="{x:Static colonisationModel:AssetFilter.SpaceInstallation}"
+                                                      Style="{DynamicResource EliteStyleCheckBox}"
+                                                      IsChecked="{Binding ColonisationBuildTotals.AssetFilter,
+                                                        Converter={StaticResource AssetFilterConvertor},
+                                                        ConverterParameter={x:Static colonisationModel:AssetFilter.SpaceInstallation},
+                                                        Mode=OneWay}" />
+                                            <CheckBox Content="Surface Outposts"
+                                                      VerticalAlignment="Center"
+                                                      Margin="0,0,10,0"
+                                                      Command="{Binding AssetFilterCommand}"
+                                                      CommandParameter="{x:Static colonisationModel:AssetFilter.SurfaceOutpost}"
+                                                      Style="{DynamicResource EliteStyleCheckBox}"
+                                                      IsChecked="{Binding ColonisationBuildTotals.AssetFilter,
+                                                        Converter={StaticResource AssetFilterConvertor},
+                                                        ConverterParameter={x:Static colonisationModel:AssetFilter.SurfaceOutpost},
+                                                        Mode=OneWay}" />
+                                            <CheckBox Content="Settlements"
+                                                      VerticalAlignment="Center"
+                                                      Margin="0,0,10,0"
+                                                      Command="{Binding AssetFilterCommand}"
+                                                      CommandParameter="{x:Static colonisationModel:AssetFilter.Settlement}"
+                                                      Style="{DynamicResource EliteStyleCheckBox}"
+                                                      IsChecked="{Binding ColonisationBuildTotals.AssetFilter,
+                                                        Converter={StaticResource AssetFilterConvertor},
+                                                        ConverterParameter={x:Static colonisationModel:AssetFilter.Settlement},
+                                                        Mode=OneWay}" />
+                                            <CheckBox Content="Hubs"
+                                                      VerticalAlignment="Center"
+                                                      Margin="0,0,10,0"
+                                                      Command="{Binding AssetFilterCommand}"
+                                                      CommandParameter="{x:Static colonisationModel:AssetFilter.Hub}"
+                                                      Style="{DynamicResource EliteStyleCheckBox}"
+                                                      IsChecked="{Binding ColonisationBuildTotals.AssetFilter,
+                                                        Converter={StaticResource AssetFilterConvertor},
+                                                        ConverterParameter={x:Static colonisationModel:AssetFilter.Hub},
+                                                        Mode=OneWay}" />
+                                        </StackPanel>
+                                    </Grid>
+                                    <DataGrid ItemsSource="{Binding ColonisationBuildTotals.AllAssetStats}"
+                                              Grid.Row="2"
+                                              Style="{DynamicResource ConstructionResourcesDataGrid}"
+                                              RowStyle="{DynamicResource NoSelectRowStyle}"
+                                              CellStyle="{DynamicResource NoSelectCellNoMargin}"
+                                              Foreground="{DynamicResource PrimaryForeground}"
+                                              FontSize="20"
+                                              IsReadOnly="True"
+                                              SelectionMode="Single"
+                                              CanUserSortColumns="True"
+                                              ScrollViewer.HorizontalScrollBarVisibility="Visible"
+                                              ScrollViewer.VerticalScrollBarVisibility="Visible"
+                                              AlternatingRowBackground="{DynamicResource RowAlternationColour}"
+                                              HeadersVisibility="Column"
+                                              AutoGenerateColumns="False"
+                                              HorizontalAlignment="Center">
+                                        <DataGrid.Columns>
+                                            <DataGridTemplateColumn Header="Type"
+                                                                    HeaderStyle="{DynamicResource DataGridHeaderLeft}"
+                                                                    SortMemberPath="Filter"
+                                                                    Width="*">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel Orientation="Vertical"
+                                                                    Margin="0,0,10,0">
+                                                            <TextBlock Text="{Binding Type}"
+                                                                       Foreground="{DynamicResource Header}" />
+                                                            <TextBlock Text="{Binding SubType}"
+                                                                       MaxWidth="270"
+                                                                       HorizontalAlignment="Left"
+                                                                       TextWrapping="Wrap"
+                                                                       FontSize="15" />
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                            <DataGridTextColumn Header="Tier"
+                                                                Width="60"
+                                                                SortMemberPath="TierInt"
+                                                                HeaderStyle="{DynamicResource DataGridHeaderCenter}"
+                                                                ElementStyle="{DynamicResource DataGridElementCenter}"
+                                                                Binding="{Binding Tier}" />
+                                            <DataGridTextColumn Header="Pad Size"
+                                                                Width="90"
+                                                                SortMemberPath="PadEnum"
+                                                                HeaderStyle="{DynamicResource DataGridHeaderCenter}"
+                                                                ElementStyle="{DynamicResource DataGridElementCenter}"
+                                                                Binding="{Binding Pad}" />
+                                            <DataGridTemplateColumn Header="Cost"
+                                                                    Width="60"
+                                                                    SortMemberPath="CostSorting"
+                                                                    HeaderStyle="{StaticResource DataGridHeaderCenter}">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel Orientation="Horizontal"
+                                                                    HorizontalAlignment="Center">
+                                                            <TextBlock Text="{Binding PointCost}"
+                                                                       VerticalAlignment="Center"/>
+                                                            <Image Width="25"
+                                                                   Height="25">
+                                                                <Image.Style>
+                                                                    <Style TargetType="{x:Type Image}">
+                                                                        <Style.Triggers>
+                                                                            <DataTrigger Binding="{Binding CostTier}"
+                                                                                         Value="{x:Static colonisationModel:PointTier.None}">
+                                                                                <Setter Property="Visibility"
+                                                                                        Value="Hidden" />
+                                                                            </DataTrigger>
+                                                                            <DataTrigger Binding="{Binding CostTier}"
+                                                                                         Value="{x:Static colonisationModel:PointTier.Tier2}">
+                                                                                <Setter Property="Source"
+                                                                                        Value="/Assets/Icons/T2Point.png" />
+                                                                            </DataTrigger>
+                                                                            <DataTrigger Binding="{Binding CostTier}"
+                                                                                         Value="{x:Static colonisationModel:PointTier.Tier3}">
+                                                                                <Setter Property="Source"
+                                                                                        Value="/Assets/Icons/T3Point.png" />
+                                                                                <Setter Property="Margin"
+                                                                                        Value="5,0" />
+                                                                            </DataTrigger>
+                                                                        </Style.Triggers>
+                                                                    </Style>
+                                                                </Image.Style>
+                                                            </Image>
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                            <DataGridTemplateColumn Header="Gain"
+                                                                    Width="60"
+                                                                    SortMemberPath="GainSorting"
+                                                                    HeaderStyle="{StaticResource DataGridHeaderCenter}">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <TextBlock Text="{Binding PointGain}"
+                                                                       VerticalAlignment="Center" />
+                                                            <Image Width="25"
+                                                                   Height="25">
+                                                                <Image.Style>
+                                                                    <Style TargetType="{x:Type Image}">
+                                                                        <Style.Triggers>
+                                                                            <DataTrigger Binding="{Binding GainTier}"
+                                                                                         Value="{x:Static colonisationModel:PointTier.None}">
+                                                                                <Setter Property="Visibility"
+                                                                                        Value="Hidden" />
+                                                                            </DataTrigger>
+                                                                            <DataTrigger Binding="{Binding GainTier}"
+                                                                                         Value="{x:Static colonisationModel:PointTier.Tier2}">
+                                                                                <Setter Property="Source"
+                                                                                        Value="/Assets/Icons/T2Point.png" />
+                                                                            </DataTrigger>
+                                                                            <DataTrigger Binding="{Binding GainTier}"
+                                                                                         Value="{x:Static colonisationModel:PointTier.Tier3}">
+                                                                                <Setter Property="Source"
+                                                                                        Value="/Assets/Icons/T3Point.png" />
+                                                                                <Setter Property="Margin"
+                                                                                        Value="5,0" />
+                                                                            </DataTrigger>
+                                                                        </Style.Triggers>
+                                                                    </Style>
+                                                                </Image.Style>
+                                                            </Image>
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                            <DataGridTemplateColumn Header="Pop"
+                                                                    Width="60"
+                                                                    SortMemberPath="Population"
+                                                                    HeaderStyle="{StaticResource DataGridHeaderCenter}">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding Population, StringFormat={}{0:+#;-#;#}}"
+                                                                   Foreground="{Binding Population, Converter={StaticResource IntToColour}}"
+                                                                   FontSize="20"
+                                                                   HorizontalAlignment="Center"
+                                                                   VerticalAlignment="Center" />
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                            <DataGridTemplateColumn Header="M Pop"
+                                                                    Width="60"
+                                                                    SortMemberPath="MaxPopulation"
+                                                                    HeaderStyle="{StaticResource DataGridHeaderCenter}">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding MaxPopulation, StringFormat={}{0:+#;-#;#}}"
+                                                                   Foreground="{Binding MaxPopulation, Converter={StaticResource IntToColour}}"
+                                                                   FontSize="20"
+                                                                   HorizontalAlignment="Center"
+                                                                   VerticalAlignment="Center" />
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                            <DataGridTemplateColumn Header="Sec"
+                                                                    Width="60"
+                                                                    SortMemberPath="Security"
+                                                                    HeaderStyle="{StaticResource DataGridHeaderCenter}">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding Security, StringFormat={}{0:+#;-#;#}}"
+                                                                   Foreground="{Binding Security, Converter={StaticResource IntToColour}}"
+                                                                   FontSize="20"
+                                                                   HorizontalAlignment="Center"
+                                                                   VerticalAlignment="Center" />
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                            <DataGridTemplateColumn Header="Wealth"
+                                                                    Width="60"
+                                                                    SortMemberPath="Wealth"
+                                                                    HeaderStyle="{StaticResource DataGridHeaderCenter}">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding Wealth, StringFormat={}{0:+#;-#;#}}"
+                                                                   Foreground="{Binding Wealth, Converter={StaticResource IntToColour}}"
+                                                                   FontSize="20"
+                                                                   HorizontalAlignment="Center"
+                                                                   VerticalAlignment="Center" />
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                            <DataGridTemplateColumn Header="Tech"
+                                                                    Width="60"
+                                                                    SortMemberPath="TechLevel"
+                                                                    HeaderStyle="{StaticResource DataGridHeaderCenter}">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding TechLevel, StringFormat={}{0:+#;-#;#}}"
+                                                                   Foreground="{Binding TechLevel, Converter={StaticResource IntToColour}}"
+                                                                   FontSize="20"
+                                                                   HorizontalAlignment="Center"
+                                                                   VerticalAlignment="Center" />
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                            <DataGridTemplateColumn Header="SoL"
+                                                                    Width="60"
+                                                                    SortMemberPath="StandardOfLiving"
+                                                                    HeaderStyle="{StaticResource DataGridHeaderCenter}">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding StandardOfLiving, StringFormat={}{0:+#;-#;#}}"
+                                                                   Foreground="{Binding StandardOfLiving, Converter={StaticResource IntToColour}}"
+                                                                   FontSize="20"
+                                                                   HorizontalAlignment="Center"
+                                                                   VerticalAlignment="Center" />
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                            <DataGridTemplateColumn Header="Dev"
+                                                                    Width="60"
+                                                                    SortMemberPath="Development"
+                                                                    HeaderStyle="{StaticResource DataGridHeaderCenter}">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding Development, StringFormat={}{0:+#;-#;#}}"
+                                                                   Foreground="{Binding Development, Converter={StaticResource IntToColour}}"
+                                                                   FontSize="20"
+                                                                   HorizontalAlignment="Center"
+                                                                   VerticalAlignment="Center" />
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                            <DataGridTextColumn Header="Score"
+                                                                Width="60"
+                                                                SortMemberPath="Score"
+                                                                HeaderStyle="{StaticResource DataGridHeaderCenter}"
+                                                                ElementStyle="{StaticResource DataGridElementCenter}"
+                                                                Binding="{Binding Score}" />
+                                        </DataGrid.Columns>
+                                    </DataGrid>
                                 </Grid>
                             </TabItem>
                             <TabItem Header="Construction Totals">

@@ -1,4 +1,5 @@
-﻿using ODMVVM.Helpers;
+﻿using ODEliteTracker.Models.Colonisation.Builds;
+using ODMVVM.Helpers;
 
 namespace ODEliteTracker.ViewModels.ModelViews.Colonisation
 {
@@ -19,11 +20,17 @@ namespace ODEliteTracker.ViewModels.ModelViews.Colonisation
                 };
             }
         }
+        public Models.LandingPadSize PadEnum => stats.Padsize;
         public string Tier => stats.Tier.ToString();
-        public string PointCost => stats.PointCost > 0 ? $"{stats.PointCost}x {stats.CostTier.GetEnumDescription()}" : string.Empty;
+        public short TierInt => stats.Tier;
+        public string PointCost => stats.PointCost > 0 ? $"{stats.PointCost}x" : string.Empty;
         public PointTier CostTier => stats.CostTier;
-        public string PointGain => stats.PointGain > 0 ? $"{stats.PointGain}x {stats.GainTier.GetEnumDescription()}" : string.Empty;
+        public int CostSorting => stats.PointCost + (int)stats.CostTier;
+        public string PointGain => stats.PointGain > 0 ? $"{stats.PointGain}x" : string.Empty;
+        public PointTier GainTier => stats.GainTier;
+        public int GainSorting => stats.PointGain + (int)stats.PointGain;
         public AssetEconomy Economy => stats.Economy;
+        public string EconomyString => stats.Economy == AssetEconomy.None ? string.Empty : stats.Economy.GetEnumDescription();
         public short Population => stats.Population;
         public short MaxPopulation => stats.MaxPopulation;
         public short Security => stats.Security;
@@ -32,5 +39,6 @@ namespace ODEliteTracker.ViewModels.ModelViews.Colonisation
         public short StandardOfLiving => stats.StandardOfLiving;
         public short Development => stats.Development;
         public short Score => stats.Score;
+        public AssetFilter Filter => stats.FilterType;
     }
 }

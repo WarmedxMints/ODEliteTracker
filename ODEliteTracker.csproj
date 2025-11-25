@@ -42,6 +42,8 @@
     <None Remove="Assets\Icons\spansh.png" />
     <None Remove="Assets\Icons\spanshbtn.png" />
     <None Remove="Assets\Icons\squadfleetcarrier.png" />
+    <None Remove="Assets\Icons\T2Point.png" />
+    <None Remove="Assets\Icons\T3point.png" />
     <None Remove="Assets\Icons\TopMost.png" />
     <None Remove="Assets\Icons\trade.png" />
     <None Remove="Assets\Icons\Transparency.png" />
@@ -148,6 +150,8 @@
     <Resource Include="Assets\Icons\spansh.png" />
     <Resource Include="Assets\Icons\spanshbtn.png" />
     <Resource Include="Assets\Icons\squadfleetcarrier.png" />
+    <Resource Include="Assets\Icons\T2Point.png" />
+    <Resource Include="Assets\Icons\T3point.png" />
     <Resource Include="Assets\Icons\TopMost.png" />
     <Resource Include="Assets\Icons\trade.png" />
     <Resource Include="Assets\Icons\Transparency.png" />

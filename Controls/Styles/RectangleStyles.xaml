@@ -1,5 +1,6 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:colonisationModel="clr-namespace:ODEliteTracker.Models.Colonisation.Builds">
 
     <Style x:Key="PowerPlayIcon"
            TargetType="{x:Type Rectangle}">
@@ -71,5 +72,60 @@
             </DataTrigger>
         </Style.Triggers>
     </Style>
-    
+
+    <Style TargetType="{x:Type Rectangle}"
+           x:Key="AssetEconomyRectange">
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Economy}"
+                         Value="{x:Static colonisationModel:AssetEconomy.None}">
+                <Setter Property="Visibility"
+                        Value="Collapsed" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Economy}"
+                         Value="{x:Static colonisationModel:AssetEconomy.Agriculture}">
+                <Setter Property="Fill"
+                        Value="#FF80FF00" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Economy}"
+                         Value="{x:Static colonisationModel:AssetEconomy.Colony}">
+                <Setter Property="Fill"
+                        Value="#FF969696" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Economy}"
+                         Value="{x:Static colonisationModel:AssetEconomy.Extraction}">
+                <Setter Property="Fill"
+                        Value="Red" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Economy}"
+                         Value="{x:Static colonisationModel:AssetEconomy.Industrial}">
+                <Setter Property="Fill"
+                        Value="Yellow" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Economy}"
+                         Value="{x:Static colonisationModel:AssetEconomy.HighTech}">
+                <Setter Property="Fill"
+                        Value="Cyan" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Economy}"
+                         Value="{x:Static colonisationModel:AssetEconomy.Military}">
+                <Setter Property="Fill"
+                        Value="#FFE500E5" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Economy}"
+                         Value="{x:Static colonisationModel:AssetEconomy.Refinery}">
+                <Setter Property="Fill"
+                        Value="#FFFF8000" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Economy}"
+                         Value="{x:Static colonisationModel:AssetEconomy.Service}">
+                <Setter Property="Fill"
+                        Value="#FF0045FF" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Economy}"
+                         Value="{x:Static colonisationModel:AssetEconomy.Tourism}">
+                <Setter Property="Fill"
+                        Value="#FF6600E5" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
 </ResourceDictionary>

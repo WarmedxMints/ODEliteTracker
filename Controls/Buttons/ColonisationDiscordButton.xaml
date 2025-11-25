@@ -1,0 +1,63 @@
+﻿<UserControl x:Class="ODEliteTracker.Controls.Buttons.ColonisationDiscordButton"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:ODEliteTracker.Controls.Buttons"
+             xmlns:helpers="clr-namespace:ODEliteTracker.Helpers"
+             mc:Ignorable="d" 
+             x:Name="Root"
+             d:DesignHeight="40" d:DesignWidth="150">
+    <Grid>
+        <ToggleButton Name="button"
+                      Width="120"
+                      FontSize="12"
+                      BorderBrush="#FF707BF3"
+                      Content="{Binding ElementName=Root, Path=Text}"
+                      Style="{StaticResource DiscordToggleBtn}"
+                      FontFamily="Unispace"
+                      Margin="10,0">
+            <ToggleButton.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="CornerRadius"
+                            Value="5" />
+                </Style>
+            </ToggleButton.Resources>
+        </ToggleButton>
+        <Popup IsOpen="{Binding IsChecked, ElementName=button}"
+               Closed="Popup_Closed"
+               ButtonBase.Click="Popup_Click"
+               Placement="Mouse"
+               StaysOpen="False">
+            <Border Background="{DynamicResource ViewBackground}"
+                    BorderBrush="{DynamicResource PrimaryControlBorder}"
+                    Padding="5"
+                    BorderThickness="1">
+                <StackPanel>
+                    <Button Content="Table in Discord Code Block"
+                            HorizontalAlignment="Stretch"
+                            Margin="0,2"
+                            HorizontalContentAlignment="Left"
+                            Command="{Binding ElementName=Root, Path=Command}"
+                            CommandParameter="{x:Static helpers:ColonisationPostType.DiscordTable}"
+                            Style="{DynamicResource CartoSelectionBtn}" />
+                    <Button Content="Table"
+                            HorizontalAlignment="Stretch"
+                            Margin="0,2"
+                            HorizontalContentAlignment="Left"
+                            Command="{Binding ElementName=Root, Path=Command}"
+                            CommandParameter="{x:Static helpers:ColonisationPostType.Table}"
+                            Style="{DynamicResource CartoSelectionBtn}" />
+                    <Button Content="List"
+                            HorizontalAlignment="Stretch"
+                            Margin="0,2"
+                            HorizontalContentAlignment="Left"
+                            Command="{Binding ElementName=Root, Path=Command}"
+                            CommandParameter="{x:Static helpers:ColonisationPostType.List}"
+                            Style="{DynamicResource CartoSelectionBtn}" />
+
+                </StackPanel>
+            </Border>
+        </Popup>
+    </Grid>
+</UserControl>

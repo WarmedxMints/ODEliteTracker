@@ -44,20 +44,20 @@ namespace ODEliteTracker.Views
             }
         }
 
-        private void Popup_Closed(object sender, EventArgs e)
-        {
-            if (!object.Equals(this.button, Mouse.DirectlyOver))
-            {
-                this.button.IsChecked = false;
-            }
-        }
+//        private void Popup_Closed(object sender, EventArgs e)
+//        {
+//            if (!object.Equals(this.button, Mouse.DirectlyOver))
+//            {
+//                this.button.IsChecked = false;
+//            }
+//}
 
-        private void Popup_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
-            this.button.IsChecked = false;
-        }
+//private void Popup_Click(object sender, System.Windows.RoutedEventArgs e)
+//{
+//    this.button.IsChecked = false;
+//}
 
-        private void PurchaseGrid_Click(object sender, RoutedEventArgs e)
+private void PurchaseGrid_Click(object sender, RoutedEventArgs e)
         {
             if(DataContext is ColonisationViewModel model && e.OriginalSource is Button btn && btn.DataContext is MarketPurchaseVM market)
             {

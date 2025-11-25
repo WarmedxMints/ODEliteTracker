@@ -1,6 +1,7 @@
 ﻿using ODEliteTracker.Helpers;
 using ODEliteTracker.Models;
 using ODEliteTracker.Models.Colonisation;
+using ODEliteTracker.Models.Colonisation.Builds;
 using ODEliteTracker.Models.FleetCarrier;
 using ODEliteTracker.Models.Galaxy;
 using ODEliteTracker.Models.Market;
@@ -69,6 +70,7 @@ namespace ODEliteTracker.ViewModels
             RemoveSelectedFromWishList = new ODRelayCommand(OnRemoveSelectedFromWishList);
             AddBuildToWishList = new ODRelayCommand<ColonisationBuild>(OnAddBuildToWishList);
             RemoveBuildFromWishList = new ODRelayCommand<ColonisationBuild>(OnRemoveBuildFromWishList);
+            AssetFilterCommand = new ODRelayCommand<AssetFilter>(OnSetAssetFilter);
 
             Depots.CollectionChanged += Depots_CollectionChanged;
 
@@ -86,7 +88,7 @@ namespace ODEliteTracker.ViewModels
             }
 
             this.settings.ColonisationSettings.CommoditySortingChanged += ColonisationSettings_CommoditySortingChanged;
-        }
+        }  
 
         public override void Dispose()
         {
@@ -134,6 +136,7 @@ namespace ODEliteTracker.ViewModels
         public ICommand RemoveSelectedFromWishList { get; }
         public ICommand AddBuildToWishList { get; }
         public ICommand RemoveBuildFromWishList { get; }
+        public ICommand AssetFilterCommand { get; }
         #endregion
 
         #region Public properties
@@ -212,6 +215,7 @@ namespace ODEliteTracker.ViewModels
         {
             get
             {
+
                 if (currentShip == null || currentShip.CargoCapacity <= 0)
                     return "∞";
 
@@ -221,11 +225,11 @@ namespace ODEliteTracker.ViewModels
                     case 0:
                         if (selectedDepot == null)
                             return string.Empty;
-                        return $"Estimated Trips {Math.Ceiling((double)selectedDepot.Resources.Sum(x => x.RemainingCount) / capacity)}";
+                        return $"Estimated Trips {Math.Ceiling((double)selectedDepot.Resources.Sum(x => x.RemainingCount) / capacity):N0} t";
                     case 1:
                         if (ShoppingList == null || ShoppingList.Depots.Count == 0)
                             return string.Empty;
-                        return $"Estimated Trips {Math.Ceiling((double)ShoppingList.Resources.Sum(x => x.RemainingCount) / capacity)}";
+                        return $"Estimated Trips {Math.Ceiling((double)ShoppingList.Resources.Sum(x => x.RemainingCount) / capacity):N0} t";
                     default:
                         return string.Empty;
 
@@ -916,6 +920,17 @@ namespace ODEliteTracker.ViewModels
         private void OnAddBuildToWishList(ColonisationBuild build)
         {
             ColonisationBuildTotals.AddToWishlist(build);
+        }
+
+        private void OnSetAssetFilter(AssetFilter filter)
+        {
+            if(ColonisationBuildTotals.AssetFilter.HasFlag(filter))
+            {
+                ColonisationBuildTotals.AssetFilter &= ~filter;
+                return;
+            }
+
+            ColonisationBuildTotals.AssetFilter |= filter;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using NetTopologySuite.GeometriesGraph;
+﻿using NAudio.Gui;
+using NetTopologySuite.GeometriesGraph;
 using ODEliteTracker.ViewModels.ModelViews.BGS;
 using ODEliteTracker.ViewModels.ModelViews.Colonisation;
 using ODEliteTracker.ViewModels.ModelViews.PowerPlay;
@@ -12,7 +13,8 @@ namespace ODEliteTracker.Helpers
     {
         DiscordTable,
         Table,
-        List
+        List,
+        CSV,
     }
 
     internal class DiscordPostCreator
@@ -200,10 +202,10 @@ namespace ODEliteTracker.Helpers
         #endregion
 
         #region Colonisation
-        internal static bool CreateColonisationPost(ConstructionDepotVM depot, IEnumerable<ConstructionResourceVM>? selectedDepotResources, ColonisationPostType type)
+        internal static bool CreateColonisationPost(ConstructionDepotVM depot, IEnumerable<ConstructionResourceVM>? resources, ColonisationPostType type)
         {
             //If we have no resources require, no need to make a post
-            if (depot.Resources.Any(x => x.RemainingCount > 0) == false || selectedDepotResources == null)
+            if (depot.Resources.Any(x => x.RemainingCount > 0) == false || resources == null)
                 return false;
 
             var sb = new StringBuilder();
@@ -221,10 +223,10 @@ namespace ODEliteTracker.Helpers
             switch (type)
             {
                 case ColonisationPostType.List:
-                    sb.AppendLine(CreateDepotResourceList(selectedDepotResources));
+                    sb.AppendLine(CreateDepotResourceList(resources));
                     break;
                 default:
-                    sb.AppendLine(CreateDepotResourceTable(selectedDepotResources));
+                    sb.AppendLine(CreateDepotResourceTable(resources));
                     break;
             }
 
@@ -237,7 +239,7 @@ namespace ODEliteTracker.Helpers
             var result = sb.ToString().TrimEnd('\r', '\n');
 
             return ODMVVM.Helpers.OperatingSystem.SetStringToClipboard(result);
-        }
+        }       
 
         private static string CreateDepotResourceTable(IEnumerable<ConstructionResourceVM> items)
         {
@@ -266,6 +268,113 @@ namespace ODEliteTracker.Helpers
             }
 
             sb.AppendLine($"Total | {items.Sum(x => x.RemainingCount):N0} t");
+            return sb.ToString().TrimEnd('\r', '\n');
+        }
+
+        internal static Tuple<bool, string> CreateDepotCSV(IEnumerable<ConstructionResourceVM>? resources)
+        {
+            if (resources == null || resources.Any() == false)
+                return Tuple.Create(false, string.Empty);
+
+            var sb = new StringBuilder();
+
+            sb.AppendLine("\"Name\", \"Category\", \"Required\"");
+
+            foreach (var resource in resources)
+            {
+                if (resource == null || resource.RequiredAmount <= 0)
+                    continue;
+
+                sb.AppendLine($"\"{resource.LocalName}\", \"{resource.Category}\", \"{resource.RequiredAmount}\"");
+            }
+
+            return Tuple.Create(true, sb.ToString());
+        }
+
+        internal static bool CreateBuildPost(string name, IEnumerable<ColonisationBuildItemVM> items, ColonisationPostType type)
+        {
+            if (items == null || items.Any() == false)
+                return false;
+
+            var sb = new StringBuilder();
+
+            if (type == ColonisationPostType.DiscordTable)
+            {
+                sb.AppendLine("```");
+
+            }
+
+            sb.AppendLine($"{name}");
+            sb.AppendLine();
+
+            switch (type)
+            {
+                case ColonisationPostType.List:
+                    sb.AppendLine(CreateBuildList(items));
+                    break;
+                default:
+                    sb.AppendLine(CreateBuildTable(items));
+                    break;
+            }
+
+            if (type == ColonisationPostType.DiscordTable)
+            {
+                sb.AppendLine("```");
+
+            }
+
+            var result = sb.ToString().TrimEnd('\r', '\n');
+
+            return ODMVVM.Helpers.OperatingSystem.SetStringToClipboard(result);
+        }
+
+        internal static Tuple<bool, string> CreateBuildCsv(IEnumerable<ColonisationBuildItemVM> items)
+        {
+            if (items == null || items.Any() == false)
+                return Tuple.Create(false, string.Empty);
+
+            var sb = new StringBuilder();
+
+            sb.AppendLine("\"Name\", \"Category\", \"Required\"");
+
+            foreach (var item in items)
+            {
+                if (item == null || item.RequiredAmount <= 0)
+                    continue;
+
+                sb.AppendLine($"\"{item.Name}\", \"{item.Category}\", \"{item.RequiredAmount}\"");
+            }
+
+            return Tuple.Create(true, sb.ToString());
+        }
+
+        private static string? CreateBuildTable(IEnumerable<ColonisationBuildItemVM> items)
+        {
+            var table = new DataTable();
+
+            table.Columns.Add("Name");
+            table.Columns.Add("Category");
+            table.Columns.Add("Required");
+
+            foreach (var item in items)
+            {
+                table.Rows.Add(item.Name, item.Category, item.Required);
+            }
+
+            table.Rows.Add("Total", string.Empty, $"{items.Sum(x => x.RequiredAmount):N0} t");
+            return ODMVVM.Helpers.AsciiTableGenerator.CreateAsciiTableFromDataTable(table, [2]).ToString().TrimEnd('\r', '\n');
+        }
+
+        private static string? CreateBuildList(IEnumerable<ColonisationBuildItemVM> items)
+        {
+            var sb = new StringBuilder();
+
+            foreach (var item in items)
+            {
+                sb.AppendLine($"{item.Name} | {item.Category} | {item.Required}");
+            }
+
+            sb.AppendLine($"Total | {items.Sum(x => x.RequiredAmount):N0} t");
             return sb.ToString().TrimEnd('\r', '\n');
         }
         #endregion

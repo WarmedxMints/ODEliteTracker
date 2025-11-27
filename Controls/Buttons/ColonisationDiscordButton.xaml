@@ -55,7 +55,13 @@
                             Command="{Binding ElementName=Root, Path=Command}"
                             CommandParameter="{x:Static helpers:ColonisationPostType.List}"
                             Style="{DynamicResource CartoSelectionBtn}" />
-
+                    <Button Content="Create CSV"
+                            HorizontalAlignment="Stretch"
+                            Margin="0,2"
+                            HorizontalContentAlignment="Left"
+                            Command="{Binding ElementName=Root, Path=Command}"
+                            CommandParameter="{x:Static helpers:ColonisationPostType.CSV}"
+                            Style="{DynamicResource CartoSelectionBtn}" />
                 </StackPanel>
             </Border>
         </Popup>

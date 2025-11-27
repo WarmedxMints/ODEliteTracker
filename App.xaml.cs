@@ -15,7 +15,7 @@ namespace ODEliteTracker
     /// </summary>
     public partial class App
     {
-        public static Version AppVersion { get; } = new Version(1, 5, 15);
+        public static Version AppVersion { get; } = new Version(1, 5, 16);
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 #if INSTALL || DEBUG

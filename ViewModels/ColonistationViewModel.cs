@@ -1,4 +1,5 @@
-﻿using ODEliteTracker.Helpers;
+﻿using Newtonsoft.Json.Linq;
+using ODEliteTracker.Helpers;
 using ODEliteTracker.Models;
 using ODEliteTracker.Models.Colonisation;
 using ODEliteTracker.Models.Colonisation.Builds;
@@ -14,8 +15,12 @@ using ODEliteTracker.ViewModels.ModelViews.Colonisation;
 using ODEliteTracker.ViewModels.ModelViews.Market;
 using ODMVVM.Commands;
 using ODMVVM.Extensions;
+using ODMVVM.Helpers;
+using ODMVVM.Services.MessageBox;
 using ODMVVM.ViewModels;
+using ODMVVM.Views.MessageBox;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Windows;
 using System.Windows.Input;
 
@@ -449,6 +454,16 @@ namespace ODEliteTracker.ViewModels
                 if (SelectedDepot is null)
                     return;
 
+                if (type == ColonisationPostType.CSV)
+                {
+                    var filename = ODDialogService.SaveFileDialog("Save CSV File", "csv files (*.csv)|*.csv", $"{SelectedDepot.StationNameSplit}.csv");
+
+                    if (filename != null && DiscordPostCreator.CreateDepotCSV(SelectedDepotResources) is Tuple<bool, string> tuple && tuple.Item1)
+                    {
+                        WriteToFile(filename, tuple);
+                    }
+                    return;
+                }
                 if (DiscordPostCreator.CreateColonisationPost(SelectedDepot, SelectedDepotResources, type))
                 {
                     DiscordButtonText = "Post Created";
@@ -458,14 +473,88 @@ namespace ODEliteTracker.ViewModels
                 return;
             }
             //Shopping List
-            if (ShoppingList is null || ShoppingList.Depots.Count == 0)
-                return;
-
-            if (DiscordPostCreator.CreateColonisationPost(ShoppingList, ShoppingListResources, type))
+            if (SelectedDepotTab == 1)
             {
-                DiscordButtonText = "Post Created";
-                notification.ShowBasicNotification(new("Clipboard", ["Construction Post", "Copied To Clipboard"], Models.Settings.NotificationOptions.CopyToClipboard));
-                Task.Delay(4000).ContinueWith(e => { DiscordButtonText = "Create Post"; });
+                if (ShoppingList is null || ShoppingList.Depots.Count == 0)
+                    return;
+
+                if (type == ColonisationPostType.CSV)
+                {
+                    var names = ShoppingList.Depots.Select(x => x.StationNameSplit);
+
+                    var filename = ODDialogService.SaveFileDialog("Save CSV File", "csv files (*.csv)|*.csv", $"{string.Join("-", names)}.csv");
+
+                    if (filename != null && DiscordPostCreator.CreateDepotCSV(ShoppingListResources) is Tuple<bool, string> tuple && tuple.Item1)
+                    {
+                        WriteToFile(filename, tuple);
+                    }
+                    return;
+                }
+
+                if (DiscordPostCreator.CreateColonisationPost(ShoppingList, ShoppingListResources, type))
+                {
+                    DiscordButtonText = "Post Created";
+                    notification.ShowBasicNotification(new("Clipboard", ["Construction Post", "Copied To Clipboard"], Models.Settings.NotificationOptions.CopyToClipboard));
+                    Task.Delay(4000).ContinueWith(e => { DiscordButtonText = "Create Post"; });
+                }
+            }
+            //Build Totals
+            if (SelectedDepotTab == 3)
+            {
+                if (type == ColonisationPostType.CSV)
+                {
+                    var filename = ODDialogService.SaveFileDialog("Save CSV File", "csv files (*.csv)|*.csv", $"{SelectedBuild}.csv");
+
+                    if (filename != null && DiscordPostCreator.CreateBuildCsv(ColonisationBuildTotals.WishListItems) is Tuple<bool, string> tuple && tuple.Item1)
+                    {
+                        WriteToFile(filename, tuple);
+                    }
+                    return;
+                }
+
+                if (DiscordPostCreator.CreateBuildPost(SelectedBuild.GetEnumDescription(), ColonisationBuildTotals.Items, type))
+                {
+                    DiscordButtonText = "Post Created";
+                    notification.ShowBasicNotification(new("Clipboard", ["Build Total Post", "Copied To Clipboard"], Models.Settings.NotificationOptions.CopyToClipboard));
+                    Task.Delay(4000).ContinueWith(e => { DiscordButtonText = "Create Post"; });
+                }
+            }
+            //Build Wishlist
+            if (SelectedDepotTab == 4)
+            {
+                if (type == ColonisationPostType.CSV)
+                {
+                    var wishlistNames = ColonisationBuildTotals.WishListBuilds.Select(x => x.Build.ToString());
+
+                    var filename = ODDialogService.SaveFileDialog("Save CSV File", "csv files (*.csv)|*.csv", $"{string.Join("-", wishlistNames)}.csv");
+
+                    if (filename != null && DiscordPostCreator.CreateBuildCsv(ColonisationBuildTotals.WishListItems) is Tuple<bool, string> tuple && tuple.Item1)
+                    {
+                        WriteToFile(filename, tuple);
+                    }
+                    return;
+                }
+
+                var names = ColonisationBuildTotals.WishListBuilds.Select(x => x.BuildName);
+
+                if (DiscordPostCreator.CreateBuildPost(string.Join("\n", names), ColonisationBuildTotals.WishListItems, type))
+                {
+                    DiscordButtonText = "Post Created";
+                    notification.ShowBasicNotification(new("Clipboard", ["Build Wishlist Post", "Copied To Clipboard"], Models.Settings.NotificationOptions.CopyToClipboard));
+                    Task.Delay(4000).ContinueWith(e => { DiscordButtonText = "Create Post"; });
+                }
+            }
+        }
+
+        private static void WriteToFile(string filename, Tuple<bool, string> tuple)
+        {
+            try
+            {
+                File.WriteAllText(filename, tuple.Item2);
+            }
+            catch (Exception)
+            {
+                _ = ODDialogService.ShowNoOwner("Error", "Error Saving csv");
             }
         }
 
@@ -639,7 +728,7 @@ namespace ODEliteTracker.ViewModels
             }
             SelectedDepot = Depots.Where(x => x.Inactive == false).LastOrDefault();
             SelectedCommanderSystem = commanderSystems.LastOrDefault();
-
+            ColonisationBuildTotals.SortLists(settings.ColonisationSettings.BuildTotalSorting);
             ColonisationBuildTotals.BuildItemList(SelectedBuild);
             OnModelLive(true);
         }

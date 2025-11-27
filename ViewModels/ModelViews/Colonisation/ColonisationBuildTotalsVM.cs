@@ -114,7 +114,8 @@ namespace ODEliteTracker.ViewModels.ModelViews.Colonisation
     {
         Category,
         Name,
-        Required
+        Required,
+        Game,
     }
     public sealed class ColonisationBuildTotalsVM(FleetCarrierDataStore fleetCarrierData, SharedDataStore sharedData) : ODObservableObject
     {
@@ -130,6 +131,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Colonisation
                 {
                     BuildItemSorting.Category => items.OrderBy(x => x.Category).ThenBy(x => x.Name),
                     BuildItemSorting.Name => items.OrderBy(x => x.Name),
+                    BuildItemSorting.Game => [.. items],
                     _ => items.OrderByDescending(x => x.RequiredAmount),
                 };
             }

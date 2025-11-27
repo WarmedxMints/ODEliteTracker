@@ -352,7 +352,8 @@
                                                     HorizontalAlignment="Right"
                                                     VerticalAlignment="Center">
                                             <buttons:ColonisationDiscordButton Text="{Binding DiscordButtonText}"
-                                                                               Command="{Binding CreatePostCommand}" />
+                                                                               Command="{Binding CreatePostCommand}"
+                                                                               Height="30" />
 
                                             <TextBlock Text="Commodity Sorting "
                                                        VerticalAlignment="Center" />
@@ -517,7 +518,8 @@
                                         <StackPanel Grid.Column="1"
                                                     Orientation="Horizontal">
                                             <buttons:ColonisationDiscordButton Text="{Binding DiscordButtonText}"
-                                                                               Command="{Binding CreatePostCommand}" />
+                                                                               Command="{Binding CreatePostCommand}"
+                                                                               Height="30" />
                                             <TextBlock Text="Commodity Sorting "
                                                        VerticalAlignment="Center" />
                                             <ComboBox ItemsSource="{Binding Source={StaticResource CommodityEnum}}"
@@ -828,6 +830,9 @@
                                         </StackPanel>
                                         <StackPanel Grid.Column="2"
                                                     Orientation="Horizontal">
+                                            <buttons:ColonisationDiscordButton Text="{Binding DiscordButtonText}"
+                                                                               Command="{Binding CreatePostCommand}"
+                                                                               Height="30"/>
                                             <TextBlock Text="Commodity Sorting "
                                                        VerticalAlignment="Center" />
                                             <ComboBox ItemsSource="{Binding Source={StaticResource BuildSortingEnum}}"
@@ -1152,6 +1157,9 @@
 
                                         <StackPanel Grid.Column="2"
                                                     Orientation="Horizontal">
+                                            <buttons:ColonisationDiscordButton Text="{Binding DiscordButtonText}"
+                                                                               Command="{Binding CreatePostCommand}"
+                                                                               Height="30" />
                                             <TextBlock Text="Commodity Sorting "
                                                        VerticalAlignment="Center" />
                                             <ComboBox ItemsSource="{Binding Source={StaticResource BuildSortingEnum}}"
@@ -1514,6 +1522,40 @@
                                                                     </Style>
                                                                 </Image.Style>
                                                             </Image>
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                            <DataGridTemplateColumn Header="Economy"
+                                                                    SortMemberPath="Economy"
+                                                                    Width="100"
+                                                                    HeaderStyle="{StaticResource DataGridHeaderCenter}">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <Rectangle Width="10"
+                                                                       Height="10"
+                                                                       Margin="5,0"
+                                                                       HorizontalAlignment="Center"
+                                                                       VerticalAlignment="Center"
+                                                                       Style="{StaticResource AssetEconomyRectange}" />
+                                                            <TextBlock Text="{Binding Economy}"
+                                                                       Margin="0,0,5,0"
+                                                                       HorizontalAlignment="Center"
+                                                                       VerticalAlignment="Center"
+                                                                       FontSize="15">
+                                                                <TextBlock.Style>
+                                                                    <Style TargetType="{x:Type TextBlock}">
+                                                                        <Style.Triggers>
+                                                                            <DataTrigger Binding="{Binding Economy}"
+                                                                                         Value="{x:Static colonisationModel:AssetEconomy.None}">
+                                                                                <Setter Property="Visibility"
+                                                                                        Value="Collapsed" />
+                                                                            </DataTrigger>
+                                                                        </Style.Triggers>
+                                                                    </Style>
+                                                                </TextBlock.Style>
+                                                            </TextBlock>
                                                         </StackPanel>
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellTemplate>

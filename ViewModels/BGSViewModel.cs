@@ -40,6 +40,7 @@ namespace ODEliteTracker.ViewModels
 
             this.sharedDataStore.StoreLive += OnSharedDataLive;
             this.sharedDataStore.CurrentSystemChanged += OnCurrentSystemChanged;
+
             SetSelectedSystemCommand = new ODRelayCommand<BGSTickSystemVM>(OnSetSelectedSystem);
             AddNewTickCommand = new ODAsyncRelayCommand<Window?>(OnAddNewTick);
             DeletedTickCommand = new ODAsyncRelayCommand(OnDeleteTick, () => SelectedTick?.ManualTick == true);
@@ -47,6 +48,7 @@ namespace ODEliteTracker.ViewModels
             OpenInaraCommand = new ODRelayCommand(OnOpenInara);
             SetExcludedSystem = new ODRelayCommand<BGSTickSystemVM>(OnSetIgnored);
             OpenPopOut = new ODRelayCommand<Type>(OnOpenPopOut);
+            SetClipboardCommand = new ODRelayCommand<string>(CopyToClipboard);
 
             missionExpiryUpdateTimer = new Timer(OnUpdateExpiry, null, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
 
@@ -98,6 +100,7 @@ namespace ODEliteTracker.ViewModels
         public ICommand OpenInaraCommand { get; }
         public ICommand SetExcludedSystem { get; }
         public ICommand OpenPopOut { get; }
+        public ICommand SetClipboardCommand { get; }
 
         public bool HideSystemsWithoutBGSData
         {
@@ -462,6 +465,11 @@ namespace ODEliteTracker.ViewModels
         private void OnOpenPopOut(Type type)
         {
             popOutService.OpenPopOut(type, settings.SelectedCommanderID);
+        }
+
+        public void CopyToClipboard(string? value)
+        {
+            notification.SetClipboard(value);
         }
     }
 }

@@ -46,13 +46,11 @@ namespace ODEliteTracker.ViewModels.ModelViews
 
             if (e != null)
             {
-                var cargo = e.Select(x => new ShipCargoVM(x));
+                var cargo = string.IsNullOrEmpty(sorting) ?
+                    e.OrderBy(x => x.Name).Select(x => new ShipCargoVM(x)) :
+                    e.OrderByDescending(x => string.Equals(sorting, x.Name))
+                        .ThenByDescending(x => x.Count).Select(x => new ShipCargoVM(x));
 
-                if(string.IsNullOrEmpty(sorting) == false)
-                {
-                    cargo = cargo.OrderByDescending(x => string.Equals(sorting, x.Name))
-                        .ThenByDescending(x => x.Count);
-                }
                 if (cargo.Any())
                 {
                     ShipCargo.AddRange(cargo);

@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-using ODEliteTracker.Helpers;
+﻿using ODEliteTracker.Helpers;
 using ODEliteTracker.Models;
 using ODEliteTracker.Models.Colonisation;
 using ODEliteTracker.Models.Colonisation.Builds;
@@ -18,7 +17,6 @@ using ODMVVM.Extensions;
 using ODMVVM.Helpers;
 using ODMVVM.Services.MessageBox;
 using ODMVVM.ViewModels;
-using ODMVVM.Views.MessageBox;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows;
@@ -535,15 +533,21 @@ namespace ODEliteTracker.ViewModels
                     return;
                 }
 
-                var names = ColonisationBuildTotals.WishListBuilds.Select(x => x.BuildName);
-
-                if (DiscordPostCreator.CreateBuildPost(string.Join("\n", names), ColonisationBuildTotals.WishListItems, type))
+                
+                if (DiscordPostCreator.CreateBuildPost(GetWishListBuildNames(), ColonisationBuildTotals.WishListItems, type))
                 {
                     DiscordButtonText = "Post Created";
                     notification.ShowBasicNotification(new("Clipboard", ["Build Wishlist Post", "Copied To Clipboard"], Models.Settings.NotificationOptions.CopyToClipboard));
                     Task.Delay(4000).ContinueWith(e => { DiscordButtonText = "Create Post"; });
                 }
             }
+        }
+
+        private string GetWishListBuildNames()
+        {
+            var builds = ColonisationBuildTotals.WishListBuilds.Select(x => $"{x.BuildName} x{x.Count:N0}");
+
+            return string.Join("\n", builds);
         }
 
         private static void WriteToFile(string filename, Tuple<bool, string> tuple)

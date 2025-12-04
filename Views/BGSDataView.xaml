@@ -271,6 +271,16 @@
                                 <TextBlock Text="{Binding SelectedSystem.NonUpperName}"
                                            FontSize="35"
                                            Foreground="{StaticResource Header}" />
+                                <Button Style="{DynamicResource ClipboardBtn}"
+                                        Command="{Binding SetClipboardCommand}"
+                                        CommandParameter="{Binding SelectedSystem.NonUpperName}"
+                                        Visibility="{Binding SelectedSystem, Converter={StaticResource NullToVis}, ConverterParameter=Hidden}"
+                                        Margin="5,0"
+                                        Height="25"
+                                        Width="25">
+                                    <Image Source="/Assets/Icons/Clipboard.png"
+                                           Margin="3" />
+                                </Button>
                                 <Button Command="{Binding OpenInaraCommand}"
                                         Height="30"
                                         Margin="10,0"

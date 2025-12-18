@@ -26,7 +26,7 @@ namespace ODEliteTracker.Stores
         private DateTime nextCycle;
         private DateTime? lastActivity;
         private Dictionary<string, int> activities = [];
-
+        private bool inPowerplayCZ = false;
         private long currentSystemAddress;
         private bool odyssey;
         private int storedMerits;
@@ -47,6 +47,8 @@ namespace ODEliteTracker.Stores
                 { JournalTypeEnum.PowerplayDeliver,true },
                 { JournalTypeEnum.PowerplayRank,true },
                 { JournalTypeEnum.ShipTargeted,true },
+                { JournalTypeEnum.SupercruiseDestinationDrop, true },
+                { JournalTypeEnum.SupercruiseEntry, true },
                 { JournalTypeEnum.Bounty, true },
                 { JournalTypeEnum.FactionKillBond, true },
                 { JournalTypeEnum.MissionCompleted,true },
@@ -245,11 +247,26 @@ namespace ODEliteTracker.Stores
                     }
                     break;
                 case ShipTargetedEvent.ShipTargetedEventArgs shipTargeted:
+                    if (string.IsNullOrEmpty(shipTargeted.LegalStatus) && shipTargeted.LegalStatus == "Enemy")
+                    {
+                        SetActivity(cycle, "Enemy Kill", evt.TimeStamp);
+                        return;
+                    }
                     if (shipTargeted.ScanStage > 2)
                         SetActivity(cycle, "Ship Scans", evt.TimeStamp);
                     break;
+                case SupercruiseDestinationDropEvent.SupercruiseDestinationDropEventArgs destinationDropEvent:
+                    if (destinationDropEvent.Type.StartsWith("$Warzone_Powerplay"))
+                    {
+                        inPowerplayCZ = true;
+                        SetActivity(cycle, "Enemy CZ Kills", evt.TimeStamp);
+                    }
+                    break;
+                case SupercruiseEntryEvent.SupercruiseEntryEventArgs scEntry:
+                        ClearActivities(cycle);
+                    break;
                 case BountyEvent.BountyEventArgs bnty:
-                    SetActivity(cycle, "Bounties", evt.TimeStamp, bnty.Rewards.Count);
+                        SetActivity(cycle, "Bounties", evt.TimeStamp, bnty.Rewards.Count);
                     break;
                 case FactionKillBondEvent.FactionKillBondEventArgs factionKillBond:
                     if(string.Equals(factionKillBond.AwardingFaction, pledgeData?.Power))
@@ -397,6 +414,7 @@ namespace ODEliteTracker.Stores
 
         private void ClearActivities(DateTime cycle)
         {
+            inPowerplayCZ = false;
             if (storedMerits <= 0)
             {
                 activities.Clear();
@@ -441,6 +459,15 @@ namespace ODEliteTracker.Stores
                 return;
             }
 
+            if (inPowerplayCZ)
+            {
+                data.MeritList.Add(new("Enemy CZ Kills", value + storedMerits));
+                storedMerits = 0;
+                if (IsLive)
+                    MeritsEarned?.Invoke(this, value);
+                return;
+            }
+
             var other = activities.FirstOrDefault(x => x.Key != "Ship Scans" && x.Value > 0);
 
             if (other.Value == 0)
@@ -457,7 +484,6 @@ namespace ODEliteTracker.Stores
             {
                 activities.Remove(other.Key);
             }
-
             if (IsLive)
                 MeritsEarned?.Invoke(this, value);
 
@@ -467,6 +493,7 @@ namespace ODEliteTracker.Stores
         {
             IsLive = false;
             systems.Clear();
+            PledgeData = null;
         }
 
         public override void Dispose()

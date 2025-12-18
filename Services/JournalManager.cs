@@ -154,11 +154,11 @@ namespace ODEliteTracker.Services
             journalLogParserList.Remove(logProcesser);
         }
 
-        public async Task Initialise()
+        public async Task<bool> Initialise()
         {
             ManagerLive = false;
             Commanders = await oDDatabase.GetAllJournalCommanders();
-            await ReadSelectedCommander();
+            return await ReadSelectedCommander();
         }
 
         public async Task ChangeCommander()
@@ -259,12 +259,12 @@ namespace ODEliteTracker.Services
         }
         #endregion
 
-        public async Task ReadSelectedCommander()
+        public async Task<bool> ReadSelectedCommander()
         {
             SelectedCommander = Commanders.FirstOrDefault(cmdr => cmdr.Id == settingsStore.SelectedCommanderID)
                 ?? new(-1, string.Empty, string.Empty, string.Empty, false, false, -1);
 
-            await eventParser.StartWatchingAsync(SelectedCommander, false).ConfigureAwait(true);
+            return await eventParser.StartWatchingAsync(SelectedCommander, false).ConfigureAwait(true);
         }
 
         internal async Task<CAPIFleetCarrier?> GetCarrier()

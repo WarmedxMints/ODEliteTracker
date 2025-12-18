@@ -166,6 +166,24 @@ namespace ODEliteTracker.Extensions
                 var httpClient = clientFactory.CreateClient("OAuthService");
                 return new OAuthService(httpClient, appName);
             });
+
+            services.AddHttpClient<TickInformacerApiService>((httpClient) =>
+            {
+                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                httpClient.BaseAddress = new Uri("http://tick.infomancer.uk/");
+                httpClient.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue
+                {
+                    NoCache = true,
+                };
+            })
+            .ConfigurePrimaryHttpMessageHandler(() =>
+            {
+                return new SocketsHttpHandler
+                {
+                    PooledConnectionLifetime = TimeSpan.FromSeconds(5),
+                    ConnectTimeout = TimeSpan.FromSeconds(10),
+                };
+            });
         }
     }
 }

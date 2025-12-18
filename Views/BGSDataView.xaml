@@ -63,11 +63,16 @@
                                   HorizontalAlignment="Left"
                                   Grid.Row="1"
                                   Width="250"
-                                  Height="30">
-                            <ComboBox.ItemTemplate>
+                                  Height="30"
+                                  VirtualizingPanel.IsVirtualizing="True"
+                                  VirtualizingPanel.ScrollUnit="Pixel"
+                                  VirtualizingPanel.VirtualizationMode="Recycling">
+                            <ComboBox.ItemTemplate>                                
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding Time}"
-                                               Margin="10,0" />
+                                    <VirtualizingStackPanel>
+                                        <TextBlock Text="{Binding Time}"
+                                                   Margin="10,0" />
+                                    </VirtualizingStackPanel>
                                 </DataTemplate>
                             </ComboBox.ItemTemplate>
                         </ComboBox>
@@ -574,7 +579,7 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="150" />
                                 <ColumnDefinition />
-                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />

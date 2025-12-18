@@ -1,40 +1,59 @@
-﻿using ODEliteTracker.Database;
+﻿using NLog.LayoutRenderers;
+using ODEliteTracker.Database;
 using ODEliteTracker.Database.DTOs;
+using ODEliteTracker.Models.BGS;
 using ODEliteTracker.Services;
 using ODJournalDatabase.Database.Interfaces;
 
 namespace ODEliteTracker.Stores
 {
+    public enum TickSource
+    {
+        TichInformancer,
+        EliteBGS
+    }
+
     public sealed class TickDataStore
     {
-        public TickDataStore(IODDatabaseProvider databaseProvider, SettingsStore settings, EliteBGSApiService eliteBGS) 
+        public TickDataStore(IODDatabaseProvider databaseProvider, SettingsStore settings, EliteBGSApiService eliteBGS, TickInformacerApiService tickInformacerApi) 
         {
             this.databaseProvider = (ODEliteTrackerDatabaseProvider)databaseProvider;
             this.settings = settings;
             this.eliteBGS = eliteBGS;
+            this.tickInformacerApi = tickInformacerApi;
         }
 
         private List<BGSTickData> tickData = [];
         private readonly ODEliteTrackerDatabaseProvider databaseProvider;
         private readonly SettingsStore settings;
         private readonly EliteBGSApiService eliteBGS;
+        private readonly TickInformacerApiService tickInformacerApi;
 
         public List<BGSTickData> BGSTickData => tickData;
-
+        public TickSource TickSource { get; private set; } = TickSource.TichInformancer;
         public EventHandler? NewTick;
+
         public async Task Initialise()
         {
-            await CheckForNewTicks();
+            await CheckForNewTick(false);
         }
 
-        public void CheckForNewTick()
+        public async Task CheckForNewTick(bool fireEvent = true)
         {
-            _= Task.Factory.StartNew(async () => 
+            bool newTick = false;
+
+            switch (TickSource)
             {
-                var newTick = await CheckForNewTicks();
-                if(newTick)
-                    NewTick?.Invoke(this, EventArgs.Empty);
-            }).ConfigureAwait(false);
+                case TickSource.TichInformancer:
+                    newTick = await CheckForNewTickInformancer();
+                    break;
+                case TickSource.EliteBGS:
+                    newTick = await CheckForNewTicksEliteBGS();
+                    break;
+            }
+
+            if (newTick && fireEvent)
+                NewTick?.Invoke(this, EventArgs.Empty);
         }
 
         public async Task UpdateTickFromDatabase()
@@ -42,7 +61,25 @@ namespace ODEliteTracker.Stores
             tickData = await databaseProvider.GetTickData(settings.JournalAgeDateTime.AddDays(-7));
         }
 
-        private async Task<bool> CheckForNewTicks()
+        private async Task<bool> CheckForNewTickInformancer()
+        {
+            await UpdateTickFromDatabase();
+
+            var newDate = await tickInformacerApi.GetLastestTick();
+
+            var newTickData = new BGSTickData(newDate.Ticks.ToString(), newDate, DateTime.UtcNow);
+
+            if (tickData.Count == 0 || tickData[0].Time < newDate)
+            {
+                await databaseProvider.AddTickData([newTickData]);
+                tickData = await databaseProvider.GetTickData(settings.JournalAgeDateTime.AddDays(-7));
+                return true;
+            }
+
+            return false;
+        }
+
+        private async Task<bool> CheckForNewTicksEliteBGS()
         {
             var min = 0L;
 

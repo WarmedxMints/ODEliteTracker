@@ -75,8 +75,8 @@ namespace ODEliteTracker.Stores
         public EventHandler? OnNewTickDetected;
         internal event EventHandler<SettlementActivity>? SettlementActivityUpdated
         {
-            add { settlementActivity.ActivityUpdated  += value; }
-            remove { settlementActivity.ActivityUpdated -= value;}
+            add { settlementActivity.ActivityUpdated += value; }
+            remove { settlementActivity.ActivityUpdated -= value; }
         }
         #endregion
 
@@ -279,7 +279,7 @@ namespace ODEliteTracker.Stores
                     {
                         var mis = evtMissions.Count == 0 ? null : evtMissions.FirstOrDefault(x => x.MissionID == m.MissionID);
 
-                        if(mis == null)
+                        if (mis == null)
                         {
                             missions.Remove(m);
                         }
@@ -423,7 +423,7 @@ namespace ODEliteTracker.Stores
 
                     var name = shipTargetedData.PilotName_Localised ?? shipTargetedData.PilotName;
 
-                    if(shipTargets.ContainsKey(name))
+                    if (shipTargets.ContainsKey(name))
                     {
                         shipTargets[name] = shipTargetedData.Faction;
                         return;
@@ -475,7 +475,7 @@ namespace ODEliteTracker.Stores
 
         private string GetVictimFaction(CommitCrimeEvent.CommitCrimeEventArgs e)
         {
-            if(string.Equals(e.CrimeType, "onFoot_murder"))
+            if (string.Equals(e.CrimeType, "onFoot_murder"))
             {
                 return e.Faction;
             }
@@ -579,18 +579,19 @@ namespace ODEliteTracker.Stores
             bGSIgnoredSystems.Clear();
             if (systems.Count > 0)
             {
-         
-                foreach( var system in systems)
+
+                foreach (var system in systems)
                 {
                     bGSIgnoredSystems.Add(system);
                 }
             }
-            this.tickContainer.UpdateTickData(tickDataStore.BGSTickData);     
+            this.tickContainer.UpdateTickData(tickDataStore.BGSTickData);
         }
+
         public override void RunAfterParsingHistory()
         {
-            CheckForNewTick();
             base.RunAfterParsingHistory();
+            CheckForNewTick();
         }
 
         public override void ClearData()
@@ -662,7 +663,7 @@ namespace ODEliteTracker.Stores
             {
                 return;
             }
-            _ = Task.Factory.StartNew(tickDataStore.CheckForNewTick);
+            _ = Task.Factory.StartNew(() => tickDataStore.CheckForNewTick());
         }
 
         internal void AddIgnoredSystem(long address, string name, bool add)

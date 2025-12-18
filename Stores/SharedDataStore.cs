@@ -301,7 +301,7 @@ namespace ODEliteTracker.Stores
                         CurrentSystem.AddBody(body);
                     }
 
-                    if (location.Population == 0 || location.SystemFaction is null || location.Factions is null || location.Factions.Count == 0)
+                    if (location.SystemFaction is null || location.Factions is null || location.Factions.Count == 0)
                     {
                         SystemNotification(location.StarSystem,
                         [

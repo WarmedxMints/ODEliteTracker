@@ -339,13 +339,17 @@ namespace ODEliteTracker.ViewModels
             await tickDataStore.Initialise().ConfigureAwait(true);
             if (navigationService.CurrentView is LoadingViewModel loadingViewModel)
             {
-                await Task.Run(journalManager.Initialise).ConfigureAwait(true);
+                var started = await journalManager.Initialise().ConfigureAwait(true);
+
+                if (started == false)
+                {
+                    await Task.Delay(3000);
+                    navigationService.NavigateTo<SettingsViewModel>();
+                    UiEnabled = true;
+                }
+                return;
             }
-            //navigationService.NavigateTo(settings.CurrentViewModel);
-            //OnPropertyChanged(nameof(CurrentSystemName));
-            //OnPropertyChanged(nameof(CurrentBody_Station));
-            //OnPropertyChanged(nameof(CurrentShipName));
-            //UiEnabled = true;
+            UiEnabled = true;
         }
 
         public async Task ChangeCommander()

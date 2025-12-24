@@ -46,8 +46,7 @@ namespace ODEliteTracker.Notifications
                     };
                     break;
                 default:
-                case NotificationOptions.System:
-                    
+                case NotificationOptions.System:                    
                     ImageSource = "/Assets/Icons/orrery_map.png";
                     break;
 

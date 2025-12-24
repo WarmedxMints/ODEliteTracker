@@ -23,6 +23,7 @@
     <None Remove="Assets\Icons\compass.png" />
     <None Remove="Assets\Icons\Coriolis_sm.png" />
     <None Remove="Assets\Icons\Discord-Symbol-White.png" />
+    <None Remove="Assets\Icons\docking.png" />
     <None Remove="Assets\Icons\edassets_larger.png" />
     <None Remove="Assets\Icons\edsmlogo.png" />
     <None Remove="Assets\Icons\GitHub_Logo_White.png" />
@@ -130,6 +131,7 @@
     <Resource Include="Assets\Icons\compass.png" />
     <Resource Include="Assets\Icons\Coriolis_sm.png" />
     <Resource Include="Assets\Icons\Discord-Symbol-White.png" />
+    <Resource Include="Assets\Icons\docking.png" />
     <Resource Include="Assets\Icons\edassets_larger.png" />
     <Resource Include="Assets\Icons\edsmlogo.png" />
     <Resource Include="Assets\Icons\fleetcarrier.png" />

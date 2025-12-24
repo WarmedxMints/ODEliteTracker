@@ -1,8 +1,12 @@
-﻿using ODEliteTracker.Models.Settings;
+﻿using EliteJournalReader;
+using ODCapi.Models;
+using ODEliteTracker.Models.Settings;
 using ODEliteTracker.Notifications;
+using ODEliteTracker.Notifications.Docking;
 using ODEliteTracker.Notifications.ScanNotification;
 using ODEliteTracker.Notifications.Test;
 using ODEliteTracker.Stores;
+using ODEliteTracker.ViewModels.ModelViews.Shared;
 using System.Collections.Concurrent;
 using System.Windows;
 using ToastNotifications;
@@ -19,6 +23,7 @@ namespace ODEliteTracker.Services
         private MessageOptions messageOptions;
 
         private readonly ConcurrentDictionary<string, ShipScannedNotification> shipScanNotifications = [];
+        private DockingNotification? dockingNotification;
 
         private bool NotificationsEnabled => settingsStore.NotificationSettings.NotificationsEnabled;
 
@@ -95,6 +100,12 @@ namespace ODEliteTracker.Services
             if (notificationBase is ShipScannedNotification notification)
             {
                 _ = shipScanNotifications.TryRemove(notification.Message, out _);
+                return;
+            }
+
+            if (notificationBase is DockingNotification)
+            {
+                dockingNotification = null;
             }
         }
 
@@ -146,6 +157,24 @@ namespace ODEliteTracker.Services
                 var newNotification = new ShipScannedNotification(name, messageOptions, settingsStore.NotificationSettings, type, targetType, bounty, faction, power);
                 shipScanNotifications.TryAdd(name, newNotification);
                 notifier.Notify(() => newNotification);
+            });
+        }
+
+        internal void ShowDockingNotification(string header, DockingDeniedReason reason)
+        {
+            if (NotificationsEnabled == false || settingsStore.NotificationSettings.Options.HasFlag(NotificationOptions.Docking) == false)
+                return;
+
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                if (dockingNotification != null)
+                {
+                    dockingNotification.Update(reason);
+                    return;
+                }
+
+                dockingNotification = new DockingNotification(header, messageOptions, settingsStore.NotificationSettings, reason);         
+                notifier.Notify(() => dockingNotification);
             });
         }
 

@@ -436,6 +436,7 @@
                             <RowDefinition />
                             <RowDefinition />
                             <RowDefinition />
+                            <RowDefinition />
                         </Grid.RowDefinitions>
                         
                         <CheckBox Style="{DynamicResource EliteStyleCheckBox}"
@@ -537,6 +538,22 @@
                                    VerticalAlignment="Center"
                                    FontSize="16"
                                    Grid.Row="5"
+                                   Grid.Column="1" />
+
+                        <CheckBox Style="{DynamicResource EliteStyleCheckBox}"
+                                  Content="Docking Denied"
+                                  Grid.Row="6"
+                                  Margin="10"
+                                  VerticalAlignment="Center"
+                                  VerticalContentAlignment="Center"
+                                  Command="{Binding SetOptions}"
+                                  CommandParameter="{x:Static settings:NotificationOptions.Docking}"
+                                  IsChecked="{Binding NotificationSettings.Options, Converter={StaticResource EnumFlagConverter}, ConverterParameter={x:Static settings:NotificationOptions.Docking}, Mode=OneWay}" />
+                        <TextBlock Text="Notification when docking denied with reason"
+                                   Margin="10"
+                                   VerticalAlignment="Center"
+                                   FontSize="16"
+                                   Grid.Row="6"
                                    Grid.Column="1" />
                     </Grid>
                 </Grid>

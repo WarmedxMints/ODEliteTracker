@@ -203,6 +203,10 @@ namespace ODEliteTracker.ViewModels
             set => settings.ColonisationSettings.SelectedBuild = value;
         }
 
+        private long activeSelectedDepot = 0;
+        private long inactiveSelectedDepot = 0;
+        private long commanderSelectedSystem = 0;
+
         private int tabIndex;
         public int TabIndex
         {
@@ -210,6 +214,13 @@ namespace ODEliteTracker.ViewModels
             set
             {
                 tabIndex = value;
+                if (tabIndex == 0)
+                    SelectedDepot = Depots.FirstOrDefault(x => x.MarketID == activeSelectedDepot) ?? SelectedDepot;
+                if (tabIndex == 1)
+                    SelectedDepot = InactiveDepots.FirstOrDefault(x => x.MarketID == inactiveSelectedDepot) ?? SelectedDepot;
+                if (tabIndex == 2)
+                    SelectedDepot = CommanderSystems.FirstOrDefault(x => x.SystemAddress == commanderSelectedSystem)?.Depots.FirstOrDefault() ?? SelectedDepot;
+
                 OnPropertyChanged(nameof(TabIndex));
             }
         }
@@ -228,11 +239,11 @@ namespace ODEliteTracker.ViewModels
                     case 0:
                         if (selectedDepot == null)
                             return string.Empty;
-                        return $"Estimated Trips {Math.Ceiling((double)selectedDepot.Resources.Sum(x => x.RemainingCount) / capacity):N0} t";
+                        return $"Estimated Trips {Math.Ceiling((double)selectedDepot.Resources.Sum(x => x.RemainingCount) / capacity):N0}";
                     case 1:
                         if (ShoppingList == null || ShoppingList.Depots.Count == 0)
                             return string.Empty;
-                        return $"Estimated Trips {Math.Ceiling((double)ShoppingList.Resources.Sum(x => x.RemainingCount) / capacity):N0} t";
+                        return $"Estimated Trips {Math.Ceiling((double)ShoppingList.Resources.Sum(x => x.RemainingCount) / capacity):N0}";
                     default:
                         return string.Empty;
 
@@ -345,7 +356,13 @@ namespace ODEliteTracker.ViewModels
             set
             {
                 selectedDepot = value;
-
+                if (selectedDepot != null)
+                {
+                    if (tabIndex == 0)
+                        activeSelectedDepot = selectedDepot.MarketID;
+                    if (tabIndex == 1)
+                        inactiveSelectedDepot = selectedDepot.MarketID;
+                }
                 CheckMarket();
                 OnFcStoreLive(null, true);
                 OnPropertyChanged(nameof(SelectedDepot));
@@ -365,7 +382,7 @@ namespace ODEliteTracker.ViewModels
                                                                                      .Select(x => new MarketPurchaseVM(x, sharedData.CurrentSystem));
 
         private readonly ObservableCollection<CommanderSystemVM> commanderSystems = [];
-        public IEnumerable<CommanderSystemVM> CommanderSystems => commanderSystems.Where(x => x.Depots.Count > 0);
+        public IEnumerable<CommanderSystemVM> CommanderSystems => commanderSystems;
 
         private CommanderSystemVM? selectedCommanderSystem;
         public CommanderSystemVM? SelectedCommanderSystem
@@ -374,6 +391,11 @@ namespace ODEliteTracker.ViewModels
             set
             {
                 selectedCommanderSystem = value;
+                if (selectedCommanderSystem != null)
+                {
+                    commanderSelectedSystem = selectedCommanderSystem.SystemAddress;
+                    SelectedDepot = selectedCommanderSystem?.Depots.FirstOrDefault();
+                }
                 OnPropertyChanged(nameof(SelectedCommanderSystem));
             }
         }
@@ -703,12 +725,11 @@ namespace ODEliteTracker.ViewModels
                     {
                         depot.Inactive = true;
                     }
+
                     var newDepot = new ConstructionDepotVM(depot);
                     newDepot.UpdateMostRecentPurchase(sharedData.MarketPurchases);
                     Depots.AddItem(newDepot);
 
-                    if (depot.Inactive)
-                        continue;
                     var cmdrSystem = commanderSystems.FirstOrDefault(x => x.SystemAddress == newDepot.SystemAddress);
                     cmdrSystem?.Depots.AddItem(newDepot);
                 }
@@ -730,8 +751,9 @@ namespace ODEliteTracker.ViewModels
                     OnPropertyChanged(nameof(ShoppingListResources));
                 }
             }
-            SelectedDepot = Depots.Where(x => x.Inactive == false).LastOrDefault();
-            SelectedCommanderSystem = commanderSystems.LastOrDefault();
+            SelectedDepot = Depots.FirstOrDefault(x => x.MarketID == colonisationStore.LastDockedDepotID && x.Inactive == false) ?? Depots.Where(x => x.Inactive == false).LastOrDefault();
+            selectedCommanderSystem = commanderSystems.LastOrDefault();
+            OnPropertyChanged(nameof(SelectedCommanderSystem));
             ColonisationBuildTotals.SortLists(settings.ColonisationSettings.BuildTotalSorting);
             ColonisationBuildTotals.BuildItemList(SelectedBuild);
             OnModelLive(true);

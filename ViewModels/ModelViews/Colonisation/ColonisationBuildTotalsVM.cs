@@ -354,7 +354,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Colonisation
                 ColonisationBuild.MiningOutpost => SpaceInstalltion_Tier1.MiningOutpost,
                 ColonisationBuild.RelayStation => SpaceInstalltion_Tier1.RelayStation,
                 ColonisationBuild.MilitaryInstallation => SpaceInstalltion_Tier2.Military,
-                ColonisationBuild.SecurityStation => SpaceInstalltion_Tier2.Military,
+                ColonisationBuild.SecurityStation => SpaceInstalltion_Tier2.SecurityStation,
                 ColonisationBuild.GovernmentInstallation => SpaceInstalltion_Tier2.Government,
                 ColonisationBuild.MedicalInstallation => SpaceInstalltion_Tier2.Medical,
                 ColonisationBuild.ResearchStation => SpaceInstalltion_Tier2.ResearchStation,

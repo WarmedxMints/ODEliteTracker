@@ -17,6 +17,7 @@ using ODEliteTracker.ViewModels.ModelViews.Colonisation;
 using ODJournalDatabase.Database.Interfaces;
 using ODJournalDatabase.JournalManagement;
 using ODMVVM.Helpers;
+using System.Collections.ObjectModel;
 
 namespace ODEliteTracker.Stores
 {
@@ -51,6 +52,8 @@ namespace ODEliteTracker.Stores
         private Station? currentStation;
         private readonly Dictionary<ColonisationBuild, int> colonisationWishList = [];
         private int currentCommanderId = -1;
+        private readonly List<string> carrierNames = [];
+        private readonly Dictionary<ulong, string> carrierNamesByMarketID = [];
         #endregion
 
         #region Public Properties
@@ -65,6 +68,7 @@ namespace ODEliteTracker.Stores
                 { JournalTypeEnum.FSDJump, true},
                 { JournalTypeEnum.CarrierJump, true},
                 { JournalTypeEnum.Docked, true},
+                { JournalTypeEnum.DockingDenied, false },
                 { JournalTypeEnum.Undocked, true},
                 { JournalTypeEnum.ApproachBody, true},
                 { JournalTypeEnum.LeaveBody, true},
@@ -78,7 +82,8 @@ namespace ODEliteTracker.Stores
                 { JournalTypeEnum.MarketSell, true},
                 { JournalTypeEnum.Scan, true},
                 { JournalTypeEnum.SupercruiseEntry, true},
-                { JournalTypeEnum.Died, true }
+                { JournalTypeEnum.Died, true },
+                { JournalTypeEnum.FSSSignalDiscovered, true }
             };
         }
         public Dictionary<string, FactionData> Factions => factions;
@@ -232,6 +237,14 @@ namespace ODEliteTracker.Stores
                     //var capimarket = ((JournalManager)journalManager).GetCAPIMarket().Result;
                     var stationName = docked.StationName_Localised ?? docked.StationName;
                     stationName = stationName.Replace("$EXT_PANEL_ColonisationShip;", "Colonisation Ship -");
+
+                   
+                    if(docked.StationType == "FleetCarrier" && carrierNames.Any(x => x.Contains(stationName)))
+                    {
+                        stationName = carrierNames.First(x => x.Contains(stationName));
+
+                        carrierNamesByMarketID.TryAdd(docked.MarketID, stationName);
+                    }
                     var stationFaction = docked.StationFaction.Name;
 
                     if (stationFaction.Equals("FleetCarrier", StringComparison.OrdinalIgnoreCase))
@@ -249,6 +262,9 @@ namespace ODEliteTracker.Stores
                         NotificationOptions.Station);
 
                     notificationService.ShowBasicNotification(args);
+                    break;
+                case DockingDeniedEvent.DockingDeniedEventArgs dockingDenied:
+                    notificationService.ShowDockingNotification("Docking Denied", dockingDenied.Reason);
                     break;
                 case FSDJumpEvent.FSDJumpEventArgs fsdJump:
                     CurrentBody = null;
@@ -405,6 +421,10 @@ namespace ODEliteTracker.Stores
 
                     if (market != null)
                     {
+                        if (carrierNamesByMarketID.TryGetValue(market.MarketID, out string? name) && string.IsNullOrEmpty(name) == false)
+                        {
+                            market.StationName = name;
+                        }
                         CurrentMarket = new(market);
                         MarketEvent?.Invoke(this, CurrentMarket);
 
@@ -486,6 +506,12 @@ namespace ODEliteTracker.Stores
                     break;
                 case DiedEvent.DiedEventArgs died:
                     bountiesManager.Reset();
+                    break;
+                case FSSSignalDiscoveredEvent.FSSSignalDiscoveredEventArgs fss:
+                    if (fss.IsStation == true && fss.SignalType == "FleetCarrier" && carrierNames.Contains(fss.SignalName) == false)
+                    {
+                        carrierNames.Add(fss.SignalName);
+                    }
                     break;
             }
         }

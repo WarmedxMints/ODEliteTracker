@@ -38,6 +38,7 @@ namespace ODEliteTracker.Stores
         public HashSet<Tuple<long, long>> ShoppingList => shoppingListDepots;
         public IEnumerable<CommanderSystem> CommanderSystems => commanderSystems.Values.OrderBy(x => x.SystemName);
         public Dictionary<string, long> ConstructionTotals => constructionTotals;
+        public long LastDockedDepotID { get; private set; }
         public override Dictionary<JournalTypeEnum, bool> EventsToParse
         {
             get => new()
@@ -142,6 +143,8 @@ namespace ODEliteTracker.Stores
                 case ColonisationConstructionDepotEvent.ColonisationConstructionDepotEventArgs depot:
                     if (currentSystem == null)
                         break;
+
+                    LastDockedDepotID = depot.MarketID;
                     var key = Tuple.Create(depot.MarketID, CurrentSystemAddress);
                     if (depots.TryGetValue(key, out ConstructionDepot? value) && value.Update(depot, currentSystem, CurrentStationName))
                     {

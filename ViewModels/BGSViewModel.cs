@@ -43,7 +43,7 @@ namespace ODEliteTracker.ViewModels
 
             SetSelectedSystemCommand = new ODRelayCommand<BGSTickSystemVM>(OnSetSelectedSystem);
             AddNewTickCommand = new ODAsyncRelayCommand<Window?>(OnAddNewTick);
-            DeletedTickCommand = new ODAsyncRelayCommand(OnDeleteTick, () => SelectedTick?.ManualTick == true);
+            DeletedTickCommand = new ODAsyncRelayCommand(OnDeleteTick/*, () => SelectedTick?.ManualTick == true*/);
             CreateDiscordPostCommand = new ODRelayCommand(OnCreateDiscordPost);
             OpenInaraCommand = new ODRelayCommand(OnOpenInara);
             SetExcludedSystem = new ODRelayCommand<BGSTickSystemVM>(OnSetIgnored);

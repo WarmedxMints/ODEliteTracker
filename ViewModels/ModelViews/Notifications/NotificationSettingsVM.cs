@@ -8,7 +8,8 @@ namespace ODEliteTracker.ViewModels.ModelViews.Notifications
     public class NotificationSettingsVM(NotificationSettings settings) : ODObservableObject
     {
         private readonly NotificationSettings settings = settings;
-         
+        private readonly NotificationSettings defaults = NotificationSettings.GetDefault();
+
         private int displayTime = settings.DisplayTime;
         public int DisplayTime 
         { 
@@ -18,6 +19,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Notifications
                 displayTime = value;
                 OnPropertyChanged(nameof(DisplayTime));
                 OnPropertyChanged(nameof(Modified));
+                OnPropertyChanged(nameof(Default));
             }
         }
 
@@ -30,6 +32,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Notifications
                 displayRegion = value;
                 OnPropertyChanged(nameof(DisplayRegion));
                 OnPropertyChanged(nameof(Modified));
+                OnPropertyChanged(nameof(Default));
             }
         }
 
@@ -42,6 +45,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Notifications
                 size = value;
                 OnPropertyChanged(nameof(Size));
                 OnPropertyChanged(nameof(Modified));
+                OnPropertyChanged(nameof(Default));
             }
         }
 
@@ -54,6 +58,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Notifications
                 placement = value;
                 OnPropertyChanged(nameof(Placement));
                 OnPropertyChanged(nameof(Modified));
+                OnPropertyChanged(nameof(Default));
             }
         }
 
@@ -66,6 +71,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Notifications
                 options = value;
                 OnPropertyChanged(nameof(Options));
                 OnPropertyChanged(nameof(Modified));
+                OnPropertyChanged(nameof(Default));
             }
         }
 
@@ -78,6 +84,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Notifications
                 maxNotificationCount = value;
                 OnPropertyChanged(nameof(MaxNotificationCount));
                 OnPropertyChanged(nameof(Modified));
+                OnPropertyChanged(nameof(Default));
             }
         }
 
@@ -90,6 +97,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Notifications
                 xOffset = value;
                 OnPropertyChanged(nameof(XOffset));
                 OnPropertyChanged(nameof(Modified));
+                OnPropertyChanged(nameof(Default));
             }
         }
 
@@ -102,6 +110,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Notifications
                 yOffset = value;
                 OnPropertyChanged(nameof(YOffset));
                 OnPropertyChanged(nameof(Modified));
+                OnPropertyChanged(nameof(Default));
             }
         }
 
@@ -114,6 +123,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Notifications
                 notificationsEnabled = value;
                 OnPropertyChanged(nameof(NotificationsEnabled));
                 OnPropertyChanged(nameof(Modified));
+                OnPropertyChanged(nameof(Default));
             }
         }
 
@@ -126,24 +136,18 @@ namespace ODEliteTracker.ViewModels.ModelViews.Notifications
                 currentTheme = value;
                 OnPropertyChanged(nameof(CurrentTheme));
                 OnPropertyChanged(nameof(Modified));
+                OnPropertyChanged(nameof(Default));
             }
         }
             
-        public bool Modified
+        public bool Modified 
         {
-            get
-            {
-                return DisplayTime != settings.DisplayTime
-                    || DisplayRegion != settings.DisplayRegion
-                    || Options != settings.Options
-                    || Size != settings.Size
-                    || MaxNotificationCount != settings.MaxNotificationCount
-                    || XOffset != settings.XOffset
-                    || YOffset != settings.YOffset
-                    || Placement != settings.Placement
-                    || NotificationsEnabled != settings.NotificationsEnabled
-                    || CurrentTheme != settings.CurrentTheme;
-            }
+            get => Changed(settings);
+        }
+
+        public bool Default
+        {
+            get => !Changed(defaults);
         }
 
         public NotificationSettings ToSettings()
@@ -175,6 +179,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Notifications
             settings.NotificationsEnabled = notificationsEnabled;
             settings.CurrentTheme = currentTheme;
             OnPropertyChanged(nameof(Modified));
+            OnPropertyChanged(nameof(Default));
         }
 
         internal void SetDefault()
@@ -191,6 +196,22 @@ namespace ODEliteTracker.ViewModels.ModelViews.Notifications
             NotificationsEnabled = defaults.NotificationsEnabled;
             CurrentTheme = defaults.CurrentTheme;
             Options = defaults.Options;
+            OnPropertyChanged(nameof(Modified));
+            OnPropertyChanged(nameof(Default));
+        }
+
+        private bool Changed(NotificationSettings settings)
+        {
+            return DisplayTime != settings.DisplayTime
+                    || DisplayRegion != settings.DisplayRegion
+                    || Options != settings.Options
+                    || Size != settings.Size
+                    || MaxNotificationCount != settings.MaxNotificationCount
+                    || XOffset != settings.XOffset
+                    || YOffset != settings.YOffset
+                    || Placement != settings.Placement
+                    || NotificationsEnabled != settings.NotificationsEnabled
+                    || CurrentTheme != settings.CurrentTheme;
         }
     }
 }

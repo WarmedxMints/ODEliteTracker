@@ -25,7 +25,7 @@ namespace ODEliteTracker.ViewModels
             ChangeNotificationPos = new ODRelayCommand<Corner>(OnChangePos, (pos) => pos != NotificationSettings.DisplayRegion);
             ChangeNotificationPlacement = new ODRelayCommand<NotificationPlacement>(OnChangePosition);
             TestNotificationCommand = new ODRelayCommand(OnTestNotification);
-            SetNotificationDefaults = new ODRelayCommand(OnSetNotificationDefaults, (_) => NotificationSettings.Modified);
+            SetNotificationDefaults = new ODRelayCommand(OnSetNotificationDefaults, (_) => !NotificationSettings.Default);
             SaveSettings = new ODRelayCommand(OnSaveSettings, (_) => NotificationSettings.Modified);
             SetTheme = new ODRelayCommand<NotificationTheme>(OnSetTheme);
             SetOptions = new ODRelayCommand<NotificationOptions>(OnSetOptions);

@@ -69,9 +69,10 @@ namespace ODEliteTracker.Stores
 
             var newTickData = new BGSTickData(newDate.Ticks.ToString(), newDate, DateTime.UtcNow);
 
-            if (tickData.Count == 0 || tickData[0].Time < newDate)
+            var newTick = await databaseProvider.TryAddTick(newTickData);
+
+            if (newTick)
             {
-                await databaseProvider.AddTickData([newTickData]);
                 tickData = await databaseProvider.GetTickData(settings.JournalAgeDateTime.AddDays(-7));
                 return true;
             }

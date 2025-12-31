@@ -488,6 +488,22 @@ namespace ODEliteTracker.Database
         #endregion
 
         #region TickData
+        public async Task<bool> TryAddTick(BGSTickData data)
+        {
+            using var context = _contextFactory.CreateDbContext();
+
+            var known = await context.TickData.FirstOrDefaultAsync(x => string.Equals(x.Id, data.Id));
+
+            if (known != null)
+            {
+                return false;
+            }
+
+            context.TickData.Add(data);
+            await context.SaveChangesAsync();
+            return true;
+        }
+
         public async Task AddTickData(IEnumerable<BGSTickData> data)
         {
             using var context = _contextFactory.CreateDbContext();
@@ -502,7 +518,7 @@ namespace ODEliteTracker.Database
         {
             using var context = _contextFactory.CreateDbContext();
 
-            return await context.TickData.Where(x => x.Time >= maxAge)
+            return await context.TickData.Where(x => x.Time >= maxAge && x.Hidden == false)
                                          .OrderByDescending(x => x.Time)
                                          .ToListAsync();
         }
@@ -515,6 +531,13 @@ namespace ODEliteTracker.Database
 
             if (data is null)
                 return;
+
+            if (data.ManualTick == false)
+            {
+                data.Hidden = true;
+                await context.SaveChangesAsync();
+                return;
+            }
 
             context.TickData.Remove(data);
             await context.SaveChangesAsync();

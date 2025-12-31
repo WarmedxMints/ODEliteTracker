@@ -52,7 +52,7 @@ namespace ODEliteTracker.Stores
         private Station? currentStation;
         private readonly Dictionary<ColonisationBuild, int> colonisationWishList = [];
         private int currentCommanderId = -1;
-        private readonly List<string> carrierNames = [];
+        private readonly Dictionary<string, string> carrierNames = [];
         private readonly Dictionary<ulong, string> carrierNamesByMarketID = [];
         #endregion
 
@@ -227,24 +227,25 @@ namespace ODEliteTracker.Stores
                     break;
                 case DockedEvent.DockedEventArgs docked:
                     CurrentMarketID = docked.MarketID;
-                    UpdateCurrentBody_Station(string.IsNullOrEmpty(docked.StationName_Localised) ? docked.StationName : docked.StationName_Localised);
+
+                    var stationName = docked.StationName_Localised ?? docked.StationName;
+                    stationName = stationName.Replace("$EXT_PANEL_ColonisationShip;", "Colonisation Ship -");
+
+                    if (docked.StationType == "FleetCarrier" && carrierNames.TryGetValue(stationName, out var name))
+                    {
+                        stationName = name;
+
+                        carrierNamesByMarketID.TryAdd(docked.MarketID, stationName);
+                    }
+
+                    UpdateCurrentBody_Station(stationName);
+
                     if (CurrentSystem != null)
                         currentStation = new(docked, new(CurrentSystem), CurrentSystem);
 
                     if (IsLive == false)
                         break;
-
-                    //var capimarket = ((JournalManager)journalManager).GetCAPIMarket().Result;
-                    var stationName = docked.StationName_Localised ?? docked.StationName;
-                    stationName = stationName.Replace("$EXT_PANEL_ColonisationShip;", "Colonisation Ship -");
-
-                   
-                    if(docked.StationType == "FleetCarrier" && carrierNames.Any(x => x.Contains(stationName)))
-                    {
-                        stationName = carrierNames.First(x => x.Contains(stationName));
-
-                        carrierNamesByMarketID.TryAdd(docked.MarketID, stationName);
-                    }
+                                        
                     var stationFaction = docked.StationFaction.Name;
 
                     if (stationFaction.Equals("FleetCarrier", StringComparison.OrdinalIgnoreCase))
@@ -421,9 +422,9 @@ namespace ODEliteTracker.Stores
 
                     if (market != null)
                     {
-                        if (carrierNamesByMarketID.TryGetValue(market.MarketID, out string? name) && string.IsNullOrEmpty(name) == false)
+                        if (carrierNamesByMarketID.TryGetValue(market.MarketID, out string? carrierName) && string.IsNullOrEmpty(carrierName) == false)
                         {
-                            market.StationName = name;
+                            market.StationName = carrierName;
                         }
                         CurrentMarket = new(market);
                         MarketEvent?.Invoke(this, CurrentMarket);
@@ -508,9 +509,17 @@ namespace ODEliteTracker.Stores
                     bountiesManager.Reset();
                     break;
                 case FSSSignalDiscoveredEvent.FSSSignalDiscoveredEventArgs fss:
-                    if (fss.IsStation == true && fss.SignalType == "FleetCarrier" && carrierNames.Contains(fss.SignalName) == false)
+                    if (fss.IsStation == true && string.Equals(fss.SignalType, "FleetCarrier", StringComparison.OrdinalIgnoreCase) && string.IsNullOrEmpty(fss.SignalName) == false)
                     {
-                        carrierNames.Add(fss.SignalName);
+                        var id = fss.SignalName.Split(' ').Last();
+
+                        if (carrierNames.ContainsKey(id))
+                        {
+                            carrierNames[id] = fss.SignalName;
+                            break;
+                        }
+
+                        _ = carrierNames.TryAdd(id, fss.SignalName);
                     }
                     break;
             }

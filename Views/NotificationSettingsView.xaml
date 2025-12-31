@@ -10,6 +10,7 @@
              xmlns:viewmodels="clr-namespace:ODEliteTracker.ViewModels"
              xmlns:wpfconverters="clr-namespace:ODEliteTracker.WPFConverters"
              xmlns:themes="clr-namespace:ODEliteTracker.Notifications.Themes"
+             xmlns:odControls="clr-namespace:ODMVVM.Controls;assembly=ODMVVM"
              d:DataContext="{d:DesignInstance {x:Type viewmodels:NotificationSettingsViewModel}}"
              mc:Ignorable="d"
              d:DesignHeight="450"
@@ -249,24 +250,41 @@
                            VerticalAlignment="Center"
                            Grid.Row="6" />
 
-                <slider:SliderWithValue Minimum="0"
+                <odControls:NumberInputBox InputText="{Binding NotificationSettings.XOffset, Mode=TwoWay}"
+                                           ValidValue="True"
+                                           Margin="25,10"
+                                           Grid.Row="6"
+                                           Width="70"
+                                           TextAlignment="Right"
+                                           HorizontalAlignment="Left"
+                                           Grid.Column="1" />
+                <!--<slider:SliderWithValue Minimum="0"
                                         Maximum="500"
                                         Margin="10"
                                         Grid.Row="6"
                                         Grid.Column="1"
-                                        Value="{Binding NotificationSettings.XOffset}" />
+                                        Value="{Binding NotificationSettings.XOffset}" />-->
 
                 <TextBlock Text="Y Offset (Pixels)"
                            Margin="0,10"
                            VerticalAlignment="Center"
                            Grid.Row="7" />
 
-                <slider:SliderWithValue Minimum="0"
+                <odControls:NumberInputBox InputText="{Binding NotificationSettings.YOffset, Mode=TwoWay}"
+                                           ValidValue="True"
+                                           Margin="25,10"
+                                           Grid.Row="7"
+                                           Width="70"
+                                           TextAlignment="Right"
+                                           HorizontalAlignment="Left"
+                                           Grid.Column="1" />
+                
+                <!--<slider:SliderWithValue Minimum="0"
                                         Maximum="500"
                                         Margin="10"
                                         Grid.Row="7"
                                         Grid.Column="1"
-                                        Value="{Binding NotificationSettings.YOffset}" />
+                                        Value="{Binding NotificationSettings.YOffset}" />-->
             </Grid>
         </Border>
 

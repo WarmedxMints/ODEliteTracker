@@ -597,10 +597,7 @@
                                            Margin="5,0" />
                             </Grid>
                         </Border>
-                    </Grid>
-
-
-         
+                    </Grid>         
                 </Grid>
             </TabItem>
             <TabItem Header="Completed Missions">

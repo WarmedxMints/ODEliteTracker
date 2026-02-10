@@ -455,6 +455,7 @@
                             <RowDefinition />
                             <RowDefinition />
                             <RowDefinition />
+                            <RowDefinition />
                         </Grid.RowDefinitions>
                         
                         <CheckBox Style="{DynamicResource EliteStyleCheckBox}"
@@ -572,6 +573,22 @@
                                    VerticalAlignment="Center"
                                    FontSize="16"
                                    Grid.Row="6"
+                                   Grid.Column="1" />
+
+                        <CheckBox Style="{DynamicResource EliteStyleCheckBox}"
+                                  Content="Commit Crime"
+                                  Grid.Row="7"
+                                  Margin="10"
+                                  VerticalAlignment="Center"
+                                  VerticalContentAlignment="Center"
+                                  Command="{Binding SetOptions}"
+                                  CommandParameter="{x:Static settings:NotificationOptions.Crime}"
+                                  IsChecked="{Binding NotificationSettings.Options, Converter={StaticResource EnumFlagConverter}, ConverterParameter={x:Static settings:NotificationOptions.Crime}, Mode=OneWay}" />
+                        <TextBlock Text="Notification when fine/bounty issued for illegal activities"
+                                   Margin="10"
+                                   VerticalAlignment="Center"
+                                   FontSize="16"
+                                   Grid.Row="7"
                                    Grid.Column="1" />
                     </Grid>
                 </Grid>

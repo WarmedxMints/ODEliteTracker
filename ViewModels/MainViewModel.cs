@@ -11,6 +11,7 @@ using ODMVVM.Navigation;
 using ODMVVM.Navigation.Controls;
 using ODMVVM.ViewModels;
 using System.Collections.ObjectModel;
+using System.Web;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
@@ -253,7 +254,7 @@ namespace ODEliteTracker.ViewModels
                 switch (settings.StatusBarSettings.StationBodyPreference)
                 {
                     case Models.SystemWebSite.Inara:
-                        ODMVVM.Helpers.OperatingSystem.OpenUrl($"https://inara.cz/station/?search={sharedData.CurrentBody_Station.Replace(' ', '+')} [{sharedData.CurrentSystem.Name.Replace(' ', '+')}]");
+                        ODMVVM.Helpers.OperatingSystem.OpenInaraStation(sharedData.CurrentBody_Station, sharedData.CurrentSystem.Name);
                         break;
                     case Models.SystemWebSite.Spansh:
                         ODMVVM.Helpers.OperatingSystem.OpenUrl($"https://spansh.co.uk/station/{sharedData.CurrentMarketID}");
@@ -284,10 +285,10 @@ namespace ODEliteTracker.ViewModels
             switch (settings.StatusBarSettings.SystemSitePreference)
             {
                 case Models.SystemWebSite.Inara:
-                    ODMVVM.Helpers.OperatingSystem.OpenUrl($"https://inara.cz/galaxy-starsystem/?search={sharedData.CurrentSystem.Name.Replace(' ', '+')}");
+                    ODMVVM.Helpers.OperatingSystem.OpenInaraSystem(sharedData.CurrentSystem.Name);
                     break;
                 case Models.SystemWebSite.Spansh:
-                    ODMVVM.Helpers.OperatingSystem.OpenUrl($"https://spansh.co.uk/system/{sharedData.CurrentSystem.Address}");
+                    ODMVVM.Helpers.OperatingSystem.OpenSpanshSystem(sharedData.CurrentSystem.Address);
                     break;
             }            
         }
@@ -393,7 +394,6 @@ namespace ODEliteTracker.ViewModels
                     OnPropertyChanged(nameof(CurrentShipName));
                 }, DispatcherPriority.DataBind);
             }
-
         }
 
         private void OnCommandersUpdated(object? sender, EventArgs e)

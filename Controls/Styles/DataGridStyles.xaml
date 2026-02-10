@@ -292,7 +292,7 @@
         <Setter Property="Margin"
                 Value="0,0,5,0" />
     </Style>
-
+    
     <Style x:Key="DataGridElementRightMarginVertTop"
            TargetType="{x:Type TextBlock}">
         <Setter Property="HorizontalAlignment"
@@ -829,7 +829,7 @@
             </DataTrigger>
         </Style.Triggers>
     </Style>
-
+    
     <Style TargetType="{x:Type DataGridRow}"
            x:Key="SpanshRowStyle">
         <Setter Property="BorderThickness"

@@ -7,6 +7,7 @@
                     xmlns:views="clr-namespace:ODMVVM.Views;assembly=ODMVVM"
                     mc:Ignorable="d"
                     WindowStyle="None"
+                    ShowActivated="False"
                     FontFamily="{StaticResource Eurostile}"
                     AllowsTransparency="True"
                     Background="Transparent"
@@ -17,7 +18,8 @@
         <DropShadowEffect x:Key="shadow"
                           Opacity="1"
                           BlurRadius="500"
-                          Color="#FFBE6A1D" />
+                          Color="#FFBE6A1D"
+                          RenderingBias="Quality" />
     </Window.Resources>
     <Grid HorizontalAlignment="Center"
           VerticalAlignment="Center">

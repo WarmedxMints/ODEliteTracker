@@ -11,6 +11,7 @@
              xmlns:sliders="clr-namespace:ODEliteTracker.Controls.Sliders"
              d:DataContext="{d:DesignInstance viewmodels:FleetCarrierViewModel}"
              mc:Ignorable="d"
+             x:Name="Root"
              d:DesignHeight="450"
              d:DesignWidth="800">
     <UserControl.Resources>
@@ -47,7 +48,7 @@
                     CornerRadius="5"
                     Margin="5"
                     Padding="5">
-                <Grid Margin="5">
+                <Grid Margin="5" DataContext="{Binding CarrierData}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
@@ -59,19 +60,19 @@
                                FontSize="22"
                                Foreground="{DynamicResource Header}" />
 
-                    <TextBlock Text="{Binding CarrierData.Name}"
+                    <TextBlock Text="{Binding Name}"
                                Margin="5"
                                Grid.Row="1" />
 
-                    <TextBlock Text="{Binding CarrierData.Callsign}"
+                    <TextBlock Text="{Binding Callsign}"
                                Margin="5"
                                Grid.Row="2" />
 
-                    <Button Content="{Binding CarrierData.StarSystem}"
+                    <Button Content="{Binding StarSystem}"
                             Style="{DynamicResource StatusBarBtn}"
-                            Command="{Binding CopyToClipboard}"
+                            Command="{Binding ElementName=Root, Path=DataContext.CopyToClipboard}"
                             HorizontalAlignment="Left"
-                            CommandParameter="{Binding CarrierData.StarSystem}"
+                            CommandParameter="{Binding StarSystem}"
                             Margin="5"
                             Grid.Row="3" />
 
@@ -87,7 +88,7 @@
 
                         <TextBlock Text="Fuel"
                                    Margin="5" />
-                        <TextBlock Text="{Binding CarrierData.Fuel}"
+                        <TextBlock Text="{Binding Fuel}"
                                    Margin="5"
                                    Grid.Row="0"
                                    Grid.Column="1" />
@@ -95,7 +96,7 @@
                         <TextBlock Text="Balance"
                                    Margin="5"
                                    Grid.Row="1" />
-                        <TextBlock Text="{Binding CarrierData.Balance, StringFormat={}{0:N0}}"
+                        <TextBlock Text="{Binding Balance, StringFormat={}{0:N0}}"
                                    Margin="5"
                                    Grid.Row="1"
                                    Grid.Column="1" />
@@ -107,6 +108,7 @@
                     Grid.Row="1"
                     CornerRadius="5"
                     Margin="5"
+                    DataContext="{Binding CarrierData}"
                     Padding="5">
                 <Grid Margin="5">
                     <Grid.RowDefinitions>
@@ -128,7 +130,7 @@
                                Margin="5"
                                Grid.Column="0"
                                Grid.Row="1" />
-                    <TextBlock Text="{Binding CarrierData.Destination}"
+                    <TextBlock Text="{Binding Destination}"
                                Margin="5"
                                Grid.Column="1"
                                Grid.Row="1" />
@@ -138,12 +140,12 @@
                                Margin="5"
                                Grid.Column="0"
                                Grid.Row="2" />
-                    <TextBlock Text="{Binding CarrierData.DestinationBody}"
+                    <TextBlock Text="{Binding DestinationBody}"
                                Margin="5"
                                Grid.Column="1"
                                Grid.Row="2" />
 
-                    <TextBlock Text="{Binding CarrierData.DepartTime}"
+                    <TextBlock Text="{Binding DepartTime}"
                                Margin="5"
                                Grid.ColumnSpan="2"
                                Grid.Row="3" />
@@ -154,6 +156,7 @@
                     Grid.Row="2"
                     CornerRadius="5"
                     Margin="5"
+                    DataContext="{Binding CarrierData}"
                     Padding="5">
                 <Grid Margin="5">
                     <Grid.ColumnDefinitions>
@@ -180,7 +183,7 @@
                     <TextBlock Text="Rearm"
                                Margin="5"
                                Grid.Row="1" />
-                    <TextBlock Text="{Binding CarrierData.Rearm}"
+                    <TextBlock Text="{Binding Rearm}"
                                Margin="5"
                                Grid.Column="1"
                                Grid.Row="1" />
@@ -188,7 +191,7 @@
                     <TextBlock Text="Refuel"
                                Margin="5"
                                Grid.Row="2" />
-                    <TextBlock Text="{Binding CarrierData.Refuel}"
+                    <TextBlock Text="{Binding Refuel}"
                                Margin="5"
                                Grid.Column="1"
                                Grid.Row="2" />
@@ -196,7 +199,7 @@
                     <TextBlock Text="Repair"
                                Margin="5"
                                Grid.Row="3" />
-                    <TextBlock Text="{Binding CarrierData.Repair}"
+                    <TextBlock Text="{Binding Repair}"
                                Margin="5"
                                Grid.Column="1"
                                Grid.Row="3" />
@@ -204,7 +207,7 @@
                     <TextBlock Text="Shipyard"
                                Margin="5"
                                Grid.Row="4" />
-                    <TextBlock Text="{Binding CarrierData.Shipyard}"
+                    <TextBlock Text="{Binding Shipyard}"
                                Margin="5"
                                Grid.Column="1"
                                Grid.Row="4" />
@@ -212,7 +215,7 @@
                     <TextBlock Text="Outfitting"
                                Margin="5"
                                Grid.Row="5" />
-                    <TextBlock Text="{Binding CarrierData.Outfitting}"
+                    <TextBlock Text="{Binding Outfitting}"
                                Margin="5"
                                Grid.Column="1"
                                Grid.Row="5" />
@@ -220,7 +223,7 @@
                     <TextBlock Text="Black Market"
                                Margin="5"
                                Grid.Row="6" />
-                    <TextBlock Text="{Binding CarrierData.BlackMarket}"
+                    <TextBlock Text="{Binding BlackMarket}"
                                Margin="5"
                                Grid.Column="1"
                                Grid.Row="6" />
@@ -228,7 +231,7 @@
                     <TextBlock Text="Redemption Office"
                                Margin="5"
                                Grid.Row="7" />
-                    <TextBlock Text="{Binding CarrierData.VoucherRedemption}"
+                    <TextBlock Text="{Binding VoucherRedemption}"
                                Margin="5"
                                Grid.Column="1"
                                Grid.Row="7" />
@@ -236,7 +239,7 @@
                     <TextBlock Text="Pioneer Supplies"
                                Margin="5"
                                Grid.Row="8" />
-                    <TextBlock Text="{Binding CarrierData.PioneerSupplies}"
+                    <TextBlock Text="{Binding PioneerSupplies}"
                                Margin="5"
                                Grid.Column="1"
                                Grid.Row="8" />
@@ -244,7 +247,7 @@
                     <TextBlock Text="Bartender"
                                Margin="5"
                                Grid.Row="9" />
-                    <TextBlock Text="{Binding CarrierData.Bartender}"
+                    <TextBlock Text="{Binding Bartender}"
                                Margin="5"
                                Grid.Column="1"
                                Grid.Row="9" />
@@ -252,7 +255,7 @@
                     <TextBlock Text="Vista Genomics"
                                Margin="5"
                                Grid.Row="10" />
-                    <TextBlock Text="{Binding CarrierData.Vista}"
+                    <TextBlock Text="{Binding Vista}"
                                Margin="5"
                                Grid.Column="1"
                                Grid.Row="10" />
@@ -440,6 +443,7 @@
             <Border Background="{DynamicResource CardBackground}"
                     CornerRadius="5"
                     Grid.Column="2"
+                    DataContext="{Binding SquadCarrierData}"
                     Margin="5"
                     Padding="5">
                 <Grid Margin="5">
@@ -454,18 +458,18 @@
                                FontSize="22"
                                Foreground="{DynamicResource Header}" />
 
-                    <TextBlock Text="{Binding SquadCarrierData.Name}"
+                    <TextBlock Text="{Binding Name}"
                                Margin="5"
                                Grid.Row="1" />
 
-                    <TextBlock Text="{Binding SquadCarrierData.Callsign}"
+                    <TextBlock Text="{Binding Callsign}"
                                Margin="5"
                                Grid.Row="2" />
 
-                    <Button Content="{Binding SquadCarrierData.StarSystem}"
+                    <Button Content="{Binding StarSystem}"
                             Command="{Binding CopyToClipboard}"
                             HorizontalAlignment="Left"
-                            CommandParameter="{Binding SquadCarrierData.StarSystem}"
+                            CommandParameter="{Binding StarSystem}"
                             Style="{DynamicResource StatusBarBtn}"
                             Margin="5"
                             Grid.Row="3" />
@@ -482,7 +486,7 @@
 
                         <TextBlock Text="Fuel"
                                    Margin="5" />
-                        <TextBlock Text="{Binding SquadCarrierData.Fuel}"
+                        <TextBlock Text="{Binding Fuel}"
                                    Margin="5"
                                    Grid.Row="0"
                                    Grid.Column="1" />
@@ -490,7 +494,7 @@
                         <TextBlock Text="Balance"
                                    Margin="5"
                                    Grid.Row="1" />
-                        <TextBlock Text="{Binding SquadCarrierData.Balance, StringFormat={}{0:N0}}"
+                        <TextBlock Text="{Binding Balance, StringFormat={}{0:N0}}"
                                    Margin="5"
                                    Grid.Row="1"
                                    Grid.Column="1" />
@@ -503,6 +507,7 @@
                     Grid.Column="2"
                     CornerRadius="5"
                     Margin="5"
+                    DataContext="{Binding SquadCarrierData}"
                     Padding="5">
                 <Grid Margin="5">
                     <Grid.RowDefinitions>
@@ -524,7 +529,7 @@
                                Margin="5"
                                Grid.Column="0"
                                Grid.Row="1" />
-                    <TextBlock Text="{Binding SquadCarrierData.Destination}"
+                    <TextBlock Text="{Binding Destination}"
                                Margin="5"
                                Grid.Column="1"
                                Grid.Row="1" />
@@ -534,12 +539,12 @@
                                Margin="5"
                                Grid.Column="0"
                                Grid.Row="2" />
-                    <TextBlock Text="{Binding SquadCarrierData.DestinationBody}"
+                    <TextBlock Text="{Binding DestinationBody}"
                                Margin="5"
                                Grid.Column="1"
                                Grid.Row="2" />
 
-                    <TextBlock Text="{Binding SquadCarrierData.DepartTime}"
+                    <TextBlock Text="{Binding DepartTime}"
                                Margin="5"
                                Grid.ColumnSpan="2"
                                Grid.Row="3" />
@@ -550,6 +555,7 @@
                     Grid.Row="2"
                     Grid.Column="2"
                     CornerRadius="5"
+                    DataContext="{Binding SquadCarrierData}"
                     Margin="5"
                     Padding="5">
                 <Grid Margin="5">
@@ -575,7 +581,7 @@
                     <TextBlock Text="Rearm"
                                Margin="5"
                                Grid.Row="1" />
-                    <TextBlock Text="{Binding SquadCarrierData.Rearm}"
+                    <TextBlock Text="{Binding Rearm}"
                                Margin="5"
                                Grid.Column="1"
                                Grid.Row="1" />
@@ -583,7 +589,7 @@
                     <TextBlock Text="Refuel"
                                Margin="5"
                                Grid.Row="2" />
-                    <TextBlock Text="{Binding SquadCarrierData.Refuel}"
+                    <TextBlock Text="{Binding Refuel}"
                                Margin="5"
                                Grid.Column="1"
                                Grid.Row="2" />
@@ -591,7 +597,7 @@
                     <TextBlock Text="Repair"
                                Margin="5"
                                Grid.Row="3" />
-                    <TextBlock Text="{Binding SquadCarrierData.Repair}"
+                    <TextBlock Text="{Binding Repair}"
                                Margin="5"
                                Grid.Column="1"
                                Grid.Row="3" />
@@ -599,7 +605,7 @@
                     <TextBlock Text="Shipyard"
                                Margin="5"
                                Grid.Row="4" />
-                    <TextBlock Text="{Binding SquadCarrierData.Shipyard}"
+                    <TextBlock Text="{Binding Shipyard}"
                                Margin="5"
                                Grid.Column="1"
                                Grid.Row="4" />
@@ -607,7 +613,7 @@
                     <TextBlock Text="Outfitting"
                                Margin="5"
                                Grid.Row="5" />
-                    <TextBlock Text="{Binding SquadCarrierData.Outfitting}"
+                    <TextBlock Text="{Binding Outfitting}"
                                Margin="5"
                                Grid.Column="1"
                                Grid.Row="5" />
@@ -615,7 +621,7 @@
                     <TextBlock Text="Pioneer Supplies"
                                Margin="5"
                                Grid.Row="6" />
-                    <TextBlock Text="{Binding SquadCarrierData.PioneerSupplies}"
+                    <TextBlock Text="{Binding PioneerSupplies}"
                                Margin="5"
                                Grid.Column="1"
                                Grid.Row="6" />
@@ -623,7 +629,7 @@
                     <TextBlock Text="Bartender"
                                Margin="5"
                                Grid.Row="7" />
-                    <TextBlock Text="{Binding SquadCarrierData.Bartender}"
+                    <TextBlock Text="{Binding Bartender}"
                                Margin="5"
                                Grid.Column="1"
                                Grid.Row="7" />
@@ -631,7 +637,7 @@
                     <TextBlock Text="Vista Genomics"
                                Margin="5"
                                Grid.Row="8" />
-                    <TextBlock Text="{Binding SquadCarrierData.Vista}"
+                    <TextBlock Text="{Binding Vista}"
                                Margin="5"
                                Grid.Column="1"
                                Grid.Row="8" />

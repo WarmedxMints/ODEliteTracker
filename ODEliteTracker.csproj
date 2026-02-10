@@ -1,202 +1,204 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net9.0-windows</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <UseWPF>true</UseWPF>
-    <ApplicationIcon>Assets\OD.ico</ApplicationIcon>
-    <Configurations>Debug;Release;Install</Configurations>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net9.0-windows</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UseWPF>true</UseWPF>
+		<ApplicationIcon>Assets\OD.ico</ApplicationIcon>
+		<Configurations>Debug;Release;Install</Configurations>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="Assets\Fonts\EUROSTILE.TTF" />
-    <None Remove="Assets\Icons\assassin-large.png" />
-    <None Remove="Assets\Icons\assassin.png" />
-    <None Remove="Assets\Icons\Asteroid.png" />
-    <None Remove="Assets\Icons\bgs.png" />
-    <None Remove="Assets\Icons\bookmark.png" />
-    <None Remove="Assets\Icons\ClickThrough.png" />
-    <None Remove="Assets\Icons\Clipboard.png" />
-    <None Remove="Assets\Icons\ColonisationBtn.png" />
-    <None Remove="Assets\Icons\compass.png" />
-    <None Remove="Assets\Icons\Coriolis_sm.png" />
-    <None Remove="Assets\Icons\Discord-Symbol-White.png" />
-    <None Remove="Assets\Icons\docking.png" />
-    <None Remove="Assets\Icons\edassets_larger.png" />
-    <None Remove="Assets\Icons\edsmlogo.png" />
-    <None Remove="Assets\Icons\GitHub_Logo_White.png" />
-    <None Remove="Assets\Icons\inaramenulogo.png" />
-    <None Remove="Assets\Icons\Mega-Ship_Icon.png" />
-    <None Remove="Assets\Icons\OD.png" />
-    <None Remove="Assets\Icons\orrery_map.png" />
-    <None Remove="Assets\Icons\paypal-donate-button.png" />
-    <None Remove="Assets\Icons\PopOutBtn.png" />
-    <None Remove="Assets\Icons\powerplay.png" />
-    <None Remove="Assets\Icons\Prospector.png" />
-    <None Remove="Assets\Icons\ResetWindow.png" />
-    <None Remove="Assets\Icons\settings.png" />
-    <None Remove="Assets\Icons\settlement_pm.png" />
-    <None Remove="Assets\Icons\ShoppingCart.png" />
-    <None Remove="Assets\Icons\ShowInTaskBar.png" />
-    <None Remove="Assets\Icons\spansh.png" />
-    <None Remove="Assets\Icons\spanshbtn.png" />
-    <None Remove="Assets\Icons\squadfleetcarrier.png" />
-    <None Remove="Assets\Icons\T2Point.png" />
-    <None Remove="Assets\Icons\T3point.png" />
-    <None Remove="Assets\Icons\TopMost.png" />
-    <None Remove="Assets\Icons\trade.png" />
-    <None Remove="Assets\Icons\Transparency.png" />
-    <None Remove="Assets\Icons\watchlist.png" />
-    <None Remove="Assets\Icons\Wing.png" />
-    <None Remove="Assets\Icons\zoom.png" />
-    <None Remove="Assets\Images\elite-dangerous-clean.png" />
-    <None Remove="Assets\Images\OD.png" />
-    <None Remove="Assets\Json\MaterialTraders.jsonl" />
-    <None Remove="Assets\Notifications\monitor.png" />
-    <None Remove="Assets\Notifications\Notification Bottom Left.png" />
-    <None Remove="Assets\Notifications\Notification Bottom Right.png" />
-    <None Remove="Assets\Notifications\Notification Large.png" />
-    <None Remove="Assets\Notifications\Notification Small.png" />
-    <None Remove="Assets\Notifications\Notification Top Left.png" />
-    <None Remove="Assets\Notifications\Notification Top Right.png" />
-    <None Remove="Assets\Notifications\Stations\Asteroid_Station_Icon.png" />
-    <None Remove="Assets\Notifications\Stations\Construction.png" />
-    <None Remove="Assets\Notifications\Stations\Coriolis.png" />
-    <None Remove="Assets\Notifications\Stations\Dodec.png" />
-    <None Remove="Assets\Notifications\Stations\FleetCarrier.png" />
-    <None Remove="Assets\Notifications\Stations\Mega-Ship_Icon.png" />
-    <None Remove="Assets\Notifications\Stations\Ocellus.png" />
-    <None Remove="Assets\Notifications\Stations\Orbis.png" />
-    <None Remove="Assets\Notifications\Stations\Outpost.png" />
-    <None Remove="Assets\Notifications\Stations\settlement_sm.png" />
-    <None Remove="Assets\Notifications\Stations\surface_port.png" />
-    <None Remove="Assets\OD.ico" />
-    <None Remove="Assets\PowerPlay\aisling-duval.png" />
-    <None Remove="Assets\PowerPlay\archon-delaine.png" />
-    <None Remove="Assets\PowerPlay\arissa-lavigny-duval.png" />
-    <None Remove="Assets\PowerPlay\denton-patreus.png" />
-    <None Remove="Assets\PowerPlay\edmund-mahon.png" />
-    <None Remove="Assets\PowerPlay\felicia-winters.png" />
-    <None Remove="Assets\PowerPlay\jerome-archer.png" />
-    <None Remove="Assets\PowerPlay\li-yong-rui.png" />
-    <None Remove="Assets\PowerPlay\nakato-kaine.png" />
-    <None Remove="Assets\PowerPlay\pranav-antal.png" />
-    <None Remove="Assets\PowerPlay\yuri-grom.png" />
-    <None Remove="Assets\PowerPlay\zachary-hudson.png" />
-    <None Remove="Assets\PowerPlay\zemina-torval.png" />
-  </ItemGroup>
+	<ItemGroup>
+		<None Remove="Assets\Fonts\EUROSTILE.TTF" />
+		<None Remove="Assets\Icons\assassin-large.png" />
+		<None Remove="Assets\Icons\assassin.png" />
+		<None Remove="Assets\Icons\Asteroid.png" />
+		<None Remove="Assets\Icons\bgs.png" />
+		<None Remove="Assets\Icons\bookmark.png" />
+		<None Remove="Assets\Icons\ClickThrough.png" />
+		<None Remove="Assets\Icons\Clipboard.png" />
+		<None Remove="Assets\Icons\ColonisationBtn.png" />
+		<None Remove="Assets\Icons\compass.png" />
+		<None Remove="Assets\Icons\Coriolis_sm.png" />
+		<None Remove="Assets\Icons\Discord-Symbol-White.png" />
+		<None Remove="Assets\Icons\docking.png" />
+		<None Remove="Assets\Icons\edassets_larger.png" />
+		<None Remove="Assets\Icons\edsmlogo.png" />
+		<None Remove="Assets\Icons\GitHub_Logo_White.png" />
+		<None Remove="Assets\Icons\inaramenulogo.png" />
+		<None Remove="Assets\Icons\Mega-Ship_Icon.png" />
+		<None Remove="Assets\Icons\OD.png" />
+		<None Remove="Assets\Icons\orrery_map.png" />
+		<None Remove="Assets\Icons\paypal-donate-button.png" />
+		<None Remove="Assets\Icons\pirate.png" />
+		<None Remove="Assets\Icons\PopOutBtn.png" />
+		<None Remove="Assets\Icons\powerplay.png" />
+		<None Remove="Assets\Icons\Prospector.png" />
+		<None Remove="Assets\Icons\ResetWindow.png" />
+		<None Remove="Assets\Icons\settings.png" />
+		<None Remove="Assets\Icons\settlement_pm.png" />
+		<None Remove="Assets\Icons\ShoppingCart.png" />
+		<None Remove="Assets\Icons\ShowInTaskBar.png" />
+		<None Remove="Assets\Icons\spansh.png" />
+		<None Remove="Assets\Icons\spanshbtn.png" />
+		<None Remove="Assets\Icons\squadfleetcarrier.png" />
+		<None Remove="Assets\Icons\T2Point.png" />
+		<None Remove="Assets\Icons\T3point.png" />
+		<None Remove="Assets\Icons\TopMost.png" />
+		<None Remove="Assets\Icons\trade.png" />
+		<None Remove="Assets\Icons\Transparency.png" />
+		<None Remove="Assets\Icons\watchlist.png" />
+		<None Remove="Assets\Icons\Wing.png" />
+		<None Remove="Assets\Icons\zoom.png" />
+		<None Remove="Assets\Images\elite-dangerous-clean.png" />
+		<None Remove="Assets\Images\OD.png" />
+		<None Remove="Assets\Json\MaterialTraders.jsonl" />
+		<None Remove="Assets\Notifications\monitor.png" />
+		<None Remove="Assets\Notifications\Notification Bottom Left.png" />
+		<None Remove="Assets\Notifications\Notification Bottom Right.png" />
+		<None Remove="Assets\Notifications\Notification Large.png" />
+		<None Remove="Assets\Notifications\Notification Small.png" />
+		<None Remove="Assets\Notifications\Notification Top Left.png" />
+		<None Remove="Assets\Notifications\Notification Top Right.png" />
+		<None Remove="Assets\Notifications\Stations\Asteroid_Station_Icon.png" />
+		<None Remove="Assets\Notifications\Stations\Construction.png" />
+		<None Remove="Assets\Notifications\Stations\Coriolis.png" />
+		<None Remove="Assets\Notifications\Stations\Dodec.png" />
+		<None Remove="Assets\Notifications\Stations\FleetCarrier.png" />
+		<None Remove="Assets\Notifications\Stations\Mega-Ship_Icon.png" />
+		<None Remove="Assets\Notifications\Stations\Ocellus.png" />
+		<None Remove="Assets\Notifications\Stations\Orbis.png" />
+		<None Remove="Assets\Notifications\Stations\Outpost.png" />
+		<None Remove="Assets\Notifications\Stations\settlement_sm.png" />
+		<None Remove="Assets\Notifications\Stations\surface_port.png" />
+		<None Remove="Assets\OD.ico" />
+		<None Remove="Assets\PowerPlay\aisling-duval.png" />
+		<None Remove="Assets\PowerPlay\archon-delaine.png" />
+		<None Remove="Assets\PowerPlay\arissa-lavigny-duval.png" />
+		<None Remove="Assets\PowerPlay\denton-patreus.png" />
+		<None Remove="Assets\PowerPlay\edmund-mahon.png" />
+		<None Remove="Assets\PowerPlay\felicia-winters.png" />
+		<None Remove="Assets\PowerPlay\jerome-archer.png" />
+		<None Remove="Assets\PowerPlay\li-yong-rui.png" />
+		<None Remove="Assets\PowerPlay\nakato-kaine.png" />
+		<None Remove="Assets\PowerPlay\pranav-antal.png" />
+		<None Remove="Assets\PowerPlay\yuri-grom.png" />
+		<None Remove="Assets\PowerPlay\zachary-hudson.png" />
+		<None Remove="Assets\PowerPlay\zemina-torval.png" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Content Include="Assets\OD.ico" />
-  </ItemGroup>
+	<ItemGroup>
+		<Content Include="Assets\OD.ico" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="BusyIndicators" Version="2.1.3" />
-    <PackageReference Include="EFCore.BulkExtensions.Sqlite" Version="9.0.2" />
-    <PackageReference Include="FlexLabs.EntityFrameworkCore.Upsert" Version="9.101.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.10" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.10">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.10" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.10" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.10" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.10" />
-    <PackageReference Include="NAudio" Version="2.2.1" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-    <PackageReference Include="NLog" Version="6.0.5" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="BusyIndicators" Version="2.1.3" />
+		<PackageReference Include="EFCore.BulkExtensions.Sqlite" Version="9.0.2" />
+		<PackageReference Include="FlexLabs.EntityFrameworkCore.Upsert" Version="9.101.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.10" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.10">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.10" />
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.10" />
+		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.10" />
+		<PackageReference Include="Microsoft.Extensions.Http" Version="9.0.10" />
+		<PackageReference Include="NAudio" Version="2.2.1" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+		<PackageReference Include="NLog" Version="6.0.5" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\ODCapi\ODCapi.csproj" />
-    <ProjectReference Include="..\ODCompass\ODCompass\ODCompass.csproj" />
-    <ProjectReference Include="..\ODJournalDatabase\ODJournalDatabase.csproj" />
-    <ProjectReference Include="..\ODMvvm\ODMVVM.csproj" />
-    <ProjectReference Include="..\ToastNotifications\Src\ToastNotifications\ToastNotifications.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\ODCapi\ODCapi.csproj" />
+		<ProjectReference Include="..\ODCompass\ODCompass\ODCompass.csproj" />
+		<ProjectReference Include="..\ODJournalDatabase\ODJournalDatabase.csproj" />
+		<ProjectReference Include="..\ODMvvm\ODMVVM.csproj" />
+		<ProjectReference Include="..\ToastNotifications\Src\ToastNotifications\ToastNotifications.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Resource Include="Assets\Fonts\EUROSTILE.TTF" />
-    <Resource Include="Assets\Icons\assassin-large.png" />
-    <Resource Include="Assets\Icons\assassin.png" />
-    <Resource Include="Assets\Icons\Asteroid.png" />
-    <Resource Include="Assets\Icons\bgs.png" />
-    <Resource Include="Assets\Icons\bookmark.png" />
-    <Resource Include="Assets\Icons\ClickThrough.png" />
-    <Resource Include="Assets\Icons\Clipboard.png" />
-    <Resource Include="Assets\Icons\ColonisationBtn.png" />
-    <Resource Include="Assets\Icons\compass.png" />
-    <Resource Include="Assets\Icons\Coriolis_sm.png" />
-    <Resource Include="Assets\Icons\Discord-Symbol-White.png" />
-    <Resource Include="Assets\Icons\docking.png" />
-    <Resource Include="Assets\Icons\edassets_larger.png" />
-    <Resource Include="Assets\Icons\edsmlogo.png" />
-    <Resource Include="Assets\Icons\fleetcarrier.png" />
-    <Resource Include="Assets\Icons\GitHub_Logo_White.png" />
-    <Resource Include="Assets\Icons\inaramenulogo.png" />
-    <Resource Include="Assets\Icons\Mega-Ship_Icon.png" />
-    <Resource Include="Assets\Icons\OD.png" />
-    <Resource Include="Assets\Icons\orrery_map.png" />
-    <Resource Include="Assets\Icons\paypal-donate-button.png" />
-    <Resource Include="Assets\Icons\PopOutBtn.png" />
-    <Resource Include="Assets\Icons\powerplay.png" />
-    <Resource Include="Assets\Icons\Prospector.png" />
-    <Resource Include="Assets\Icons\ResetWindow.png" />
-    <Resource Include="Assets\Icons\settings.png" />
-    <Resource Include="Assets\Icons\settlement_pm.png" />
-    <Resource Include="Assets\Icons\ShoppingCart.png" />
-    <Resource Include="Assets\Icons\ShowInTaskBar.png" />
-    <Resource Include="Assets\Icons\spansh.png" />
-    <Resource Include="Assets\Icons\spanshbtn.png" />
-    <Resource Include="Assets\Icons\squadfleetcarrier.png" />
-    <Resource Include="Assets\Icons\T2Point.png" />
-    <Resource Include="Assets\Icons\T3point.png" />
-    <Resource Include="Assets\Icons\TopMost.png" />
-    <Resource Include="Assets\Icons\trade.png" />
-    <Resource Include="Assets\Icons\Transparency.png" />
-    <Resource Include="Assets\Icons\watchlist.png">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\Icons\Wing.png" />
-    <Resource Include="Assets\Icons\zoom.png" />
-    <Resource Include="Assets\Images\elite-dangerous-clean.png" />
-    <Resource Include="Assets\Images\OD.png" />
-    <EmbeddedResource Include="Assets\Json\MaterialTraders.jsonl" />
-    <Resource Include="Assets\Notifications\monitor.png" />
-    <Resource Include="Assets\Notifications\Notification Bottom Left.png" />
-    <Resource Include="Assets\Notifications\Notification Bottom Right.png" />
-    <Resource Include="Assets\Notifications\Notification Large.png" />
-    <Resource Include="Assets\Notifications\Notification Small.png" />
-    <Resource Include="Assets\Notifications\Notification Top Left.png" />
-    <Resource Include="Assets\Notifications\Notification Top Right.png" />
-    <Resource Include="Assets\Notifications\Stations\Asteroid_Station_Icon.png" />
-    <Resource Include="Assets\Notifications\Stations\Construction.png" />
-    <Resource Include="Assets\Notifications\Stations\Coriolis.png" />
-    <Resource Include="Assets\Notifications\Stations\Dodec.png" />
-    <Resource Include="Assets\Notifications\Stations\FleetCarrier.png" />
-    <Resource Include="Assets\Notifications\Stations\Mega-Ship_Icon.png" />
-    <Resource Include="Assets\Notifications\Stations\Ocellus.png" />
-    <Resource Include="Assets\Notifications\Stations\Orbis.png" />
-    <Resource Include="Assets\Notifications\Stations\Outpost.png" />
-    <Resource Include="Assets\Notifications\Stations\settlement_sm.png" />
-    <Resource Include="Assets\Notifications\Stations\surface_port.png" />
-    <Resource Include="Assets\OD.ico" />
-    <Resource Include="Assets\PowerPlay\aisling-duval.png" />
-    <Resource Include="Assets\PowerPlay\archon-delaine.png" />
-    <Resource Include="Assets\PowerPlay\arissa-lavigny-duval.png" />
-    <Resource Include="Assets\PowerPlay\denton-patreus.png" />
-    <Resource Include="Assets\PowerPlay\edmund-mahon.png" />
-    <Resource Include="Assets\PowerPlay\felicia-winters.png" />
-    <Resource Include="Assets\PowerPlay\jerome-archer.png" />
-    <Resource Include="Assets\PowerPlay\li-yong-rui.png" />
-    <Resource Include="Assets\PowerPlay\nakato-kaine.png" />
-    <Resource Include="Assets\PowerPlay\pranav-antal.png" />
-    <Resource Include="Assets\PowerPlay\yuri-grom.png" />
-    <Resource Include="Assets\PowerPlay\zachary-hudson.png" />
-    <Resource Include="Assets\PowerPlay\zemina-torval.png" />
-  </ItemGroup>
+	<ItemGroup>
+		<Resource Include="Assets\Fonts\EUROSTILE.TTF" />
+		<Resource Include="Assets\Icons\assassin-large.png" />
+		<Resource Include="Assets\Icons\assassin.png" />
+		<Resource Include="Assets\Icons\Asteroid.png" />
+		<Resource Include="Assets\Icons\bgs.png" />
+		<Resource Include="Assets\Icons\bookmark.png" />
+		<Resource Include="Assets\Icons\ClickThrough.png" />
+		<Resource Include="Assets\Icons\Clipboard.png" />
+		<Resource Include="Assets\Icons\ColonisationBtn.png" />
+		<Resource Include="Assets\Icons\compass.png" />
+		<Resource Include="Assets\Icons\Coriolis_sm.png" />
+		<Resource Include="Assets\Icons\Discord-Symbol-White.png" />
+		<Resource Include="Assets\Icons\docking.png" />
+		<Resource Include="Assets\Icons\edassets_larger.png" />
+		<Resource Include="Assets\Icons\edsmlogo.png" />
+		<Resource Include="Assets\Icons\fleetcarrier.png" />
+		<Resource Include="Assets\Icons\GitHub_Logo_White.png" />
+		<Resource Include="Assets\Icons\inaramenulogo.png" />
+		<Resource Include="Assets\Icons\Mega-Ship_Icon.png" />
+		<Resource Include="Assets\Icons\OD.png" />
+		<Resource Include="Assets\Icons\orrery_map.png" />
+		<Resource Include="Assets\Icons\paypal-donate-button.png" />
+		<Resource Include="Assets\Icons\pirate.png" />
+		<Resource Include="Assets\Icons\PopOutBtn.png" />
+		<Resource Include="Assets\Icons\powerplay.png" />
+		<Resource Include="Assets\Icons\Prospector.png" />
+		<Resource Include="Assets\Icons\ResetWindow.png" />
+		<Resource Include="Assets\Icons\settings.png" />
+		<Resource Include="Assets\Icons\settlement_pm.png" />
+		<Resource Include="Assets\Icons\ShoppingCart.png" />
+		<Resource Include="Assets\Icons\ShowInTaskBar.png" />
+		<Resource Include="Assets\Icons\spansh.png" />
+		<Resource Include="Assets\Icons\spanshbtn.png" />
+		<Resource Include="Assets\Icons\squadfleetcarrier.png" />
+		<Resource Include="Assets\Icons\T2Point.png" />
+		<Resource Include="Assets\Icons\T3point.png" />
+		<Resource Include="Assets\Icons\TopMost.png" />
+		<Resource Include="Assets\Icons\trade.png" />
+		<Resource Include="Assets\Icons\Transparency.png" />
+		<Resource Include="Assets\Icons\watchlist.png">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="Assets\Icons\Wing.png" />
+		<Resource Include="Assets\Icons\zoom.png" />
+		<Resource Include="Assets\Images\elite-dangerous-clean.png" />
+		<Resource Include="Assets\Images\OD.png" />
+		<EmbeddedResource Include="Assets\Json\MaterialTraders.jsonl" />
+		<Resource Include="Assets\Notifications\monitor.png" />
+		<Resource Include="Assets\Notifications\Notification Bottom Left.png" />
+		<Resource Include="Assets\Notifications\Notification Bottom Right.png" />
+		<Resource Include="Assets\Notifications\Notification Large.png" />
+		<Resource Include="Assets\Notifications\Notification Small.png" />
+		<Resource Include="Assets\Notifications\Notification Top Left.png" />
+		<Resource Include="Assets\Notifications\Notification Top Right.png" />
+		<Resource Include="Assets\Notifications\Stations\Asteroid_Station_Icon.png" />
+		<Resource Include="Assets\Notifications\Stations\Construction.png" />
+		<Resource Include="Assets\Notifications\Stations\Coriolis.png" />
+		<Resource Include="Assets\Notifications\Stations\Dodec.png" />
+		<Resource Include="Assets\Notifications\Stations\FleetCarrier.png" />
+		<Resource Include="Assets\Notifications\Stations\Mega-Ship_Icon.png" />
+		<Resource Include="Assets\Notifications\Stations\Ocellus.png" />
+		<Resource Include="Assets\Notifications\Stations\Orbis.png" />
+		<Resource Include="Assets\Notifications\Stations\Outpost.png" />
+		<Resource Include="Assets\Notifications\Stations\settlement_sm.png" />
+		<Resource Include="Assets\Notifications\Stations\surface_port.png" />
+		<Resource Include="Assets\OD.ico" />
+		<Resource Include="Assets\PowerPlay\aisling-duval.png" />
+		<Resource Include="Assets\PowerPlay\archon-delaine.png" />
+		<Resource Include="Assets\PowerPlay\arissa-lavigny-duval.png" />
+		<Resource Include="Assets\PowerPlay\denton-patreus.png" />
+		<Resource Include="Assets\PowerPlay\edmund-mahon.png" />
+		<Resource Include="Assets\PowerPlay\felicia-winters.png" />
+		<Resource Include="Assets\PowerPlay\jerome-archer.png" />
+		<Resource Include="Assets\PowerPlay\li-yong-rui.png" />
+		<Resource Include="Assets\PowerPlay\nakato-kaine.png" />
+		<Resource Include="Assets\PowerPlay\pranav-antal.png" />
+		<Resource Include="Assets\PowerPlay\yuri-grom.png" />
+		<Resource Include="Assets\PowerPlay\zachary-hudson.png" />
+		<Resource Include="Assets\PowerPlay\zemina-torval.png" />
+	</ItemGroup>
 
 </Project>

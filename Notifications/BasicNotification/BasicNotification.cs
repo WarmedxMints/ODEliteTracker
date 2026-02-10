@@ -18,7 +18,7 @@ namespace ODEliteTracker.Notifications
             switch (args.Type)
             {
                 case NotificationOptions.Station:
-                    if(args.Text.Length == 0)
+                    if (args.Text.Length == 0)
                     {
                         ImageSource = "/Assets/Icons/Coriolis_sm.png";
                         break;
@@ -46,7 +46,7 @@ namespace ODEliteTracker.Notifications
                     };
                     break;
                 default:
-                case NotificationOptions.System:                    
+                case NotificationOptions.System:
                     ImageSource = "/Assets/Icons/orrery_map.png";
                     break;
 
@@ -59,7 +59,10 @@ namespace ODEliteTracker.Notifications
                 case NotificationOptions.SqaudCarrierReady:
                     ImageSource = "/Assets/Icons/squadfleetcarrier.png";
                     break;
-            }            
+                case NotificationOptions.Crime:
+                    ImageSource = "/Assets/Icons/pirate.png";
+                    break;
+            }
 
             var thinBorder = 2;
             var thickBorder = 6;

@@ -45,6 +45,7 @@
             <Border Background="{DynamicResource ViewBackground}"
                     CornerRadius="20"
                     Grid.Column="1"
+                    MinWidth="140"
                     TextBlock.FontSize="16"
                     Margin="5"
                     Padding="10">
@@ -134,6 +135,7 @@
             <Border Background="{DynamicResource ViewBackground}"
                     CornerRadius="20"
                     Grid.Column="1"
+                    MinWidth="140"
                     TextBlock.FontSize="16"
                     Margin="5"
                     Padding="10">

@@ -12,7 +12,7 @@ namespace ODEliteTracker.Models.Missions
         Abandoned
     }
 
-    public class MissionBase
+    public abstract class MissionBase
     {
         public MissionBase(MissionAcceptedEvent.MissionAcceptedEventArgs args,
                            long originAddress,
@@ -40,7 +40,7 @@ namespace ODEliteTracker.Models.Missions
             AcceptedTime = args.Timestamp;
             DestinationSystem = args.DestinationSystem;
             DestinationSettlement = args.DestinationSettlement;
-            DestinationSystem = args.DestinationSystem;
+            DestinationStation = args.DestinationStation;
         }
         public bool Odyssey { get; protected set; }
         public long OriginSystemAddress { get; protected set; }

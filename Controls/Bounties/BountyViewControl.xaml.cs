@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using ODEliteTracker.ViewModels.ModelViews.Shared;
+using System.Windows.Controls;
 
 namespace ODEliteTracker.Controls.Bounties
 {
@@ -10,6 +11,14 @@ namespace ODEliteTracker.Controls.Bounties
         public BountyViewControl()
         {
             InitializeComponent();
+        }
+
+        private void ClearAllBounties(object sender, System.Windows.RoutedEventArgs e)
+        {
+            if (DataContext is BountyManagerVM vm)
+            {
+                vm.AddIgnoredBounties.Execute("All");
+            }
         }
     }
 }

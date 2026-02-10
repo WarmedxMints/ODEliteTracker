@@ -14,8 +14,8 @@ namespace ODEliteTracker.Models.FleetCarrier
         public bool Rare { get; set; } = commodity.Rare;
         public long SalePrice { get; set; } = salePrice;
                 
-        private long stockCount;
-        public long StockCount 
+        private int stockCount;
+        public int StockCount 
         {
             get => stockCount;
             set
@@ -26,8 +26,8 @@ namespace ODEliteTracker.Models.FleetCarrier
             }
         }
 
-        private long buyOrderCount;
-        public long BuyOrderCount
+        private int buyOrderCount;
+        public int BuyOrderCount
         {
             get => buyOrderCount;
             set

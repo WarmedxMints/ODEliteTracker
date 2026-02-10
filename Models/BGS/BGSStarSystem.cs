@@ -1,5 +1,6 @@
 ﻿using EliteJournalReader;
 using EliteJournalReader.Events;
+using ODEliteTracker.Database.DTOs;
 using ODEliteTracker.Extensions;
 using ODEliteTracker.Models.Galaxy;
 using ODEliteTracker.ViewModels.ModelViews.Galaxy;
@@ -116,6 +117,11 @@ namespace ODEliteTracker.Models.BGS
             var wars = Wars.Where(x => data.TimeWithinTick(x.TimeCompleted));
 
             return new BGSTickSystem(this,  tickData, claims, transactions, crimes, carto, s_r, conflicts, wars);
+        }
+
+        internal bool GetBGSTickSystem(BGSTickData data)
+        {
+            return TickData.Any(x => x.VisitedDuringPeriod(data.Time, DateTime.UtcNow));
         }
     }
 }

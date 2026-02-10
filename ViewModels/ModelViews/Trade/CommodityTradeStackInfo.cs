@@ -1,4 +1,5 @@
 ﻿using ODMVVM.ViewModels;
+using System.Security.Cryptography.X509Certificates;
 
 namespace ODEliteTracker.ViewModels.ModelViews.Trade
 {
@@ -42,5 +43,31 @@ namespace ODEliteTracker.ViewModels.ModelViews.Trade
         public int ValueInt { get; }
         public string CreditPerT => $"{CreditPerTInt:N0} cr";
         public int CreditPerTInt { get; }
+        public string CarrierStock => CarrierStockInt == 0 ? string.Empty : $"{CarrierStockInt:N0}";
+
+        private int carrierStockInt;          
+        public int CarrierStockInt
+        {
+            get => carrierStockInt;
+            set
+            {
+                carrierStockInt = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(CarrierStock));
+            }
+        }
+        public string CarrierDiff => CarrierStockInt == 0 ? string.Empty : $"{CarrierDiffInt:N0}";
+
+        private int carrierDiffInt;
+        public int CarrierDiffInt
+        {
+            get => carrierDiffInt;
+            set
+            {
+                carrierDiffInt = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(CarrierDiff));
+            }
+        }
     }
 }

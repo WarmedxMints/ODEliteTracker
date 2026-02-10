@@ -1,4 +1,5 @@
-﻿using ODEliteTracker.Models.Missions;
+﻿using ODEliteTracker.Models.FleetCarrier;
+using ODEliteTracker.Models.Missions;
 using ODEliteTracker.Models.Settings;
 using ODEliteTracker.Models.Ship;
 using ODEliteTracker.Stores;
@@ -12,11 +13,12 @@ namespace ODEliteTracker.ViewModels
 {
     public sealed class TradeMissionViewModel : ODViewModel
     { 
-        public TradeMissionViewModel(TradeMissionStore missionStore, SharedDataStore sharedDatastore, SettingsStore settings) 
+        public TradeMissionViewModel(TradeMissionStore missionStore, SharedDataStore sharedDatastore, SettingsStore settings, FleetCarrierDataStore fcDataStore) 
         {
             this.missionStore = missionStore;
             this.sharedData = sharedDatastore;
             this.settings = settings;
+            this.fcDataStore = fcDataStore;
             this.missionStore.StoreLive += OnStoreLive;
             this.missionStore.OnMissionAddedEvent += OnMissionAdded;
             this.missionStore.OnMissionUpdatedEvent += OnMissionUpdated;
@@ -32,12 +34,22 @@ namespace ODEliteTracker.ViewModels
             {
                 OnStoreLive(null, true);
             }
+
+            this.fcDataStore.CarrierStockUpdated += OnCarrierStockUpdated;
+            this.fcDataStore.StoreLive += OnFcStoreLive;
+
+            if (fcDataStore.IsLive)
+            {
+                OnFcStoreLive(null, true);
+            }
         }
 
         private readonly TradeMissionStore missionStore;
         private readonly SharedDataStore sharedData;
         private readonly SettingsStore settings;
+        private readonly FleetCarrierDataStore fcDataStore;
         private readonly Timer expiryTimeUpdateTimer;
+
         public override bool IsLive => missionStore.IsLive;
         public GridSize ActiveMissionsGridSize => settings.TradeSettings.ActiveMissionsGridSize;
         public List<TradeMissionVM> missions { get; } = [];
@@ -170,6 +182,33 @@ namespace ODEliteTracker.ViewModels
             sharedData.ShipChangedEvent -= OnShipChanged;
             sharedData.ShipCargoUpdatedEvent -= OnCargoUpdated;
             expiryTimeUpdateTimer.Dispose();
+        }
+
+        private void OnFcStoreLive(object? sender, bool e)
+        {
+            if (e && fcDataStore.CarrierData != null)
+            {
+                OnCarrierStockUpdated(sender, fcDataStore.CarrierData);
+            }
+        }
+
+        private void OnCarrierStockUpdated(object? sender, FleetCarrier e)
+        {
+            if (e.Stock == null || e.Stock.Count == 0 || CommodityTradeStack == null || CommodityTradeStack.Stacks.Count == 0)
+                return;
+
+            foreach(var item in e.Stock)
+            {
+                var stack = CommodityTradeStack.Stacks.FirstOrDefault(x => string.Equals(x.FdevCommodity, item.FdevName, StringComparison.OrdinalIgnoreCase));
+              
+                if (stack == null)
+                    continue;
+
+                stack.CarrierStockInt = item.StockCount;               
+                stack.CarrierDiffInt = item.StockCount == 0 ? 0 : item.StockCount - stack.CommodityCountInt;
+            }
+
+           
         }
     }
 }

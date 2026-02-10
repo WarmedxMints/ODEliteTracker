@@ -7,7 +7,7 @@ namespace ODEliteTracker.Database
         private readonly string _connectionString = connectionString;
         public ODEliteTrackerDbContext CreateDbContext()
         {
-            DbContextOptions options = new DbContextOptionsBuilder().UseSqlite(_connectionString).Options;
+            DbContextOptions options = new DbContextOptionsBuilder().UseSqlite(_connectionString, x => x.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)).Options;
 
             var context = new ODEliteTrackerDbContext(options);
             using var connection = context.Database.GetDbConnection();

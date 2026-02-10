@@ -2,6 +2,7 @@
 using ODEliteTracker.Database;
 using ODEliteTracker.Models.BGS;
 using ODJournalDatabase.Database.Interfaces;
+using System.Linq;
 
 namespace ODEliteTracker.Managers
 {
@@ -40,6 +41,11 @@ namespace ODEliteTracker.Managers
             }
 
             bounties.TryAdd(voucherClaim.Faction, [voucherClaim]);
+        }
+
+        public bool FactionBountiesClaimed(string faction, long value, double? brokerPercentage)
+        {
+            return FactionBountiesClaimed(new RedeemVoucherEvent.RedeemVoucherEventArgs.FactionAmount() { Faction = faction, Amount = value }, brokerPercentage);
         }
 
         public bool FactionBountiesClaimed(RedeemVoucherEvent.RedeemVoucherEventArgs.FactionAmount faction, double? brokerPercentage)

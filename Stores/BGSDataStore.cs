@@ -436,9 +436,19 @@ namespace ODEliteTracker.Stores
                         break;
                     }
                     CheckForCZ(music.Timestamp);
+                    currentSystem = null;
+                    CurrentSystemAddress = 0;
+                    CurrentSystemName = string.Empty;
+                    CurrentStationName = string.Empty;
+                    currentStation = null;
                     break;
                 case ShutdownEvent.ShutdownEventArgs shutdown:
                     CheckForCZ(shutdown.Timestamp);
+                    currentSystem = null;
+                    CurrentSystemAddress = 0;
+                    CurrentSystemName = string.Empty;
+                    CurrentStationName = string.Empty;
+                    currentStation = null;
                     break;
                 case ApproachSettlementEvent.ApproachSettlementEventArgs approachSettlement:
                     czManager.OnApproachSettlement(approachSettlement.Name);
@@ -590,8 +600,31 @@ namespace ODEliteTracker.Stores
 
         public override void RunAfterParsingHistory()
         {
+
             base.RunAfterParsingHistory();
             CheckForNewTick();
+
+           CheckCurrentSystemVisited();
+        }
+
+        private void CheckCurrentSystemVisited()
+        {
+            if (CurrentSystem == null)
+                return;
+
+            var tick = tickContainer.GetTick(DateTime.UtcNow);
+
+            if (tick == null)
+                return;
+
+            var hasData = CurrentSystem.GetBGSTickSystem(tick);
+
+            if (hasData)
+                return;
+
+            CurrentSystem.TickData.LastOrDefault()?.VisitedTimes.Add(DateTime.UtcNow);
+            SystemUpdated?.Invoke(this, CurrentSystem);
+            return;
         }
 
         public override void ClearData()
@@ -617,6 +650,7 @@ namespace ODEliteTracker.Stores
         private void OnNewTick(object? sender, EventArgs e)
         {
             tickContainer = new(tickDataStore.BGSTickData);
+            CheckCurrentSystemVisited();
             OnNewTickDetected?.Invoke(this, EventArgs.Empty);
         }
 
@@ -648,6 +682,7 @@ namespace ODEliteTracker.Stores
         {
             var tick = await tickDataStore.AddTick(dateTime);
             tickContainer.UpdateTickData(tickDataStore.BGSTickData);
+            CheckCurrentSystemVisited();
             return tick;
         }
 

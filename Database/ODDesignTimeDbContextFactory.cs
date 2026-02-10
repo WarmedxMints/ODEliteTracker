@@ -7,7 +7,7 @@ namespace ODEliteTracker.Database
     {
         public ODEliteTrackerDbContext CreateDbContext(string[] args)
         {
-            var dbOptions = new DbContextOptionsBuilder().UseSqlite("DataSource=DebugDatabase.db;").Options;
+            var dbOptions = new DbContextOptionsBuilder().UseSqlite("DataSource=DebugDatabase.db;", x => x.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)).Options;
             return new ODEliteTrackerDbContext(dbOptions);
         }
     }

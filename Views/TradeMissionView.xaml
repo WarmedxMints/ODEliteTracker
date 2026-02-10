@@ -125,8 +125,8 @@
                     <Grid Grid.Row="2">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="0.8*" />
-                            <ColumnDefinition Width="0.4*" />
-                            <ColumnDefinition Width="0.8*" />
+                            <ColumnDefinition Width="0.35*" />
+                            <ColumnDefinition Width="0.85*" />
                         </Grid.ColumnDefinitions>
 
                         <Border Background="{DynamicResource CardBackground}"
@@ -215,7 +215,8 @@
                                                     <DataGridTextColumn Header="Cr Per T"
                                                                         MinWidth="100"
                                                                         Width="SizeToCells"
-                                                                        ElementStyle="{DynamicResource DataGridElementRightMargin}"
+                                                                        HeaderStyle="{DynamicResource DataGridHeaderCenter}"
+                                                                        ElementStyle="{DynamicResource DataGridElementCenter}"
                                                                         Binding="{Binding Path=CreditPerT}" />
                                                 </DataGrid.Columns>
                                             </DataGrid>
@@ -317,26 +318,96 @@
                                                             ElementStyle="{DynamicResource DataGridElementRightMargin}"
                                                             Binding="{Binding Path=CommodityCount}" />
 
+                                        <DataGridTextColumn Header="C Stock"
+                                                            MinWidth="80"
+                                                            Width="SizeToCells"
+                                                            ElementStyle="{DynamicResource DataGridElementRightMargin}"
+                                                            Binding="{Binding Path=CarrierStock}">
+                                            <DataGridTextColumn.HeaderStyle>
+                                                <Style TargetType="{x:Type DataGridColumnHeader}"
+                                                       BasedOn="{StaticResource DataGridHeaderCenter}">
+                                                    <Setter Property="ToolTip"
+                                                            Value="Carrier Stock" />
+                                                    <Setter Property="ToolTipService.Placement"
+                                                            Value="Top" />
+                                                </Style>
+                                            </DataGridTextColumn.HeaderStyle>
+                                        </DataGridTextColumn>
+
+                                        <DataGridTextColumn Header="C Diff"
+                                                            MinWidth="80"
+                                                            Width="SizeToCells"
+                                                            Binding="{Binding Path=CarrierDiff}">
+                                            <DataGridTextColumn.HeaderStyle>
+                                                <Style TargetType="{x:Type DataGridColumnHeader}"
+                                                   BasedOn="{StaticResource DataGridHeaderCenter}">
+                                                <Setter Property="ToolTip"
+                                                            Value="Carrier Stock Difference" />
+                                                    <Setter Property="ToolTipService.Placement"
+                                                            Value="Top" />
+                                                </Style>
+                                            </DataGridTextColumn.HeaderStyle>
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="{x:Type TextBlock}">
+                                                    <Setter Property="HorizontalAlignment"
+                                                            Value="Right" />
+                                                    <Setter Property="VerticalAlignment"
+                                                            Value="Center" />
+                                                    <Setter Property="Margin"
+                                                            Value="0,0,5,0" />
+                                                    <Setter Property="Foreground"
+                                                            Value="{Binding CarrierDiffInt, Converter={StaticResource IntToColour}}" />
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+
                                         <DataGridTextColumn Header="# MIS"
                                                             MinWidth="50"
                                                             Width="SizeToCells"
-                                                            HeaderStyle="{DynamicResource DataGridHeaderCenter}"
                                                             ElementStyle="{DynamicResource DataGridElementRightMargin}"
-                                                            Binding="{Binding Path=MissionCount}" />
+                                                            Binding="{Binding Path=MissionCount}">
+                                            <DataGridTextColumn.HeaderStyle>
+                                                <Style TargetType="{x:Type DataGridColumnHeader}"
+                                                       BasedOn="{StaticResource DataGridHeaderCenter}">
+                                                    <Setter Property="ToolTip"
+                                                            Value="Mission Count" />
+                                                    <Setter Property="ToolTipService.Placement"
+                                                            Value="Top" />
+                                                </Style>
+                                            </DataGridTextColumn.HeaderStyle>
+                                        </DataGridTextColumn>
 
                                         <DataGridTextColumn Header="DEL"
                                                             MinWidth="60"
                                                             Width="SizeToCells"
-                                                            HeaderStyle="{DynamicResource DataGridHeaderCenter}"
                                                             ElementStyle="{DynamicResource DataGridElementRightMargin}"
-                                                            Binding="{Binding Path=DeliveredCount}" />
+                                                            Binding="{Binding Path=DeliveredCount}">
+                                            <DataGridTextColumn.HeaderStyle>
+                                                <Style TargetType="{x:Type DataGridColumnHeader}"
+                                                       BasedOn="{StaticResource DataGridHeaderCenter}">
+                                                    <Setter Property="ToolTip"
+                                                            Value="Total Delivered" />
+                                                    <Setter Property="ToolTipService.Placement"
+                                                            Value="Top" />
+                                                </Style>
+                                            </DataGridTextColumn.HeaderStyle>
+                                        </DataGridTextColumn>
 
                                         <DataGridTextColumn Header="# REM"
                                                             MinWidth="60"
                                                             Width="SizeToCells"
-                                                            HeaderStyle="{DynamicResource DataGridHeaderCenter}"
                                                             ElementStyle="{DynamicResource DataGridElementTradeRemaining}"
-                                                            Binding="{Binding Path=RemainingCount}" />
+                                                            Binding="{Binding Path=RemainingCount}">
+                                            <DataGridTextColumn.HeaderStyle>
+                                                <Style TargetType="{x:Type DataGridColumnHeader}"
+                                                       BasedOn="{StaticResource DataGridHeaderCenter}">
+                                                    <Setter Property="ToolTip"
+                                                            Value="Total Remaining" />
+                                                    <Setter Property="ToolTipService.Placement"
+                                                            Value="Top" />
+                                                </Style>
+                                            </DataGridTextColumn.HeaderStyle>
+                                        </DataGridTextColumn>
 
                                         <DataGridTextColumn Header="VALUE"
                                                             MinWidth="120"
@@ -345,11 +416,12 @@
                                                             ElementStyle="{DynamicResource DataGridElementRightMargin}"
                                                             Binding="{Binding Path=Value}" />
 
-                                        <DataGridTextColumn Header="Cr Per T"
+                                        <!--<DataGridTextColumn Header="Cr Per T"
                                                             MinWidth="100"
                                                             Width="SizeToCells"
+                                                            HeaderStyle="{DynamicResource DataGridHeaderCenter}"
                                                             ElementStyle="{DynamicResource DataGridElementRightMargin}"
-                                                            Binding="{Binding Path=CreditPerT}" />
+                                                            Binding="{Binding Path=CreditPerT}" />-->
                                     </DataGrid.Columns>
                                 </DataGrid>
 

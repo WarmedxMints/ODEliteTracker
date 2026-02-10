@@ -380,9 +380,9 @@ namespace ODEliteTracker.Helpers
         #endregion
         public static string DiscordTimeConvertor(DateTime time)
         {
-            TimeSpan t = time.ToUniversalTime() - new DateTime(1970, 1, 1);
+            TimeSpan t = time.ToUniversalTime() - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             int secondsSinceEpoch = (int)t.TotalSeconds;
-            return $"<t:{secondsSinceEpoch}>";
+            return $"<t:{secondsSinceEpoch}:f>";
         }
 
         internal static bool CreateColonisationPost(ColonisationShoppingList shoppingList, IEnumerable<ConstructionResourceVM>? resources, ColonisationPostType type)

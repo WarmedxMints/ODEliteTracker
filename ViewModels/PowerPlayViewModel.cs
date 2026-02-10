@@ -280,7 +280,7 @@ namespace ODEliteTracker.ViewModels
             if (selectedSystem == null)
                 return;
 
-            ODMVVM.Helpers.OperatingSystem.OpenUrl($"https://inara.cz/galaxy-starsystem/?search={selectedSystem.NonUpperName.Replace(' ', '+')}");
+            ODMVVM.Helpers.OperatingSystem.OpenInaraSystem(selectedSystem.NonUpperName);
         }
 
         public override void Dispose()

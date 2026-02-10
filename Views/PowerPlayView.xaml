@@ -45,10 +45,10 @@
                     </Grid.RowDefinitions>
 
                     <TextBlock Text="Pledge"
-                             Grid.Row="0"
-                             FontSize="20"
-                             Foreground="{DynamicResource Header}"
-                             Background="Transparent" />
+                               Grid.Row="0"
+                               FontSize="20"
+                               Foreground="{DynamicResource Header}"
+                               Background="Transparent" />
 
                     <Rectangle x:Name="Rect"
                                Margin="10"
@@ -350,7 +350,7 @@
                             <RowDefinition />
                         </Grid.RowDefinitions>
 
-                        <Grid>
+                        <Grid    DataContext="{Binding SelectedSystem}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition />
@@ -367,14 +367,14 @@
                             <StackPanel Margin="0,5"
                                         Grid.ColumnSpan="3"
                                         Orientation="Horizontal">
-                                <TextBlock Text="{Binding SelectedSystem.NonUpperName}"
+                                <TextBlock Text="{Binding NonUpperName}"
                                            FontSize="35"
                                            Foreground="{StaticResource Header}" />
-                                <Button Command="{Binding OpenInaraCommand}"
+                                <Button Command="{Binding ElementName=Root, Path=DataContext.OpenInaraCommand}"
                                         Height="30"
                                         Margin="10,0"
                                         Cursor="Hand"
-                                        Visibility="{Binding SelectedSystem, Converter={StaticResource NullToVis}, ConverterParameter=Hidden}"
+                                        Visibility="{Binding Converter={StaticResource NullToVis}, ConverterParameter=Hidden}"
                                         Grid.Column="1">
                                     <Button.Template>
                                         <ControlTemplate TargetType="{x:Type Button}">
@@ -390,7 +390,7 @@
                                        Grid.Row="1"
                                        Grid.Column="0"
                                        Margin="5" />
-                            <TextBlock Text="{Binding SelectedSystem.Power}"
+                            <TextBlock Text="{Binding Power}"
                                        Grid.Row="1"
                                        Grid.Column="1"
                                        Margin="5" />
@@ -399,7 +399,7 @@
                                        Grid.Row="2"
                                        Grid.Column="0"
                                        Margin="5" />
-                            <TextBlock Text="{Binding SelectedSystem.PowerState}"
+                            <TextBlock Text="{Binding PowerState}"
                                        Grid.Row="2"
                                        Grid.Column="1"
                                        Margin="5" />
@@ -408,7 +408,7 @@
                                        Grid.Row="3"
                                        Grid.Column="0"
                                        Margin="5" />
-                            <TextBlock Text="{Binding SelectedSystemData.MeritsEarned}"
+                            <TextBlock Text="{Binding MeritsEarned}"
                                        Grid.Row="3"
                                        Grid.Column="1"
                                        Margin="5" />
@@ -417,7 +417,7 @@
                                        Grid.Row="4"
                                        Grid.Column="0"
                                        Margin="5" />
-                            <TextBlock Text="{Binding SelectedSystem.ControllingFaction}"
+                            <TextBlock Text="{Binding ControllingFaction}"
                                        Grid.Row="4"
                                        Grid.Column="1"
                                        Margin="5" />
@@ -426,7 +426,7 @@
                                        Grid.Row="5"
                                        Grid.Column="0"
                                        Margin="5" />
-                            <TextBlock Text="{Binding SelectedSystem.SystemAllegiance}"
+                            <TextBlock Text="{Binding SystemAllegiance}"
                                        Grid.Row="5"
                                        Grid.Column="1"
                                        Margin="5" />
@@ -529,7 +529,7 @@
                                 HorizontalAlignment="Stretch"
                                 Margin="5"
                                 Padding="5">
-                            <Grid>
+                            <Grid DataContext="{Binding SelectedSystemData}">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition />
@@ -539,7 +539,7 @@
                                            FontSize="24"
                                            Margin="5,5"
                                            Grid.Column="1" />
-                                <DataGrid ItemsSource="{Binding SelectedSystemData.GoodsCollected}"
+                                <DataGrid ItemsSource="{Binding GoodsCollected}"
                                           Style="{DynamicResource BaseDataGridStyle}"
                                           RowStyle="{DynamicResource NoSelectRowStyle}"
                                           CellStyle="{DynamicResource NoSelectCellNoMargin}"
@@ -566,6 +566,7 @@
                         <Border Background="{DynamicResource CardBackground}"
                                 CornerRadius="5"
                                 Grid.Row="1"
+                                DataContext="{Binding SelectedSystemData}"
                                 HorizontalAlignment="Stretch"
                                 Margin="5"
                                 Padding="5">
@@ -579,7 +580,7 @@
                                            FontSize="24"
                                            Margin="5,5"
                                            Grid.Column="1" />
-                                <DataGrid ItemsSource="{Binding SelectedSystemData.GoodsDelivered}"
+                                <DataGrid ItemsSource="{Binding GoodsDelivered}"
                                           Style="{DynamicResource BaseDataGridStyle}"
                                           RowStyle="{DynamicResource NoSelectRowStyle}"
                                           CellStyle="{DynamicResource NoSelectCellNoMargin}"

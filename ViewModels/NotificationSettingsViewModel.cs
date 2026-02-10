@@ -64,7 +64,7 @@ namespace ODEliteTracker.ViewModels
         private void OnTestNotification(object? obj)
         {
             var settings = NotificationSettings.ToSettings();
-            notificationService.UpdateNotificationSettings(settings);
+          //  notificationService.UpdateNotificationSettings(settings);
             notificationService.ShowTestNotification(settings);
         }
 

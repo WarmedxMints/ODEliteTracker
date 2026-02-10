@@ -561,8 +561,8 @@ namespace ODEliteTracker.Stores
             if (known != null)
             {
                 known.StockCount += value;
-                if (known.StockCount <= 0 && known.SalePrice <= 0)
-                    CarrierData?.Stock.Remove(known);
+                //if (known.StockCount <= 0 && known.SalePrice <= 0)
+                //    CarrierData?.Stock.Remove(known);
                 return true;
             }
 

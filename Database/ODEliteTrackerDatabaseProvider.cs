@@ -15,7 +15,6 @@ using ODJournalDatabase.Database.DTOs;
 using ODJournalDatabase.Database.Interfaces;
 using ODJournalDatabase.JournalManagement;
 using ODMVVM.Helpers.IO;
-using System.Diagnostics.CodeAnalysis;
 using BGSIgnoredSystems = ODEliteTracker.Models.BGS.BGSIgnoredSystems;
 
 namespace ODEliteTracker.Database
@@ -185,7 +184,8 @@ namespace ODEliteTracker.Database
 
             using var context = _contextFactory.CreateDbContext();
 
-            context.BulkInsertOrUpdate(entriesToAdd, new BulkConfig() { PropertiesToIncludeOnCompare = ["TimeStamp", "Offset"] });
+            //context.BulkInsertOrUpdate(entriesToAdd, new BulkConfig() { PropertiesToIncludeOnCompare = ["TimeStamp", "Offset"] });
+            context.UpsertRange(entriesToAdd).On(x => new { x.TimeStamp, x.Offset}).Run();
 
             var connection = context.Database.GetDbConnection();
             connection.Open();

@@ -17,7 +17,6 @@ using ODEliteTracker.ViewModels.ModelViews.Colonisation;
 using ODJournalDatabase.Database.Interfaces;
 using ODJournalDatabase.JournalManagement;
 using ODMVVM.Helpers;
-using System.Collections.ObjectModel;
 
 namespace ODEliteTracker.Stores
 {
@@ -62,28 +61,29 @@ namespace ODEliteTracker.Stores
         {
             get => new()
             {
-                { JournalTypeEnum.Commander, true },
-                { JournalTypeEnum.Powerplay, true },
-                { JournalTypeEnum.Location, true },
-                { JournalTypeEnum.FSDJump, true},
+                { JournalTypeEnum.ApproachBody, true},
+                { JournalTypeEnum.Bounty, true },
+                { JournalTypeEnum.Cargo, false },
                 { JournalTypeEnum.CarrierJump, true},
+                { JournalTypeEnum.Commander, true },
+                { JournalTypeEnum.CommitCrime, false },
+                { JournalTypeEnum.Died, true },
                 { JournalTypeEnum.Docked, true},
                 { JournalTypeEnum.DockingDenied, false },
-                { JournalTypeEnum.Undocked, true},
-                { JournalTypeEnum.ApproachBody, true},
+                { JournalTypeEnum.FSDJump, true},
+                { JournalTypeEnum.FSSSignalDiscovered, true },
                 { JournalTypeEnum.LeaveBody, true},
-                { JournalTypeEnum.Market, false },
                 { JournalTypeEnum.Loadout, true },
-                { JournalTypeEnum.Cargo, false },
-                { JournalTypeEnum.ShipTargeted, false },
-                { JournalTypeEnum.Bounty, true },
-                { JournalTypeEnum.RedeemVoucher, true},
+                { JournalTypeEnum.Location, true },
+                { JournalTypeEnum.Market, false },
                 { JournalTypeEnum.MarketBuy, true},
                 { JournalTypeEnum.MarketSell, true},
+                { JournalTypeEnum.Powerplay, true },
+                { JournalTypeEnum.RedeemVoucher, true},
                 { JournalTypeEnum.Scan, true},
+                { JournalTypeEnum.ShipTargeted, false },
                 { JournalTypeEnum.SupercruiseEntry, true},
-                { JournalTypeEnum.Died, true },
-                { JournalTypeEnum.FSSSignalDiscovered, true }
+                { JournalTypeEnum.Undocked, true},
             };
         }
         public Dictionary<string, FactionData> Factions => factions;
@@ -123,6 +123,8 @@ namespace ODEliteTracker.Stores
             MarketEvent?.Invoke(this, null);
             ShipChangedEvent?.Invoke(this, null);
             ShipCargoUpdatedEvent?.Invoke(this, null);
+            MarketPurchases.Clear();
+            LastLoginTime = DateTime.MinValue;
             IsLive = false;
         }
 
@@ -149,9 +151,6 @@ namespace ODEliteTracker.Stores
 
             switch (evt.EventData)
             {
-                case CommanderEvent.CommanderEventArgs commander:
-                    LastLoginTime = commander.Timestamp;
-                    break;
                 case ApproachBodyEvent.ApproachBodyEventArgs approachBody:
                     CurrentBody = CurrentSystem?.Bodies.FirstOrDefault(x => x.Key == approachBody.BodyID).Value;
 
@@ -159,10 +158,7 @@ namespace ODEliteTracker.Stores
                         CurrentBody.Landable = true;
                     UpdateCurrentBody_Station(approachBody.Body);
                     break;
-                case LeaveBodyEvent.LeaveBodyEventArgs leaveBody:
-                    CurrentBody = null;
-                    UpdateCurrentBody_Station(null);
-                    break;
+
                 case BountyEvent.BountyEventArgs bounty:
 
                     if (bounty.Rewards is null || bounty.Rewards.Count == 0)
@@ -175,6 +171,7 @@ namespace ODEliteTracker.Stores
 
                     FireBountiesChangedIfLive();
                     break;
+
                 case CargoEvent.CargoEventArgs:
                     var cargo = journalManager.GetCargo();
 
@@ -191,6 +188,7 @@ namespace ODEliteTracker.Stores
                         }
                     }
                     break;
+
                 case CarrierJumpEvent.CarrierJumpEventArgs carrierJump:
                     UpdateCurrentSystem(new(carrierJump));
                     string? bodyStn = null;
@@ -225,6 +223,22 @@ namespace ODEliteTracker.Stores
                             EliteHelpers.FactionReputationToString(carrierJump.Factions.FirstOrDefault(x => string.Equals(x.Name, carrierJump.SystemFaction.Name))?.MyReputation)
                         ]);
                     break;
+
+                case CommanderEvent.CommanderEventArgs commander:
+                    LastLoginTime = commander.Timestamp;
+                    break;
+
+                case CommitCrimeEvent.CommitCrimeEventArgs commitCrimeEvent:
+                    if (!IsLive)
+                        break;
+
+                    notificationService.ShowCrimeNotification(commitCrimeEvent);
+                    break;
+
+                case DiedEvent.DiedEventArgs died:
+                    bountiesManager.Reset();
+                    break;
+                
                 case DockedEvent.DockedEventArgs docked:
                     CurrentMarketID = docked.MarketID;
 
@@ -234,6 +248,11 @@ namespace ODEliteTracker.Stores
                     if (docked.StationType == "FleetCarrier" && carrierNames.TryGetValue(stationName, out var name))
                     {
                         stationName = name;
+
+                        if (carrierNamesByMarketID.ContainsKey(docked.MarketID))
+                        {
+                            carrierNamesByMarketID[docked.MarketID] = name;
+                        }
 
                         carrierNamesByMarketID.TryAdd(docked.MarketID, stationName);
                     }
@@ -245,7 +264,7 @@ namespace ODEliteTracker.Stores
 
                     if (IsLive == false)
                         break;
-                                        
+
                     var stationFaction = docked.StationFaction.Name;
 
                     if (stationFaction.Equals("FleetCarrier", StringComparison.OrdinalIgnoreCase))
@@ -264,9 +283,11 @@ namespace ODEliteTracker.Stores
 
                     notificationService.ShowBasicNotification(args);
                     break;
+
                 case DockingDeniedEvent.DockingDeniedEventArgs dockingDenied:
                     notificationService.ShowDockingNotification("Docking Denied", dockingDenied.Reason);
                     break;
+
                 case FSDJumpEvent.FSDJumpEventArgs fsdJump:
                     CurrentBody = null;
                     UpdateCurrentSystem(new(fsdJump));
@@ -291,12 +312,34 @@ namespace ODEliteTracker.Stores
                             EliteHelpers.FactionReputationToString(fsdJump.Factions.FirstOrDefault(x => string.Equals(x.Name, fsdJump.SystemFaction.Name))?.MyReputation)
                         ]);
                     break;
+
+                case FSSSignalDiscoveredEvent.FSSSignalDiscoveredEventArgs fss:
+                    if (fss.IsStation == true && string.Equals(fss.SignalType, "FleetCarrier", StringComparison.OrdinalIgnoreCase) && string.IsNullOrEmpty(fss.SignalName) == false)
+                    {
+                        var id = fss.SignalName.Split(' ').Last();
+
+                        if (carrierNames.ContainsKey(id))
+                        {
+                            carrierNames[id] = fss.SignalName;
+                            break;
+                        }
+
+                        _ = carrierNames.TryAdd(id, fss.SignalName);
+                    }
+                    break;
+
+                case LeaveBodyEvent.LeaveBodyEventArgs leaveBody:
+                    CurrentBody = null;
+                    UpdateCurrentBody_Station(null);
+                    break;
+
                 case LoadoutEvent.LoadoutEventArgs loadOut:
                     //Sometimes the ship name comes though as a string with a single space so we trim it
                     CurrentShipInfo = new ShipInfo(string.IsNullOrEmpty(loadOut.ShipName.Trim()) ? EliteHelpers.ConvertShipName(loadOut.Ship) : loadOut.ShipName, loadOut.ShipIdent, loadOut.CargoCapacity, (JObject)loadOut.OriginalEvent.DeepClone());
                     if (IsLive)
                         ShipChangedEvent?.Invoke(this, CurrentShipInfo);
                     break;
+
                 case LocationEvent.LocationEventArgs location:
                     UpdateCurrentSystem(new(location));
                     string? bodyStation = null;
@@ -338,6 +381,29 @@ namespace ODEliteTracker.Stores
                             EliteHelpers.FactionReputationToString(location.Factions.FirstOrDefault(x => string.Equals(x.Name, location.SystemFaction.Name))?.MyReputation)
                         ]);
                     break;
+
+                case EliteJournalReader.Events.MarketEvent.MarketEventArgs:
+                    var market = journalManager.GetMarketInfo();
+
+                    if (market != null)
+                    {
+                        if (carrierNamesByMarketID.TryGetValue(market.MarketID, out string? carrierName) && string.IsNullOrEmpty(carrierName) == false)
+                        {
+                            market.StationName = carrierName;
+                        }
+                        CurrentMarket = new(market);
+                        MarketEvent?.Invoke(this, CurrentMarket);
+
+                        var watched = WatchedMarkets.FirstOrDefault(x => x.MarketID == market.MarketID);
+
+                        if (watched != null)
+                        {
+                            watched.UpdatePurchaseOrders(market);
+                            WatchedMarketUpdated?.Invoke(this, watched);
+                        }
+                    }
+                    break;
+
                 case MarketBuyEvent.MarketBuyEventArgs marketBuy:
                     if (currentStation == null
                         || CurrentSystem == null)
@@ -388,6 +454,7 @@ namespace ODEliteTracker.Stores
                     if (IsLive)
                         PurchasesUpdated?.Invoke(this, purchase);
                     break;
+
                 case MarketSellEvent.MarketSellEventArgs sell:
                     if (IsLive == false)
                         break;
@@ -417,44 +484,45 @@ namespace ODEliteTracker.Stores
                         }
                     }
                     break;
-                case EliteJournalReader.Events.MarketEvent.MarketEventArgs:
-                    var market = journalManager.GetMarketInfo();
-
-                    if (market != null)
-                    {
-                        if (carrierNamesByMarketID.TryGetValue(market.MarketID, out string? carrierName) && string.IsNullOrEmpty(carrierName) == false)
-                        {
-                            market.StationName = carrierName;
-                        }
-                        CurrentMarket = new(market);
-                        MarketEvent?.Invoke(this, CurrentMarket);
-
-                        var watched = WatchedMarkets.FirstOrDefault(x => x.MarketID == market.MarketID);
-
-                        if (watched != null)
-                        {
-                            watched.UpdatePurchaseOrders(market);
-                            WatchedMarketUpdated?.Invoke(this, watched);
-                        }
-                    }
-                    break;
+                
                 case PowerplayEvent.PowerplayEventArgs powerPlay:
                     commanderPower = powerPlay.Power;
                     break;
+
                 case RedeemVoucherEvent.RedeemVoucherEventArgs redeemVoucher:
 
                     if (!string.Equals(redeemVoucher.Type, "Bounty", StringComparison.OrdinalIgnoreCase))
                         break;
 
-                    var fireEvent = false;
-                    foreach (var faction in redeemVoucher.Factions)
+                    var boutniesRemoved = false;
+
+                    if (redeemVoucher.Factions == null || redeemVoucher.Factions.Count == 0)
                     {
-                        fireEvent = bountiesManager.FactionBountiesClaimed(faction, redeemVoucher.BrokerPercentage) | fireEvent;
+                        if (string.IsNullOrEmpty(redeemVoucher.Faction))
+                            break;
+
+
+                        boutniesRemoved = bountiesManager.FactionBountiesClaimed(redeemVoucher.Faction, redeemVoucher.Amount, redeemVoucher.BrokerPercentage);
+                        if (boutniesRemoved)
+                            FireBountiesChangedIfLive();
+                        break;
                     }
 
-                    if (fireEvent)
+                    foreach (var faction in redeemVoucher.Factions)
+                    {
+                        boutniesRemoved = bountiesManager.FactionBountiesClaimed(faction, redeemVoucher.BrokerPercentage) || boutniesRemoved;
+                    }
+
+                    if (boutniesRemoved)
                         FireBountiesChangedIfLive();
                     break;
+
+                case ScanEvent.ScanEventArgs scan:
+                    if (CurrentSystem is null)
+                        break;
+                    CurrentSystem.AddBody(scan);
+                    break;
+
                 case ShipTargetedEvent.ShipTargetedEventArgs shipTargeted:
 
                     if (shipTargeted.ScanStage != 3)
@@ -492,36 +560,16 @@ namespace ODEliteTracker.Stores
                     if (IsLive)
                         notificationService.ShowShipTargetedNotification(pilotName, EliteHelpers.ConvertShipName(shipTargeted.Ship), targetType, shipTargeted.Bounty, shipTargeted.Faction, shipTargeted.Power);
                     break;
-                case ScanEvent.ScanEventArgs scan:
-                    if (CurrentSystem is null)
-                        break;
-                    CurrentSystem.AddBody(scan);
-                    break;
+       
                 case SupercruiseEntryEvent.SupercruiseEntryEventArgs:
                     CurrentBody = null;
                     break;
+
                 case UndockedEvent.UndockedEventArgs:
                     CurrentMarketID = 0;
                     currentStation = null;
                     UpdateCurrentBody_Station(CurrentBody?.BodyName);
-                    break;
-                case DiedEvent.DiedEventArgs died:
-                    bountiesManager.Reset();
-                    break;
-                case FSSSignalDiscoveredEvent.FSSSignalDiscoveredEventArgs fss:
-                    if (fss.IsStation == true && string.Equals(fss.SignalType, "FleetCarrier", StringComparison.OrdinalIgnoreCase) && string.IsNullOrEmpty(fss.SignalName) == false)
-                    {
-                        var id = fss.SignalName.Split(' ').Last();
-
-                        if (carrierNames.ContainsKey(id))
-                        {
-                            carrierNames[id] = fss.SignalName;
-                            break;
-                        }
-
-                        _ = carrierNames.TryAdd(id, fss.SignalName);
-                    }
-                    break;
+                    break; 
             }
         }
 

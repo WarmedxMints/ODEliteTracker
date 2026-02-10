@@ -145,7 +145,7 @@ namespace ODEliteTracker.Services
                 logProcesser.ClearData();
                 logProcesser.RunBeforeParsingHistory(settingsStore.SelectedCommanderID);
 
-               await Task.Run(async () => await eventParser.StreamJournalHistoryOfTypeAsync(settingsStore.SelectedCommanderID, [logProcesser], settingsStore.JournalAgeDateTime));
+               await Task.Run(async () => await eventParser.StreamJournalHistoryOfTypeAsync(settingsStore.SelectedCommanderID, [logProcesser], settingsStore.JournalAgeDateTime)).ConfigureAwait(true);
             }
         }
 

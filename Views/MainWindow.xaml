@@ -16,6 +16,7 @@
                      Title="{Binding Title}"
                      FontFamily="{DynamicResource Eurostile}"
                      FontSize="18"
+                     ShowActivated="False"
                      WindowStartupLocation="CenterScreen"
                      Top="{Binding WindowPosition.Top, Mode=TwoWay}"
                      Left="{Binding WindowPosition.Left, Mode=TwoWay}"

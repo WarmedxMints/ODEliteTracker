@@ -11,7 +11,7 @@ namespace ODEliteTracker.WPFConverters
             if (value == null)
                 return new SolidColorBrush(Colors.Black);
 
-            var positive = System.Convert.ToInt32(value) > 0;
+            var positive = System.Convert.ToInt32(value) >= 0;
 
             return positive ? new SolidColorBrush(Colors.Green) : new SolidColorBrush(Colors.Red);
         }

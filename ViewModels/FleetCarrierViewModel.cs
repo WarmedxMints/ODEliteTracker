@@ -232,8 +232,11 @@ namespace ODEliteTracker.ViewModels
         {
             if (SquadCarrierData == null)
                 return;
-
-            SquadCarrierData.UpdateData(e);
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                SquadCarrierData.UpdateData(e);
+                OnPropertyChanged(nameof(SquadCarrierData));
+            });
         }
 
         private void OnCarrierStockUpdated(object? sender, FleetCarrier e)

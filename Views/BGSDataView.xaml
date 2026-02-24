@@ -120,7 +120,7 @@
                              Foreground="{DynamicResource PrimaryForeground}">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <Button FontSize="20"
+                                <Button FontSize="17"
                                         Tag="1"
                                         Grid.Column="1"
                                         HorizontalAlignment="Stretch"
@@ -142,7 +142,7 @@
                                                    HorizontalAlignment="Left"
                                                    VerticalAlignment="Center"
                                                    TextWrapping="NoWrap"
-                                                   FontWeight="SemiBold"
+                                                   FontWeight="Bold"
                                                    Margin="5,1" />
 
                                         <TextBlock Text="{Binding ControllingFaction}"

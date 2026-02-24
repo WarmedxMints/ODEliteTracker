@@ -184,8 +184,8 @@ namespace ODEliteTracker.Database
 
             using var context = _contextFactory.CreateDbContext();
 
-            //context.BulkInsertOrUpdate(entriesToAdd, new BulkConfig() { PropertiesToIncludeOnCompare = ["TimeStamp", "Offset"] });
-            context.UpsertRange(entriesToAdd).On(x => new { x.TimeStamp, x.Offset}).Run();
+            context.BulkInsertOrUpdate(entriesToAdd, new BulkConfig() { PropertiesToIncludeOnCompare = ["TimeStamp", "Offset"] });
+            //context.UpsertRange(entriesToAdd).On(x => new { x.TimeStamp, x.Offset}).Run();
 
             var connection = context.Database.GetDbConnection();
             connection.Open();

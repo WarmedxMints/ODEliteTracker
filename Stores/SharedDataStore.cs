@@ -24,7 +24,7 @@ namespace ODEliteTracker.Stores
     {
         public SharedDataStore(IManageJournalEvents journalManager,
                                NotificationService notificationService,
-                               IODDatabaseProvider databaseProvider,
+                               IODDatabaseProvider databaseProvider, 
                                SettingsStore settings)
         {
             this.journalManager = journalManager;
@@ -382,26 +382,30 @@ namespace ODEliteTracker.Stores
                         ]);
                     break;
 
-                case EliteJournalReader.Events.MarketEvent.MarketEventArgs:
-                    var market = journalManager.GetMarketInfo();
-
-                    if (market != null)
+                case EliteJournalReader.Events.MarketEvent.MarketEventArgs marketArgs:
+                    Task.Factory.StartNew(async () =>
                     {
-                        if (carrierNamesByMarketID.TryGetValue(market.MarketID, out string? carrierName) && string.IsNullOrEmpty(carrierName) == false)
+                        await Task.Delay(400);
+                        var market = journalManager.GetMarketInfo();
+                        //Check the market ID.  Since the Kestrel MK2 update the game has a habit of firing the market event while failing to update the market.json file
+                        if (market != null && market.Timestamp >= marketArgs.Timestamp)
                         {
-                            market.StationName = carrierName;
-                        }
-                        CurrentMarket = new(market);
-                        MarketEvent?.Invoke(this, CurrentMarket);
+                            if (carrierNamesByMarketID.TryGetValue(market.MarketID, out string? carrierName) && string.IsNullOrEmpty(carrierName) == false)
+                            {
+                                market.StationName = carrierName;
+                            }
+                            CurrentMarket = new(market);
+                            MarketEvent?.Invoke(this, CurrentMarket);
 
-                        var watched = WatchedMarkets.FirstOrDefault(x => x.MarketID == market.MarketID);
+                            var watched = WatchedMarkets.FirstOrDefault(x => x.MarketID == market.MarketID);
 
-                        if (watched != null)
-                        {
-                            watched.UpdatePurchaseOrders(market);
-                            WatchedMarketUpdated?.Invoke(this, watched);
+                            if (watched != null)
+                            {
+                                watched.UpdatePurchaseOrders(market);
+                                WatchedMarketUpdated?.Invoke(this, watched);
+                            }
                         }
-                    }
+                    });
                     break;
 
                 case MarketBuyEvent.MarketBuyEventArgs marketBuy:

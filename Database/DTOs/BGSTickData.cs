@@ -8,7 +8,7 @@ namespace ODEliteTracker.Database.DTOs
     {
         [JsonPropertyName("_id")]
         public string Id { get; set; } = id;
-        public DateTime Time { get; set; } = time;
+        public DateTime Time { get; set; } = new DateTime(time.Year, time.Month, time.Day, time.Hour, time.Minute, time.Second, DateTimeKind.Utc);
         public DateTime Updated_At { get; set; } = updated_At;
         public bool ManualTick { get; set; } = manualTick;
         public bool Hidden { get; set; } = hidden;

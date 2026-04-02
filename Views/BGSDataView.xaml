@@ -253,7 +253,6 @@
                             SelectedIndex="{Binding SelectedTab}"
                             Background="{DynamicResource CardBackground}">
                     <TabItem Header="System Information">
-
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
@@ -665,6 +664,87 @@
                     </TabItem>
                     <TabItem Header="Material Traders">
                         <materialtraders:MaterialTradersControl DataContext="{Binding MaterialTraders}" />
+                    </TabItem>
+                    <TabItem Header="Conflict Zones">
+                        <DataGrid  Style="{DynamicResource BaseDataGridStyle}"
+                                   RowStyle="{DynamicResource NoSelectRowStyle}"
+                                   CellStyle="{DynamicResource NoSelectCellNoMargin}"
+                                   Foreground="{DynamicResource PrimaryForeground}"
+                                   FontSize="18"
+                                   ScrollViewer.HorizontalScrollBarVisibility="Visible"
+                                   ScrollViewer.VerticalScrollBarVisibility="Visible"
+                                   RowHeight="35"
+                                   AlternatingRowBackground="{DynamicResource RowAlternationColour}"
+                                   HeadersVisibility="Column"
+                                   HorizontalAlignment="Center"
+                                   ItemsSource="{Binding ConflictCounts}"
+                                   RowDetailsVisibilityMode="Visible">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Faction"
+                                                    Binding="{Binding Name}"
+                                                    HeaderStyle="{StaticResource DataGridHeaderLeft}"
+                                                    ElementStyle="{StaticResource DataGridElementLeftMarginBody}"
+                                                    Width="*" />
+                                <DataGridTextColumn Header="Low Space"
+                                                    Width="100"
+                                                    HeaderStyle="{StaticResource DataGridHeaderCenter}"
+                                                    ElementStyle="{StaticResource DataGridElementCenter}"
+                                                    Binding="{Binding LSCZCount}" />
+                                <DataGridTextColumn Header="Med Space"
+                                                    Width="100"
+                                                    HeaderStyle="{StaticResource DataGridHeaderCenter}"
+                                                    ElementStyle="{StaticResource DataGridElementCenter}"
+                                                    Binding="{Binding MSCZCount}" />
+                                <DataGridTextColumn Header="High Space"
+                                                    Width="100"
+                                                    HeaderStyle="{StaticResource DataGridHeaderCenter}"
+                                                    ElementStyle="{StaticResource DataGridElementCenter}"
+                                                    Binding="{Binding HSCZCount}" />
+                                <DataGridTextColumn Header="Low Ground"
+                                                    Width="100"
+                                                    HeaderStyle="{StaticResource DataGridHeaderCenter}"
+                                                    ElementStyle="{StaticResource DataGridElementCenter}"
+                                                    Binding="{Binding LGCZCount}" />
+                                <DataGridTextColumn Header="Med Ground"
+                                                    Width="100"
+                                                    HeaderStyle="{StaticResource DataGridHeaderCenter}"
+                                                    ElementStyle="{StaticResource DataGridElementCenter}"
+                                                    Binding="{Binding MGCZCount}" />
+                                <DataGridTextColumn Header="High Ground"
+                                                    Width="100"
+                                                    HeaderStyle="{StaticResource DataGridHeaderCenter}"
+                                                    ElementStyle="{StaticResource DataGridElementCenter}"
+                                                    Binding="{Binding HGCZCount}" />
+                            </DataGrid.Columns>
+                            <DataGrid.RowDetailsTemplate>
+                                <DataTemplate>
+                                    <DataGrid  Style="{DynamicResource BaseDataGridStyle}"
+                                               RowStyle="{DynamicResource NoSelectRowStyle}"
+                                               CellStyle="{DynamicResource NoSelectCellNoMargin}"
+                                               Foreground="{DynamicResource PrimaryForeground}"
+                                               FontSize="18"
+                                               ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                               ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                               RowHeight="30"
+                                               HeadersVisibility="None"
+                                               Margin="20, 0, 0 , 10"
+                                               AlternatingRowBackground="{DynamicResource RowAlternationColour}"
+                                               HorizontalAlignment="Left"
+                                               ItemsSource="{Binding GroundCounflictCounts}"
+                                               RowDetailsVisibilityMode="Visible">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Settlement"
+                                                                ElementStyle="{StaticResource DataGridElementLeftMarginBody}"
+                                                                Binding="{Binding SettlementName}"
+                                                                Width="350" />
+                                            <DataGridTextColumn Header="Wins"
+                                                                ElementStyle="{StaticResource DataGridElementCenter}"
+                                                                Binding="{Binding Wins}" />
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </DataTemplate>
+                            </DataGrid.RowDetailsTemplate>
+                        </DataGrid>
                     </TabItem>
                 </TabControl>
 

@@ -132,8 +132,11 @@ namespace ODEliteTracker.ViewModels
                 selectedSystem = value;
                 bountyManager.OnSelectedSystemChanged();
                 OnPropertyChanged(nameof(SelectedSystem));
+                OnPropertyChanged(nameof(ConflictCounts));
             }
         }
+
+        public IEnumerable<ConflictCounts> ConflictCounts => SelectedSystem?.Factions.Where(x => x.Wars?.Total > 0).Select(x => new ModelViews.BGS.ConflictCounts(x)) ?? [];
 
         private ObservableCollection<BGSTickSystemVM> systems { get; set; } = [];
         public IEnumerable<BGSTickSystemVM> Systems

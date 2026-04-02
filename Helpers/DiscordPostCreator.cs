@@ -1,9 +1,6 @@
-﻿using NAudio.Gui;
-using NetTopologySuite.GeometriesGraph;
-using ODEliteTracker.ViewModels.ModelViews.BGS;
+﻿using ODEliteTracker.ViewModels.ModelViews.BGS;
 using ODEliteTracker.ViewModels.ModelViews.Colonisation;
 using ODEliteTracker.ViewModels.ModelViews.PowerPlay;
-using System;
 using System.Data;
 using System.Text;
 
@@ -150,6 +147,7 @@ namespace ODEliteTracker.Helpers
                 var ordered = data.Wars.Settlements.OrderBy(x => x.Key);
                 builder = new StringBuilder(builder.ToString().TrimEnd('\r', '\n').TrimEnd(',', ' '));
                 builder.AppendLine();
+
                 foreach (var item in ordered)
                 {
                     builder.AppendLine($">           {item.Value}x {item.Key}");
@@ -380,7 +378,7 @@ namespace ODEliteTracker.Helpers
         #endregion
         public static string DiscordTimeConvertor(DateTime time)
         {
-            TimeSpan t = time.ToUniversalTime() - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            TimeSpan t = time - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             int secondsSinceEpoch = (int)t.TotalSeconds;
             return $"<t:{secondsSinceEpoch}:f>";
         }

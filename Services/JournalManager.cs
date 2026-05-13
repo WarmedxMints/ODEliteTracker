@@ -76,6 +76,8 @@ namespace ODEliteTracker.Services
             remove => capiService.CAPILive -= value;
         }
 
+        private HashSet<Tuple<string, long>> prossedEntries = [];
+
         #region Event Parser Methods
         private void EventParser_OnJournalEventReceived(object? sender, JournalEntry e)
         {
@@ -83,6 +85,15 @@ namespace ODEliteTracker.Services
             {
                 return;
             }
+
+            var entryTuple = Tuple.Create(e.Filename, e.Offset);
+
+            if (prossedEntries.Contains(entryTuple))
+            {
+                return;
+            }
+
+            prossedEntries.Add(entryTuple);
 
             foreach (var parser in journalLogParserList)
             {

@@ -244,7 +244,7 @@ namespace ODEliteTracker.Stores
                 return;
             }
 
-            databaseProvider.RemoveShoppingListDepot(vM.MarketID, vM.SystemAddress, vM.StationName);
+            databaseProvider.RemoveShoppingListDepot(vM.MarketID, vM.SystemAddress);
         }
     }
 }

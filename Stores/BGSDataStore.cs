@@ -412,6 +412,10 @@ namespace ODEliteTracker.Stores
                     czManager.OnDestinationDrop(scDestDrop.Type);
                     break;
                 case SupercruiseEntryEvent.SupercruiseEntryEventArgs scEntry:
+                    CurrentStationName = string.Empty;
+                    CurrentMarketID = 0;
+                    currentStation = null;
+                    UpdateStationIfLive(currentStation);
                     currentSuperCruiseDestination = null;
                     shipTargets.Clear();
                     settlementActivity.Reset();
@@ -451,6 +455,9 @@ namespace ODEliteTracker.Stores
                     currentStation = null;
                     break;
                 case ApproachSettlementEvent.ApproachSettlementEventArgs approachSettlement:
+                    CurrentStationName = approachSettlement.Name;
+                    CurrentSystemAddress = approachSettlement.SystemAddress;
+                    CurrentMarketID = approachSettlement.MarketID;
                     czManager.OnApproachSettlement(approachSettlement.Name);
                     settlementActivity.OnApproachSettlement(approachSettlement);
                     break;

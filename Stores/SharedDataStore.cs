@@ -314,9 +314,26 @@ namespace ODEliteTracker.Stores
                     break;
 
                 case FSSSignalDiscoveredEvent.FSSSignalDiscoveredEventArgs fss:
-                    if (fss.IsStation == true && string.Equals(fss.SignalType, "FleetCarrier", StringComparison.OrdinalIgnoreCase) && string.IsNullOrEmpty(fss.SignalName) == false)
+                    if (fss.IsStation == false)
+                        break;
+
+                    if (string.Equals(fss.SignalType, "FleetCarrier", StringComparison.OrdinalIgnoreCase) && string.IsNullOrEmpty(fss.SignalName) == false)
                     {
                         var id = fss.SignalName.Split(' ').Last();
+
+                        if (carrierNames.ContainsKey(id))
+                        {
+                            carrierNames[id] = fss.SignalName;
+                            break;
+                        }
+
+                        _ = carrierNames.TryAdd(id, fss.SignalName);
+                        break;
+                    }
+
+                    if (string.Equals(fss.SignalType, "SquadronCarrier", StringComparison.OrdinalIgnoreCase) && string.IsNullOrEmpty(fss.SignalName) == false)
+                    {
+                        var id = fss.SignalName.Split('|').Last().Trim();
 
                         if (carrierNames.ContainsKey(id))
                         {

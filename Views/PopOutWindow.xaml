@@ -161,7 +161,7 @@
                                 PopupAnimation="Scroll"
                                 StaysOpen="False"
                                 Width="300"
-                                VerticalOffset="15"
+                                VerticalOffset="10"
                                 AllowsTransparency="True"
                                 HorizontalAlignment="Center"
                                 Placement="Bottom">
@@ -223,7 +223,7 @@
                                 PlacementTarget="{Binding ElementName=OpacityBtn}"
                                 PopupAnimation="Scroll"
                                 StaysOpen="False"
-                                VerticalOffset="15"
+                                VerticalOffset="10"
                                 AllowsTransparency="True"
                                 HorizontalAlignment="Center"
                                 Placement="Bottom">

@@ -455,11 +455,11 @@ namespace ODEliteTracker.Database
             context.SaveChanges();
         }
 
-        public void RemoveShoppingListDepot(long marketID, long systemAddress, string stationName)
+        public void RemoveShoppingListDepot(long marketID, long systemAddress)
         {
             using var context = _contextFactory.CreateDbContext();
 
-            var knownDepot = context.DepotShoppingList.FirstOrDefault(x => x.MarketID == marketID && x.SystemAddress == systemAddress && x.StationName == stationName);
+            var knownDepot = context.DepotShoppingList.FirstOrDefault(x => x.MarketID == marketID && x.SystemAddress == systemAddress);
 
             if (knownDepot != null)
             {

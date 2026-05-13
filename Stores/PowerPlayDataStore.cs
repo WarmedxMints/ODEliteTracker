@@ -1,6 +1,5 @@
 ﻿using EliteJournalReader;
 using EliteJournalReader.Events;
-using Newtonsoft.Json.Linq;
 using ODEliteTracker.Models.PowerPlay;
 using ODJournalDatabase.JournalManagement;
 using ODMVVM.Helpers;
@@ -53,6 +52,7 @@ namespace ODEliteTracker.Stores
                 { JournalTypeEnum.FactionKillBond, true },
                 { JournalTypeEnum.MissionCompleted,true },
                 { JournalTypeEnum.DatalinkScan,true },
+                { JournalTypeEnum.DataScanned,true },
                 { JournalTypeEnum.SearchAndRescue, true },
                 { JournalTypeEnum.MarketSell, true },
                 { JournalTypeEnum.SellExplorationData, true },
@@ -180,6 +180,22 @@ namespace ODEliteTracker.Stores
                         PledgeDataUpdated?.Invoke(this, PledgeData);
                     break;
                 case PowerplayMeritsEvent.PowerplayMeritsEventArgs merits:
+//#if DEBUG
+//                    if (systems.TryGetValue(currentSystemAddress, out var csystem))
+//                    {
+//                        if (csystem.CycleData.TryGetValue(cycle, out var ppData))
+//                        {
+//                            ppData.MeritList.Add(new("Total", merits.MeritsGained));
+//                        }
+//                        else
+//                        {
+//                            var pdata = new PowerplayCycleData();
+
+//                            pdata.MeritList.Add(new("Total", merits.MeritsGained));
+//                            csystem.CycleData.Add(cycle, pdata);
+//                        }
+//                    }
+//#endif
                     if (systems.TryGetValue(currentSystemAddress, out var powerplaySystem))
                     {
                         UpdatePledgeData(merits);
@@ -276,10 +292,22 @@ namespace ODEliteTracker.Stores
                     break;
                 case MissionCompletedEvent.MissionCompletedEventArgs missionCompleted:
                     if (missionCompleted.Name.Contains("Mission_Altruism"))
+                    {
                         SetActivity(cycle, "Donations", evt.TimeStamp);
+                        break;
+                    }
+
+                    if (missionCompleted.Name.Contains("Mission_OnFoot_RebootRestore"))
+                    {
+                        SetActivity(cycle, "Settlement Restore", evt.TimeStamp);
+                    }
                     break;
                 case DatalinkScanEvent.DatalinkScanEventArgs datalink:
                     if(datalink.Message.Contains("$Datascan_ShipUplink;"))
+                        SetActivity(cycle, "Data Link Scans", evt.TimeStamp);
+                    break;
+                case DataScannedEvent.DataScannedEventArgs datascan:
+                    if (datascan.Type.Contains("$Datascan_ShipUplink;"))
                         SetActivity(cycle, "Data Link Scans", evt.TimeStamp);
                     break;
                 case SearchAndRescueEvent.SearchAndRescueEventArgs:
@@ -397,8 +425,9 @@ namespace ODEliteTracker.Stores
             {
                 if (system.CycleData.TryGetValue(cycle, out var ppData))
                 {
-                    AddMerits(ppData, storedMerits);
+                    var value = storedMerits;
                     storedMerits = 0;
+                    AddMerits(ppData, value);
                     UpdateSystemIfLive(system);
                     return;
                 }

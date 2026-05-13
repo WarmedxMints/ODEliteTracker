@@ -23,7 +23,7 @@
             <wpfconverters:IntToColourConverter x:Key="IntToColour" />
             <wpfconverters:AssetFilterToBoolConverter x:Key="AssetFilterConvertor" />
             <FontFamily x:Key="Eurostile">pack://application:,,,/Assets/Fonts/#Eurostile</FontFamily>
-            
+            <!--<FontFamily x:Key="Eurostile">Verdana</FontFamily>-->
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Views/ViewDataTemplates.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/BusyIndicator;component/Theme/Default.xaml" />

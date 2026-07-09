@@ -153,7 +153,27 @@ namespace ODEliteTracker.ViewModels.ModelViews.BGS
         public Position Position => system.Position;
         public string ControllingFaction => system.ControllingFaction;
         public string? Security => system.Security;
-        public string? ControllingFactionState => Factions.FirstOrDefault(x => string.Equals(x.Name, ControllingFaction))?.FactionState;
+        public string? ControllingFactionState 
+            {
+            get
+            {
+                if (system.Factions.Count <= 0 || string.IsNullOrEmpty(system.ControllingFaction))
+                {
+                    return "None";
+                }
+
+                var faction = system.Factions.FirstOrDefault(x => string.Equals(x.Name, system.ControllingFaction));
+
+                if (faction is null || faction.ActiveStates.Count == 0)
+                {
+                    return "None";
+                }
+
+                var states = faction.ActiveStates.Select(x => x.State.SplitCamelCase());
+
+                return string.Join(", ", states);
+            }
+        }
         public string SystemAllegiance => system.SystemAllegiance;
         public string Power => system.Power;
         public PowerplayState PowerState => system.PowerState;

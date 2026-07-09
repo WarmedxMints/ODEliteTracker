@@ -205,7 +205,7 @@ namespace ODEliteTracker.Models.Colonisation.Builds
 
         private static readonly List<AssetStats> SettlementResearchBioLarge =
             [
-                new("Research Bio Settlement [Large]", "Chronos", LandingPadSize.Large, 2, 1, PointTier.Tier2, 1, PointTier.Tier3, AssetEconomy.HighTech, 1, 1, 0, 0, 10, 0, 3, 4, AssetFilter.Settlement)
+                new("Research Bio Settlement [Large]", "Chronos", LandingPadSize.Large, 2, 1, PointTier.Tier2, 2, PointTier.Tier3, AssetEconomy.HighTech, 1, 1, 0, 0, 10, 0, 3, 4, AssetFilter.Settlement)
             ];
 
         private static readonly List<AssetStats> SettlementTourismSmall =
@@ -220,7 +220,7 @@ namespace ODEliteTracker.Models.Colonisation.Builds
 
         private static readonly List<AssetStats> SettlementTourismLarge =
             [
-                new("Tourist Settlement [Large]", "Fufluns", LandingPadSize.Large, 2, 1, PointTier.Tier2, 1, PointTier.Tier3, AssetEconomy.Tourism, 1, 1, -1, 5, 0, 0, 0, 4, AssetFilter.Settlement)
+                new("Tourist Settlement [Large]", "Fufluns", LandingPadSize.Large, 2, 1, PointTier.Tier2, 2, PointTier.Tier3, AssetEconomy.Tourism, 1, 1, -1, 5, 0, 0, 0, 4, AssetFilter.Settlement)
             ];
 
         private static readonly List<AssetStats> HubExtraction =

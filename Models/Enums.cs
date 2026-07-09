@@ -163,7 +163,9 @@ namespace ODEliteTracker.Models
         [Description("Exobiology Route (Old Format)")]
         ExobiologyOld,
         [Description("Colonisation Plotter")]
-        Colonisation
+        Colonisation,
+        [Description("Galaxy Plotter Old")]
+        GalaxyPlotterOld,
     }
 
     public enum CsvTypeComboBox

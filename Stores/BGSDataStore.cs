@@ -124,11 +124,13 @@ namespace ODEliteTracker.Stores
             switch (evt.EventData)
             {
                 case FileheaderEvent.FileheaderEventArgs file:
-                    CheckForCZ(file.Timestamp);
+                    //CheckForCZ(file.Timestamp);
+                    czManager.Reset();
                     break;
                 case LoadGameEvent.LoadGameEventArgs load:
                     odyssey = load.Odyssey;
                     settlementActivity.Reset();
+                    //czManager.Reset();
                     CheckForCZ(load.Timestamp);
                     if (IsLive)
                         UpdatePreviousThursday();
@@ -264,16 +266,33 @@ namespace ODEliteTracker.Stores
                     }
                     break;
                 case MissionsEvent.MissionsEventArgs missionsEvt:
-                    var evtMissions = new List<Mission>();
 
-                    evtMissions.AddRange(missionsEvt.Active);
-                    evtMissions.AddRange(missionsEvt.Complete);
-                    evtMissions.AddRange(missionsEvt.Failed);
+                    //check failed
+                    foreach (var failed in missionsEvt.Failed)
+                    {
+                        var failMission = missions.FirstOrDefault(x => x.MissionID == failed.MissionID);
+                        if (failMission != null)
+                        {
+                            failMission.CurrentState = MissionState.Failed;
+                            failMission.CompletionTime = missionsEvt.Timestamp;
+                            failMission.Reward = 0;
+
+                            if (systems.TryGetValue(failMission.OriginSystemAddress, out var sys))
+                            {
+                                sys.AddMissionTick(missionsEvt.Timestamp);
+                            }
+                        }
+                    }
 
                     var missionsToRemove = missions.Where(x => x.CurrentState <= MissionState.Redirected).ToList();
 
                     if (missionsToRemove.Count == 0)
                         break;
+
+                    var evtMissions = new List<Mission>();
+
+                    evtMissions.AddRange(missionsEvt.Active);
+                    evtMissions.AddRange(missionsEvt.Complete);
 
                     foreach (var m in missionsToRemove)
                     {

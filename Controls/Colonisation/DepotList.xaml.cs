@@ -1,4 +1,5 @@
-﻿using ODEliteTracker.ViewModels.ModelViews.Colonisation;
+﻿using ODEliteTracker.ViewModels;
+using ODEliteTracker.ViewModels.ModelViews.Colonisation;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -44,5 +45,29 @@ namespace ODEliteTracker.Controls.Colonisation
         // Using a DependencyProperty as the backing store for SelectDepotCommand.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty SelectDepotCommandProperty =
             DependencyProperty.Register("SelectDepotCommand", typeof(ICommand), typeof(DepotList), new PropertyMetadata(null));
+
+        private void SetDepotActiveState(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is ColonisationViewModel vm && sender is MenuItem item && item.DataContext is ConstructionDepotVM depot)
+            {
+                vm.SetActiveStateCommand.Execute(depot);
+            }
+        }
+
+        private void AddRemoveShoppingList(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is ColonisationViewModel vm && sender is MenuItem item && item.DataContext is ConstructionDepotVM depot)
+            {
+                vm.AddShoppingListCommand.Execute(depot);
+            }
+        }
+
+        private void CopyToClipboard(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is ColonisationViewModel vm && sender is MenuItem item && item.DataContext is ConstructionDepotVM depot)
+            {
+                vm.SetClipboardCommand.Execute(depot.SystemNameText);
+            }
+        }
     }
 }

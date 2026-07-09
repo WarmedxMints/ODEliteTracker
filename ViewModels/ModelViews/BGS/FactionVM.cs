@@ -8,7 +8,17 @@ namespace ODEliteTracker.ViewModels.ModelViews.BGS
     public sealed class FactionVM(Faction faction) : ODObservableObject
     {
         public string Name { get; } = faction.Name;
-        public string FactionState { get; } = faction.FactionState.SplitCamelCase();
+        public string FactionState 
+        { 
+            get
+            {
+                if (faction.ActiveStates.Any())
+                {
+                    return faction.ActiveStates[0].State.SplitCamelCase();
+                }
+                return "None";
+            }
+        }
         public string Government { get; } = string.IsNullOrEmpty(faction.Government_Localised) ? faction.Government : faction.Government_Localised;
         public string Influence { get; } = $"{faction.Influence * 100:N2} %";
         public string Allegiance { get; } = faction.Allegiance;

@@ -332,13 +332,13 @@
                                         </Grid.RowDefinitions>
                                         <StackPanel Grid.Column="0"
                                                     Orientation="Horizontal">
-                                            <TextBlock Text="{Binding SelectedDepot.SystemName}"
+                                            <TextBlock Text="{Binding SelectedDepot.SystemNameText}"
                                                        FontSize="30"
                                                        Foreground="{DynamicResource Header}"
                                                        Grid.Column="0" />
                                             <Button Style="{DynamicResource ClipboardBtn}"
                                                     Command="{Binding SetClipboardCommand}"
-                                                    CommandParameter="{Binding SelectedDepot.SystemName}"
+                                                    CommandParameter="{Binding SelectedDepot.SystemNameText}"
                                                     Margin="5,0"
                                                     Height="25"
                                                     Width="25">

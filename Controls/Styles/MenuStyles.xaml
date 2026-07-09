@@ -26,6 +26,7 @@
                                    Text="{Binding Path=Header, RelativeSource={RelativeSource TemplatedParent}}"
                                    HorizontalAlignment="Left"
                                    VerticalAlignment="Center"
+                                   Margin="5,0"
                                    Foreground="{TemplateBinding Foreground}"
                                    Grid.Column="0" />
 

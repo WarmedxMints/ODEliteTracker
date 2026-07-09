@@ -20,12 +20,13 @@ namespace ODEliteTracker.Services
             ["System Name", "Body Name", "Body Subtype", "Is Terraformable", "Distance To Arrival", "Estimated Scan Value", "Estimated Mapping Value", "Jumps"], //roadToRichesRoute
             ["System Name", "Distance", "Distance Remaining", "Tritium in tank", "Tritium in market", "Fuel Used", "Icy Ring", "Pristine", "Restock Tritium"], //fleetCarrierRoute
             ["System Name", "Distance To Arrival", "Distance Remaining", "Neutron Star", "Jumps"], //neutronRoute
-            ["System Name", "Distance", "Distance Remaining", "Fuel Left", "Fuel Used", "Refuel", "Neutron Star"], //galaxyPlotterRoute
+            ["System Name", "Distance", "Distance Remaining", "Fuel Left", "Fuel Used", "Refuel", "Neutron Star", "Inject"], //galaxyPlotterRoute            
             ["System Name", "Body Name", "Distance To Arrival", "Jumps"], //worldTypeRoute
             ["System Name", "Jumps"], //touristRoute
             ["System Name","Body Name","Body Subtype","Distance To Arrival","Landmark Subtype","Value","Count","Jumps"], //ExoBiology    
             ["System Name", "Body Name", "Body Subtype", "Distance To Arrival", "Landmark Type", "Value", "Jumps"], //ExoBiologyold
-            ["System Name", "Distance", "Distance Remaining"] //Colonisation Plotter
+            ["System Name", "Distance", "Distance Remaining"], //Colonisation Plotter,
+            ["System Name", "Distance", "Distance Remaining", "Fuel Left", "Fuel Used", "Refuel", "Neutron Star"], //galaxyPlotterRoute old
         ];
 
         public static CsvParserReturn? ForceParse(string filename, CsvType type)
@@ -92,6 +93,7 @@ namespace ODEliteTracker.Services
                     CsvType.ExobiologyOld => ProcessExoRoute(parser, CsvType.ExobiologyOld),
                     CsvType.Exobiology => ProcessExoRoute(parser, CsvType.Exobiology),
                     CsvType.Colonisation => ProcessColonisation(parser),
+                    CsvType.GalaxyPlotterOld => ProcessGalaxyPlotterRoute(parser),
                     _ => null,
                 };
             }

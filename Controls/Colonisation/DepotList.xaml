@@ -8,6 +8,43 @@
              x:Name="DepotListBox"
              d:DesignHeight="450"
              d:DesignWidth="800">
+    <UserControl.Resources>
+        <Style TargetType="{x:Type ContextMenu}">
+            <Setter Property="SnapsToDevicePixels"
+                    Value="True" />
+            <Setter Property="OverridesDefaultStyle"
+                    Value="True" />
+            <Setter Property="Grid.IsSharedSizeScope"
+                    Value="true" />
+            <Setter Property="HasDropShadow"
+                    Value="True" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ContextMenu}">
+                        <Border x:Name="Border"
+                                Background="{DynamicResource ViewBackground}"
+                                BorderBrush="{DynamicResource EliteBtnBorder}"
+                                BorderThickness="2">
+                            <StackPanel IsItemsHost="True"
+                                        Margin="2"
+                                        KeyboardNavigation.DirectionalNavigation="Cycle" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="HasDropShadow"
+                                     Value="true">
+                                <Setter TargetName="Border"
+                                        Property="Padding"
+                                        Value="0,3,0,3" />
+                                <Setter TargetName="Border"
+                                        Property="CornerRadius"
+                                        Value="4" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
     <Grid>
         <ListBox ItemsSource="{Binding ElementName=DepotListBox, Path=Depots}"
                  ScrollViewer.VerticalScrollBarVisibility="Visible"
@@ -71,6 +108,30 @@
                                 </Rectangle.OpacityMask>
                             </Rectangle>
                         </Grid>
+                        <Button.ContextMenu>
+                            <ContextMenu BorderBrush="{DynamicResource EliteBtnBorder}"
+                                         FontSize="18"
+                                         Width="280"
+                                         Background="{DynamicResource ViewBackground}">
+                                <ContextMenu.Items>
+                                    <MenuItem Header="Toggle Active"
+                                              IsCheckable="False"
+                                              BorderThickness="0"
+                                              Height="25"
+                                              Click="SetDepotActiveState" />
+                                    <MenuItem Header="Add/Remove From Shopping List"
+                                              BorderThickness="0"
+                                              IsCheckable="False"
+                                              Height="25"
+                                              Click="AddRemoveShoppingList" />
+                                    <MenuItem Header="Copy System Name to Clipboard"
+                                              BorderThickness="0"
+                                              IsCheckable="False"
+                                              Height="25"
+                                              Click="CopyToClipboard" />
+                                </ContextMenu.Items>
+                            </ContextMenu>
+                        </Button.ContextMenu>
                     </Button>
                 </DataTemplate>
             </ListBox.ItemTemplate>

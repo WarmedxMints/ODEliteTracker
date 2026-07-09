@@ -307,7 +307,8 @@ namespace ODEliteTracker.Stores
                             fsdJump.SystemFaction.Name,
                             $"Population : {EliteHelpers.FormatNumber(fsdJump.Population)}",
                             fsdJump.SystemAllegiance,
-                            fsdJump.SystemFaction.FactionState,
+                            //fsdJump.SystemFaction.FactionState,
+                            fsdJump.ControllingFactionState,
                             fsdJump.SystemSecurity_Localised,
                             EliteHelpers.FactionReputationToString(fsdJump.Factions.FirstOrDefault(x => string.Equals(x.Name, fsdJump.SystemFaction.Name))?.MyReputation)
                         ]);
@@ -393,13 +394,13 @@ namespace ODEliteTracker.Stores
                             location.SystemFaction.Name,
                             $"Population : {EliteHelpers.FormatNumber(location.Population ?? 0)}",
                             location.SystemAllegiance,
-                            location.SystemFaction.FactionState,
+                            location.ControllingFactionState,
                             location.SystemSecurity_Localised,
                             EliteHelpers.FactionReputationToString(location.Factions.FirstOrDefault(x => string.Equals(x.Name, location.SystemFaction.Name))?.MyReputation)
                         ]);
                     break;
 
-                case EliteJournalReader.Events.MarketEvent.MarketEventArgs marketArgs:
+                case MarketEvent.MarketEventArgs marketArgs:
                     Task.Factory.StartNew(async () =>
                     {
                         await Task.Delay(400);

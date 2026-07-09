@@ -59,6 +59,16 @@ namespace ODEliteTracker.Models.BGS
             TickData.Add(data);
         }
 
+        public void AddMissionTick(DateTime eventTime)
+        { 
+            var data = TickData.Last();
+
+            if (data.VisitedTimes.Contains(eventTime))
+                return;
+
+            data.VisitedTimes.Add(eventTime);
+        }
+
         public void AddConflicts(IEnumerable<Conflict> conflicts, DateTime eventTime)
         {
             foreach(var conflict in conflicts)

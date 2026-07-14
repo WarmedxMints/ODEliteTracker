@@ -71,7 +71,8 @@ namespace ODEliteTracker.Notifications.Docking
                 DockingDeniedReason.ActiveFighter => "Ship Launcher Fighter Deployed",
                 DockingDeniedReason.NoReason => "No Reason Given",
                 DockingDeniedReason.RestrictedAccess => "Insufficient Docking Access",
-                DockingDeniedReason.JumpImminent => "Carrier Jump Imminent",
+                DockingDeniedReason.JumpImminent => "Jump Imminent",
+                DockingDeniedReason.DockingUnavliable => "Docking Unavliable",
                 _ => "Unknown",
             };
         }

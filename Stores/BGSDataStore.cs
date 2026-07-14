@@ -266,7 +266,12 @@ namespace ODEliteTracker.Stores
                     }
                     break;
                 case MissionsEvent.MissionsEventArgs missionsEvt:
-
+                    //Check if we've started an operation and shouldn't check for missions to be removed
+                    if (missionsEvt.Active.Count == 1 && missionsEvt.Failed.Count == 0 && missionsEvt.Complete.Count == 0
+                        && missionsEvt.Active[0].Expires == 0)
+                    {
+                        break;
+                    }
                     //check failed
                     foreach (var failed in missionsEvt.Failed)
                     {

@@ -28,7 +28,8 @@ namespace ODEliteTracker.Models.Settings
         SqaudCarrierReady = 1 << 5,
         Docking = 1 << 6,
         Crime = 1 << 7,
-        All = System | Station | ShipScanned | CopyToClipboard | FleetCarrierReady | SqaudCarrierReady | Docking | Crime
+        SpanshRefuel = 1 << 8,
+        All = System | Station | ShipScanned | CopyToClipboard | FleetCarrierReady | SqaudCarrierReady | Docking | Crime | SpanshRefuel
     }
 
     public sealed class NotificationSettings

@@ -423,6 +423,7 @@ namespace ODEliteTracker.ViewModels
             sharedData.Save();
             popOutService.CloseViews(settings.SelectedCommanderID);
             notificationService.Dispose();
+            navigationService.CurrentView?.Dispose();
         }
     }
 }

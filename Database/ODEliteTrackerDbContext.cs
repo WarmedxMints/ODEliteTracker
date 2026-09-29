@@ -15,6 +15,7 @@ namespace ODEliteTracker.Database
         public DbSet<WatchedMarketDTO> WatchedMarkets { get; set; }
         public DbSet<BGSIgnoredSystemsDTO> BGSIgnoredSystems { get; set; }
         public DbSet<ColonisationBuildWishlistItemDTO> ColonisationWishList { get; set; }
+        public DbSet<ColonisationRouteSystemDTO> ColonisationRouteSystems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -26,6 +27,14 @@ namespace ODEliteTracker.Database
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_SystemAddress");
+
+            modelBuilder.Entity<ColonisationRouteSystemDTO>()
+                .Property(c => c.CommanderId)         
+                .ValueGeneratedNever();
+
+            modelBuilder.Entity<ColonisationRouteSystemDTO>()
+                .Property(c => c.SystemAddress)
+                .ValueGeneratedNever();
         }
     }
 }

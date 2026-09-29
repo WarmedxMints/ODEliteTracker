@@ -62,6 +62,9 @@ namespace ODEliteTracker.Notifications
                 case NotificationOptions.Crime:
                     ImageSource = "/Assets/Icons/pirate.png";
                     break;
+                case NotificationOptions.SpanshRefuel:
+                    ImageSource = "/Assets/Icons/refuel.png";
+                    break;
             }
 
             var thinBorder = 2;

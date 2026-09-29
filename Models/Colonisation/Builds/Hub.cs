@@ -148,7 +148,7 @@
             { "$copper_name;", 93 },
             { "$aluminium_name;", 2697 },
             { "$fruitandvegetables_name;", 38 },
-            { "$foodcartridges_name;", 58 },
+            { "$foodcartridges_name;", 56 },
             { "$polymers_name;", 744 },
             { "$powergenerators_name;", 28 },
             { "$computercomponents_name;", 42 },

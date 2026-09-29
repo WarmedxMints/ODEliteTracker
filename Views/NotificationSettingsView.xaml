@@ -456,6 +456,7 @@
                             <RowDefinition />
                             <RowDefinition />
                             <RowDefinition />
+                            <RowDefinition />
                         </Grid.RowDefinitions>
                         
                         <CheckBox Style="{DynamicResource EliteStyleCheckBox}"
@@ -469,6 +470,7 @@
                         <TextBlock Text="Notification with system details when you arrive in a new star system"
                                    Margin="10"
                                    VerticalAlignment="Center"
+                                   TextWrapping="Wrap"
                                    FontSize="16"
                                    Grid.Column="1" />
 
@@ -484,6 +486,7 @@
                         <TextBlock Text="Notification with station details when you dock"
                                    Margin="10"
                                    VerticalAlignment="Center"
+                                   TextWrapping="Wrap"
                                    FontSize="16"
                                    Grid.Row="1"
                                    Grid.Column="1" />
@@ -499,6 +502,7 @@
                                   IsChecked="{Binding NotificationSettings.Options, Converter={StaticResource EnumFlagConverter}, ConverterParameter={x:Static settings:NotificationOptions.ShipScanned}, Mode=OneWay}" />
                         <TextBlock Margin="10"
                                    VerticalAlignment="Center"
+                                   TextWrapping="Wrap"
                                    FontSize="16"
                                    Grid.Row="2"
                                    Grid.Column="1">
@@ -523,6 +527,7 @@
                         <TextBlock Text="Notification when something is copied to the clipboard"
                                    Margin="10"
                                    VerticalAlignment="Center"
+                                   TextWrapping="Wrap"
                                    FontSize="16"
                                    Grid.Row="3"
                                    Grid.Column="1" />
@@ -539,6 +544,7 @@
                         <TextBlock Text="Notification when the cooldown has finished and the carrier is ready to jump again"
                                    Margin="10"
                                    VerticalAlignment="Center"
+                                   TextWrapping="Wrap"
                                    FontSize="16"
                                    Grid.Row="4"
                                    Grid.Column="1" />
@@ -555,6 +561,7 @@
                         <TextBlock Text="Notification when the cooldown has finished and the squadron carrier is ready to jump again"
                                    Margin="10"
                                    VerticalAlignment="Center"
+                                   TextWrapping="Wrap"
                                    FontSize="16"
                                    Grid.Row="5"
                                    Grid.Column="1" />
@@ -571,6 +578,7 @@
                         <TextBlock Text="Notification when docking denied with reason"
                                    Margin="10"
                                    VerticalAlignment="Center"
+                                   TextWrapping="Wrap"
                                    FontSize="16"
                                    Grid.Row="6"
                                    Grid.Column="1" />
@@ -587,8 +595,26 @@
                         <TextBlock Text="Notification when fine/bounty issued for illegal activities"
                                    Margin="10"
                                    VerticalAlignment="Center"
+                                   TextWrapping="Wrap"
                                    FontSize="16"
                                    Grid.Row="7"
+                                   Grid.Column="1" />
+
+                        <CheckBox Style="{DynamicResource EliteStyleCheckBox}"
+                                  Content="Refuel System"
+                                  Grid.Row="8"
+                                  Margin="10"
+                                  VerticalAlignment="Center"
+                                  VerticalContentAlignment="Center"
+                                  Command="{Binding SetOptions}"
+                                  CommandParameter="{x:Static settings:NotificationOptions.SpanshRefuel}"
+                                  IsChecked="{Binding NotificationSettings.Options, Converter={StaticResource EnumFlagConverter}, ConverterParameter={x:Static settings:NotificationOptions.SpanshRefuel}, Mode=OneWay}" />
+                        <TextBlock Text="Notification when when arriving in a refuel system when using the Spansh Galaxy plotter"
+                                   Margin="10"
+                                   VerticalAlignment="Center"
+                                   TextWrapping="Wrap"
+                                   FontSize="16"
+                                   Grid.Row="8"
                                    Grid.Column="1" />
                     </Grid>
                 </Grid>

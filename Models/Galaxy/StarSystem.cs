@@ -15,6 +15,7 @@ namespace ODEliteTracker.Models.Galaxy
             ControllingFaction = evt.SystemFaction?.Name;
             SystemAllegiance = evt.SystemAllegiance;
             Security = string.IsNullOrEmpty(evt.SystemSecurity_Localised) ? evt.SystemSecurity : evt.SystemSecurity_Localised;
+            FactionCount = evt.Factions?.Count ?? 0;
         }
 
         public StarSystem(FSDJumpEvent.FSDJumpEventArgs evt)
@@ -27,6 +28,7 @@ namespace ODEliteTracker.Models.Galaxy
             ControllingFaction = evt.SystemFaction?.Name;
             SystemAllegiance = evt.SystemAllegiance;
             Security = string.IsNullOrEmpty(evt.SystemSecurity_Localised) ? evt.SystemSecurity : evt.SystemSecurity_Localised;
+            FactionCount = evt.Factions?.Count ?? 0;
         }
 
         public StarSystem(CarrierJumpEvent.CarrierJumpEventArgs evt)
@@ -39,6 +41,7 @@ namespace ODEliteTracker.Models.Galaxy
             ControllingFaction = evt.SystemFaction?.Name;
             SystemAllegiance = evt.SystemAllegiance;
             Security = string.IsNullOrEmpty(evt.SystemSecurity_Localised) ? evt.SystemSecurity : evt.SystemSecurity_Localised;
+            FactionCount = evt.Factions?.Count ?? 0;
         }
 
         public string Name { get; set; }
@@ -50,6 +53,7 @@ namespace ODEliteTracker.Models.Galaxy
         public string? SystemAllegiance { get; set; }
         public string? Security { get; set; }
         public Dictionary<long, SystemBody> Bodies { get; set; } = [];
+        public int FactionCount { get; set;  }
         public void UpdateSystem(StarSystem system)
         {
             ControllingPower = system.ControllingPower;
@@ -57,8 +61,19 @@ namespace ODEliteTracker.Models.Galaxy
             ControllingFaction = system.ControllingFaction;
             SystemAllegiance = system.SystemAllegiance;
             Security = system.Security;
+            FactionCount = system.FactionCount;
         }
 
+        internal bool DataChanged(StarSystem other)
+        {
+            if (other == null)
+                return false;
+            return FactionCount != other.FactionCount
+                || !string.Equals(ControllingPower, other.ControllingPower)
+                || PowerState != other.PowerState
+                || !string.Equals(SystemAllegiance, other.SystemAllegiance)
+                || !string.Equals(Security, other.Security);
+        }
         internal void AddBody(SystemBody body)
         {
             if (Bodies.ContainsKey(body.BodyID))

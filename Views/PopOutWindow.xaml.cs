@@ -1,6 +1,7 @@
 ﻿using ODEliteTracker.ViewModels.PopOuts;
 using ODMVVM.Helpers;
 using ODMVVM.Views;
+using System.Diagnostics;
 using System.Timers;
 using System.Windows;
 using System.Windows.Input;
@@ -46,16 +47,17 @@ namespace ODEliteTracker.Views
             }
         }
 
-        private void PopOutWindow_Loaded(object sender, RoutedEventArgs e)
+        private async void PopOutWindow_Loaded(object sender, RoutedEventArgs e)
         {
             checkForMouseTimer.Start();
+            await Task.Delay(100);
             SetRect();
         }
 
         private Rect windowRect = new();
         private readonly System.Timers.Timer checkForMouseTimer;
         private readonly PopOutViewModel viewModel;
-
+        private bool containsMouse;
         private void OnMouseTimer(object? sender, ElapsedEventArgs e)
         {
             if (_forceClosed)
@@ -70,7 +72,7 @@ namespace ODEliteTracker.Views
                 //Get the mouse position
                 var mousePos = System.Windows.Forms.Control.MousePosition;
                 //Check if the mouse is within the window
-                var containsMouse = windowRect.Contains(mousePos.X, mousePos.Y);
+                containsMouse = windowRect.Contains(mousePos.X, mousePos.Y);
 
 
                 if (viewModel.ClickThrough)
@@ -111,16 +113,17 @@ namespace ODEliteTracker.Views
         }
 
         private void SetRect()
-        {
+        {       
             Point screenCoordinates = this.PointToScreen(new Point(0, 0));
-            windowRect = new(screenCoordinates.X - 10, screenCoordinates.Y - 10, this.Width + 20, this.Height + 20);
+            windowRect = new(screenCoordinates.X - 20, screenCoordinates.Y - 20, this.Width + 40, this.Height + 40);
         }
 
-        private void PopOut_SizeChanged(object sender, SizeChangedEventArgs e)
+        private async void PopOut_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             if (IsLoaded == false)
                 return;
 
+            await Task.Delay(100);
             SetRect();
             AdjustPopout();
         }

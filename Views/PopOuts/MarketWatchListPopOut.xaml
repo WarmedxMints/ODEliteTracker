@@ -8,6 +8,7 @@
              xmlns:busyIndicator="https://github.com/moh3ngolshani/BusyIndicator"
              xmlns:settings="clr-namespace:ODEliteTracker.Models.Settings"
              xmlns:colonisation="clr-namespace:ODEliteTracker.Controls.Colonisation"
+             xmlns:odmvvm="clr-namespace:ODMVVM.Helpers;assembly=ODMVVM"
              d:DataContext="{d:DesignInstance popouts:MarketWatchListPopOutViewModel}"
              mc:Ignorable="d"
              x:Name="Root"
@@ -32,11 +33,13 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
-                    <RowDefinition />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="{Binding StationMarketRowGridLength}" />
                 </Grid.RowDefinitions>
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
@@ -45,7 +48,7 @@
                                Margin="5"
                                Foreground="{DynamicResource Overlay_ForegroundBrush}" />
 
-                    <StackPanel Grid.Column="1"
+                    <StackPanel Grid.Column="2"
                                 Visibility="{Binding IsMouseOver, Converter={StaticResource BoolToVis}}"
                                 Orientation="Horizontal">
                         <TextBlock Text="Commodity Sorting "
@@ -63,50 +66,32 @@
                     </StackPanel>
                 </Grid>
 
-                <DataGrid ItemsSource="{Binding WatchedMarkets}"
-                          SelectedItem="{Binding SelectedWatchedMarket}"
-                          Grid.Row="1"
-                          Margin="10"
-                          Style="{DynamicResource ConstructionResourcesDataGrid}"
-                          RowStyle="{DynamicResource MarketWatchlistRowStyle}"
-                          CellStyle="{DynamicResource NoSelectCellNoMarginPopOut}"
-                          Foreground="{DynamicResource Overlay_ForegroundBrush}"
-                          FontSize="20"
-                          IsReadOnly="True"
-                          SelectionMode="Single"
-                          Visibility="{Binding IsMouseOver, Converter={StaticResource BoolToVis}}"
-                          ScrollViewer.HorizontalScrollBarVisibility="{Binding IsMouseOver, Converter={StaticResource BoolToVis}}"
-                          ScrollViewer.VerticalScrollBarVisibility="{Binding IsMouseOver, Converter={StaticResource BoolToVis}}"
-                          HeadersVisibility="Column"
-                          AutoGenerateColumns="False"
-                          HorizontalAlignment="Center">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Station Name"
-                                            MinWidth="250"
-                                            Width="*"
-                                            HeaderStyle="{DynamicResource OverlayDataGridHeaderLeft}"
-                                            ElementStyle="{DynamicResource DataGridElementLeftMarginBody}"
-                                            Binding="{Binding Name}" />
-                        <DataGridTemplateColumn Width="30">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <Button Command="{Binding ElementName=Root, Path=DataContext.AddRemoveWatchedMarketsCommand}"
-                                            CommandParameter="{Binding MarketId}"
-                                            Style="{DynamicResource EliteStyleButton}"
-                                            Content="X"
-                                            Margin="2"
-                                            Width="25"
-                                            Height="25"
-                                            ToolTip="Remove From Watched List"
-                                            FontSize="16" />
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                    </DataGrid.Columns>
-                </DataGrid>
+                <Grid Grid.Row="1">
+                    <ComboBox ItemsSource="{Binding WatchedMarkets}"
+                              DisplayMemberPath="Name"
+                              SelectedItem="{Binding SelectedWatchedMarket}"
+                              FontSize="20"
+                              Height="30"
+                              Visibility="{Binding IsMouseOver, Converter={StaticResource BoolToVis}}"
+                              HorizontalAlignment="Left"
+                              Margin="10" />
+
+                    <Button Command="{Binding AddRemoveWatchedMarketsCommand}"
+                            CommandParameter="{Binding SelectedWatchedMarket.MarketId}"
+                            Style="{DynamicResource EliteStyleButton}"
+                            Content="X"
+                            Margin="2"
+                            Width="20"
+                            Height="30"
+                            Grid.Column="1"
+                            Visibility="{Binding IsMouseOver, Converter={StaticResource BoolToVis}}"
+                            HorizontalAlignment="Right"
+                            ToolTip="Remove From Watched List"
+                            FontSize="16" />
+                </Grid>
 
                 <DataGrid ItemsSource="{Binding SelectedWatchedMarketCommodities}"
-                          Grid.Row="3"
+                          Grid.Row="2"
                           Margin="10"
                           Style="{DynamicResource ConstructionResourcesDataGrid}"
                           RowStyle="{DynamicResource NoSelectRowStyle}"
@@ -116,18 +101,25 @@
                           FontSize="20"
                           IsReadOnly="True"
                           SelectionMode="Single"
-                          ScrollViewer.HorizontalScrollBarVisibility="{Binding IsMouseOver, Converter={StaticResource BoolToVis}}"
-                          ScrollViewer.VerticalScrollBarVisibility="{Binding IsMouseOver, Converter={StaticResource BoolToVis}}"
+                          GridLinesVisibility="None"
+                          ScrollViewer.HorizontalScrollBarVisibility="{Binding IsMouseOver, Converter={StaticResource ScollBarBoolToVis}}"
+                          ScrollViewer.VerticalScrollBarVisibility="{Binding IsMouseOver, Converter={StaticResource ScollBarBoolToVis}}"
                           HeadersVisibility="Column"
                           AutoGenerateColumns="False">
+                    <DataGrid.Resources>
+                        <odmvvm:WpfBindingProxy x:Key="proxy"
+                                            Data="{Binding }" />
+                    </DataGrid.Resources>
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Commodity"
-                                            MinWidth="250"
+                                            Width="*"
+                                            MinWidth="150"
                                             HeaderStyle="{DynamicResource OverlayDataGridHeaderLeft}"
                                             ElementStyle="{DynamicResource DataGridElementLeftMarginBody}"
                                             Binding="{Binding Name_Localised}" />
                         <DataGridTextColumn Header="Category"
                                             Width="*"
+                                            Visibility="{Binding Data.CategoryColumnVisibilty, Source={StaticResource proxy}}"
                                             HeaderStyle="{DynamicResource OverlayDataGridHeaderLeft}"
                                             ElementStyle="{DynamicResource DataGridElementLeftMarginBody}"
                                             Binding="{Binding Category_Localised}" />
@@ -139,6 +131,104 @@
                     </DataGrid.Columns>
                 </DataGrid>
 
+                <Grid Grid.Row="3">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+
+
+                        <TextBlock Text="{Binding CurrentMarket.StationName}"
+                                   FontSize="22"
+                                   Visibility="{Binding StationMarketVisibilty}"
+                                   Foreground="{DynamicResource Overlay_ForegroundBrush}"
+                                   Grid.ColumnSpan="2" />
+
+                        <StackPanel Orientation="Horizontal"
+                                    HorizontalAlignment="Right"
+                                    Grid.Column="3">
+                            <CheckBox Style="{DynamicResource EliteStyleCheckBox}"
+                                      Grid.Column="3"
+                                      
+                                      Margin="0,0,10,0"
+                                      Visibility="{Binding IsMouseOver, Converter={StaticResource BoolToVis}}"
+                                      Content="Category Column"
+                                      IsChecked="{Binding CategoryColumnVisibilty, Converter={StaticResource VisToBoolConverter}, Mode=OneWay}"
+                                      Command="{Binding ToggleCategoryColumnCommand}"
+                                      CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}" />
+                            <CheckBox Style="{DynamicResource EliteStyleCheckBox}"
+                                      Grid.Column="3"
+                                      HorizontalAlignment="Right"
+                                      Margin="0,0,10,0"
+                                      Visibility="{Binding IsMouseOver, Converter={StaticResource BoolToVis}}"
+                                      Content="Station Market"
+                                      IsChecked="{Binding StationMarketVisible}"
+                                      Command="{Binding OnToggleStationMarket}"
+                                      CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}" />
+                        </StackPanel>
+                    </Grid>
+                    <Grid  Visibility="{Binding StationMarketVisibilty}"
+                           Grid.Row="1">
+                        <DataGrid ItemsSource="{Binding CurrentMarketItems}"
+                                  Visibility="{Binding CurrentMarket, Converter={StaticResource NullToVis}, ConverterParameter=Hidden}"
+                                  Grid.Row="1"
+                                  Margin="10"
+                                  Style="{DynamicResource ConstructionResourcesDataGrid}"
+                                  RowStyle="{DynamicResource NoSelectRowStyle}"
+                                  CellStyle="{DynamicResource NoSelectCellNoMargin}"
+                                  Foreground="{DynamicResource Overlay_ForegroundBrush}"
+                                  FontSize="20"
+                                  IsReadOnly="True"
+                                  SelectionMode="Single"
+                                  GridLinesVisibility="None"
+                                  ScrollViewer.HorizontalScrollBarVisibility="{Binding IsMouseOver, Converter={StaticResource ScollBarBoolToVis}}"
+                                  ScrollViewer.VerticalScrollBarVisibility="{Binding IsMouseOver, Converter={StaticResource ScollBarBoolToVis}}"
+                                  HeadersVisibility="Column"
+                                  AutoGenerateColumns="False"
+                                  HorizontalAlignment="Center"
+                                  VerticalAlignment="Stretch">
+                            <DataGrid.Resources>
+                                <odmvvm:WpfBindingProxy x:Key="proxy"
+                                                        Data="{Binding}" />
+                            </DataGrid.Resources>
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Commodity"
+                                                    Width="*"
+                                                    MinWidth="150"
+                                                    HeaderStyle="{DynamicResource OverlayDataGridHeaderLeft}"
+                                                    ElementStyle="{DynamicResource DataGridElementLeftMarginBody}"
+                                                    Binding="{Binding Name_Localised}" />
+                                <DataGridTextColumn Header="Category"
+                                                    Width="*"
+                                                    MinWidth="100"
+                                                    Visibility="{Binding Data.CategoryColumnVisibilty, Source={StaticResource proxy}}"
+                                                    HeaderStyle="{DynamicResource OverlayDataGridHeaderLeft}"
+                                                    ElementStyle="{DynamicResource DataGridElementLeftMarginBody}"
+                                                    Binding="{Binding Category_Localised}" />
+                                <DataGridTextColumn Header="Stock"
+                                                    MinWidth="100"
+                                                    HeaderStyle="{DynamicResource OverDataGridHeaderCenter}"
+                                                    ElementStyle="{DynamicResource DataGridElementRightMargin}"
+                                                    Binding="{Binding Stock, StringFormat={}{0:N0} t}" />
+                                <DataGridTextColumn Header="Required"
+                                                    MinWidth="100"
+                                                    HeaderStyle="{DynamicResource OverDataGridHeaderCenter}"
+                                                    ElementStyle="{DynamicResource DataGridElementRightMargin}"
+                                                    Binding="{Binding Required, StringFormat={}{0:N0} t}" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </Grid>
             </Grid>
         </Border>
     </busyIndicator:BusyMask>

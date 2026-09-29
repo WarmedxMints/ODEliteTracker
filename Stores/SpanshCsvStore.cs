@@ -33,7 +33,7 @@ namespace ODEliteTracker.Stores
         private readonly SharedDataStore sharedData;
         private readonly ODEliteTrackerDatabaseProvider databaseProvider;
         private Dictionary<CsvType, SpanshCsvContainer> containers = [];
-
+        private CsvType currentContainerType;
         public event EventHandler<ExplorationTarget?>? OnCurrentTargetChanged;
         public event EventHandler<SpanshCsvContainer?>? OnCurrentContainerChanged;
 
@@ -99,6 +99,7 @@ namespace ODEliteTracker.Stores
 
         public SpanshCsvContainer SetCurrentCSVContainer(CsvType csvType)
         {
+            currentContainerType = csvType;
             if (settingsStore.SpanshCSVSettings[settingsStore.SelectedCommanderID] != csvType)
             {
                 settingsStore.SpanshCSVSettings[settingsStore.SelectedCommanderID] = csvType;
@@ -240,6 +241,13 @@ namespace ODEliteTracker.Stores
                 {
                     CurrentIndex = index;
 
+                    if (currentContainerType == CsvType.GalaxyPlotter
+                    && string.IsNullOrEmpty(CurrentTarget?.Property3) == false
+                    && CurrentTarget.Property3.Contains("Yes", StringComparison.OrdinalIgnoreCase))
+                    {
+                        notificationService.ShowBasicNotification(new Notifications.NotificationArgs(NextTarget.SystemName, ["Refuel System"], Models.Settings.NotificationOptions.SpanshRefuel));
+                    }
+
                     if (settingsStore.SpanshCSVSettings.AutoCopySystemToClipboard && string.IsNullOrEmpty(NextTarget?.SystemName) == false)
                     {
                         notificationService.SetClipboard(NextTarget.SystemName);
@@ -248,6 +256,7 @@ namespace ODEliteTracker.Stores
 
                 return;
             }
+
             if (settingsStore.SpanshCSVSettings.AutoCopySystemToClipboard == false)
                 return;
 

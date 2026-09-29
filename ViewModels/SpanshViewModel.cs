@@ -101,6 +101,17 @@ namespace ODEliteTracker.ViewModels
             }
         }
 
+        public string TimeRemaining
+        {
+            get
+            {
+                if (CurrentType != CsvType.FleetCarrier)
+                    return string.Empty;
+
+                var duration = TimeSpan.FromMinutes(20) * RemainingCount;
+                return $"{duration.Hours} h {duration.Minutes} m";
+            }
+        }
         #region Commands
         public ICommand PreviousTargetCommand { get; }
         public ICommand NextTargetCommand { get; }
@@ -184,6 +195,7 @@ namespace ODEliteTracker.ViewModels
                 OnPropertyChanged(nameof(CurrentIndex));
                 OnPropertyChanged(nameof(RemainingCount));
                 OnPropertyChanged(nameof(CurrentType));
+                OnPropertyChanged(nameof(TimeRemaining));
                 return;
             }
             currentTarget = CurrentIndex < Targets.Count - 1 ? Targets[CurrentIndex]
@@ -195,6 +207,7 @@ namespace ODEliteTracker.ViewModels
             OnPropertyChanged(nameof(CurrentIndex));
             OnPropertyChanged(nameof(RemainingCount));
             OnPropertyChanged(nameof(CurrentType));
+            OnPropertyChanged(nameof(TimeRemaining));
         }
 
         public void ParseCSV(string fileName)

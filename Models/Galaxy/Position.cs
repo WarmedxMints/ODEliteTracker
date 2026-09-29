@@ -1,10 +1,14 @@
 ﻿using EliteJournalReader;
+using Newtonsoft.Json;
+using ODEliteTracker.Models.Spansh;
 
 namespace ODEliteTracker.Models.Galaxy
 {
     public sealed class Position
     {
+        [JsonIgnore]
         public const double kEpsilon = 0.00001F;
+        [JsonIgnore]
         public const double kEpsilonNormalSqrt = 1e-15F;
 
         public Position() { }
@@ -15,13 +19,35 @@ namespace ODEliteTracker.Models.Galaxy
             Y = y;
             Z = z;
         }
+       
+        public Position(Position starPos) : this(starPos.X, starPos.Y, starPos.Z) { }
         public Position(SystemPosition starPos) : this(starPos.X, starPos.Y, starPos.Z) { }
-
         public double X { get; set; }
         public double Y { get; set; }
         public double Z { get; set; }
-
+        [JsonIgnore]
         public Position FlipZ => new(X, Y, Z * -1);
+        [JsonIgnore]
+        public double sqrMagnitude => (float)(X * X + Y * Y + Z * Z);
+        [JsonIgnore]
+        public double magnitude => Math.Sqrt(X * X + Y * Y + Z * Z);
+
+        public static Position Normalize(in Position value)
+        {
+            var num = value.magnitude;
+            if (!(num > 1E-05f))
+            {
+                return new() { X = 0, Y = 0, Z = 0 };
+            }
+
+            Position result = new()
+            {
+                X = value.X / num,
+                Y = value.Y / num,
+                Z = value.Z / num
+            };
+            return result;
+        }
 
         public static double Distance(Position a, Position b)
         {
@@ -89,6 +115,7 @@ namespace ODEliteTracker.Models.Galaxy
         public static Position operator -(Position a) { return new Position(-a.X, -a.Y, -a.Z); }
         public static Position operator *(Position a, float d) { return new Position(a.X * d, a.Y * d, a.Z * d); }
         public static Position operator *(double d, Position a) { return new Position(a.X * d, a.Y * d, a.Z * d); }
+        public static Position operator *(Position a, double d) { return new Position(a.X * d, a.Y * d, a.Z * d); }
         public static Position operator /(Position a, float d) { return new Position(a.X / d, a.Y / d, a.Z / d); }
 
     }

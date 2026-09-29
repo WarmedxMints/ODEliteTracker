@@ -1,0 +1,739 @@
+﻿using Newtonsoft.Json;
+using ODEliteTracker.Models.Colonisation;
+using ODEliteTracker.Models.Galaxy;
+using ODEliteTracker.Models.Spansh;
+using ODEliteTracker.Services;
+using ODEliteTracker.Stores;
+using ODEliteTracker.ViewModels.ModelViews.Colonisation;
+using ODJournalDatabase.JournalManagement;
+using ODMVVM.Commands;
+using ODMVVM.Extensions;
+using ODMVVM.ViewModels;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Text;
+using System.Windows;
+using System.Windows.Input;
+
+namespace ODEliteTracker.ViewModels
+{
+    public enum AddSystemToRouteEnum
+    {
+        AtStart,
+        BeforeSelected,
+        AfterSelected,
+        AtEnd
+    }
+    public sealed class ColonisationRoutePlannerViewModel : ODObservableObject, IDisposable
+    {
+        private readonly ColonisationStore store;
+        private readonly SharedDataStore sharedData;
+        private readonly NotificationService notification;
+        private readonly SettingsStore settings;
+        private bool live = false;
+        public ColonisationRoutePlannerViewModel(ColonisationStore store, SharedDataStore sharedData, Services.NotificationService notification, SettingsStore settings)
+        {
+            this.store = store;
+            this.sharedData = sharedData;
+            this.notification = notification;
+            this.settings = settings;
+            store.StoreLive += OnStoreLive;
+
+            if (store.IsLive)
+            {
+                OnStoreLive(null, true);
+            }
+            
+            sharedData.CurrentSystemChanged += OnCurrentSystemChanged;
+
+            RemoveAfterSelectedCommand = new ODRelayCommand(RemoveAfterSelected, (x) => SelectedSystem != null);
+            ToggleSelectedHubCommand = new ODRelayCommand(ToggleSelectedHub, (x) => SelectedSystem != null);
+            ToggleSelectedBuiltCommand = new ODRelayCommand(ToggleSelectedBuilt, (x) => SelectedSystem != null);
+            DeleteSelectedSystemCommand = new ODRelayCommand(DeleteSelectedSystem, (x) => SelectedSystem != null);
+            SetClipboardCommand = new ODRelayCommand<string>(SetClipboard, (x) => SelectedSystem != null);
+            SaveRouteCommand = new ODRelayCommand(SaveRoute, (x) => DataChanged);
+            ReloadFromDatabaseCommand = new ODRelayCommand(LoadFromDatabase);
+            SetSelctedAsTargetCommand = new ODRelayCommand(SetSelectedAsTarget, (x) => SelectedSystem != null && SelectedSystem.SystemAddress != targetSystem?.SystemAddress);
+
+            SetStartAsSelectedCommand = new ODRelayCommand(SetStartAsSelected, (x) => SelectedSystem != null);
+            SetStartAsCurrentCommand = new ODRelayCommand(SetStartAsCurrent, (x) => sharedData.CurrentSystem != null);
+            SetEndAsSelectedCommand = new ODRelayCommand(SetEndAsSelected, (x) => SelectedSystem != null);
+            SetEndAsCurrentCommand = new ODRelayCommand(SetEndAsCurrent, (x) => sharedData.CurrentSystem != null);
+            SetEndAsTargetCommand = new ODRelayCommand(SetEndAsTargetSystem, (x) => TargetSystem != null);
+            AddCurrentSystemToRouteCommand = new ODRelayCommand<AddSystemToRouteEnum>(AddCurrentToRoute, (x) => CanAddCurrentSystem(x));
+            SelectCurrentSystemCommand = new ODRelayCommand(SelectCurrentSystem, (x) => RouteSystems.Any(x => x.SystemAddress == sharedData.CurrentSystem?.Address));
+        }
+
+        private void OnCurrentSystemChanged(object? sender, StarSystem? e)
+        {
+            if (e == null)
+                return;
+
+            CalcLineValues();
+
+            var routeSystem = RouteSystems.FirstOrDefault(x => x.SystemAddress == e.Address);
+
+            if (routeSystem == null)
+                return;
+
+            var colonised = e.FactionCount > 1;
+
+            if(routeSystem.Built == false && colonised)
+            {
+                routeSystem.Built = true;
+                SelectedSystem = routeSystem;
+                SelectedSystemChanged?.Invoke(this, routeSystem);
+                DataChanged = true;
+            }
+        }
+
+        #region Route Planner
+        public ICommand RemoveAfterSelectedCommand { get; }
+        public ICommand ToggleSelectedHubCommand { get; }
+        public ICommand ToggleSelectedBuiltCommand { get; }
+        public ICommand DeleteSelectedSystemCommand { get; }
+        public ICommand SetClipboardCommand { get;  }
+        public ICommand SaveRouteCommand { get;  }
+        public ICommand ReloadFromDatabaseCommand { get;  }
+        public ICommand SetSelctedAsTargetCommand { get;  }
+        public ICommand AddCurrentSystemToRouteCommand { get;  }
+        public ICommand SelectCurrentSystemCommand { get;  }
+
+        private ObservableCollection<ColonisationRouteSystemVM> routeSystems = [];
+        public ObservableCollection<ColonisationRouteSystemVM> RouteSystems { get => routeSystems; set { routeSystems = value; OnPropertyChanged(); } }
+
+        private ColonisationRouteSystemVM? targetSystem;
+        public ColonisationRouteSystemVM? TargetSystem { get => targetSystem; set { targetSystem = value; OnPropertyChanged(); } }
+
+        private ColonisationRouteSystemVM? selectedSystem;
+        public ColonisationRouteSystemVM? SelectedSystem 
+        { 
+            get => selectedSystem;
+            set
+            {
+                selectedSystem = value;
+                selectedSystem?.Selected(RouteSystems.FirstOrDefault(), targetSystem);
+                if (selectedSystem != null && live)
+                {
+                    settings.ColonisationSettings.SelectedPlannerAddress = selectedSystem.SystemAddress;
+                }
+                OnPropertyChanged();
+            }
+        }
+
+        private bool dataChanged;
+        public bool DataChanged { get => dataChanged; set { dataChanged = value; OnPropertyChanged(); } }
+
+        public string TargetSystemText => targetSystem == null ?
+            string.Empty : $"{targetSystem.Distance:N2} ly away from {targetSystem.SystemName}";
+        internal EventHandler? DataChangedWarning;
+        internal EventHandler? OnViewModelLive;
+        internal EventHandler<ColonisationRouteSystemVM>? SelectedSystemChanged;
+        private void OnStoreLive(object? sender, bool e)
+        {
+            if (e)
+            {
+                if (store.RouteSystems.Any() == false)
+                    return;
+                LoadFromDatabase(null);
+
+                if (settings.ColonisationSettings.SelectedPlannerAddress > 0)
+                {
+                    SelectedSystem = RouteSystems.FirstOrDefault(x => x.SystemAddress == settings.ColonisationSettings.SelectedPlannerAddress);
+                }
+                CalcLineValues();
+                live = true;
+
+                OnViewModelLive?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
+        private void LoadFromDatabase(object? obj)
+        {
+            RouteSystems.ClearCollection();
+            RouteSystems.AddRange(store.RouteSystems.Where(x => x.HopNumber >= 0).Select(x => new ColonisationRouteSystemVM(x, this)));
+
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                TargetSystem = store.RouteSystems.Where(x => x.HopNumber == -1).Select(x => new ColonisationRouteSystemVM(x, this)).FirstOrDefault();
+                CalcDistances();
+                DataChanged = false;
+            });
+        }       
+
+        public void Dispose()
+        {
+            sharedData.CurrentSystemChanged -= OnCurrentSystemChanged;
+
+            if(dataChanged && live)
+            {
+                DataChangedWarning?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
+        internal bool GetEliteNavRoute(bool addToRoute)
+        {
+            var route = sharedData.GetNavRoute();
+
+            return ParseEliteNavRouteActual(route, addToRoute);
+        }
+
+        internal bool ParseEliteNavRoute(string fileName, bool addToRoute)
+        {
+            string json = File.ReadAllText(fileName, Encoding.UTF8);
+
+            var route = JsonConvert.DeserializeObject<NavigationRoute>(json);
+
+            return ParseEliteNavRouteActual(route, addToRoute);
+        }
+        private bool ParseEliteNavRouteActual(NavigationRoute? route, bool addToRoute)
+        {
+            if (route == null || route.Route.Any() == false)
+                return false;
+
+            if (addToRoute)
+            {
+                foreach (var system in route.Route)
+                {
+                    var known = RouteSystems.FirstOrDefault(x => x.SystemAddress == system.SystemAddress);
+
+                    if (known != null)
+                    {
+                        known.UpdateSystemDetails(system);
+                        continue;
+                    }
+
+                    RouteSystems.AddItem(new(system, this));
+                }
+
+                CalcDistances();
+                return true;
+            }
+
+            TargetSystem = null;
+            RouteSystems.ClearCollection();
+            RouteSystems.AddRange(route.Route.Select(x => new ColonisationRouteSystemVM(x, this)));
+            CalcDistances();
+            return true;
+        }
+
+        internal bool ParseSpanshRoute(string fileName, bool addToRoute)
+        {
+            try
+            {
+                string json = File.ReadAllText(fileName, Encoding.UTF8);
+
+                var route = JsonConvert.DeserializeObject<SpanshColonisationRoute>(json);
+
+                if (route == null || route.Result == null || route.Result.Jumps == null || route.Result.Jumps.Any() == false)
+                    return false;
+
+                if (addToRoute)
+                {
+                    foreach (var system in route.Result.Jumps)
+                    {
+                        var known = RouteSystems.FirstOrDefault(x => x.SystemAddress == system.Id64);
+
+                        if (known != null)
+                        {
+                            known.UpdateSystemDetails(system);
+                            continue;
+                        }
+
+                        RouteSystems.AddItem(new(system, this));
+                    }
+
+                    CalcDistances();
+                    return true;
+                }
+
+                TargetSystem = null;
+                RouteSystems.ClearCollection();
+                RouteSystems.AddRange(route.Result.Jumps.Select(x => new ColonisationRouteSystemVM(x, this)));
+
+                CalcDistances();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        internal void CalcDistances()
+        {
+            ColonisationRouteSystemVM? previous = null;
+            double totalDistance = 0;
+            double totalHopDistance = 0;
+            ColonisationRouteSystemVM? lastBuilt = null;
+            ColonisationRouteSystemVM? hub = RouteSystems.FirstOrDefault();
+            ColonisationRouteSystemVM? start = RouteSystems.FirstOrDefault();
+
+            int hopNumber = 1;
+            foreach (var system in RouteSystems)
+            {
+                if (previous == null)
+                {
+                    previous = system;
+                    totalDistance = 0;
+                    system.HopNumber = 0;
+                    continue;
+                }
+
+                system.Distance = previous.Position.DistanceFrom(system.Position);
+                totalHopDistance += system.Distance;
+                if (hub != null)
+                {
+                    totalDistance = hub.Position.DistanceFrom(system.Position);
+                }
+                system.TotalHopDistance = totalHopDistance;
+                if (start != null)
+                {
+                    system.TotalDistanceFromStart = start.Position.DistanceFrom(system.Position);
+                }
+                system.TotalDistance = totalDistance;
+                system.HopNumber = hopNumber;
+                hopNumber++;
+                previous = system;
+
+                if (system.Hub)
+                {
+                    hub = system;
+                    totalDistance = 0;
+                    totalHopDistance = 0;
+                    hopNumber = 1;
+                }
+
+                if (system.Built)
+                {
+                    lastBuilt = system;
+                }
+            }
+
+            DataChanged = true;
+            if (RouteSystems.Count == 0)
+            {
+                return;
+            }
+
+            lastBuilt ??= RouteSystems.FirstOrDefault();
+
+            if (lastBuilt == null)
+                return;
+
+            SelectedSystem ??= RouteSystems.FirstOrDefault();
+            TargetSystem ??= RouteSystems.LastOrDefault()?.Clone();
+
+            if (TargetSystem != null)
+            {
+                TargetSystem.HopNumber = -1;
+                TargetSystem.Distance = TargetSystem.Position.DistanceFrom(lastBuilt.Position);
+                OnPropertyChanged(nameof(TargetSystemText));
+            }
+        }
+
+        private void RemoveAfterSelected(object? obj)
+        {
+            if (SelectedSystem == null)
+                return;
+
+            var index = RouteSystems.IndexOf(SelectedSystem);
+
+            if (index < 0)
+                return;
+
+            for (var i = RouteSystems.Count - 1; i > index; i--)
+            {
+                RouteSystems.RemoveAt(i);
+            }
+
+            DataChanged = true;
+        }
+
+        private void SetSelectedAsTarget(object? obj)
+        {
+            if (selectedSystem == null)
+                return;
+
+            TargetSystem = new(selectedSystem)
+            {
+                HopNumber = -1
+            };
+
+            CalcDistances();
+            selectedSystem.Selected(RouteSystems.FirstOrDefault(), TargetSystem);
+        }
+
+        private void ToggleSelectedBuilt(object? obj)
+        {
+            if (SelectedSystem == null)
+                return;
+
+            SelectedSystem.Built = !SelectedSystem.Built;
+
+            DataChanged = true;
+
+            CalcDistances();
+        }
+
+        private void ToggleSelectedHub(object? obj)
+        {
+            if (SelectedSystem == null)
+                return;
+
+            SelectedSystem.Hub = !SelectedSystem.Hub;
+
+            DataChanged = true;
+
+            CalcDistances();
+        }
+
+        internal void DeleteSelectedSystem(object? obj)
+        {
+            if (SelectedSystem == null)
+                return;
+
+            RouteSystems.RemoveItem(SelectedSystem);
+            SelectedSystem = null;
+
+            CalcDistances();
+        }
+
+        private void SetClipboard(string value)
+        {
+            notification.SetClipboard(value);
+        }
+
+        internal void SystemDataChanged()
+        {
+            DataChanged = true;
+        }
+
+        private void SaveRoute(object? obj)
+        {
+            store.SaveColonisationRotue(RouteSystems, TargetSystem);
+            DataChanged = false;
+        }
+
+        private void SelectCurrentSystem(object? obj)
+        {
+            var inRoute = RouteSystems.FirstOrDefault(x => x.SystemAddress == sharedData.CurrentSystem?.Address);
+
+            if (inRoute == null)
+                return;
+
+            SelectedSystem = inRoute;
+            SelectedSystemChanged?.Invoke(this, inRoute);
+        }
+
+        internal void ClearRoute()
+        {
+            RouteSystems.ClearCollection();
+            SelectedSystem = null;
+            TargetSystem = null;
+            DataChanged = true;
+        }
+
+        private bool CanAddCurrentSystem(AddSystemToRouteEnum x)
+        {
+            if (sharedData.CurrentSystem == null)
+                return false;
+
+            if (RouteSystems.Any(x => x.SystemAddress == sharedData.CurrentSystem.Address))
+                return false;
+
+            switch (x)
+            {
+                case AddSystemToRouteEnum.AtStart:
+                    break;
+                case AddSystemToRouteEnum.BeforeSelected:
+                    if (selectedSystem == null)
+                        return false;
+                    break;
+                case AddSystemToRouteEnum.AfterSelected:
+                    if (selectedSystem == null)
+                        return false;
+                    break;
+                case AddSystemToRouteEnum.AtEnd:
+                    break;
+            }
+
+            return true;
+        }
+
+        private void AddCurrentToRoute(AddSystemToRouteEnum route)
+        {
+            if (sharedData.CurrentSystem == null)
+                return;
+
+            if (RouteSystems.Any(x => x.SystemAddress == sharedData.CurrentSystem.Address))
+                return;
+
+            var newSystem = new ColonisationRouteSystemVM(
+                new SystemInRoute()
+                {
+                    StarClass = EliteJournalReader.StarType.Unknown,
+                    SystemAddress = sharedData.CurrentSystem.Address,
+                    StarSystem = sharedData.CurrentSystem.Name,
+                    StarPos = new() { X = sharedData.CurrentSystem.Position.X, Y = sharedData.CurrentSystem.Position.Y, Z = sharedData.CurrentSystem.Position.Z }
+                }, this);
+
+            switch (route)
+            {
+                case AddSystemToRouteEnum.AtStart:
+                    RouteSystems.Insert(0, newSystem);
+                    break;
+                case AddSystemToRouteEnum.BeforeSelected:
+                   if (SelectedSystem == null)
+                    {
+                        return;
+                    }
+                    var index = RouteSystems.IndexOf(SelectedSystem);
+                    RouteSystems.Insert(index, newSystem);
+                    break;
+                case AddSystemToRouteEnum.AfterSelected:
+                    if (SelectedSystem == null)
+                    {
+                        return;
+                    }
+                    var idx = RouteSystems.IndexOf(SelectedSystem);
+                    RouteSystems.Insert(idx + 1, newSystem);
+                    break;
+                case AddSystemToRouteEnum.AtEnd:
+                    RouteSystems.Add(newSystem);
+                    break;
+            }
+
+            CalcDistances();
+            SelectedSystem = newSystem;
+            SelectedSystemChanged?.Invoke(this, newSystem);
+        }
+
+        internal bool LoadFromJson(string filename, bool addToRoute)
+        {
+            try
+            {
+                var json = File.ReadAllText(filename);
+                var data = JsonConvert.DeserializeObject<ColonisationRouteSave>(json);
+
+                if (data is null || data.RouteSystems.Count == 0)
+                    return false;
+
+                if (addToRoute)
+                {
+                    var systemsToAdd = data.RouteSystems.Where(x => RouteSystems.Any(y => y.SystemAddress == x.SystemAddress) == false).Select(x => new ColonisationRouteSystemVM(x, this));
+
+                    RouteSystems.AddRange(systemsToAdd);
+
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        TargetSystem = data.TargetSystem == null ? null : new(data.TargetSystem, this);
+                        CalcDistances();
+                    });
+                    return true;
+                }
+
+                RouteSystems.ClearCollection();
+                RouteSystems.AddRange(data.RouteSystems.Where(x => x.HopNumber >= 0).Select(x => new ColonisationRouteSystemVM(x, this)));
+
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    TargetSystem = data.TargetSystem == null ? null : new(data.TargetSystem, this);
+                    CalcDistances();
+                });
+            }
+            catch
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        internal bool SaveJson(string fileName)
+        {
+            var save = new ColonisationRouteSave()
+            {
+                RouteSystems = [.. RouteSystems.Select(x => new ColonisationRouteSystem(x))]
+            };
+
+            if (targetSystem != null)
+            {
+                var targetKnown = RouteSystems.FirstOrDefault(x => x.SystemAddress == targetSystem.SystemAddress);
+
+                if (targetKnown == null)
+                    save.TargetSystem = new(targetSystem);
+            }
+
+            try
+            {
+                var json = JsonConvert.SerializeObject(save, Formatting.Indented);
+                File.WriteAllText(fileName, json);
+            }
+            catch
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        internal bool SaveCSV(string fileName)
+        {
+            var sb = new StringBuilder();
+
+            sb.AppendLine("\"Hop Number\", \"Address\", \"SystemName\", \"X\", \"Y\", \"Z\", \"Built\", \"Hub\", \"Hop Distance\", \"Total Hop Distance\", \"Dist From Hub\", \"Dist From Start\", \"Notes\"");
+
+            foreach(var item in RouteSystems)
+            {
+                sb.AppendLine($"\"{item.DataBaseHopNumber}\", \"{item.SystemAddress}\", \"{item.SystemName}\", \"{item.Position.X}\", \"{item.Position.Y}\", \"{item.Position.Z}\", \"{item.Built}\", \"{item.Hub}\", \"{item.Distance}\", \"{item.TotalHopDistance}\", \"{item.TotalDistance}\", \"{item.TotalDistanceFromStart}\", \"{item.Notes}\"");
+            }
+
+            try
+            {
+                File.WriteAllText(fileName, sb.ToString());
+            }
+            catch
+            {
+                return false;
+            }
+
+            return true;
+        }
+        #endregion
+
+        #region Straight Line Tool
+        public Position? StartPos { get => settings.ColonisationSettings.LineStart; set { settings.ColonisationSettings.LineStart = value; OnPropertyChanged(); } }
+        public Position? EndPos { get => settings.ColonisationSettings.LineEnd; set { settings.ColonisationSettings.LineEnd = value; OnPropertyChanged(); } }
+        private Position point500ly = new();
+
+        private string distanceFromStart = string.Empty;
+        public string DistanceFromStart { get => distanceFromStart; set { distanceFromStart = value; OnPropertyChanged(); } }
+
+        private string distanceFrom500ly = string.Empty;
+        public string DistanceFrom500ly { get => distanceFrom500ly; set { distanceFrom500ly = value; OnPropertyChanged(); } }
+
+        private string distanceFromStraightLine = string.Empty;
+        public string DistanceFromStraightLine { get => distanceFromStraightLine; set { distanceFromStraightLine = value; OnPropertyChanged(); } }
+
+        private string directionsToStraightLine = string.Empty;
+        public string DirectionsToStraightLine { get => directionsToStraightLine; set { directionsToStraightLine = value; OnPropertyChanged(); } }
+
+        public ICommand SetStartAsSelectedCommand { get; }
+        public ICommand SetStartAsCurrentCommand { get; }
+        public ICommand SetEndAsSelectedCommand { get; }
+        public ICommand SetEndAsCurrentCommand { get; }
+        public ICommand SetEndAsTargetCommand { get; }
+
+        private void SetStartAsSelected(object? obj)
+        {
+            if (selectedSystem == null)
+                return;
+
+            StartPos = selectedSystem.Position.Position;
+            CalcLineValues();
+        }
+
+        private void SetStartAsCurrent(object? obj)
+        {
+            if (sharedData.CurrentSystem == null)
+                return;
+
+            StartPos = sharedData.CurrentSystem.Position;
+            CalcLineValues();
+        }
+
+        private void SetEndAsSelected(object? obj)
+        {
+            if (selectedSystem == null)
+                return;
+
+            EndPos = selectedSystem.Position.Position;
+            CalcLineValues();
+        }
+
+        private void SetEndAsCurrent(object? obj)
+        {
+            if (sharedData.CurrentSystem == null)
+                return;
+
+            EndPos = sharedData.CurrentSystem.Position;
+            CalcLineValues();
+        }
+
+        private void SetEndAsTargetSystem(object? obj)
+        {
+            if (TargetSystem == null)
+                return;
+
+            EndPos = TargetSystem.Position.Position;
+            CalcLineValues();
+        }
+
+        private void CalcLineValues()
+        {
+            if (StartPos == null || EndPos == null || sharedData.CurrentSystem == null)
+            {
+                DistanceFromStart = string.Empty;
+                DistanceFrom500ly = string.Empty;
+                DistanceFromStraightLine = string.Empty;
+                DirectionsToStraightLine = string.Empty;
+                return;
+            }
+
+            point500ly = GetPointAtDistance(StartPos, EndPos, 500);
+            var nearestPointOnline = GetClosestPointOnLineSegment(StartPos, EndPos, sharedData.CurrentSystem.Position);
+
+            DistanceFromStart = $"{Position.Distance(sharedData.CurrentSystem.Position, StartPos):N2} ly";
+            DistanceFrom500ly = $"{Position.Distance(sharedData.CurrentSystem.Position, point500ly):N2} ly";
+            DistanceFromStraightLine = $"{Position.Distance(sharedData.CurrentSystem.Position, nearestPointOnline):N2} ly";
+            DirectionsToStraightLine = $"{DirectionText(nearestPointOnline.X, sharedData.CurrentSystem.Position.X, "Left", "Right")} | {DirectionText(nearestPointOnline.Y, sharedData.CurrentSystem.Position.Y, "Down", "Up")} | {DirectionText(nearestPointOnline.Z, sharedData.CurrentSystem.Position.Z, "Back", "Forward")}";
+        }
+        private Position GetPointAtDistance(Position pointA, Position pointB, float distance)
+        {
+            // 1. Get the direction vector from A to B
+            Position direction = pointB - pointA;
+
+            // 2. Normalize it so its total length becomes 1 unit
+            Position normalizedDirection = Position.Normalize(direction);
+
+            // 3. Multiply the unit direction by your distance and add it to the starting point
+            Position targetPoint = pointA + (normalizedDirection * distance);
+
+            return targetPoint;
+        }
+
+        public static Position GetClosestPointOnLineSegment(Position lineStart, Position lineEnd, Position point)
+        {
+            Position lineVector = lineEnd - lineStart;
+            double lineLengthSqr = lineVector.sqrMagnitude;
+
+            // If the two points are on top of each other, return the start point
+            if (lineLengthSqr == 0f)
+                return lineStart;
+
+            // Project the point onto the line vector to find the percentage 't' along the line
+            Position pointVector = point - lineStart;
+            double t = Position.Dot(pointVector, lineVector) / lineLengthSqr;
+
+            // Clamp 't' to keep the point strictly on the line segment
+            t = Math.Clamp(t, 0f, 1f); // Use Math.Clamp(t, 0f, 1f) for non-Unity C#
+
+            // Calculate the actual 3D coordinates
+            return lineStart + lineVector * t;
+        }
+
+        private string DirectionText(double current, double point, string lessText, string moreText)
+        {
+            var dist = Math.Abs(point - current);
+            if (current > point)
+                return $"{moreText} {dist:N2} ly";
+
+            if (current < point)
+                return $"{lessText} {dist:N2} ly";
+
+            return "---";
+        }
+        #endregion
+    }
+}

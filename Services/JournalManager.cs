@@ -203,6 +203,15 @@ namespace ODEliteTracker.Services
             return market;
         }
 
+
+        public NavigationRoute? ReadNavRouteJson(int commanderId)
+        {
+            if (ManagerLive == false)
+                return null;
+
+            return eventParser.ReadNavRouteJson(commanderId);
+        }
+
         public MarketInfo? GetMarketInfo()
         {
             if (ManagerLive == false)

@@ -39,6 +39,8 @@ namespace ODEliteTracker.ViewModels
             this.settings = settings;
             this.notification = notification;
             this.popOutService = popOutService;
+            routePlanner = new ColonisationRoutePlannerViewModel(colonisationStore, sharedDataStore, notification, settings);
+
             this.colonisationStore.StoreLive += OnStoreLive;
             this.colonisationStore.DepotUpdated += OnDepotUpdated;
             this.colonisationStore.NewDepot += OnNewDepot;
@@ -114,6 +116,8 @@ namespace ODEliteTracker.ViewModels
             this.fcDataStore.StoreLive -= OnFcStoreLive;
 
             this.settings.ColonisationSettings.CommoditySortingChanged -= ColonisationSettings_CommoditySortingChanged;
+
+            routePlanner.Dispose();
         }
 
         #region Private fields
@@ -123,6 +127,7 @@ namespace ODEliteTracker.ViewModels
         private readonly SettingsStore settings;
         private readonly NotificationService notification;
         private readonly PopOutService popOutService;
+        private readonly ColonisationRoutePlannerViewModel routePlanner;
         #endregion
 
         #region Commands
@@ -143,6 +148,7 @@ namespace ODEliteTracker.ViewModels
         #endregion
 
         #region Public properties
+        public ColonisationRoutePlannerViewModel RoutePlanner => routePlanner;
         public override bool IsLive { get => colonisationStore.IsLive; }
         public GridSize ColonisationGridSize => settings.ColonisationSettings.ColonisationGridSize;
         public string ActiveButtonText

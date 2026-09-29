@@ -14,7 +14,7 @@
         <Setter Property="HorizontalContentAlignment"
                 Value="Center" />
         <Setter Property="Foreground"
-                Value="{DynamicResource PrimaryForegroundDisabled}" />
+                Value="{DynamicResource PrimaryControlForeground}" />
         <Setter Property="Background"
                 Value="Transparent" />
         <Setter Property="Template">
@@ -39,6 +39,11 @@
                                     Value="{DynamicResource PrimaryControlForeground}" />
                             <Setter Property="BorderThickness"
                                     Value="0" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled"
+                                 Value="False">
+                            <Setter Property="Foreground"
+                                    Value="{DynamicResource PrimaryForegroundDisabled}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                     <Border Background="{TemplateBinding Background}"

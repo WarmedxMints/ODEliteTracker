@@ -33,6 +33,14 @@
                             <Setter Property="Foreground"
                                     Value="{DynamicResource PrimaryForegroundDisabled}" />
                         </Trigger>
+                        <Trigger Property="IsEnabled"
+                                 Value="False">
+                            <Setter TargetName="Border"
+                                    Property="Background"
+                                    Value="{DynamicResource CardBackgroundMouseOver}" />
+                            <Setter Property="Foreground"
+                                    Value="{DynamicResource PrimaryForegroundDisabled}" />
+                        </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>

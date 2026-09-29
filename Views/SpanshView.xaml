@@ -174,8 +174,7 @@
                                   SelectionMode="Single"
                                   GridLinesVisibility="Horizontal"
                                   SelectionChanged="DataGrid_SelectionChanged"
-                                  AlternatingRowBackground="{DynamicResource RowAlternationColour}"
-                                  AlternationCount="1"                                  
+                                  RowStyle="{DynamicResource SpanshDetailsRowStyle}"                                 
                                   ItemsSource="{Binding Targets}"
                                   SelectedItem="{Binding CurrentTarget, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
                             <DataGrid.Columns>

@@ -1,4 +1,5 @@
-﻿using ODEliteTracker.ViewModels.ModelViews.Colonisation;
+﻿using ODEliteTracker.Models.Galaxy;
+using ODEliteTracker.ViewModels.ModelViews.Colonisation;
 using System.Windows;
 
 namespace ODEliteTracker.Models.Settings
@@ -56,5 +57,9 @@ namespace ODEliteTracker.Models.Settings
         public int SelectedDepotTab { get; set; }
         public GridSize ColonisationGridSize { get; set; } = new() { GridLengths = [new(1, GridUnitType.Star), new(15, GridUnitType.Pixel), new(292.5, GridUnitType.Pixel)] };
         public ColonisationBuild SelectedBuild { get; set; } = ColonisationBuild.OutpostP;
+
+        public Position? LineStart { get; set; }
+        public Position? LineEnd { get; set; }
+        public long SelectedPlannerAddress { get; set; }
     }
 }

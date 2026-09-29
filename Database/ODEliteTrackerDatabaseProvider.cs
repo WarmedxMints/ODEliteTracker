@@ -8,6 +8,7 @@ using ODEliteTracker.Models;
 using ODEliteTracker.Models.BGS;
 using ODEliteTracker.Models.Bookmarks;
 using ODEliteTracker.Models.Colonisation;
+using ODEliteTracker.Models.Colonisation.Builds;
 using ODEliteTracker.Models.Spansh;
 using ODEliteTracker.ViewModels.ModelViews.Bookmarks;
 using ODEliteTracker.ViewModels.ModelViews.Colonisation;
@@ -15,6 +16,8 @@ using ODJournalDatabase.Database.DTOs;
 using ODJournalDatabase.Database.Interfaces;
 using ODJournalDatabase.JournalManagement;
 using ODMVVM.Helpers.IO;
+using System.Drawing;
+using System.Formats.Asn1;
 using BGSIgnoredSystems = ODEliteTracker.Models.BGS.BGSIgnoredSystems;
 
 namespace ODEliteTracker.Database
@@ -381,6 +384,69 @@ namespace ODEliteTracker.Database
         #endregion
 
         #region Colonisation
+        public List<ColonisationRouteSystem> GetColonisationRoute(int commanderId)
+        {
+            using var context = _contextFactory.CreateDbContext();
+
+            var systems = context.ColonisationRouteSystems
+                .Where(x => x.CommanderId == commanderId)
+                .OrderBy(x => x.HopNumber)
+                .Select(x => new ColonisationRouteSystem(x));
+            return [.. systems];
+        }
+
+        public void SaveColonitationRoute(List<ColonisationRouteSystem> systems, int commanderId)
+        {
+            using var context = _contextFactory.CreateDbContext();
+
+            var commanderSystems = context.ColonisationRouteSystems.Where(x => x.CommanderId == commanderId);
+
+            foreach (var system in commanderSystems)
+            {
+                context.ColonisationRouteSystems.Remove(system);
+            }
+            //-1 is the designation for a target system
+            //0 is the start system
+            var startAndEndSystems = systems.Where(x => x.HopNumber < 0);
+
+            context.ColonisationRouteSystems.AddRange(startAndEndSystems.Select(x => new ColonisationRouteSystemDTO(
+                    commanderId,
+                    x.SystemAddress,
+                    x.HopNumber,
+                    x.SystemName,
+                    x.Position.X,
+                    x.Position.Y,
+                    x.Position.Z,
+                    x.StarClass,
+                    x.Built,
+                    x.Hub,
+                    x.Notes)));
+
+            var routeSystems = systems.Where(x => x.HopNumber >= 0).ToList();
+            var count = routeSystems.Count;
+
+            for (var i = 0; i < count; i++)
+            {
+                var system = routeSystems[i];
+
+                var newSystem = new ColonisationRouteSystemDTO(
+                    commanderId,
+                    system.SystemAddress, 
+                    i + 1,
+                    system.SystemName, 
+                    system.Position.X,
+                    system.Position.Y,
+                    system.Position.Z,
+                    system.StarClass,
+                    system.Built,
+                    system.Hub,
+                    system.Notes);
+
+                context.ColonisationRouteSystems.Add(newSystem);
+            }
+
+            context.SaveChanges();
+        }
 
         public List<WatchedMarket> GetWatchedMarkets()
         {

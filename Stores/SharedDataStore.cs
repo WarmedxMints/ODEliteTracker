@@ -626,7 +626,7 @@ namespace ODEliteTracker.Stores
 
         private void UpdateCurrentSystem(StarSystem starSystem)
         {
-            if (CurrentSystem != null && starSystem.Address == CurrentSystem.Address)
+            if (CurrentSystem != null && starSystem.Address == CurrentSystem.Address && !CurrentSystem.DataChanged(starSystem))
             {
                 //Nothing to do here
                 return;
@@ -791,5 +791,7 @@ namespace ODEliteTracker.Stores
 
             colonisationWishList.TryAdd(item.Build, item.Count);
         }
+
+        public NavigationRoute? GetNavRoute() => journalManager.ReadNavRouteJson(currentCommanderId);
     }
 }

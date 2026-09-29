@@ -699,48 +699,29 @@
                                         </StackPanel>
                                     </Grid>
 
-                                    <DataGrid ItemsSource="{Binding WatchedMarkets}"
-                                              SelectedItem="{Binding SelectedWatchedMarket}"
-                                              Grid.Row="1"
-                                              Margin="10"
-                                              Style="{DynamicResource ConstructionResourcesDataGrid}"
-                                              RowStyle="{DynamicResource MarketWatchlistRowStyle}"
-                                              CellStyle="{DynamicResource NoSelectCellNoMargin}"
-                                              Foreground="{DynamicResource PrimaryForeground}"
-                                              FontSize="20"
-                                              IsReadOnly="True"
-                                              SelectionMode="Single"
-                                              ScrollViewer.HorizontalScrollBarVisibility="Visible"
-                                              ScrollViewer.VerticalScrollBarVisibility="Visible"
-                                              AlternatingRowBackground="{DynamicResource RowAlternationColour}"
-                                              HeadersVisibility="Column"
-                                              AutoGenerateColumns="False"
-                                              HorizontalAlignment="Center">
-                                        <DataGrid.Columns>
-                                            <DataGridTextColumn Header="Station Name"
-                                                                MinWidth="250"
-                                                                Width="*"
-                                                                HeaderStyle="{DynamicResource DataGridHeaderLeft}"
-                                                                ElementStyle="{DynamicResource DataGridElementLeftMarginBody}"
-                                                                Binding="{Binding Name}" />
-                                            <DataGridTemplateColumn Width="30">
-                                                <DataGridTemplateColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <Button Command="{Binding ElementName=Root, Path=DataContext.AddRemoveWatchedMarketsCommand}"
-                                                                CommandParameter="{Binding MarketId}"
-                                                                Style="{DynamicResource EliteStyleButton}"
-                                                                Content="X"
-                                                                Margin="2"
-                                                                Width="25"
-                                                                Height="25"
-                                                                ToolTip="Remove From Watched List"
-                                                                FontSize="16" />
-                                                    </DataTemplate>
-                                                </DataGridTemplateColumn.CellTemplate>
-                                            </DataGridTemplateColumn>
-                                        </DataGrid.Columns>
-                                    </DataGrid>
+                                    <Grid Grid.Row="1">
+                                        <ComboBox ItemsSource="{Binding WatchedMarkets}"
+                                                  DisplayMemberPath="Name"
+                                                  SelectedItem="{Binding SelectedWatchedMarket}"
+                                                  FontSize="20"
+                                                  Height="30"
+                                                  Width="450"
+                                                  HorizontalAlignment="Left"
+                                                  Margin="10" />
 
+                                        <Button Command="{Binding AddRemoveWatchedMarketsCommand}"
+                                                CommandParameter="{Binding SelectedWatchedMarket.MarketId}"
+                                                Style="{DynamicResource EliteStyleButton}"
+                                                Content="Remove From Watchlist"
+                                                Margin="2"
+                                                Width="180"
+                                                Height="30"
+                                                Grid.Column="1"
+                                                HorizontalAlignment="Right"
+                                                ToolTip="Remove From Watched List"
+                                                FontSize="16" />
+                                    </Grid>
+                                  
                                     <DataGrid ItemsSource="{Binding SelectedWatchedMarketCommodities}"
                                               Grid.Row="3"
                                               Margin="10"
@@ -832,7 +813,7 @@
                                                     Orientation="Horizontal">
                                             <buttons:ColonisationDiscordButton Text="{Binding DiscordButtonText}"
                                                                                Command="{Binding CreatePostCommand}"
-                                                                               Height="30"/>
+                                                                               Height="30" />
                                             <TextBlock Text="Commodity Sorting "
                                                        VerticalAlignment="Center" />
                                             <ComboBox ItemsSource="{Binding Source={StaticResource BuildSortingEnum}}"
@@ -1456,7 +1437,7 @@
                                                         <StackPanel Orientation="Horizontal"
                                                                     HorizontalAlignment="Center">
                                                             <TextBlock Text="{Binding PointCost}"
-                                                                       VerticalAlignment="Center"/>
+                                                                       VerticalAlignment="Center" />
                                                             <Image Width="25"
                                                                    Height="25">
                                                                 <Image.Style>
@@ -1709,6 +1690,9 @@
                                         </DataGrid.Columns>
                                     </DataGrid>
                                 </Grid>
+                            </TabItem>
+                            <TabItem Header="Route Planner">
+                                <colonisation:ColoniationRoutePlannerControl DataContext="{Binding RoutePlanner}"/>
                             </TabItem>
                         </TabControl>
                     </Border>

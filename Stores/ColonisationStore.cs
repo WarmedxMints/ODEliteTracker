@@ -6,6 +6,7 @@ using ODEliteTracker.Models.Galaxy;
 using ODEliteTracker.ViewModels.ModelViews.Colonisation;
 using ODJournalDatabase.Database.Interfaces;
 using ODJournalDatabase.JournalManagement;
+using System.Collections.ObjectModel;
 
 namespace ODEliteTracker.Stores
 {
@@ -27,7 +28,7 @@ namespace ODEliteTracker.Stores
         private readonly Dictionary<string, long> constructionTotals = [];
         //When the colonisation events were added to the game
         private readonly DateTime colonisationEventUpdate = new(2025, 4, 7);
-
+        private List<ColonisationRouteSystem> routeSystems = [];
         private StarSystem? currentSystem;
         private long CurrentSystemAddress;
         private string CurrentSystemName = "Unknown";
@@ -38,6 +39,7 @@ namespace ODEliteTracker.Stores
         public HashSet<Tuple<long, long>> ShoppingList => shoppingListDepots;
         public IEnumerable<CommanderSystem> CommanderSystems => commanderSystems.Values.OrderBy(x => x.SystemName);
         public Dictionary<string, long> ConstructionTotals => constructionTotals;
+        public IEnumerable<ColonisationRouteSystem> RouteSystems => routeSystems.OrderBy(x => x.HopNumber);
         public long LastDockedDepotID { get; private set; }
         public override Dictionary<JournalTypeEnum, bool> EventsToParse
         {
@@ -62,9 +64,10 @@ namespace ODEliteTracker.Stores
         public EventHandler<CommanderSystem>? NewCommanderSystem;
         public EventHandler<CommanderSystem>? ReleaseCommanderSystem;
         public EventHandler<bool>? ShoppingListUpdated;
-
+        private int currentCommanderId;
         public override void ClearData()
         {
+            routeSystems.Clear();
             depots.Clear();
             commanderSystems.Clear();
             inactiveDepots.Clear();
@@ -84,7 +87,9 @@ namespace ODEliteTracker.Stores
         {
             inactiveDepots = databaseProvider.GetInactiveDepots();
             shoppingListDepots = databaseProvider.GetDepotShoppingList();
+            routeSystems = databaseProvider.GetColonisationRoute(currentCmdrId);
             constructionTotals.Clear();
+            currentCommanderId = currentCmdrId;
         }
 
         public override DateTime GetJournalAge(DateTime defaultAge)
@@ -245,6 +250,22 @@ namespace ODEliteTracker.Stores
             }
 
             databaseProvider.RemoveShoppingListDepot(vM.MarketID, vM.SystemAddress);
+        }
+
+        internal void SaveColonisationRotue(ObservableCollection<ColonisationRouteSystemVM> routeSystems, ColonisationRouteSystemVM? targetSystem)
+        {
+            List<ColonisationRouteSystem> systems = [];
+
+            systems.AddRange(routeSystems.Select(x => new ColonisationRouteSystem(x)));
+
+            if (targetSystem != null && systems.FirstOrDefault(x => x.SystemAddress == targetSystem.SystemAddress) == null)
+            {
+                systems.Add(new(targetSystem) { HopNumber = -1 });
+            }
+
+            databaseProvider.SaveColonitationRoute(systems, currentCommanderId);
+
+            this.routeSystems = databaseProvider.GetColonisationRoute(currentCommanderId);
         }
     }
 }

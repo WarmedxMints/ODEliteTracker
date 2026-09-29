@@ -15,7 +15,7 @@ namespace ODEliteTracker.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "9.0.10");
+            modelBuilder.HasAnnotation("ProductVersion", "9.0.20");
 
             modelBuilder.Entity("ODEliteTracker.Database.DTOs.BGSIgnoredSystemsDTO", b =>
                 {
@@ -108,6 +108,49 @@ namespace ODEliteTracker.Migrations
                     b.HasKey("CommanderID", "Build");
 
                     b.ToTable("ColonisationWishList");
+                });
+
+            modelBuilder.Entity("ODEliteTracker.Database.DTOs.ColonisationRouteSystemDTO", b =>
+                {
+                    b.Property<int>("CommanderId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("SystemAddress")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Built")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("HopNumber")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Hub")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Notes")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("StarClass")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("SystemName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<double>("X")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("Y")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("Z")
+                        .HasColumnType("REAL");
+
+                    b.HasKey("CommanderId", "SystemAddress");
+
+                    b.ToTable("ColonisationRouteSystems");
                 });
 
             modelBuilder.Entity("ODEliteTracker.Database.DTOs.DepotShoppingListDTO", b =>

@@ -39,12 +39,14 @@ namespace ODEliteTracker.Stores
                 { JournalTypeEnum.Bounty, true},
                 { JournalTypeEnum.Docked, true},
                 { JournalTypeEnum.Undocked, true},
+                { JournalTypeEnum.GameModeChange, true},
             };
         }
 
         public EventHandler<MassacreMission>? MissionAddedEvent;
         public EventHandler<MassacreMission>? MissionUpdatedEvent;
         public EventHandler? MissionsUpdatedEvent;
+        private bool inMainGame;
 
         public override void ParseJournalEvent(JournalEntry evt)
         {
@@ -53,6 +55,9 @@ namespace ODEliteTracker.Stores
 
             switch (evt.EventData)
             {
+                case GameModeChangeEvent.GameModeChangeEventArgs mode:
+                    inMainGame = string.Equals(mode.GameMode, "MainGame");
+                    break;
                 case LoadGameEvent.LoadGameEventArgs load:
                     odyssey = load.Odyssey;
                     break;
@@ -98,7 +103,8 @@ namespace ODEliteTracker.Stores
                     {
                         rMission.CurrentState = MissionState.Redirected;
                         rMission.Kills = rMission.KillCount;
-                        if (IsLive)
+                        if
+                            (IsLive)
                             MissionUpdatedEvent?.Invoke(this, rMission);
                     }
                     break;
@@ -135,9 +141,8 @@ namespace ODEliteTracker.Stores
                     }
                     break;
                 case MissionsEvent.MissionsEventArgs missionsEvt:
-                    //Check if we've started an operation and shouldn't check for missions to be removed
-                    if (missionsEvt.Active.Count == 1 && missionsEvt.Failed.Count == 0 && missionsEvt.Complete.Count == 0
-                        && missionsEvt.Active[0].Expires == 0)
+                    //Check if we are in an operation
+                    if (inMainGame == false)
                     {
                         break;
                     }
@@ -175,7 +180,12 @@ namespace ODEliteTracker.Stores
                         MissionsUpdatedEvent?.Invoke(this, EventArgs.Empty);
                     break;
                 case BountyEvent.BountyEventArgs bountyEvt:
-                    if(bountyEvt.VictimFaction.Contains("faction_none")
+                    //Check if we are in an operation
+                    if (inMainGame == false)
+                    {
+                        break;
+                    }
+                    if (bountyEvt.VictimFaction.Contains("faction_none")
                        || bountyEvt.VictimFaction.Contains("faction_Pirate")
                        || bountyEvt.Target.Contains("suit")
                        || bountyEvt.TotalReward <= 0)

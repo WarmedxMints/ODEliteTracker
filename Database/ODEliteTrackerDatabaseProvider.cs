@@ -420,7 +420,9 @@ namespace ODEliteTracker.Database
                     x.StarClass,
                     x.Built,
                     x.Hub,
-                    x.Notes)));
+                    x.Notes,
+                    x.BodyCount,
+                    x.StarCount)));
 
             var routeSystems = systems.Where(x => x.HopNumber >= 0).ToList();
             var count = routeSystems.Count;
@@ -440,7 +442,9 @@ namespace ODEliteTracker.Database
                     system.StarClass,
                     system.Built,
                     system.Hub,
-                    system.Notes);
+                    system.Notes,
+                    system.BodyCount,
+                    system.StarCount);
 
                 context.ColonisationRouteSystems.Add(newSystem);
             }
@@ -474,14 +478,14 @@ namespace ODEliteTracker.Database
             context.SaveChanges();
         }
 
-        public HashSet<Tuple<long, long>> GetInactiveDepots()
+        public HashSet<Tuple<ulong, ulong>> GetInactiveDepots()
         {
             using var context = _contextFactory.CreateDbContext();
 
             return [.. context.InactiveDepots.Select(x => Tuple.Create(x.MarketID, x.SystemAddress))];
         }
 
-        public void AddInactiveDepot(long marketID, long systemAddress, string stationName)
+        public void AddInactiveDepot(ulong marketID, ulong systemAddress, string stationName)
         {
             using var context = _contextFactory.CreateDbContext();
             context.InactiveDepots.
@@ -491,7 +495,7 @@ namespace ODEliteTracker.Database
             context.SaveChanges();
         }
 
-        public void RemoveInactiveDepot(long marketID, long systemAddress, string stationName)
+        public void RemoveInactiveDepot(ulong marketID, ulong systemAddress, string stationName)
         {
             using var context = _contextFactory.CreateDbContext();
 
@@ -504,14 +508,14 @@ namespace ODEliteTracker.Database
             }
         }
 
-        public HashSet<Tuple<long, long>> GetDepotShoppingList()
+        public HashSet<Tuple<ulong, ulong>> GetDepotShoppingList()
         {
             using var context = _contextFactory.CreateDbContext();
 
             return [.. context.DepotShoppingList.Select(x => Tuple.Create(x.MarketID, x.SystemAddress))];
         }
 
-        public void AddShoppingListDepot(long marketID, long systemAddress, string stationName)
+        public void AddShoppingListDepot(ulong marketID, ulong systemAddress, string stationName)
         {
             using var context = _contextFactory.CreateDbContext();
             context.DepotShoppingList.
@@ -521,7 +525,7 @@ namespace ODEliteTracker.Database
             context.SaveChanges();
         }
 
-        public void RemoveShoppingListDepot(long marketID, long systemAddress)
+        public void RemoveShoppingListDepot(ulong marketID, ulong systemAddress)
         {
             using var context = _contextFactory.CreateDbContext();
 
@@ -791,7 +795,7 @@ namespace ODEliteTracker.Database
             return ret;
         }
 
-        public async Task DeleteBookmark(long systemAddress, int bookmarkId)
+        public async Task DeleteBookmark(ulong systemAddress, int bookmarkId)
         {
             using var context = _contextFactory.CreateDbContext();
 

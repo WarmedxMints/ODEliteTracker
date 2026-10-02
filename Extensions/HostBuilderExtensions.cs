@@ -60,6 +60,7 @@ namespace ODEliteTracker.Extensions
             services.AddTransient<ProspectorPopOutViewModel>();
             services.AddTransient<MarketWatchListPopOutViewModel>();
             services.AddTransient<SettlementActivityPopOutVM>();
+            services.AddTransient<StraightLineToolPopOut>();
         }
 
         public static void AddViewModels(this IServiceCollection services)
@@ -79,6 +80,7 @@ namespace ODEliteTracker.Extensions
             services.AddTransient<PopOutControlViewModel>();   
             services.AddTransient<SpanshViewModel>();
             services.AddTransient<MiningViewModel>();
+            services.AddTransient<ColonisationRoutePlannerViewModel>();
         }
 
         public static void AddServices(this IServiceCollection services, string basePath)
@@ -127,6 +129,7 @@ namespace ODEliteTracker.Extensions
             services.AddHttpClient<EliteBGSApiService>((httpClient) =>
             {
                 httpClient.BaseAddress = new Uri("https://elitebgs.app/api/ebgs/v5/");
+                httpClient.DefaultRequestHeaders.Add("User-Agent", "Other");
                 httpClient.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue("application/json"));
                 httpClient.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue
@@ -184,6 +187,25 @@ namespace ODEliteTracker.Extensions
                     ConnectTimeout = TimeSpan.FromSeconds(10),
                 };
             });
+
+            services.AddHttpClient<SpanshClient>((httpClient) =>
+            {
+                httpClient.BaseAddress = new Uri("https://spansh.co.uk/api/");
+                httpClient.DefaultRequestHeaders.Add("User-Agent", "Other");
+                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                httpClient.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue
+                {
+                    NoCache = true,
+                };
+            })
+                .ConfigurePrimaryHttpMessageHandler(() =>
+                {
+                    return new SocketsHttpHandler
+                    {
+                        PooledConnectionLifetime = TimeSpan.FromSeconds(5),
+                        ConnectTimeout = TimeSpan.FromSeconds(10),
+                    };
+                });
         }
     }
 }

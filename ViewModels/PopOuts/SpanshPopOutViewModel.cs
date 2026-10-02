@@ -165,9 +165,10 @@ namespace ODEliteTracker.ViewModels.PopOuts
         }
         #endregion
 
-        private void OnCSVStoreLive(object? sender, bool e)
+        private Task OnCSVStoreLive(object? sender, bool e)
         {
             OnModelLive();
+            return Task.CompletedTask;
         }
 
         private void CsvStore_OnCurrentContainerChanged(object? sender, SpanshCsvContainer? e)

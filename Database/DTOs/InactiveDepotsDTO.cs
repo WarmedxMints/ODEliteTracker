@@ -3,5 +3,5 @@
 namespace ODEliteTracker.Database.DTOs
 {
     [PrimaryKey(nameof(MarketID), nameof(SystemAddress), nameof(StationName))]
-    public record InactiveDepotsDTO(long MarketID, long SystemAddress, string StationName);
+    public record InactiveDepotsDTO(ulong MarketID, ulong SystemAddress, string StationName);
 }

@@ -29,7 +29,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Bookmarks
             Bookmarks = [];
         }
 
-        public long Address { get; }
+        public ulong Address { get; }
         public string Name { get; }
         public double X { get; }
         public string XString => X.ToString("N3");

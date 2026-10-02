@@ -107,13 +107,15 @@ namespace ODEliteTracker.ViewModels.PopOuts
             return JObject.FromObject(Settings.GetSettings());
         }
 
-        private void OnColonisationStoreLive(object? sender, bool e)
+        private Task OnColonisationStoreLive(object? sender, bool e)
         {
             if (e == false)
-                return;
+                return Task.CompletedTask;
 
             BuildShoppingList();
             OnModelLive();
+
+            return Task.CompletedTask;
         }
 
         private void OnShoppingListUpdated(object? sender, bool e)
@@ -149,12 +151,13 @@ namespace ODEliteTracker.ViewModels.PopOuts
             OnPropertyChanged(nameof(ShoppingListResources));
         }
 
-        private void OnFcStoreLive(object? sender, bool e)
+        private Task OnFcStoreLive(object? sender, bool e)
         {
             if (e && fcDataStore.CarrierData != null)
             {
                 OnCarrierStockUpdated(sender, fcDataStore.CarrierData);
             }
+            return Task.CompletedTask;
         }
 
         private void OnCarrierStockUpdated(object? sender, FleetCarrier e)

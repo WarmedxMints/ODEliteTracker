@@ -16,7 +16,7 @@ namespace ODEliteTracker.Stores
         private IManageJournalEvents journalManager;
         private readonly List<MassacreMission> missions = [];
 
-        private long CurrentSystemAddress;
+        private ulong CurrentSystemAddress;
         private string CurrentSystemName = "Unknown";
         private ulong CurrentMarketID;
         private string CurrentStationName = "Unknown";

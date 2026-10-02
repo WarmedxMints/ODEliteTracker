@@ -2,7 +2,7 @@
 
 namespace ODEliteTracker.ViewModels.ModelViews.Colonisation
 {
-    public sealed class ConstructionTotalsVM(string systemName, long total) : ODObservableObject
+    public sealed class ConstructionTotalsVM(string systemName, ulong total) : ODObservableObject
     {
         private string systemName = systemName;
         public string SystemName
@@ -15,7 +15,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Colonisation
             }
         }
 
-        private long total = total;
+        private ulong total = total;
         public string Total => $"{total:N0} t";
     }
 }

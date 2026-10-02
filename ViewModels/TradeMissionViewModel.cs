@@ -32,7 +32,7 @@ namespace ODEliteTracker.ViewModels
 
             if (this.missionStore.IsLive)
             {
-                OnStoreLive(null, true);
+                _ = OnStoreLive(null, true);
             }
 
             this.fcDataStore.CarrierStockUpdated += OnCarrierStockUpdated;
@@ -69,7 +69,7 @@ namespace ODEliteTracker.ViewModels
             }
         }
 
-        private void OnStoreLive(object? sender, bool e)
+        private async Task OnStoreLive(object? sender, bool e)
         {
             if(e)
             {
@@ -184,12 +184,13 @@ namespace ODEliteTracker.ViewModels
             expiryTimeUpdateTimer.Dispose();
         }
 
-        private void OnFcStoreLive(object? sender, bool e)
+        private Task OnFcStoreLive(object? sender, bool e)
         {
             if (e && fcDataStore.CarrierData != null)
             {
                 OnCarrierStockUpdated(sender, fcDataStore.CarrierData);
             }
+            return Task.CompletedTask;
         }
 
         private void OnCarrierStockUpdated(object? sender, FleetCarrier e)

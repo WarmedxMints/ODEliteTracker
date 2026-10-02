@@ -7,9 +7,9 @@ namespace ODEliteTracker.Models.Colonisation
     {
         public StarSystem StarSystem { get; private set; } = system;
         public bool Inactive { get; set; } = inactive;
-        public long SystemAddress => StarSystem.Address;
+        public ulong SystemAddress => StarSystem.Address;
         public string SystemName => StarSystem.Name;
-        public long MarketID { get; set; } = args.MarketID;
+        public ulong MarketID { get; set; } = args.MarketID;
         public string StationName { get; set; } = stationName;
         public double Progress { get; set; } = args.ConstructionProgress;
         public bool Complete { get; set; } = args.ConstructionComplete;

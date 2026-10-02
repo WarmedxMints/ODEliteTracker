@@ -19,7 +19,7 @@ namespace ODEliteTracker.Migrations
 
             modelBuilder.Entity("ODEliteTracker.Database.DTOs.BGSIgnoredSystemsDTO", b =>
                 {
-                    b.Property<long>("SystemAddress")
+                    b.Property<ulong>("SystemAddress")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
@@ -61,7 +61,7 @@ namespace ODEliteTracker.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<long>("BodyId")
+                    b.Property<uint>("BodyId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("BodyName")
@@ -84,7 +84,7 @@ namespace ODEliteTracker.Migrations
                     b.Property<double>("Longitude")
                         .HasColumnType("REAL");
 
-                    b.Property<long>("SystemAddress")
+                    b.Property<ulong>("SystemAddress")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
@@ -115,7 +115,10 @@ namespace ODEliteTracker.Migrations
                     b.Property<int>("CommanderId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<long>("SystemAddress")
+                    b.Property<ulong>("SystemAddress")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("BodyCount")
                         .HasColumnType("INTEGER");
 
                     b.Property<bool>("Built")
@@ -134,6 +137,9 @@ namespace ODEliteTracker.Migrations
                     b.Property<string>("StarClass")
                         .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("StarCount")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("SystemName")
                         .IsRequired()
@@ -155,10 +161,10 @@ namespace ODEliteTracker.Migrations
 
             modelBuilder.Entity("ODEliteTracker.Database.DTOs.DepotShoppingListDTO", b =>
                 {
-                    b.Property<long>("MarketID")
+                    b.Property<ulong>("MarketID")
                         .HasColumnType("INTEGER");
 
-                    b.Property<long>("SystemAddress")
+                    b.Property<ulong>("SystemAddress")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("StationName")
@@ -187,10 +193,10 @@ namespace ODEliteTracker.Migrations
 
             modelBuilder.Entity("ODEliteTracker.Database.DTOs.InactiveDepotsDTO", b =>
                 {
-                    b.Property<long>("MarketID")
+                    b.Property<ulong>("MarketID")
                         .HasColumnType("INTEGER");
 
-                    b.Property<long>("SystemAddress")
+                    b.Property<ulong>("SystemAddress")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("StationName")
@@ -220,7 +226,7 @@ namespace ODEliteTracker.Migrations
 
             modelBuilder.Entity("ODEliteTracker.Database.DTOs.SystemBookmarkDTO", b =>
                 {
-                    b.Property<long>("Address")
+                    b.Property<ulong>("Address")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")

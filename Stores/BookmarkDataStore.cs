@@ -122,7 +122,7 @@ namespace ODEliteTracker.Stores
             return ret;
         }
 
-        public async Task DeleteBookmark(long systemAddress, int bookmarkId)
+        public async Task DeleteBookmark(ulong systemAddress, int bookmarkId)
         {
             await databaseProvider.DeleteBookmark(systemAddress, bookmarkId);
 

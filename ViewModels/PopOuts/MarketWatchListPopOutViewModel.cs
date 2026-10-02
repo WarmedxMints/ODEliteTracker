@@ -40,7 +40,7 @@ namespace ODEliteTracker.ViewModels.PopOuts
 
             if (colonisationStore.IsLive)
             {
-                OnStoreLive(null, true);
+                _ = OnStoreLive(null, true);
             }
         }
 
@@ -214,7 +214,7 @@ namespace ODEliteTracker.ViewModels.PopOuts
             Application.Current.Dispatcher.Invoke(() => CurrentMarket = market);
         }
 
-        private void OnStoreLive(object? sender, bool e)
+        private async Task OnStoreLive(object? sender, bool e)
         {
             if (e)
             {

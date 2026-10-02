@@ -35,7 +35,7 @@ namespace ODEliteTracker.Stores
         private readonly TickDataStore tickDataStore;
         private readonly SharedDataStore sharedData;
         private readonly ODEliteTrackerDatabaseProvider databaseProvider;
-        private long CurrentSystemAddress;
+        private ulong CurrentSystemAddress;
         private string CurrentSystemName = "Unknown";
         private ulong CurrentMarketID;
         private string CurrentStationName = "Unknown";
@@ -45,7 +45,7 @@ namespace ODEliteTracker.Stores
 
         private TickContainer tickContainer;
         private readonly List<BGSMission> missions = [];
-        private readonly Dictionary<long, BGSStarSystem> systems = [];
+        private readonly Dictionary<ulong, BGSStarSystem> systems = [];
         private readonly List<MegaShipScan> megaShipScans = [];
         private readonly Dictionary<string, string> shipTargets = new(StringComparer.OrdinalIgnoreCase);
         private readonly List<BGSIgnoredSystems> bGSIgnoredSystems = [];
@@ -732,7 +732,7 @@ namespace ODEliteTracker.Stores
             _ = Task.Factory.StartNew(() => tickDataStore.CheckForNewTick());
         }
 
-        internal void AddIgnoredSystem(long address, string name, bool add)
+        internal void AddIgnoredSystem(ulong address, string name, bool add)
         {
             var known = bGSIgnoredSystems.FirstOrDefault(x => x.Address == address);
             if (add)

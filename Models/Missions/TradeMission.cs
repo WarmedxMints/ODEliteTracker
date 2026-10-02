@@ -3,7 +3,7 @@
 namespace ODEliteTracker.Models.Missions
 {
     public sealed class TradeMission(MissionAcceptedEvent.MissionAcceptedEventArgs args,
-                        long originAddress,
+                        ulong originAddress,
                         string originSystemName,
                         ulong originMarketID,
                         string originStationName,

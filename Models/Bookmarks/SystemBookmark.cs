@@ -15,7 +15,7 @@ namespace ODEliteTracker.Models.Bookmarks
             Bookmarks = [.. bookmarkDTO.Bookmarks.Select(x => new Bookmark(x))];
         }
 
-        public long Address { get; }
+        public ulong Address { get; }
         public string Name { get; }
         public double X { get; }
         public double Y { get; }

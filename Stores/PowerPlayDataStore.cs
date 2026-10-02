@@ -26,10 +26,10 @@ namespace ODEliteTracker.Stores
         private DateTime? lastActivity;
         private Dictionary<string, int> activities = [];
         private bool inPowerplayCZ = false;
-        private long currentSystemAddress;
+        private ulong currentSystemAddress;
         private bool odyssey;
         private int storedMerits;
-        private Dictionary<long, PowerPlaySystem> systems = [];
+        private Dictionary<ulong, PowerPlaySystem> systems = [];
         public override string StoreName => "PowerPlay";
         public PowerPlaySystem? CurrentSystem => systems.Values.FirstOrDefault(x => x.Address == currentSystemAddress);
         public override Dictionary<JournalTypeEnum, bool> EventsToParse
@@ -117,7 +117,7 @@ namespace ODEliteTracker.Stores
                         if (currentCycle == this.currentCycle)
                             break;
 
-                        var systemsToRemove = new List<long>();
+                        var systemsToRemove = new List<ulong>();
                         foreach (var powerSystem in systems)
                         {
                             if (powerSystem.Value.CycleData.ContainsKey(this.currentCycle) == false)

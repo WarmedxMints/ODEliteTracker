@@ -18,7 +18,7 @@ namespace ODEliteTracker.Controls.Colonisation
             InitializeComponent();
             Loaded += ColoniationRoutePlannerControl_Loaded;
 
-           
+
         }
 
         private void ColoniationRoutePlannerControl_Loaded(object sender, RoutedEventArgs e)
@@ -69,53 +69,6 @@ namespace ODEliteTracker.Controls.Colonisation
                 if (mb == MessageBoxResult.Yes)
                 {
                     vm.SaveRouteCommand.Execute(null);
-                }
-            }
-        }
-
-        private void Popup_Closed(object sender, EventArgs e)
-        {
-            if (sender is Popup popup)
-            {
-                switch (popup.Tag)
-                {
-                    case "Import":
-                        if (!object.Equals(this.ImportBtn, Mouse.DirectlyOver))
-                        {
-                            this.ImportBtn.IsChecked = false;
-                        }
-                        break;
-                    case "Export":
-                        if (!object.Equals(this.ExportBtn, Mouse.DirectlyOver))
-                        {
-                            this.ExportBtn.IsChecked = false;
-                        }
-                        break;
-                    case "AddCurrent":
-                        if (!object.Equals(this.AddCurrentBtn, Mouse.DirectlyOver))
-                        {
-                            this.AddCurrentBtn.IsChecked = false;
-                        }
-                        break;
-                }
-            }
-        }
-
-        private void Popup_Click(object sender, RoutedEventArgs e)
-        {
-            if (sender is Popup popup)
-            {
-                switch (popup.Tag)
-                {
-                    case "Import":
-                        this.ImportBtn.IsChecked = false;
-                        break;
-                    case "Export":
-                        this.ExportBtn.IsChecked = false;
-                        break;
-                    case "AddCurrent":
-                        this.AddCurrentBtn.IsChecked = false;
-                        break;
                 }
             }
         }
@@ -293,6 +246,132 @@ namespace ODEliteTracker.Controls.Colonisation
                 return;
             }
             ODDialogService.ShowWithOwner(Window.GetWindow(this), "Error", "Unable to process JSON file");
+        }
+
+        private async void CheckBodyCounts(object sender, RoutedEventArgs e)
+        {
+            if (sender is not Button btn || DataContext is not ColonisationRoutePlannerViewModel vm)
+                return;
+
+            btn.IsEnabled = false;
+            await vm.CheckAllSystemCounts();
+
+            btn.IsEnabled = true;
+        }
+
+        private void SelectStartOfRoute(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is not ColonisationRoutePlannerViewModel vm)
+                return;
+
+            var system = vm.RouteSystems.FirstOrDefault();
+
+            if (system == null)
+                return;
+
+            SelectSystem(system, vm);
+        }
+
+        private void SelectLastBuilt(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is not ColonisationRoutePlannerViewModel vm)
+                return;
+
+            var system = vm.RouteSystems.LastOrDefault(x => x.Built);
+
+            if (system == null)
+                return;
+
+            SelectSystem(system, vm);
+        }
+
+        private void SelectLastBuiltHub(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is not ColonisationRoutePlannerViewModel vm)
+                return;
+
+            var system = vm.RouteSystems.LastOrDefault(x => x.Built && x.Hub);
+
+            if (system == null)
+                return;
+
+            SelectSystem(system, vm);
+        }
+
+        private void SelectNextSystemWithNotes(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is not ColonisationRoutePlannerViewModel vm || vm.SelectedSystem == null)
+                return;
+
+            var index = vm.RouteSystems.IndexOf(vm.SelectedSystem);
+
+            if (index < 0 || index >= vm.RouteSystems.Count - 1)
+                return;
+
+            for (var i = index + 1; i < vm.RouteSystems.Count; i++)
+            {
+                var system = vm.RouteSystems[i];
+
+                if (system.HasNotes)
+                {
+                    SelectSystem(system, vm);
+                    return;
+                }
+            }
+
+            for (var i = 0; i < vm.RouteSystems.Count; i++)
+            {
+                var system = vm.RouteSystems[i];
+
+                if (system.HasNotes)
+                {
+                    SelectSystem(system, vm);
+                    return;
+                }
+            }
+
+        }
+
+        private void SelectFirstNotBuilt(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is not ColonisationRoutePlannerViewModel vm)
+                return;
+
+            var system = vm.RouteSystems.FirstOrDefault(x => x.Built == false);
+
+            if (system == null)
+                return;
+
+            SelectSystem(system, vm);
+        }
+
+        private void SelectLastSystem(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is not ColonisationRoutePlannerViewModel vm)
+                return;
+
+            var system = vm.RouteSystems.LastOrDefault();
+
+            if (system == null)
+                return;
+
+            SelectSystem(system, vm);
+        }
+
+        private void SelectSystem(ColonisationRouteSystemVM system, ColonisationRoutePlannerViewModel vm)
+        {
+            vm.SelectedSystem = system;
+            ScrollSelectedIntoView(vm);
+        }
+
+        private async void RecheckSelectBodyCount(object sender, RoutedEventArgs e)
+        {
+            if (sender is not Button btn || DataContext is not ColonisationRoutePlannerViewModel vm || vm.SelectedSystem == null)
+                return;
+
+            btn.IsEnabled = false;
+            await vm.UpdateSystemBodyCounts(vm.SelectedSystem);
+            btn.IsEnabled = true;
         }
     }
 }

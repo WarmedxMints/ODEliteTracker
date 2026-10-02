@@ -12,8 +12,8 @@ namespace ODEliteTracker.Services
                                                BookmarkDataStore bookmarkData,
                                                EdsmApiService esdmApi,
                                                SettingsStore settings,
-                                               long systemAddress,
-                                               long bodyID,
+                                               ulong systemAddress,
+                                               uint bodyID,
                                                double lat,
                                                double lon)
         {

@@ -21,26 +21,26 @@ namespace ODEliteTracker.Stores
 
         private readonly IManageJournalEvents journalManager;
         private readonly ODEliteTrackerDatabaseProvider databaseProvider;
-        private readonly Dictionary<Tuple<long, long>, ConstructionDepot> depots = [];
-        private readonly Dictionary<long, CommanderSystem> commanderSystems = [];
-        private HashSet<Tuple<long, long>> inactiveDepots = [];
-        private HashSet<Tuple<long, long>> shoppingListDepots = [];
-        private readonly Dictionary<string, long> constructionTotals = [];
+        private readonly Dictionary<Tuple<ulong, ulong>, ConstructionDepot> depots = [];
+        private readonly Dictionary<ulong, CommanderSystem> commanderSystems = [];
+        private HashSet<Tuple<ulong, ulong>> inactiveDepots = [];
+        private HashSet<Tuple<ulong, ulong>> shoppingListDepots = [];
+        private readonly Dictionary<string, ulong> constructionTotals = [];
         //When the colonisation events were added to the game
         private readonly DateTime colonisationEventUpdate = new(2025, 4, 7);
         private List<ColonisationRouteSystem> routeSystems = [];
         private StarSystem? currentSystem;
-        private long CurrentSystemAddress;
+        private ulong CurrentSystemAddress;
         private string CurrentSystemName = "Unknown";
         private string CurrentStationName = "Unknown";
 
         public override string StoreName => "Colonisation";
         public IEnumerable<ConstructionDepot> Depots => depots.Values.OrderBy(x => x.SystemName);
-        public HashSet<Tuple<long, long>> ShoppingList => shoppingListDepots;
+        public HashSet<Tuple<ulong, ulong>> ShoppingList => shoppingListDepots;
         public IEnumerable<CommanderSystem> CommanderSystems => commanderSystems.Values.OrderBy(x => x.SystemName);
-        public Dictionary<string, long> ConstructionTotals => constructionTotals;
+        public Dictionary<string, ulong> ConstructionTotals => constructionTotals;
         public IEnumerable<ColonisationRouteSystem> RouteSystems => routeSystems.OrderBy(x => x.HopNumber);
-        public long LastDockedDepotID { get; private set; }
+        public ulong LastDockedDepotID { get; private set; }
         public override Dictionary<JournalTypeEnum, bool> EventsToParse
         {
             get => new()
@@ -86,10 +86,15 @@ namespace ODEliteTracker.Stores
         public override void RunBeforeParsingHistory(int currentCmdrId)
         {
             inactiveDepots = databaseProvider.GetInactiveDepots();
-            shoppingListDepots = databaseProvider.GetDepotShoppingList();
-            routeSystems = databaseProvider.GetColonisationRoute(currentCmdrId);
+            shoppingListDepots = databaseProvider.GetDepotShoppingList();       
             constructionTotals.Clear();
             currentCommanderId = currentCmdrId;
+        }
+
+        public override void RunAfterParsingHistory()
+        {
+            routeSystems = databaseProvider.GetColonisationRoute(currentCommanderId);
+            base.RunAfterParsingHistory();
         }
 
         public override DateTime GetJournalAge(DateTime defaultAge)
@@ -166,7 +171,7 @@ namespace ODEliteTracker.Stores
                     if (currentSystem == null)
                         break;
 
-                    long delivered = 0;
+                    ulong delivered = 0;
 
                     foreach (var item in contribution.Contributions)
                     {

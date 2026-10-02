@@ -26,14 +26,14 @@ namespace ODEliteTracker.ViewModels.PopOuts
 
             if (this.colonisationStore.IsLive)
             {
-                OnStoreLive(null, true);
+                _ = OnStoreLive(null, true);
             }
 
             this.sharedData.MarketEvent += (_, _) => CheckMarket();
 
             if (colonisationStore.IsLive)
             {
-                OnStoreLive(null, true);
+                _ = OnStoreLive(null, true);
             }
 
             this.fcDataStore.CarrierStockUpdated += OnCarrierStockUpdated;
@@ -41,7 +41,7 @@ namespace ODEliteTracker.ViewModels.PopOuts
 
             if (fcDataStore.IsLive)
             {
-                OnFcStoreLive(null, true);
+                _ = OnFcStoreLive(null, true);
             }
 
             this.settings.ColonisationSettings.CommoditySortingChanged += ColonisationSettings_CommoditySortingChanged;
@@ -88,7 +88,7 @@ namespace ODEliteTracker.ViewModels.PopOuts
                 }
                 selectedDepot = value;
                 CheckMarket();
-                OnFcStoreLive(null, true);
+                _ = OnFcStoreLive(null, true);
                 OnPropertyChanged(nameof(SelectedDepot));
                 OnPropertyChanged(nameof(SelectedDepotResources));
             }
@@ -132,7 +132,7 @@ namespace ODEliteTracker.ViewModels.PopOuts
             return JObject.FromObject(Settings.GetSettings());
         }
 
-        private void OnStoreLive(object? sender, bool e)
+        private async Task OnStoreLive(object? sender, bool e)
         {
             if (e)
             {
@@ -213,7 +213,7 @@ namespace ODEliteTracker.ViewModels.PopOuts
             }
         }
 
-        private void OnFcStoreLive(object? sender, bool e)
+        private async Task OnFcStoreLive(object? sender, bool e)
         {
             if (e && fcDataStore.CarrierData != null)
             {

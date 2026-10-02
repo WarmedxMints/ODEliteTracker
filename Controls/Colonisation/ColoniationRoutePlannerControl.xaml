@@ -5,11 +5,15 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:ODEliteTracker.Controls.Colonisation"
              xmlns:viewmodels="clr-namespace:ODEliteTracker.ViewModels"
+             xmlns:galaxy="clr-namespace:ODEliteTracker.Controls.Galaxy"
+             xmlns:popouts="clr-namespace:ODEliteTracker.ViewModels.PopOuts"
+             xmlns:busyIndicator="https://github.com/moh3ngolshani/BusyIndicator"
+             xmlns:controls="clr-namespace:ODEliteTracker.Controls.Buttons"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewmodels:ColonisationRoutePlannerViewModel}"
              d:DesignHeight="450"
-             d:DesignWidth="800">
-    <Grid>
+             d:DesignWidth="1920">
+    <Grid TextBlock.FontSize="18">
         <Grid.RowDefinitions>
             <RowDefinition Height="40" />
             <RowDefinition />
@@ -22,113 +26,75 @@
 
         <StackPanel HorizontalAlignment="Left"
                     Orientation="Horizontal">
-            <ToggleButton Name="ImportBtn"
-                          Width="80"
-                          Height="30"
-                          Content="Import"
-                          BorderThickness="0"
-                          Style="{DynamicResource EliteSytleImageToggleBtn}"
-                          Margin="5,0">
-            </ToggleButton>
-            <Popup IsOpen="{Binding IsChecked, ElementName=ImportBtn}"
-                   Closed="Popup_Closed"
-                   ButtonBase.Click="Popup_Click"
-                   Tag="Import"
-                   Placement="Mouse"
-                   StaysOpen="False">
-                <Border Background="{DynamicResource ViewBackground}"
-                        BorderBrush="{DynamicResource PrimaryControlBorder}"
-                        Padding="5"
-                        BorderThickness="1">
+            <controls:ToggleButonWithPopup ToggleButtonContent="Import"
+                                           Width="80"
+                                           Height="30"
+                                           BorderThickness="0"
+                                           Margin="5,0">
+                <controls:ToggleButonWithPopup.PopupContent>
                     <StackPanel>
                         <Button Content="Elite Game NavRoute"
                                 HorizontalAlignment="Stretch"
                                 Margin="0,2"
                                 HorizontalContentAlignment="Left"
                                 Click="LoadGameNavRoute"
-                                Style="{DynamicResource CartoSelectionBtn}" />
+                                Style="{DynamicResource PopOutBtn}" />
                         <Button Content="Saved Elite NavRoute"
                                 HorizontalAlignment="Stretch"
                                 Margin="0,2"
                                 Click="ImportSavedNavRoute"
                                 HorizontalContentAlignment="Left"
-                                Style="{DynamicResource CartoSelectionBtn}" />
+                                Style="{DynamicResource PopOutBtn}" />
                         <Button Content="Spansh Colonisation Route Json"
                                 HorizontalAlignment="Stretch"
                                 Margin="0,2"
                                 Click="ImportSpanshJson"
                                 HorizontalContentAlignment="Left"
-                                Style="{DynamicResource CartoSelectionBtn}" />
+                                Style="{DynamicResource PopOutBtn}" />
                         <Button Content="Reload from Database"
                                 HorizontalAlignment="Stretch"
                                 Margin="0,2"
                                 HorizontalContentAlignment="Left"
                                 Command="{Binding ReloadFromDatabaseCommand}"
-                                Style="{DynamicResource CartoSelectionBtn}" />
+                                Style="{DynamicResource PopOutBtn}" />
                         <Button Content="Exported Route Json"
                                 HorizontalAlignment="Stretch"
                                 Margin="0,2"
                                 HorizontalContentAlignment="Left"
                                 Click="LoadFromJsonSave"
-                                Style="{DynamicResource CartoSelectionBtn}" />
+                                Style="{DynamicResource PopOutBtn}" />
                     </StackPanel>
-                </Border>
-            </Popup>
+                </controls:ToggleButonWithPopup.PopupContent>
+            </controls:ToggleButonWithPopup>
 
-            <ToggleButton Name="ExportBtn"
-                          Width="80"
-                          Height="30"
-                          Content="Export"
-                          BorderThickness="0"
-                          Style="{DynamicResource EliteSytleImageToggleBtn}"
-                          Margin="5,0">
-            </ToggleButton>
-            <Popup IsOpen="{Binding IsChecked, ElementName=ExportBtn}"
-                   Closed="Popup_Closed"
-                   ButtonBase.Click="Popup_Click"
-                   Tag="Export"
-                   Placement="Mouse"
-                   StaysOpen="False">
-                <Border Background="{DynamicResource ViewBackground}"
-                        BorderBrush="{DynamicResource PrimaryControlBorder}"
-                        Padding="5"
-                        BorderThickness="1">
+            <controls:ToggleButonWithPopup ToggleButtonContent="Export"
+                                           Width="80"
+                                           Height="30"
+                                           Margin="5,0">
+                <controls:ToggleButonWithPopup.PopupContent>
                     <StackPanel>
                         <Button Content="To Json"
                                 HorizontalAlignment="Stretch"
                                 Margin="0,2"
                                 HorizontalContentAlignment="Left"
                                 Click="SaveJson"
-                                Style="{DynamicResource CartoSelectionBtn}" />
+                                Style="{DynamicResource PopOutBtn}" />
                         <Button Content="To CSV"
                                 HorizontalAlignment="Stretch"
                                 Margin="0,2"
                                 HorizontalContentAlignment="Left"
                                 Click="SaveCsv"
-                                Style="{DynamicResource CartoSelectionBtn}" />
+                                Style="{DynamicResource PopOutBtn}" />
                     </StackPanel>
-                </Border>
-            </Popup>
+                </controls:ToggleButonWithPopup.PopupContent>
+            </controls:ToggleButonWithPopup>
 
-            <ToggleButton Name="AddCurrentBtn"
-                          Width="180"
-                          Height="30"
-                          Tag="AddCurrent"
-                          Content="Current System"
-                          BorderThickness="0"
-                          Style="{DynamicResource EliteSytleImageToggleBtn}"
-                          Margin="5,0">
-            </ToggleButton>
-            <Popup IsOpen="{Binding IsChecked, ElementName=AddCurrentBtn}"
-                   Closed="Popup_Closed"
-                   ButtonBase.Click="Popup_Click"
-                   Tag="AddCurrent"
-                   Placement="Mouse"
-                   StaysOpen="False">
-                <Border Background="{DynamicResource ViewBackground}"
-                        BorderBrush="{DynamicResource PrimaryControlBorder}"
-                        Padding="5"
-                        BorderThickness="1">
+            <controls:ToggleButonWithPopup ToggleButtonContent="Current System"
+                                           Width="130"
+                                           Height="30"
+                                           BorderThickness="0"
+                                           Margin="5,0">
+                <controls:ToggleButonWithPopup.PopupContent>
                     <StackPanel>
                         <Button Content="Add to Start of Route"
                                 HorizontalAlignment="Stretch"
@@ -136,37 +102,37 @@
                                 HorizontalContentAlignment="Left"
                                 Command="{Binding AddCurrentSystemToRouteCommand}"
                                 CommandParameter="{x:Static viewmodels:AddSystemToRouteEnum.AtStart}"
-                                Style="{DynamicResource CartoSelectionBtn}" />
+                                Style="{DynamicResource PopOutBtn}" />
                         <Button Content="Add Before Selected System"
                                 HorizontalAlignment="Stretch"
                                 Margin="0,2"
                                 HorizontalContentAlignment="Left"
                                 Command="{Binding AddCurrentSystemToRouteCommand}"
                                 CommandParameter="{x:Static viewmodels:AddSystemToRouteEnum.BeforeSelected}"
-                                Style="{DynamicResource CartoSelectionBtn}" />
+                                Style="{DynamicResource PopOutBtn}" />
                         <Button Content="Add After Selected System"
                                 HorizontalAlignment="Stretch"
                                 Margin="0,2"
                                 HorizontalContentAlignment="Left"
                                 Command="{Binding AddCurrentSystemToRouteCommand}"
                                 CommandParameter="{x:Static viewmodels:AddSystemToRouteEnum.AfterSelected}"
-                                Style="{DynamicResource CartoSelectionBtn}" />
+                                Style="{DynamicResource PopOutBtn}" />
                         <Button Content="Add to End of Route"
                                 HorizontalAlignment="Stretch"
                                 Margin="0,2"
                                 HorizontalContentAlignment="Left"
                                 Command="{Binding AddCurrentSystemToRouteCommand}"
                                 CommandParameter="{x:Static viewmodels:AddSystemToRouteEnum.AtEnd}"
-                                Style="{DynamicResource CartoSelectionBtn}" />
+                                Style="{DynamicResource PopOutBtn}" />
                         <Button Content="Select in Route"
                                 HorizontalAlignment="Stretch"
                                 Margin="0,2"
                                 HorizontalContentAlignment="Left"
                                 Command="{Binding SelectCurrentSystemCommand}"
-                                Style="{DynamicResource CartoSelectionBtn}" />
+                                Style="{DynamicResource PopOutBtn}" />
                     </StackPanel>
-                </Border>
-            </Popup>
+                </controls:ToggleButonWithPopup.PopupContent>
+            </controls:ToggleButonWithPopup>
 
             <Button Content="Remove All After Selected"
                     Width="210"
@@ -174,6 +140,52 @@
                     Margin="5,0"
                     Command="{Binding RemoveAfterSelectedCommand}"
                     Style="{DynamicResource EliteStyleButton}" />
+
+            <controls:ToggleButonWithPopup ToggleButtonContent="Select System"
+                                           Width="130"
+                                           Height="30"
+                                           Margin="5,0">
+                <controls:ToggleButonWithPopup.PopupContent>
+                    <StackPanel>
+                        <Button Content="First System"
+                                HorizontalAlignment="Stretch"
+                                Margin="0,2"
+                                HorizontalContentAlignment="Left"
+                                Click="SelectStartOfRoute"
+                                Style="{DynamicResource PopOutBtn}" />
+                        <Button Content="Last Built system"
+                                HorizontalAlignment="Stretch"
+                                Margin="0,2"
+                                HorizontalContentAlignment="Left"
+                                Click="SelectLastBuilt"
+                                Style="{DynamicResource PopOutBtn}" />
+                        <Button Content="Last Built Hub"
+                                HorizontalAlignment="Stretch"
+                                Margin="0,2"
+                                HorizontalContentAlignment="Left"
+                                Click="SelectLastBuiltHub"
+                                Style="{DynamicResource PopOutBtn}" />
+                        <Button Content="Next System With Notes"
+                                HorizontalAlignment="Stretch"
+                                Margin="0,2"
+                                HorizontalContentAlignment="Left"
+                                Click="SelectNextSystemWithNotes"
+                                Style="{DynamicResource PopOutBtn}" />
+                        <Button Content="First Marked as not built"
+                                HorizontalAlignment="Stretch"
+                                Margin="0,2"
+                                HorizontalContentAlignment="Left"
+                                Click="SelectFirstNotBuilt"
+                                Style="{DynamicResource PopOutBtn}" />
+                        <Button Content="Last System"
+                                HorizontalAlignment="Stretch"
+                                Margin="0,2"
+                                HorizontalContentAlignment="Left"
+                                Click="SelectLastSystem"
+                                Style="{DynamicResource PopOutBtn}" />
+                    </StackPanel>
+                </controls:ToggleButonWithPopup.PopupContent>
+            </controls:ToggleButonWithPopup>
         </StackPanel>
 
         <StackPanel Orientation="Horizontal"
@@ -186,146 +198,249 @@
                     Command="{Binding SaveRouteCommand}"
                     Style="{DynamicResource EliteStyleButton}" />
 
-            <Button Content="Clear"
-                    Width="50"
-                    Height="30"
-                    Margin="5,0"
-                    Click="ClearRoute"
-                    Style="{DynamicResource EliteStyleButton}" />
+            <controls:ToggleButonWithPopup  Width="30"
+                                            Height="30"
+                                            Margin="5,0"
+                                            ButtonStyle="{DynamicResource EliteSytleImageToggleBtn}"
+                                            CloseOnClick="False">
+                <controls:ToggleButonWithPopup.ToggleButtonContent>
+                    <Image Source="/Assets/Icons/settings.png"
+                           Margin="2" />
+                </controls:ToggleButonWithPopup.ToggleButtonContent>
+                <controls:ToggleButonWithPopup.PopupContent>
+
+                    <Grid Width="400">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="80" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="50" />
+                            <RowDefinition Height="50" />
+                            <RowDefinition Height="50" />
+                            <RowDefinition Height="50" />
+                        </Grid.RowDefinitions>
+                        <Button Content="Clear"
+                                Width="55"
+                                Height="35"
+                                Margin="10,0"
+                                Click="ClearRoute"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                Style="{DynamicResource EliteStyleButton}" />
+
+                        <TextBlock Text="Clears the route list"
+                                   VerticalAlignment="Center"
+                                   Grid.Column="1"
+                                   FontSize="16" />
+
+                        <CheckBox Style="{DynamicResource EliteStyleCheckBox}"
+                                  Margin="10,0"
+                                  IsChecked="{Binding UseSpansh}"
+                                  HorizontalAlignment="Center"
+                                  VerticalAlignment="Center"
+                                  Grid.Row="1" />
+                        <TextBlock Text="Check Spansh for system body counts on route load"
+                                   TextWrapping="Wrap"
+                                   VerticalAlignment="Center"
+                                   Grid.Column="1"
+                                   Grid.Row="1"
+                                   FontSize="16" />
+
+
+                        <CheckBox Style="{DynamicResource EliteStyleCheckBox}"
+                                  IsChecked="{Binding FollowRoute}"
+                                  Margin="10,0"
+                                  HorizontalAlignment="Center"
+                                  VerticalAlignment="Center"
+                                  Grid.Row="2" />
+                        <TextBlock Text="Copy next system naem to the clipboard when arriving in a system within the route and the next system is not marked built"
+                                   TextWrapping="Wrap"
+                                   VerticalAlignment="Center"
+                                   Grid.Column="1"
+                                   Grid.Row="2"
+                                   FontSize="16" />
+
+                        <Button Content="Check"
+                                Click="CheckBodyCounts"
+                                Height="35"
+                                Width="55"
+                                Margin="10,0"
+                                Grid.Row="3"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                Style="{DynamicResource EliteStyleButton}" />
+
+                        <TextBlock Text="Rechecks system body counts (will check spansh if enabled)"
+                                   TextWrapping="Wrap"
+                                   VerticalAlignment="Center"
+                                   Grid.Column="1"
+                                   Grid.Row="3"
+                                   FontSize="16" />
+                    </Grid>
+                </controls:ToggleButonWithPopup.PopupContent>
+            </controls:ToggleButonWithPopup>
+
+            <!--<Button Content="Clear"
+                        Width="50"
+                        Height="30"
+                        Margin="5,0"
+                        Click="ClearRoute"
+                        Style="{DynamicResource EliteStyleButton}" />-->
         </StackPanel>
-        <DataGrid x:Name="RouteListGrid"
-                  ItemsSource="{Binding RouteSystems}"
-                  AutoGenerateColumns="False"
-                  SelectedItem="{Binding SelectedSystem}"
-                  Style="{DynamicResource BaseDataGridStyle}"
-                  RowStyle="{DynamicResource CommanderRowStyle}"
-                  SelectionMode="Single"
-                  CanUserAddRows="False"
-                  CanUserDeleteRows="False"
-                  CanUserSortColumns="False"
-                  HeadersVisibility="Column"
-                  HorizontalAlignment="Left"
-                  AlternatingRowBackground="{DynamicResource RowAlternationColour}"
-                  Grid.Row="1">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Hop"
-                                    Width="50"
-                                    HeaderStyle="{DynamicResource DataGridHeaderCenter}"
-                                    CellStyle="{DynamicResource CmdrSelectionCellLeft}"
-                                    Binding="{Binding HopNumber}" />
-                <DataGridTextColumn Header="System Name"
-                                    Width="*"
-                                    HeaderStyle="{DynamicResource DataGridHeaderLeft}"
-                                    CellStyle="{DynamicResource CmdrSelectionCellLeft}"
-                                    Binding="{Binding SystemName}" />
-                <DataGridTemplateColumn  HeaderStyle="{DynamicResource DataGridHeaderLeft}"
-                                         CellStyle="{DynamicResource CmdrSelectionCellCenter}"
-                                         Header=" ">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <Rectangle Opacity="1"
-                                       Height="18"
-                                       Width="18"
-                                       Fill="White"
-                                       Visibility="{Binding HasNotes, Converter={StaticResource BoolToVis}}">
-                                <Rectangle.OpacityMask>
-                                    <VisualBrush Stretch="Uniform">
-                                        <VisualBrush.Visual>
-                                            <Viewbox Stretch="Uniform">
-                                                <Image Source="/Assets/Icons/write-file.png" />
-                                            </Viewbox>
-                                        </VisualBrush.Visual>
-                                    </VisualBrush>
-                                </Rectangle.OpacityMask>
-                            </Rectangle>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTemplateColumn  HeaderStyle="{DynamicResource DataGridHeaderLeft}"
-                                         CellStyle="{DynamicResource CmdrSelectionCellCenter}"
-                                         Header=" ">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <Rectangle Opacity="1"
-                                       Height="18"
-                                       Width="18"
-                                       Fill="ForestGreen"
-                                       Visibility="{Binding Hub, Converter={StaticResource BoolToVis}}">
-                                <Rectangle.OpacityMask>
-                                    <VisualBrush Stretch="Uniform">
-                                        <VisualBrush.Visual>
-                                            <Viewbox Stretch="Uniform">
-                                                <Image Source="/Assets/Icons/cooling-tower.png" />
-                                            </Viewbox>
-                                        </VisualBrush.Visual>
-                                    </VisualBrush>
-                                </Rectangle.OpacityMask>
-                            </Rectangle>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTemplateColumn  HeaderStyle="{DynamicResource DataGridHeaderLeft}"
-                                         CellStyle="{DynamicResource CmdrSelectionCellCenter}"
-                                         Header=" ">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <TextBlock FontFamily="Segoe MDL2 Assets"
-                                       Visibility="{Binding Built, Converter={StaticResource BoolToVis}}"
-                                       Foreground="ForestGreen"
-                                       FontWeight="ExtraBold"
-                                       Text="&#xE73E;" />
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTextColumn Header="Hop Dist"
-                                    Width="110"
-                                    HeaderStyle="{DynamicResource DataGridHeaderCenter}"
-                                    ElementStyle="{StaticResource DataGridElementRightMargin}"
-                                    Binding="{Binding Distance, StringFormat={}{0:N2} ly}">
-                    <DataGridTextColumn.CellStyle>
-                        <Style TargetType="DataGridCell">
-                            <Style.Triggers>
-                                <Trigger Property="IsSelected"
-                                         Value="True">
-                                    <Setter Property="Background"
-                                            Value="{DynamicResource EliteBtnBGMouseOver}" />
-                                    <Setter Property="Foreground"
-                                            Value="{DynamicResource EliteBtnFGMouseOver}" />
-                                    <Setter Property="BorderBrush"
-                                            Value="Transparent" />
-                                    <Setter Property="BorderThickness"
-                                            Value="0" />
-                                </Trigger>
-                                <DataTrigger Binding="{Binding GreaterThan15ly}"
+        <busyIndicator:BusyMask x:Name="BusyIndicator"
+                                IsBusy="{Binding IsBusy}"
+                                Background="{DynamicResource CardBackground}"
+                                FontSize="30"
+                                Height="Auto"
+                                Grid.Row="1"
+                                BusyContent="Loading Systems From Database"
+                                IndicatorType="Cupertino"
+                                BusyContentMargin="0,20,0,0">
+            <DataGrid x:Name="RouteListGrid"
+                      ItemsSource="{Binding RouteSystems}"
+                      AutoGenerateColumns="False"
+                      SelectedItem="{Binding SelectedSystem}"
+                      Style="{DynamicResource BaseDataGridStyle}"
+                      RowStyle="{DynamicResource CommanderRowStyle}"
+                      FontSize="18"
+                      SelectionMode="Single"
+                      CanUserAddRows="False"
+                      CanUserDeleteRows="False"
+                      CanUserSortColumns="False"
+                      HeadersVisibility="Column"
+                      HorizontalAlignment="Left"
+                      AlternatingRowBackground="{DynamicResource RowAlternationColour}"
+                      Grid.Row="1">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Hop"
+                                        Width="50"
+                                        HeaderStyle="{DynamicResource DataGridHeaderCenter}"
+                                        CellStyle="{DynamicResource CmdrSelectionCellLeft}"
+                                        Binding="{Binding HopNumber}" />
+                    <DataGridTextColumn Header="System Name"
+                                        Width="*"
+                                        HeaderStyle="{DynamicResource DataGridHeaderLeft}"
+                                        CellStyle="{DynamicResource CmdrSelectionCellLeft}"
+                                        Binding="{Binding SystemName}" />
+                    <DataGridTextColumn Header="Bodies"
+                                        Width="60"
+                                        HeaderStyle="{DynamicResource DataGridHeaderCenter}"
+                                        CellStyle="{DynamicResource CmdrSelectionCellCenter}"
+                                        Binding="{Binding BodyCountString}" />
+                    <DataGridTextColumn Header="Stars"
+                                        Width="60"
+                                        HeaderStyle="{DynamicResource DataGridHeaderCenter}"
+                                        CellStyle="{DynamicResource CmdrSelectionCellCenter}"
+                                        Binding="{Binding StarCountString}" />
+                    <DataGridTemplateColumn  HeaderStyle="{DynamicResource DataGridHeaderLeft}"
+                                             CellStyle="{DynamicResource CmdrSelectionCellCenter}"
+                                             Header=" ">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Rectangle Opacity="1"
+                                           Height="18"
+                                           Width="18"
+                                           Fill="White"
+                                           Visibility="{Binding HasNotes, Converter={StaticResource BoolToVis}}">
+                                    <Rectangle.OpacityMask>
+                                        <VisualBrush Stretch="Uniform">
+                                            <VisualBrush.Visual>
+                                                <Viewbox Stretch="Uniform">
+                                                    <Image Source="/Assets/Icons/write-file.png" />
+                                                </Viewbox>
+                                            </VisualBrush.Visual>
+                                        </VisualBrush>
+                                    </Rectangle.OpacityMask>
+                                </Rectangle>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn  HeaderStyle="{DynamicResource DataGridHeaderLeft}"
+                                             CellStyle="{DynamicResource CmdrSelectionCellCenter}"
+                                             Header=" ">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Rectangle Opacity="1"
+                                           Height="18"
+                                           Width="18"
+                                           Fill="ForestGreen"
+                                           Visibility="{Binding Hub, Converter={StaticResource BoolToVis}}">
+                                    <Rectangle.OpacityMask>
+                                        <VisualBrush Stretch="Uniform">
+                                            <VisualBrush.Visual>
+                                                <Viewbox Stretch="Uniform">
+                                                    <Image Source="/Assets/Icons/cooling-tower.png" />
+                                                </Viewbox>
+                                            </VisualBrush.Visual>
+                                        </VisualBrush>
+                                    </Rectangle.OpacityMask>
+                                </Rectangle>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn  HeaderStyle="{DynamicResource DataGridHeaderLeft}"
+                                             CellStyle="{DynamicResource CmdrSelectionCellCenter}"
+                                             Header=" ">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock FontFamily="Segoe MDL2 Assets"
+                                           Visibility="{Binding Built, Converter={StaticResource BoolToVis}}"
+                                           Foreground="ForestGreen"
+                                           FontWeight="ExtraBold"
+                                           Text="&#xE73E;" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="Hop Dist"
+                                        Width="110"
+                                        HeaderStyle="{DynamicResource DataGridHeaderCenter}"
+                                        ElementStyle="{StaticResource DataGridElementRightMargin}"
+                                        Binding="{Binding Distance, StringFormat={}{0:N2} ly}">
+                        <DataGridTextColumn.CellStyle>
+                            <Style TargetType="DataGridCell">
+                                <Style.Triggers>
+                                    <Trigger Property="IsSelected"
                                              Value="True">
-                                    <Setter Property="Foreground"
-                                            Value="Red" />
-                                    <Setter Property="FontWeight"
-                                            Value="Bold" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </DataGridTextColumn.CellStyle>
-                </DataGridTextColumn>
+                                        <Setter Property="Background"
+                                                Value="{DynamicResource EliteBtnBGMouseOver}" />
+                                        <Setter Property="Foreground"
+                                                Value="{DynamicResource EliteBtnFGMouseOver}" />
+                                        <Setter Property="BorderBrush"
+                                                Value="Transparent" />
+                                        <Setter Property="BorderThickness"
+                                                Value="0" />
+                                    </Trigger>
+                                    <DataTrigger Binding="{Binding GreaterThan15ly}"
+                                                 Value="True">
+                                        <Setter Property="Foreground"
+                                                Value="Red" />
+                                        <Setter Property="FontWeight"
+                                                Value="Bold" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGridTextColumn.CellStyle>
+                    </DataGridTextColumn>
 
-                <DataGridTextColumn Header="Total Hop Dist"
-                                    Width="110"
-                                    HeaderStyle="{DynamicResource DataGridHeaderCenter}"
-                                    CellStyle="{DynamicResource CmdrSelectionCellRight}"
-                                    Binding="{Binding TotalHopDistance, StringFormat={}{0:N2} ly}" />
-                <DataGridTextColumn Header="From Hub"
-                                    Width="110"
-                                    HeaderStyle="{DynamicResource DataGridHeaderCenter}"
-                                    CellStyle="{DynamicResource CmdrSelectionCellRight}"
-                                    Binding="{Binding TotalDistance, StringFormat={}{0:N2} ly}" />
-                <DataGridTextColumn Header="From Start"
-                                    Width="110"
-                                    HeaderStyle="{DynamicResource DataGridHeaderCenter}"
-                                    CellStyle="{DynamicResource CmdrSelectionCellRight}"
-                                    Binding="{Binding TotalDistanceFromStart, StringFormat={}{0:N2} ly}" />
-            </DataGrid.Columns>
-        </DataGrid>
-
+                    <DataGridTextColumn Header="Total Hop Dist"
+                                        Width="110"
+                                        HeaderStyle="{DynamicResource DataGridHeaderCenter}"
+                                        CellStyle="{DynamicResource CmdrSelectionCellRight}"
+                                        Binding="{Binding TotalHopDistance, StringFormat={}{0:N2} ly}" />
+                    <DataGridTextColumn Header="From Hub"
+                                        Width="110"
+                                        HeaderStyle="{DynamicResource DataGridHeaderCenter}"
+                                        CellStyle="{DynamicResource CmdrSelectionCellRight}"
+                                        Binding="{Binding TotalDistance, StringFormat={}{0:N2} ly}" />
+                    <DataGridTextColumn Header="From Start"
+                                        Width="110"
+                                        HeaderStyle="{DynamicResource DataGridHeaderCenter}"
+                                        CellStyle="{DynamicResource CmdrSelectionCellRight}"
+                                        Binding="{Binding TotalDistanceFromStart, StringFormat={}{0:N2} ly}" />
+                </DataGrid.Columns>
+            </DataGrid>
+        </busyIndicator:BusyMask>
         <TextBlock Text="{Binding TargetSystemText}"
                    Foreground="{DynamicResource Header}"
                    VerticalAlignment="Center"
@@ -342,122 +457,74 @@
                         <RowDefinition />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
+                    <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                                  VerticalScrollBarVisibility="Auto">
+                        <Grid Grid.Row="0"
+                              Visibility="{Binding SelectedSystem, Converter={StaticResource NullToVis}, ConverterParameter=Hidden}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
 
-                    <Grid Grid.Row="0"
-                          Visibility="{Binding SelectedSystem, Converter={StaticResource NullToVis}, ConverterParameter=Hidden}">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Style="{DynamicResource ClipboardBtn}"
+                                        Command="{Binding SetClipboardCommand}"
+                                        CommandParameter="{Binding SelectedSystem.SystemName}"
+                                        Margin="5,0"
+                                        Height="25"
+                                        Width="25">
+                                    <Image Source="/Assets/Icons/Clipboard.png"
+                                           Margin="3" />
+                                </Button>
+                                <TextBlock Text="{Binding SelectedSystem.SystemName}"
+                                           FontSize="24"
+                                           Margin="0 10"
+                                           Foreground="{DynamicResource Header}" />
+                            </StackPanel>
 
-                        <StackPanel Orientation="Horizontal">
-                            <Button Style="{DynamicResource ClipboardBtn}"
-                                    Command="{Binding SetClipboardCommand}"
-                                    CommandParameter="{Binding SelectedSystem.SystemName}"
-                                    Margin="5,0"
-                                    Height="25"
-                                    Width="25">
-                                <Image Source="/Assets/Icons/Clipboard.png"
-                                       Margin="3" />
-                            </Button>
-                            <TextBlock Text="{Binding SelectedSystem.SystemName}"
-                                       FontSize="24"
-                                       Margin="0 10"
-                                       Foreground="{DynamicResource Header}" />
-                        </StackPanel>
+                            <Button Content="Recheck"
+                                    ToolTip="Recheck Body Counts"
+                                    HorizontalAlignment="Right"
+                                    Click="RecheckSelectBodyCount"
+                                    Margin="5"
+                                    Height="30"
+                                    Style="{DynamicResource EliteStyleButton}" />
+                            <galaxy:PositionControl Position="{Binding SelectedSystem.Position.Position}"
+                                                    HorizontalAlignment="Center"
+                                                    Grid.Row="1" />
 
-                        <StackPanel Orientation="Horizontal"
-                                    DataContext="{Binding SelectedSystem}"
-                                    Grid.Row="1">
-                            <TextBlock Text="X"
+                            <TextBlock Text="Notes"
+                                       Grid.Row="2"
                                        FontSize="18"
-                                       Margin="5, 0"
+                                       Margin="10 5 10 0"
                                        VerticalAlignment="Center"
-                                       TextAlignment="Center"
+                                       TextAlignment="Left"
                                        Foreground="{DynamicResource Header}" />
 
-                            <Border BorderThickness="1"
-                                    Margin="5, 0"
-                                    Width="100"
-                                    BorderBrush="{DynamicResource PrimaryControlBorder}"
-                                    Background="{DynamicResource PrimaryControlBackground}">
-                                <TextBlock Text="{Binding Position.X, StringFormat={}{0:N2}, Mode=OneWay}"
-                                           VerticalAlignment="Center"
-                                           TextAlignment="Center"
-                                           Background="Transparent"
-                                           Foreground="{DynamicResource PrimaryControlForeground}" />
-                            </Border>
+                            <TextBox Text="{Binding SelectedSystem.Notes}"
+                                     Grid.Row="3"
+                                     Margin="10"
+                                     Width="400"
+                                     TextWrapping="Wrap"
+                                     VerticalScrollBarVisibility="Auto"
+                                     HorizontalScrollBarVisibility="Auto"
+                                     Style="{DynamicResource EliteTextBox}"
+                                     Foreground="{DynamicResource PrimaryControlForeground}"
+                                     HorizontalAlignment="Stretch"
+                                     VerticalAlignment="Stretch" />
 
-                            <TextBlock Text="Y"
-                                       FontSize="18"
-                                       Margin="5, 0"
+                            <TextBlock Text="{Binding SelectedSystem.DistanceFromLineText}"
+                                       Grid.Row="4"
+                                       FontSize="17"
+                                       TextWrapping="Wrap"
+                                       Margin="10 5 10 0"
                                        VerticalAlignment="Center"
-                                       TextAlignment="Center"
-                                       Foreground="{DynamicResource Header}" />
-
-                            <Border BorderThickness="1"
-                                    Margin="5, 0"
-                                    Width="100"
-                                    BorderBrush="{DynamicResource PrimaryControlBorder}"
-                                    Background="{DynamicResource PrimaryControlBackground}">
-                                <TextBlock Text="{Binding Position.Y, StringFormat={}{0:N2}, Mode=OneWay}"
-                                           VerticalAlignment="Center"
-                                           TextAlignment="Center"
-                                           Background="Transparent"
-                                           Foreground="{DynamicResource PrimaryControlForeground}" />
-                            </Border>
-
-                            <TextBlock Text="Z"
-                                       FontSize="18"
-                                       Margin="5, 0"
-                                       VerticalAlignment="Center"
-                                       TextAlignment="Center"
-                                       Foreground="{DynamicResource Header}" />
-
-                            <Border BorderThickness="1"
-                                    Margin="5, 0"
-                                    Width="100"
-                                    BorderBrush="{DynamicResource PrimaryControlBorder}"
-                                    Background="{DynamicResource PrimaryControlBackground}">
-                                <TextBlock Text="{Binding Position.Z, StringFormat={}{0:N2}, Mode=OneWay}"
-                                           VerticalAlignment="Center"
-                                           TextAlignment="Center"
-                                           Background="Transparent"
-                                           Foreground="{DynamicResource PrimaryControlForeground}" />
-                            </Border>
-                        </StackPanel>
-
-                        <TextBlock Text="Notes"
-                                   Grid.Row="2"
-                                   FontSize="18"
-                                   Margin="10 5 10 0"
-                                   VerticalAlignment="Center"
-                                   TextAlignment="Left"
-                                   Foreground="{DynamicResource Header}" />
-
-                        <TextBox Text="{Binding SelectedSystem.Notes}"
-                                 Grid.Row="3"
-                                 Margin="10"
-                                 TextWrapping="Wrap"
-                                 VerticalScrollBarVisibility="Auto"
-                                 HorizontalScrollBarVisibility="Auto"
-                                 Style="{DynamicResource EliteTextBox}"
-                                 Foreground="{DynamicResource PrimaryControlForeground}"
-                                 HorizontalAlignment="Stretch"
-                                 VerticalAlignment="Stretch" />
-
-                        <TextBlock Text="{Binding SelectedSystem.DistanceFromLineText}"
-                                   Grid.Row="4"
-                                   FontSize="17"
-                                   TextWrapping="Wrap"
-                                   Margin="10 5 10 0"
-                                   VerticalAlignment="Center"
-                                   TextAlignment="Left" />
-                    </Grid>
-
+                                       TextAlignment="Left" />
+                        </Grid>
+                    </ScrollViewer>
                     <Grid Grid.Column="1"
                           Grid.Row="1"
                           Visibility="{Binding SelectedSystem, Converter={StaticResource NullToVis}, ConverterParameter=Hidden}">
@@ -499,255 +566,172 @@
                 </Grid>
             </TabItem>
             <TabItem Header="Straight Line Tool">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-
-                    <TextBlock Text="Start Position"
-                               Margin="5 10"
-                               Foreground="{DynamicResource Header}"
-                               VerticalAlignment="Center" />
-
-                    <StackPanel Orientation="Horizontal"
-                                Margin="10"
-                                Grid.Row="2">
-                        <Button Content="Use Selected"
-                                Margin="5"
-                                Width="110"
-                                Height="30"
-                                Command="{Binding SetStartAsSelectedCommand}"
-                                Style="{DynamicResource EliteStyleButton}" />
-                        <Button Content="Use Current"
-                                Margin="5"
-                                Width="110"
-                                Height="30"
-                                Command="{Binding SetStartAsCurrentCommand}"
-                                Style="{DynamicResource EliteStyleButton}" />
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal"
-                                Grid.Row="1">
-                        <TextBlock Text="X"
-                                   FontSize="18"
-                                   Margin="5, 0"
-                                   VerticalAlignment="Center"
-                                   TextAlignment="Center"
-                                   Foreground="{DynamicResource Header}" />
-
-                        <Border BorderThickness="1"
-                                Margin="5, 0"
-                                Width="100"
-                                BorderBrush="{DynamicResource PrimaryControlBorder}"
-                                Background="{DynamicResource PrimaryControlBackground}">
-                            <TextBlock Text="{Binding StartPos.X, StringFormat={}{0:N2}, Mode=OneWay}"
-                                       VerticalAlignment="Center"
-                                       TextAlignment="Center"
-                                       Background="Transparent"
-                                       Foreground="{DynamicResource PrimaryControlForeground}" />
-                        </Border>
-
-                        <TextBlock Text="Y"
-                                   FontSize="18"
-                                   Margin="5, 0"
-                                   VerticalAlignment="Center"
-                                   TextAlignment="Center"
-                                   Foreground="{DynamicResource Header}" />
-
-                        <Border BorderThickness="1"
-                                Margin="5, 0"
-                                Width="100"
-                                BorderBrush="{DynamicResource PrimaryControlBorder}"
-                                Background="{DynamicResource PrimaryControlBackground}">
-                            <TextBlock Text="{Binding StartPos.Y, StringFormat={}{0:N2}, Mode=OneWay}"
-                                       VerticalAlignment="Center"
-                                       TextAlignment="Center"
-                                       Background="Transparent"
-                                       Foreground="{DynamicResource PrimaryControlForeground}" />
-                        </Border>
-
-                        <TextBlock Text="Z"
-                                   FontSize="18"
-                                   Margin="5, 0"
-                                   VerticalAlignment="Center"
-                                   TextAlignment="Center"
-                                   Foreground="{DynamicResource Header}" />
-
-                        <Border BorderThickness="1"
-                                Margin="5, 0"
-                                Width="100"
-                                BorderBrush="{DynamicResource PrimaryControlBorder}"
-                                Background="{DynamicResource PrimaryControlBackground}">
-                            <TextBlock Text="{Binding StartPos.Z, StringFormat={}{0:N2}, Mode=OneWay}"
-                                       VerticalAlignment="Center"
-                                       TextAlignment="Center"
-                                       Background="Transparent"
-                                       Foreground="{DynamicResource PrimaryControlForeground}" />
-                        </Border>
-                    </StackPanel>
-
-                    <TextBlock Text="End Position"
-                               Margin="5 10"
-                               Foreground="{DynamicResource Header}"
-                               VerticalAlignment="Center"
-                               Grid.Row="3" />
-
-                    <StackPanel Orientation="Horizontal"
-                                Margin="10"
-                                Grid.Row="5">
-                        <Button Content="Use Target"
-                                Margin="5"
-                                Width="110"
-                                Height="30"
-                                Command="{Binding SetEndAsTargetCommand}"
-                                Style="{DynamicResource EliteStyleButton}" />
-                        <Button Content="Use Selected"
-                                Margin="5"
-                                Width="110"
-                                Height="30"
-                                Command="{Binding SetEndAsSelectedCommand}"
-                                Style="{DynamicResource EliteStyleButton}" />
-                        <Button Content="Use Current"
-                                Margin="5"
-                                Width="110"
-                                Height="30"
-                                Command="{Binding SetEndAsCurrentCommand}"
-                                Style="{DynamicResource EliteStyleButton}" />
-                    </StackPanel>
-
-                    <StackPanel Orientation="Horizontal"
-                                Grid.Row="4">
-                        <TextBlock Text="X"
-                                   FontSize="18"
-                                   Margin="5, 0"
-                                   VerticalAlignment="Center"
-                                   TextAlignment="Center"
-                                   Foreground="{DynamicResource Header}" />
-
-                        <Border BorderThickness="1"
-                                Margin="5, 0"
-                                Width="100"
-                                BorderBrush="{DynamicResource PrimaryControlBorder}"
-                                Background="{DynamicResource PrimaryControlBackground}">
-                            <TextBlock Text="{Binding EndPos.X, StringFormat={}{0:N2}, Mode=OneWay}"
-                                       VerticalAlignment="Center"
-                                       TextAlignment="Center"
-                                       Background="Transparent"
-                                       Foreground="{DynamicResource PrimaryControlForeground}" />
-                        </Border>
-
-                        <TextBlock Text="Y"
-                                   FontSize="18"
-                                   Margin="5, 0"
-                                   VerticalAlignment="Center"
-                                   TextAlignment="Center"
-                                   Foreground="{DynamicResource Header}" />
-
-                        <Border BorderThickness="1"
-                                Margin="5, 0"
-                                Width="100"
-                                BorderBrush="{DynamicResource PrimaryControlBorder}"
-                                Background="{DynamicResource PrimaryControlBackground}">
-                            <TextBlock Text="{Binding EndPos.Y, StringFormat={}{0:N2}, Mode=OneWay}"
-                                       VerticalAlignment="Center"
-                                       TextAlignment="Center"
-                                       Background="Transparent"
-                                       Foreground="{DynamicResource PrimaryControlForeground}" />
-                        </Border>
-
-                        <TextBlock Text="Z"
-                                   FontSize="18"
-                                   Margin="5, 0"
-                                   VerticalAlignment="Center"
-                                   TextAlignment="Center"
-                                   Foreground="{DynamicResource Header}" />
-
-                        <Border BorderThickness="1"
-                                Margin="5, 0"
-                                Width="100"
-                                BorderBrush="{DynamicResource PrimaryControlBorder}"
-                                Background="{DynamicResource PrimaryControlBackground}">
-                            <TextBlock Text="{Binding EndPos.Z, StringFormat={}{0:N2}, Mode=OneWay}"
-                                       VerticalAlignment="Center"
-                                       TextAlignment="Center"
-                                       Background="Transparent"
-                                       Foreground="{DynamicResource PrimaryControlForeground}" />
-                        </Border>
-                    </StackPanel>
-
-                    <Grid Grid.Row="7"
-                          TextBlock.FontSize="20"
-                          Margin="5">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
+                <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                              VerticalScrollBarVisibility="Auto">
+                    <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="30" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
 
-                        <TextBlock Text="Current distance from start position"
+                        <TextBlock Text="Start Position"
+                                   Margin="5 10"
+                                   Grid.Row="0"
                                    Foreground="{DynamicResource Header}"
-                                   VerticalAlignment="Center"
-                                   Margin="0 5"
-                                   Grid.Row="0" />
-                        <TextBlock Text="{Binding DistanceFromStart}"
-                                   VerticalAlignment="Center"
-                                   HorizontalAlignment="Right"
-                                   Grid.Row="1"
-                                   Margin="0 5"
-                                   Grid.Column="1" />
+                                   VerticalAlignment="Center" />
 
-                        <TextBlock Text="Current distance from 500ly point "
+                        <StackPanel Orientation="Horizontal"
+                                    Grid.Row="0"
+                                    HorizontalAlignment="Right">
+                            <controls:ToggleButonWithPopup ToggleButtonContent="Set"
+                                                           HorizontalAlignment="Right"
+                                                           Width="80"
+                                                           Height="25">
+                                <controls:ToggleButonWithPopup.PopupContent>
+                                    <StackPanel>
+                                        <Button Content="Use Selected System"
+                                                HorizontalAlignment="Stretch"
+                                                Margin="0,2"
+                                                HorizontalContentAlignment="Left"
+                                                Command="{Binding SetStartAsSelectedCommand}"
+                                                Style="{DynamicResource PopOutBtn}" />
+                                        <Button Content="Use Current System"
+                                                HorizontalAlignment="Stretch"
+                                                Margin="0,2"
+                                                HorizontalContentAlignment="Left"
+                                                Style="{DynamicResource PopOutBtn}"
+                                                Command="{Binding SetStartAsCurrentCommand}" />
+                                    </StackPanel>
+                                </controls:ToggleButonWithPopup.PopupContent>
+                            </controls:ToggleButonWithPopup>
+
+                            <Button Command="{Binding OpenPopOut}"
+                                    CommandParameter="{x:Type popouts:StraightLineToolPopOut}"
+                                    Style="{DynamicResource EliteStyleImageButton}"
+                                    Width="25"
+                                    Height="25"
+                                    Margin="5,0"
+                                    Padding="2"
+                                    ToolTip="Open Overlay">
+                                <Image Source="/Assets/Icons/PopOutBtn.png" />
+                            </Button>
+
+                        </StackPanel>
+
+
+                        <galaxy:PositionControl Position="{Binding StartPos}"
+                                                Grid.Row="1" />
+
+                        <TextBlock Text="End Position"
+                                   Margin="5 10"
                                    Foreground="{DynamicResource Header}"
                                    VerticalAlignment="Center"
-                                   Margin="0 5"
                                    Grid.Row="2" />
-                        <TextBlock Text="{Binding DistanceFrom500ly}"
-                                   VerticalAlignment="Center"
-                                   HorizontalAlignment="Right"
-                                   Grid.Row="3"
-                                   Margin="0 5"
-                                   Grid.Column="1" />
 
-                        <TextBlock Text="Current distance from straight line"
-                                   Foreground="{DynamicResource Header}"
-                                   VerticalAlignment="Center"
-                                   Margin="0 5"
-                                   Grid.Row="4" />
-                        <TextBlock Text="{Binding DistanceFromStraightLine}"
-                                   VerticalAlignment="Center"
-                                   HorizontalAlignment="Right"
-                                   Grid.Row="5"
-                                   Margin="0 5"
-                                   Grid.Column="1" />
+                        <controls:ToggleButonWithPopup ToggleButtonContent="Set"
+                                                       HorizontalAlignment="Right"
+                                                       Width="80"
+                                                       Margin="0 0 35 0"
+                                                       Grid.Row="2"
+                                                       Height="25">
+                            <controls:ToggleButonWithPopup.PopupContent>
+                                <StackPanel>
+                                    <Button Content="Use Target System"
+                                            HorizontalAlignment="Stretch"
+                                            Margin="0,2"
+                                            HorizontalContentAlignment="Left"
+                                            Command="{Binding SetEndAsTargetCommand}"
+                                            Style="{DynamicResource PopOutBtn}" />
+                                    <Button Content="Use Selected System"
+                                            HorizontalAlignment="Stretch"
+                                            Margin="0,2"
+                                            HorizontalContentAlignment="Left"
+                                            Command="{Binding SetEndAsSelectedCommand}"
+                                            Style="{DynamicResource PopOutBtn}" />
+                                    <Button Content="Use Current System"
+                                            HorizontalAlignment="Stretch"
+                                            Margin="0,2"
+                                            HorizontalContentAlignment="Left"
+                                            Command="{Binding SetEndAsCurrentCommand}"
+                                            Style="{DynamicResource PopOutBtn}" />
+                                </StackPanel>
+                            </controls:ToggleButonWithPopup.PopupContent>
+                        </controls:ToggleButonWithPopup>
 
-                        <TextBlock Text="Directions to closest point on line"
-                                   Foreground="{DynamicResource Header}"
-                                   VerticalAlignment="Center"
-                                   Margin="0 5"
-                                   Grid.Row="6" />
-                        <TextBlock Text="{Binding DirectionsToStraightLine}"
-                                   VerticalAlignment="Center"
-                                   HorizontalAlignment="Right"
-                                   Grid.Row="7"
-                                   Margin="0 5"
-                                   Grid.Column="1" />
+                        <galaxy:PositionControl Position="{Binding EndPos}"
+                                                Grid.Row="3" />
+
+                        <Grid Grid.Row="5"
+                              TextBlock.FontSize="20"
+                              Margin="5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="Current distance from start position"
+                                       Foreground="{DynamicResource Header}"
+                                       VerticalAlignment="Center"
+                                       Margin="0 5"
+                                       Grid.Row="0" />
+                            <TextBlock Text="{Binding DistanceFromStart}"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Right"
+                                       Grid.Row="1"
+                                       Margin="0 5"
+                                       Grid.Column="1" />
+
+                            <TextBlock Text="Current distance from 500ly point "
+                                       Foreground="{DynamicResource Header}"
+                                       VerticalAlignment="Center"
+                                       Margin="0 5"
+                                       Grid.Row="2" />
+                            <TextBlock Text="{Binding DistanceFrom500ly}"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Right"
+                                       Grid.Row="3"
+                                       Margin="0 5"
+                                       Grid.Column="1" />
+
+                            <TextBlock Text="Current distance from straight line"
+                                       Foreground="{DynamicResource Header}"
+                                       VerticalAlignment="Center"
+                                       Margin="0 5"
+                                       Grid.Row="4" />
+                            <TextBlock Text="{Binding DistanceFromStraightLine}"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Right"
+                                       Grid.Row="5"
+                                       Margin="0 5"
+                                       Grid.Column="1" />
+
+                            <TextBlock Text="Directions to closest point on line"
+                                       Foreground="{DynamicResource Header}"
+                                       VerticalAlignment="Center"
+                                       Margin="0 5"
+                                       Grid.Row="6" />
+                            <TextBlock Text="{Binding DirectionsToStraightLine}"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Right"
+                                       Grid.Row="7"
+                                       Margin="0 5"
+                                       Grid.Column="1" />
+                        </Grid>
                     </Grid>
-                </Grid>
+                </ScrollViewer>
             </TabItem>
         </TabControl>
     </Grid>

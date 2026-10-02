@@ -26,6 +26,8 @@ namespace ODEliteTracker.Models.Colonisation
             Built = dto.Built;
             Hub = dto.Hub;
             Notes = dto.Notes;
+            BodyCount = dto.BodyCount;
+            StarCount = dto.StarCount;
         }
 
         public ColonisationRouteSystem(ColonisationRouteSystemVM vm)
@@ -38,10 +40,14 @@ namespace ODEliteTracker.Models.Colonisation
             Built = vm.Built;
             Hub = vm.Hub;
             Notes = vm.Notes;
+            BodyCount = vm.BodyCount;
+            StarCount = vm.StarCount;
         }
 
-        public long SystemAddress { get; set; }
+        public ulong SystemAddress { get; set; }
         public int HopNumber { get; set; }
+        public int BodyCount { get; set; }
+        public int StarCount { get; set; }
         public string SystemName { get; set; }
         public Position Position { get; set; }
         public string StarClass { get; set; }

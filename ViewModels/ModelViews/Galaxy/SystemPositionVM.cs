@@ -1,6 +1,7 @@
 ﻿using EliteJournalReader;
 using ODEliteTracker.Models.Galaxy;
 using ODEliteTracker.Models.Spansh;
+using Position = ODEliteTracker.Models.Galaxy.Position;
 
 namespace ODEliteTracker.ViewModels.ModelViews.Galaxy
 {

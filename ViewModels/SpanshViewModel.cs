@@ -161,9 +161,10 @@ namespace ODEliteTracker.ViewModels
         }
         #endregion
 
-        private void OnCSVStoreLive(object? sender, bool e)
+        private Task OnCSVStoreLive(object? sender, bool e)
         {
             OnModelLive(e);
+            return Task.CompletedTask;
         }
 
         private void CsvStore_OnCurrentContainerChanged(object? sender, SpanshCsvContainer? e)

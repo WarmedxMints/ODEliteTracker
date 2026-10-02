@@ -5,7 +5,7 @@ namespace ODEliteTracker.Models.Bookmarks
     public sealed class Bookmark(BookMarkDTO dto)
     {
         public int Id { get; } = dto.Id;
-        public long BodyId { get; } = dto.BodyId;
+        public uint BodyId { get; } = dto.BodyId;
         public string BodyName { get; } = dto.BodyName;
         public string BodyNameLocal { get; } = dto.BodyNameLocal;
         public string? BookMarkName { get; } = dto.BookmarkName;

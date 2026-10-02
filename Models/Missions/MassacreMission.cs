@@ -5,7 +5,7 @@ namespace ODEliteTracker.Models.Missions
     public sealed class MassacreMission : MissionBase
     {
         public MassacreMission(MissionAcceptedEvent.MissionAcceptedEventArgs args,
-                               long originAddress,
+                               ulong originAddress,
                                string originSystemName,
                                ulong originMarketID,
                                string originStationName,

@@ -1,4 +1,4 @@
 ﻿namespace ODEliteTracker.Models.Colonisation
 {
-    public record CommanderSystem(long SystemAddress, string SystemName);
+    public record CommanderSystem(ulong SystemAddress, string SystemName);
 }

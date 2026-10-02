@@ -45,7 +45,7 @@ namespace ODEliteTracker.Models.FleetCarrier
         public List<CarrierCommodity> Stock { get; set; } = [];
         //public List<CarrierCommodity> BuyOrders { get; set; } = [];
         public string StarSystem { get; internal set; } = string.Empty;
-        public long SystemAddress { get; internal set; }
+        public ulong SystemAddress { get; internal set; }
         public int BodyID { get; internal set; }
 
         public FleetCarrierDestination Destination { get; set; } = new();

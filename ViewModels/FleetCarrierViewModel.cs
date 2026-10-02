@@ -43,7 +43,7 @@ namespace ODEliteTracker.ViewModels
             }
 
             if (this.dataStore.IsLive)
-                OnStoreLive(null, true);
+                _ = OnStoreLive(null, true);
         }       
 
         public override void Dispose()
@@ -200,7 +200,7 @@ namespace ODEliteTracker.ViewModels
             await AudioPlayer.PlayFile(settings.FleetCarrierSettings.TimerAudioFile, settings.FleetCarrierSettings.Volume).ConfigureAwait(true);
             CanPlay = true;
         }
-        private void OnStoreLive(object? sender, bool e)
+        private async Task OnStoreLive(object? sender, bool e)
         {
             if (e)
             {

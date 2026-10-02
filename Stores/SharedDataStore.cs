@@ -24,7 +24,7 @@ namespace ODEliteTracker.Stores
     {
         public SharedDataStore(IManageJournalEvents journalManager,
                                NotificationService notificationService,
-                               IODDatabaseProvider databaseProvider, 
+                               IODDatabaseProvider databaseProvider,
                                SettingsStore settings)
         {
             this.journalManager = journalManager;
@@ -43,7 +43,7 @@ namespace ODEliteTracker.Stores
         private readonly ODEliteTrackerDatabaseProvider databaseProvider;
         private readonly SettingsStore settings;
         private readonly Dictionary<string, FactionData> factions = [];
-        private readonly Dictionary<long, StarSystem> Systems = [];
+        private readonly Dictionary<ulong, StarSystem> systems = [];
         private string? commanderPower;
         private readonly BountiesManager bountiesManager;
         private readonly MaterialTraderService materialTraderService;
@@ -84,6 +84,7 @@ namespace ODEliteTracker.Stores
                 { JournalTypeEnum.ShipTargeted, false },
                 { JournalTypeEnum.SupercruiseEntry, true},
                 { JournalTypeEnum.Undocked, true},
+                { JournalTypeEnum.FSSDiscoveryScan, true },
             };
         }
         public Dictionary<string, FactionData> Factions => factions;
@@ -98,6 +99,7 @@ namespace ODEliteTracker.Stores
         public Dictionary<ODMVVM.Helpers.Commodity, List<CommodityPurchase>> MarketPurchases => marketPurchases;
         public DateTime LastLoginTime { get; private set; }
         public Dictionary<ColonisationBuild, int> ColonisationWishList => colonisationWishList;
+        public Dictionary<ulong, StarSystem> Systems => systems;
         #endregion
 
         #region Events
@@ -110,6 +112,7 @@ namespace ODEliteTracker.Stores
         public EventHandler<CommodityPurchase>? PurchasesUpdated;
         public EventHandler<WatchedMarket>? WatchedMarketUpdated;
         public EventHandler<List<WatchedMarket>>? WatchedMarketsUpdated;
+        public EventHandler<StarSystem>? SystemBodiesUpdated;
         #endregion
 
         public override void ClearData()
@@ -238,7 +241,7 @@ namespace ODEliteTracker.Stores
                 case DiedEvent.DiedEventArgs died:
                     bountiesManager.Reset();
                     break;
-                
+
                 case DockedEvent.DockedEventArgs docked:
                     CurrentMarketID = docked.MarketID;
 
@@ -506,7 +509,7 @@ namespace ODEliteTracker.Stores
                         }
                     }
                     break;
-                
+
                 case PowerplayEvent.PowerplayEventArgs powerPlay:
                     commanderPower = powerPlay.Power;
                     break;
@@ -540,9 +543,12 @@ namespace ODEliteTracker.Stores
                     break;
 
                 case ScanEvent.ScanEventArgs scan:
-                    if (CurrentSystem is null)
+                    if (CurrentSystem is null || CurrentSystem.Address != scan.SystemAddress)
                         break;
-                    CurrentSystem.AddBody(scan);
+                    if (CurrentSystem.AddBody(scan) && IsLive)
+                    {
+                        SystemBodiesUpdated?.Invoke(this, CurrentSystem);
+                    }
                     break;
 
                 case ShipTargetedEvent.ShipTargetedEventArgs shipTargeted:
@@ -582,7 +588,7 @@ namespace ODEliteTracker.Stores
                     if (IsLive)
                         notificationService.ShowShipTargetedNotification(pilotName, EliteHelpers.ConvertShipName(shipTargeted.Ship), targetType, shipTargeted.Bounty, shipTargeted.Faction, shipTargeted.Power);
                     break;
-       
+
                 case SupercruiseEntryEvent.SupercruiseEntryEventArgs:
                     CurrentBody = null;
                     break;
@@ -591,7 +597,14 @@ namespace ODEliteTracker.Stores
                     CurrentMarketID = 0;
                     currentStation = null;
                     UpdateCurrentBody_Station(CurrentBody?.BodyName);
-                    break; 
+                    break;
+
+                case FSSDiscoveryScanEvent.FSSDiscoveryScanEventArgs discoveryScan:
+                    if(systems.TryGetValue(discoveryScan.SystemAddress, out var knownSystem))
+                    {
+                        knownSystem.BodyCount = discoveryScan.BodyCount;
+                    }
+                    break;
             }
         }
 
@@ -645,13 +658,13 @@ namespace ODEliteTracker.Stores
 
         private StarSystem AddSystem(StarSystem starSystem)
         {
-            if (Systems.TryGetValue(starSystem.Address, out var system))
+            if (systems.TryGetValue(starSystem.Address, out var system))
             {
                 system.UpdateSystem(starSystem);
                 return system;
             }
 
-            Systems.TryAdd(starSystem.Address, starSystem);
+            systems.TryAdd(starSystem.Address, starSystem);
             return starSystem;
         }
 

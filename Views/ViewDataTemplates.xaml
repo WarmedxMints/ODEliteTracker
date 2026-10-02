@@ -71,4 +71,7 @@
     <DataTemplate DataType="{x:Type popoutsVMs:SettlementActivityPopOutVM}">
         <popouts:SettlementActivityPopOutView />
     </DataTemplate>
+    <DataTemplate DataType="{x:Type popoutsVMs:StraightLineToolPopOut}">
+        <popouts:StraightLinePopOut />
+    </DataTemplate>
 </ResourceDictionary>

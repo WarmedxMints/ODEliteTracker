@@ -12,6 +12,7 @@ using ODEliteTracker.Stores;
 using ODEliteTracker.ViewModels.ModelViews;
 using ODEliteTracker.ViewModels.ModelViews.Colonisation;
 using ODEliteTracker.ViewModels.ModelViews.Market;
+using ODEliteTracker.Extensions;
 using ODMVVM.Commands;
 using ODMVVM.Extensions;
 using ODMVVM.Helpers;
@@ -31,7 +32,8 @@ namespace ODEliteTracker.ViewModels
                                      FleetCarrierDataStore fcDataStore,
                                      SettingsStore settings,
                                      NotificationService notification,
-                                     PopOutService popOutService)
+                                     PopOutService popOutService,
+                                     ColonisationRoutePlannerViewModel routePlanner)
         {
             this.colonisationStore = colonisationStore;
             this.sharedData = sharedDataStore;
@@ -39,7 +41,7 @@ namespace ODEliteTracker.ViewModels
             this.settings = settings;
             this.notification = notification;
             this.popOutService = popOutService;
-            routePlanner = new ColonisationRoutePlannerViewModel(colonisationStore, sharedDataStore, notification, settings);
+            this.routePlanner = routePlanner;
 
             this.colonisationStore.StoreLive += OnStoreLive;
             this.colonisationStore.DepotUpdated += OnDepotUpdated;
@@ -59,7 +61,7 @@ namespace ODEliteTracker.ViewModels
             
             if (this.sharedData.IsLive)
             {
-                OnSharedDataLive(null, true);           
+                _ = OnSharedDataLive(null, true);           
             }
 
             SetSelectedDepotCommand = new ODRelayCommand<ConstructionDepotVM?>(SetSelectedDepot);
@@ -81,7 +83,7 @@ namespace ODEliteTracker.ViewModels
 
             if (colonisationStore.IsLive)
             {
-                OnStoreLive(null, true);
+                _ = OnStoreLive(null, true);
             }
 
             this.fcDataStore.CarrierStockUpdated += OnCarrierStockUpdated;
@@ -89,7 +91,7 @@ namespace ODEliteTracker.ViewModels
 
             if (fcDataStore.IsLive)
             {
-                OnFcStoreLive(null, true);
+                _ = OnFcStoreLive(null, true);
             }
 
             this.settings.ColonisationSettings.CommoditySortingChanged += ColonisationSettings_CommoditySortingChanged;
@@ -209,9 +211,9 @@ namespace ODEliteTracker.ViewModels
             set => settings.ColonisationSettings.SelectedBuild = value;
         }
 
-        private long activeSelectedDepot = 0;
-        private long inactiveSelectedDepot = 0;
-        private long commanderSelectedSystem = 0;
+        private ulong activeSelectedDepot = 0;
+        private ulong inactiveSelectedDepot = 0;
+        private ulong commanderSelectedSystem = 0;
 
         private int tabIndex;
         public int TabIndex
@@ -370,7 +372,7 @@ namespace ODEliteTracker.ViewModels
                         inactiveSelectedDepot = selectedDepot.MarketID;
                 }
                 CheckMarket();
-                OnFcStoreLive(null, true);
+                _ = OnFcStoreLive(null, true);
                 OnPropertyChanged(nameof(SelectedDepot));
                 OnPropertyChanged(nameof(ActiveButtonText));
                 OnPropertyChanged(nameof(SelectedDepotResources));
@@ -687,7 +689,7 @@ namespace ODEliteTracker.ViewModels
             OnNewDepot(sender, e);
         }
 
-        private void OnSharedDataLive(object? sender, bool e)
+        private async Task OnSharedDataLive(object? sender, bool e)
         {
             if (this.sharedData.CurrentShipInfo != null)
                 OnShipChanged(null, this.sharedData.CurrentShipInfo);
@@ -696,7 +698,7 @@ namespace ODEliteTracker.ViewModels
 
             ColonisationBuildTotals.OnSharedDataLive();
         }
-        private void OnStoreLive(object? sender, bool e)
+        private async Task OnStoreLive(object? sender, bool e)
         {
             if (e == false)
                 return;
@@ -926,7 +928,7 @@ namespace ODEliteTracker.ViewModels
             SelectedCommanderSystem = vM;
         }
 
-        private void OnFcStoreLive(object? sender, bool e)
+        private async Task OnFcStoreLive(object? sender, bool e)
         {
             if (e && fcDataStore.CarrierData != null)
             {

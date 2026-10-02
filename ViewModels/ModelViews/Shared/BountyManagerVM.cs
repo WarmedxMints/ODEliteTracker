@@ -26,7 +26,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Shared
 
             if (this.sharedData.IsLive)
             {
-                OnStoreLive(null, true);
+                _ = OnStoreLive(null, true);
             }
 
             SetTopMostFaction = new ODRelayCommand<string>(OnSetTopMostFaction);
@@ -118,7 +118,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Shared
             UpdateBounties();
         }
 
-        private void OnStoreLive(object? sender, bool e)
+        private async Task OnStoreLive(object? sender, bool e)
         {
             if (e == false)
                 return;

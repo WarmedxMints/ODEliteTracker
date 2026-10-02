@@ -4,7 +4,7 @@ using ODEliteTracker.Models.BGS;
 namespace ODEliteTracker.Models.Missions
 {
     public sealed class BGSMission(MissionAcceptedEvent.MissionAcceptedEventArgs args,
-                                   long originAddress,
+                                   ulong originAddress,
                                    string originSystemName,
                                    ulong originMarketID,
                                    string originStationName,

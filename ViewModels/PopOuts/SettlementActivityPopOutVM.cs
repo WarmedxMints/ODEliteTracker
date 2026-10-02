@@ -15,7 +15,7 @@ namespace ODEliteTracker.ViewModels.PopOuts
             this.dataStore.SettlementActivityUpdated += DataStore_SettlementActivityUpdated;
 
             if (this.dataStore.IsLive)
-                OnStoreLive(null, true);
+                _ = OnStoreLive(null, true);
         }
 
         private readonly BGSDataStore dataStore;
@@ -51,7 +51,7 @@ namespace ODEliteTracker.ViewModels.PopOuts
             }
         }
 
-        private void OnStoreLive(object? sender, bool e)
+        private async Task OnStoreLive(object? sender, bool e)
         {
             if (e)
             {

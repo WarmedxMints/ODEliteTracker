@@ -17,7 +17,7 @@ namespace ODEliteTracker.ViewModels.PopOuts
             ProspectorContainer = new(miningData);
 
             if (this.miningData.IsLive)
-                OnStoreLive(this.miningData, true);
+                _ = OnStoreLive(this.miningData, true);
         }
 
         protected override void Dispose()
@@ -34,7 +34,7 @@ namespace ODEliteTracker.ViewModels.PopOuts
 
         public MiningProspectorContainer ProspectorContainer { get; }
 
-        private void OnStoreLive(object? sender, bool e)
+        private async Task OnStoreLive(object? sender, bool e)
         {
             if(e)
             {

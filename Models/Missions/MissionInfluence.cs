@@ -1,4 +1,4 @@
 ﻿namespace ODEliteTracker.Models.Missions
 {
-    public record MissionInfluence(long SystemAddress, int Influence);
+    public record MissionInfluence(ulong SystemAddress, int Influence);
 }

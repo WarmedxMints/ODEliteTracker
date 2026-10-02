@@ -8,7 +8,7 @@ namespace ODEliteTracker.Models.Galaxy
     public sealed class SystemBody
     {
         public StarSystem Owner { get; }
-        public long BodyID { get; private set; }
+        public uint BodyID { get; private set; }
         public List<BodyParent>? Parents { get; set; }
         public StarType StarType { get; private set; }
         public PlanetClass PlanetClass { get; private set; }

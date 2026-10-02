@@ -15,7 +15,7 @@ namespace ODEliteTracker.Models.Missions
     public abstract class MissionBase
     {
         public MissionBase(MissionAcceptedEvent.MissionAcceptedEventArgs args,
-                           long originAddress,
+                           ulong originAddress,
                            string originSystemName,
                            ulong originMarketID,
                            string originStationName,
@@ -43,7 +43,7 @@ namespace ODEliteTracker.Models.Missions
             DestinationStation = args.DestinationStation;
         }
         public bool Odyssey { get; protected set; }
-        public long OriginSystemAddress { get; protected set; }
+        public ulong OriginSystemAddress { get; protected set; }
         public string OriginSystemName { get; protected set; }
         public ulong OriginMarketID { get; protected set; }
         public string OriginStationName { get; protected set; }

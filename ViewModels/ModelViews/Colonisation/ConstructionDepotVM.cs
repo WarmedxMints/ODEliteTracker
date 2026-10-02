@@ -11,13 +11,13 @@ namespace ODEliteTracker.ViewModels.ModelViews.Colonisation
     {
         public readonly StarSystem starSystem = depot.StarSystem;
         public bool Inactive { get; set; } = depot.Inactive;
-        public long SystemAddress { get; set; } = depot.SystemAddress;
+        public ulong SystemAddress { get; set; } = depot.SystemAddress;
         public string SystemName { get; set; } = depot.SystemName.ToUpper();
         public string SystemNameText { get; set; } = depot.SystemName;
         public string StationName { get; set; } = depot.StationName;
         public string StationNameSplit => StationName.Split([':', ';'], StringSplitOptions.TrimEntries).Last().Trim();
         public bool PlanetBuild => StationName.Contains("Planetary", StringComparison.OrdinalIgnoreCase);
-        public long MarketID { get; set; } = depot.MarketID;
+        public ulong MarketID { get; set; } = depot.MarketID;
         public double ProgressValue { get; set; } = depot.Progress;
         public string Progress => $"{ProgressValue * 100:N2} %";
         public bool Complete { get; set; } = depot.Complete;

@@ -23,7 +23,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Trade
             Stacks.Sort((x, y) => x.Commodity.CompareTo(y.Commodity));
         }
 
-        public long SystemAddress { get; }
+        public ulong SystemAddress { get; }
         public ulong MarketID { get; }
         public string OriginSystem { get; }
         public string OriginStation { get; }

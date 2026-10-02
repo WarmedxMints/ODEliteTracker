@@ -32,7 +32,7 @@ namespace ODEliteTracker.ViewModels
             currentCycleNo = EliteHelpers.CurrentCycleNo();
 
             if (this.dataStore.IsLive)
-                OnStoreLive(null, true);
+                _ = OnStoreLive(null, true);
         }
 
         private readonly PowerPlayDataStore dataStore;
@@ -170,7 +170,7 @@ namespace ODEliteTracker.ViewModels
             UpdateSystems(null);
         }
 
-        private void OnStoreLive(object? sender, bool e)
+        private async Task OnStoreLive(object? sender, bool e)
         {
             if (e)
             {

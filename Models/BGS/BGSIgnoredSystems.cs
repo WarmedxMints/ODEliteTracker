@@ -1,8 +1,8 @@
 ﻿namespace ODEliteTracker.Models.BGS
 {
-    public sealed class BGSIgnoredSystems(long address, string name)
+    public sealed class BGSIgnoredSystems(ulong address, string name)
     {
-        public long Address { get; set; } = address;
+        public ulong Address { get; set; } = address;
         public string Name { get; set; } = name;
     }
 }

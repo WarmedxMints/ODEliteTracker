@@ -368,7 +368,7 @@ namespace ODEliteTracker.ViewModels
             OnPropertyChanged(nameof(CurrentBody_Station));
         }
 
-        private void OnStoreLive(object? sender, bool e)
+        private async Task OnStoreLive(object? sender, bool e)
         {
             if (e && journalManager is JournalManager manager)
             {
@@ -398,7 +398,7 @@ namespace ODEliteTracker.ViewModels
 
         private void OnCommandersUpdated(object? sender, EventArgs e)
         {
-            OnStoreLive(null, true);
+            _ = OnStoreLive(null, true);
         }
 
         private void OnCurrentSystemChanged(object? sender, StarSystem? e)

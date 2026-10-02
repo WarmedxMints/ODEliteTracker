@@ -42,7 +42,7 @@ namespace ODEliteTracker.ViewModels
             this.sharedData.ShipCargoUpdatedEvent += OnCargoUpdated;
 
             if (this.miningData.IsLive)
-                OnStoreLive(this.miningData, true);
+                _ = OnStoreLive(this.miningData, true);
         }
 
         public override void Dispose()
@@ -117,7 +117,7 @@ namespace ODEliteTracker.ViewModels
         }
         #endregion
 
-        private void OnStoreLive(object? sender, bool e)
+        private async Task OnStoreLive(object? sender, bool e)
         {
             if(e)
             {

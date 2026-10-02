@@ -38,7 +38,7 @@ namespace ODEliteTracker.Models.BGS
         }
 
         public string Name { get; }
-        public long Address { get;  }
+        public ulong Address { get;  }
         public long Population { get; }
         public Position Position { get; }
         public string ControllingFaction { get;  }

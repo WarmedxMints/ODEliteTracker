@@ -6,7 +6,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.BGS
     {
         public DateTime ScanDate { get; } = scan.ScanDate;
         public string SystemName { get; } = scan.SystemName;
-        public long SystemAddress {get; } = scan.SystemAddress;
+        public ulong SystemAddress {get; } = scan.SystemAddress;
         public string MegaShipName {get; } = scan.MegaShipName;
     }
 }

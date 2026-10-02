@@ -148,7 +148,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.BGS
         private readonly BGSTickSystem system;
         public string NonUpperName => system.Name;
         public string Name => system.Name.ToUpper();
-        public long Address => system.Address;
+        public ulong Address => system.Address;
         public string Population => $"{system.Population:N0}";
         public Position Position => system.Position;
         public string ControllingFaction => system.ControllingFaction;

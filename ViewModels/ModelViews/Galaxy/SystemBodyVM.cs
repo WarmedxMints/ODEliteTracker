@@ -6,7 +6,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Galaxy
     public sealed class SystemBodyVM(SystemBody body, StarSystemVM owner) : ODObservableObject
     {
         public StarSystemVM Owner { get; } = owner;
-        public long BodyID { get;  } = body.BodyID;
+        public uint BodyID { get;  } = body.BodyID;
         public string BodyName { get; set; } = body.BodyName;
         public string BodyNameLocal
         {

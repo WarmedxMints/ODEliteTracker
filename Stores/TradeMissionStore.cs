@@ -17,7 +17,7 @@ namespace ODEliteTracker.Stores
         private readonly List<TradeMission> missions = [];
 
         private readonly string[] validMissionNames = ["Mission_Collect", "Mission_Delivery", "Mission_Mining", "Mission_Altruism"];
-        private long CurrentSystemAddress;
+        private ulong CurrentSystemAddress;
         private string CurrentSystemName = "Unknown";
         private ulong CurrentMarketID;
         private string CurrentStationName = "Unknown";

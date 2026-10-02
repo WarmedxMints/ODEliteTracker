@@ -38,7 +38,7 @@ namespace ODEliteTracker.ViewModels.PopOuts
 
             if (this.sharedData.IsLive)
             {
-                OnStoreLive(null, true);
+                _ = OnStoreLive(null, true);
             }
 
             this.bookmarkData.StoreLive += BookmarkData_StoreLive;
@@ -263,7 +263,7 @@ namespace ODEliteTracker.ViewModels.PopOuts
             PauseWindowListener = true;
 
             EliteTrackerDialogService.ShowBookmarkManager(
-                owner, sharedData, bookmarkData, edsmApi, settings, sharedData.CurrentSystem.Address, sharedData.CurrentBody?.BodyID ?? -1,
+                owner, sharedData, bookmarkData, edsmApi, settings, sharedData.CurrentSystem.Address, sharedData.CurrentBody?.BodyID ?? 0,
                 currentLat, currentLon);
          
             PauseWindowListener = false;
@@ -297,7 +297,7 @@ namespace ODEliteTracker.ViewModels.PopOuts
             return JObject.FromObject(CompassSettings.GetSettings());
         }
 
-        private void OnStoreLive(object? sender, bool e)
+        private async Task OnStoreLive(object? sender, bool e)
         {
             if (e)
             {

@@ -61,7 +61,7 @@ namespace ODEliteTracker.Models.Spansh
         public long EstimatedScanValue { get; set; }
 
         [JsonPropertyName("id64")]
-        public long Id64 { get; set; }
+        public ulong Id64 { get; set; }
 
         [JsonPropertyName("landmark_value")]
         public long LandmarkValue { get; set; }

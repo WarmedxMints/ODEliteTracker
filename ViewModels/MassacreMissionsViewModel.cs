@@ -30,7 +30,7 @@ namespace ODEliteTracker.ViewModels
 
             if (this.massacreStore.IsLive)
             {
-                OnStoreLive(null, true);
+                _ = OnStoreLive(null, true);
             }
         }
 
@@ -159,7 +159,7 @@ namespace ODEliteTracker.ViewModels
             }
         }
 
-        private void OnStoreLive(object? sender, bool e)
+        private async Task OnStoreLive(object? sender, bool e)
         {
             if (e)
             {

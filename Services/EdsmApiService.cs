@@ -55,7 +55,7 @@ namespace ODEliteTracker.Services
     {
         private readonly HttpClient httpClient = httpClient;
         public event EventHandler<Exception>? OnError;
-        public async Task<string?> GetSystemUrlAsync(long address)
+        public async Task<string?> GetSystemUrlAsync(ulong address)
         {
             var content = await httpClient.GetFromJsonAsync<EdsmBodyResponse>($"api-system-v1/bodies?systemId64={address}").ConfigureAwait(true);
 

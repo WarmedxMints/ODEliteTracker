@@ -8,9 +8,11 @@ namespace ODEliteTracker.ViewModels.ModelViews.Colonisation
 {
     public sealed class ColonisationRouteSystemVM : ODObservableObject
     {
-        private long systemAddress;
+        private ulong systemAddress;
         private int hopNumber = -100;
         private int databaseHopNumber;
+        private int bodyCount;
+        private int starCount;
         private string systemName;
         private SystemPositionVM position;
         private string starClass;
@@ -35,6 +37,8 @@ namespace ODEliteTracker.ViewModels.ModelViews.Colonisation
             hub = system.Hub;
             notes = system.Notes;
             this.vm = vm;
+            bodyCount = system.BodyCount;
+            StarCount = system.StarCount;
         }
 
         public ColonisationRouteSystemVM(SystemInRoute system, ColonisationRoutePlannerViewModel vm)
@@ -59,16 +63,22 @@ namespace ODEliteTracker.ViewModels.ModelViews.Colonisation
 
         public ColonisationRouteSystemVM(ColonisationRouteSystemVM routeSystem)
         {
-            this.vm = routeSystem.vm;
-            this.systemAddress = routeSystem.systemAddress;
-            this.systemName = routeSystem.systemName;
-            this.position = routeSystem.position;
-            this.starClass = routeSystem.starClass;
-            this.notes = routeSystem.notes;
+            vm = routeSystem.vm;
+            systemAddress = routeSystem.systemAddress;
+            systemName = routeSystem.systemName;
+            position = routeSystem.position;
+            starClass = routeSystem.starClass;
+            notes = routeSystem.notes;
+            bodyCount = routeSystem.BodyCount;
+            StarCount = routeSystem.StarCount;
         }
 
-        public long SystemAddress { get => systemAddress; set { systemAddress = value; OnPropertyChanged(); } }      
+        public ulong SystemAddress { get => systemAddress; set { systemAddress = value; OnPropertyChanged(); } }      
         public int HopNumber { get => hopNumber; set { hopNumber = value; OnPropertyChanged(); } }
+        public int BodyCount { get => bodyCount; set { bodyCount = value; OnPropertyChanged(); OnPropertyChanged(nameof(BodyCountString)); } }
+        public string BodyCountString => bodyCount > 0 ? bodyCount.ToString() : string.Empty;
+        public int StarCount { get => starCount; set { starCount = value; OnPropertyChanged(); OnPropertyChanged(nameof(StarCountString)); } }
+        public string StarCountString => starCount > 0 ? starCount.ToString() : string.Empty;
         public int DataBaseHopNumber => databaseHopNumber;
         public string SystemName { get => systemName; set { systemName = value; OnPropertyChanged(); } }        
         public SystemPositionVM Position { get => position; set { position = value; OnPropertyChanged(); } }

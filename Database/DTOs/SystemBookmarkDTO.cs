@@ -7,7 +7,7 @@ namespace ODEliteTracker.Database.DTOs
     public sealed class SystemBookmarkDTO
     {
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public long Address { get; set; }
+        public ulong Address { get; set; }
         public required string Name { get; set; }
         public double X { get; set; }
         public double Y { get; set; }

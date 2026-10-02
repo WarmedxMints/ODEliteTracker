@@ -9,6 +9,8 @@ namespace ODEliteTracker.Models.Settings
         public event EventHandler<CommoditySorting>? CommoditySortingChanged;
         public event EventHandler<CommoditySorting>? ShoppingListSortingChanged;
         public event EventHandler<CommoditySorting>? WatchedMarketSortingChanged;
+        public event EventHandler? StraightLineStarPosChanged;
+        public event EventHandler? StraightLineEndPosChanged;
 
         private CommoditySorting colonisationCommoditySorting = CommoditySorting.Category;
         public CommoditySorting ColonisationCommoditySorting
@@ -39,6 +41,9 @@ namespace ODEliteTracker.Models.Settings
         }
 
         private CommoditySorting watchedMarketSorting = CommoditySorting.Category;
+        private Position? lineStart;
+        private Position? lineEnd;
+
         public CommoditySorting WatchedMarketSorting
         {
             get => watchedMarketSorting;
@@ -58,8 +63,12 @@ namespace ODEliteTracker.Models.Settings
         public GridSize ColonisationGridSize { get; set; } = new() { GridLengths = [new(1, GridUnitType.Star), new(15, GridUnitType.Pixel), new(292.5, GridUnitType.Pixel)] };
         public ColonisationBuild SelectedBuild { get; set; } = ColonisationBuild.OutpostP;
 
-        public Position? LineStart { get; set; }
-        public Position? LineEnd { get; set; }
-        public long SelectedPlannerAddress { get; set; }
+        #region Routeplanner Settings
+        public Position? LineStart { get => lineStart; set { lineStart = value; StraightLineStarPosChanged?.Invoke(this, EventArgs.Empty); } }
+        public Position? LineEnd { get => lineEnd; set { lineEnd = value; StraightLineEndPosChanged?.Invoke(this, EventArgs.Empty); } }
+        public ulong SelectedPlannerAddress { get; set; }
+        public bool CheckSpansh { get; set; } = true;
+        public bool FollowRoute { get; set; }
+        #endregion
     }
 }

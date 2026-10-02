@@ -35,8 +35,8 @@ namespace ODEliteTracker.ViewModels.ModelViews.Bookmarks
 
         public int Id { get; set; }
 
-        private long bodyID;
-        public long BodyId
+        private uint bodyID;
+        public uint BodyId
         {
             get => bodyID;
             set

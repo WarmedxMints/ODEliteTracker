@@ -31,7 +31,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Massacre
             CompletionTime = mission.CompletionTime.ToLocalTime();
         }
 
-        public long OriginSystemAddress { get; private set; }
+        public ulong OriginSystemAddress { get; private set; }
         public string OriginSystemName { get; private set; }
         public ulong OriginMarketID { get; private set; }
         public string OriginStationName { get; private set; }

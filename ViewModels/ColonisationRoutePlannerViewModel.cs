@@ -14,6 +14,7 @@ using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Input;
+using Position = ODEliteTracker.Models.Galaxy.Position;
 
 namespace ODEliteTracker.ViewModels
 {
@@ -30,21 +31,33 @@ namespace ODEliteTracker.ViewModels
         private readonly SharedDataStore sharedData;
         private readonly NotificationService notification;
         private readonly SettingsStore settings;
-        private bool live = false;
-        public ColonisationRoutePlannerViewModel(ColonisationStore store, SharedDataStore sharedData, Services.NotificationService notification, SettingsStore settings)
+        private readonly PopOutService popOutService;
+        private readonly SpanshClient spanshClient;
+        private bool isBusy = true;
+        public bool IsBusy { get => isBusy; set { isBusy = value; OnPropertyChanged(); } }
+        public ColonisationRoutePlannerViewModel(ColonisationStore store,
+                                                 SharedDataStore sharedData,
+                                                 NotificationService notification,
+                                                 SettingsStore settings,
+                                                 PopOutService popOutService,
+                                                 SpanshClient spanshClient)
         {
             this.store = store;
             this.sharedData = sharedData;
             this.notification = notification;
             this.settings = settings;
+            this.popOutService = popOutService;
+            this.spanshClient = spanshClient;
             store.StoreLive += OnStoreLive;
 
             if (store.IsLive)
             {
-                OnStoreLive(null, true);
+                _= OnStoreLive(null, true);
             }
-            
+
             sharedData.CurrentSystemChanged += OnCurrentSystemChanged;
+            settings.ColonisationSettings.StraightLineStarPosChanged += ColonisationSettings_StraightLineStarPosChanged;
+            settings.ColonisationSettings.StraightLineEndPosChanged += ColonisationSettings_StraightLineEndPosChanged;
 
             RemoveAfterSelectedCommand = new ODRelayCommand(RemoveAfterSelected, (x) => SelectedSystem != null);
             ToggleSelectedHubCommand = new ODRelayCommand(ToggleSelectedHub, (x) => SelectedSystem != null);
@@ -52,7 +65,7 @@ namespace ODEliteTracker.ViewModels
             DeleteSelectedSystemCommand = new ODRelayCommand(DeleteSelectedSystem, (x) => SelectedSystem != null);
             SetClipboardCommand = new ODRelayCommand<string>(SetClipboard, (x) => SelectedSystem != null);
             SaveRouteCommand = new ODRelayCommand(SaveRoute, (x) => DataChanged);
-            ReloadFromDatabaseCommand = new ODRelayCommand(LoadFromDatabase);
+            ReloadFromDatabaseCommand = new ODAsyncRelayCommand(LoadFromDatabase);
             SetSelctedAsTargetCommand = new ODRelayCommand(SetSelectedAsTarget, (x) => SelectedSystem != null && SelectedSystem.SystemAddress != targetSystem?.SystemAddress);
 
             SetStartAsSelectedCommand = new ODRelayCommand(SetStartAsSelected, (x) => SelectedSystem != null);
@@ -62,43 +75,77 @@ namespace ODEliteTracker.ViewModels
             SetEndAsTargetCommand = new ODRelayCommand(SetEndAsTargetSystem, (x) => TargetSystem != null);
             AddCurrentSystemToRouteCommand = new ODRelayCommand<AddSystemToRouteEnum>(AddCurrentToRoute, (x) => CanAddCurrentSystem(x));
             SelectCurrentSystemCommand = new ODRelayCommand(SelectCurrentSystem, (x) => RouteSystems.Any(x => x.SystemAddress == sharedData.CurrentSystem?.Address));
+
+            OpenPopOut = new ODRelayCommand<Type>(OnOpenPopOut);
+        }
+
+        private void OnOpenPopOut(Type type)
+        {
+            popOutService.OpenPopOut(type, settings.SelectedCommanderID);
+        }
+
+        private void ColonisationSettings_StraightLineEndPosChanged(object? sender, EventArgs e)
+        {
+            OnPropertyChanged(nameof(EndPos));
+            CalcLineValues();
+        }
+
+        private void ColonisationSettings_StraightLineStarPosChanged(object? sender, EventArgs e)
+        {
+            OnPropertyChanged(nameof(StartPos));
+            CalcLineValues();
         }
 
         private void OnCurrentSystemChanged(object? sender, StarSystem? e)
         {
             if (e == null)
                 return;
-
             CalcLineValues();
 
             var routeSystem = RouteSystems.FirstOrDefault(x => x.SystemAddress == e.Address);
 
             if (routeSystem == null)
                 return;
+            if (FollowRoute)
+                CheckNextSystemOnRoute(routeSystem);
 
             var colonised = e.FactionCount > 1;
 
-            if(routeSystem.Built == false && colonised)
+            if (!routeSystem.Built && colonised)
             {
                 routeSystem.Built = true;
+                DataChanged = true;
                 SelectedSystem = routeSystem;
                 SelectedSystemChanged?.Invoke(this, routeSystem);
-                DataChanged = true;
             }
         }
 
+        private void CheckNextSystemOnRoute(ColonisationRouteSystemVM routeSystem)
+        {
+            var index = RouteSystems.IndexOf(routeSystem);
+
+            if (index >= RouteSystems.Count)
+                return;
+
+            var next = RouteSystems[index + 1];
+
+            if (next.Built)
+                return;
+
+            SetClipboard(next.SystemName);
+        }
         #region Route Planner
         public ICommand RemoveAfterSelectedCommand { get; }
         public ICommand ToggleSelectedHubCommand { get; }
         public ICommand ToggleSelectedBuiltCommand { get; }
         public ICommand DeleteSelectedSystemCommand { get; }
-        public ICommand SetClipboardCommand { get;  }
-        public ICommand SaveRouteCommand { get;  }
-        public ICommand ReloadFromDatabaseCommand { get;  }
-        public ICommand SetSelctedAsTargetCommand { get;  }
-        public ICommand AddCurrentSystemToRouteCommand { get;  }
-        public ICommand SelectCurrentSystemCommand { get;  }
-
+        public ICommand SetClipboardCommand { get; }
+        public ICommand SaveRouteCommand { get; }
+        public ICommand ReloadFromDatabaseCommand { get; }
+        public ICommand SetSelctedAsTargetCommand { get; }
+        public ICommand AddCurrentSystemToRouteCommand { get; }
+        public ICommand SelectCurrentSystemCommand { get; }
+        public ICommand OpenPopOut { get; }
         private ObservableCollection<ColonisationRouteSystemVM> routeSystems = [];
         public ObservableCollection<ColonisationRouteSystemVM> RouteSystems { get => routeSystems; set { routeSystems = value; OnPropertyChanged(); } }
 
@@ -106,14 +153,14 @@ namespace ODEliteTracker.ViewModels
         public ColonisationRouteSystemVM? TargetSystem { get => targetSystem; set { targetSystem = value; OnPropertyChanged(); } }
 
         private ColonisationRouteSystemVM? selectedSystem;
-        public ColonisationRouteSystemVM? SelectedSystem 
-        { 
+        public ColonisationRouteSystemVM? SelectedSystem
+        {
             get => selectedSystem;
             set
             {
                 selectedSystem = value;
                 selectedSystem?.Selected(RouteSystems.FirstOrDefault(), targetSystem);
-                if (selectedSystem != null && live)
+                if (selectedSystem != null && !IsBusy)
                 {
                     settings.ColonisationSettings.SelectedPlannerAddress = selectedSystem.SystemAddress;
                 }
@@ -123,49 +170,109 @@ namespace ODEliteTracker.ViewModels
 
         private bool dataChanged;
         public bool DataChanged { get => dataChanged; set { dataChanged = value; OnPropertyChanged(); } }
-
+        public bool UseSpansh { get => settings.ColonisationSettings.CheckSpansh; set { settings.ColonisationSettings.CheckSpansh = value; OnPropertyChanged(); } }
+        public bool FollowRoute { get => settings.ColonisationSettings.FollowRoute; set { settings.ColonisationSettings.FollowRoute = value; OnPropertyChanged(); } }
         public string TargetSystemText => targetSystem == null ?
             string.Empty : $"{targetSystem.Distance:N2} ly away from {targetSystem.SystemName}";
         internal EventHandler? DataChangedWarning;
         internal EventHandler? OnViewModelLive;
         internal EventHandler<ColonisationRouteSystemVM>? SelectedSystemChanged;
-        private void OnStoreLive(object? sender, bool e)
+        private async Task OnStoreLive(object? sender, bool e)
         {
             if (e)
             {
                 if (store.RouteSystems.Any() == false)
-                    return;
-                LoadFromDatabase(null);
-
-                if (settings.ColonisationSettings.SelectedPlannerAddress > 0)
                 {
-                    SelectedSystem = RouteSystems.FirstOrDefault(x => x.SystemAddress == settings.ColonisationSettings.SelectedPlannerAddress);
+                    IsBusy = false;
+                    return;
                 }
-                CalcLineValues();
-                live = true;
+                await Application.Current.Dispatcher.InvokeAsync(async () =>
+                {
+                    await LoadFromDatabase();
 
-                OnViewModelLive?.Invoke(this, EventArgs.Empty);
+                    if (settings.ColonisationSettings.SelectedPlannerAddress > 0)
+                    {
+                        SelectedSystem = RouteSystems.FirstOrDefault(x => x.SystemAddress == settings.ColonisationSettings.SelectedPlannerAddress);
+                    }
+
+                    CalcLineValues();
+                    IsBusy = false;
+
+                    OnViewModelLive?.Invoke(this, EventArgs.Empty);
+                });
+
+                return;
             }
+
+            IsBusy = false;
         }
 
-        private void LoadFromDatabase(object? obj)
+        private async Task LoadFromDatabase()
         {
             RouteSystems.ClearCollection();
-            RouteSystems.AddRange(store.RouteSystems.Where(x => x.HopNumber >= 0).Select(x => new ColonisationRouteSystemVM(x, this)));
+            var routeSystems = store.RouteSystems.Where(x => x.HopNumber >= 0).Select(x => new ColonisationRouteSystemVM(x, this)).ToList();
+            RouteSystems.AddRange(routeSystems);
+            bool updated = await CheckAllSystemCounts();
 
             Application.Current.Dispatcher.Invoke(() =>
             {
                 TargetSystem = store.RouteSystems.Where(x => x.HopNumber == -1).Select(x => new ColonisationRouteSystemVM(x, this)).FirstOrDefault();
                 CalcDistances();
                 DataChanged = false;
+
+                if (updated)
+                    store.SaveColonisationRotue(RouteSystems, targetSystem);
             });
-        }       
+        }
+
+        internal async Task<bool> CheckAllSystemCounts()
+        {
+            bool updated = false;
+            foreach (var routesystem in routeSystems)
+            {
+                if (routesystem.BodyCount > 0)
+                    continue;
+
+                if (await UpdateSystemBodyCounts(routesystem))
+                    updated = true;
+            }
+
+            return updated;
+        }
+        internal async Task<bool> UpdateSystemBodyCounts(ColonisationRouteSystemVM routesystem)
+        {
+            if (routesystem.BodyCount > 0)
+                return false;
+
+            if (sharedData.Systems.TryGetValue(routesystem.SystemAddress, out var system) && system.BodyCount > 0)
+            {
+                routesystem.BodyCount = system.BodyCount;
+                routesystem.StarCount = system.Bodies.Count(x => x.Value.StarType != EliteJournalReader.StarType.Unknown);
+                DataChanged = true;
+            }
+
+            if (routesystem.BodyCount > 0 || !settings.ColonisationSettings.CheckSpansh)
+                return true;
+
+            var spanshDump = await spanshClient.GetSystem(routesystem.SystemAddress);
+
+            if (spanshDump == null || spanshDump.System == null || spanshDump.System.bodyCount == 0 || spanshDump.System.Bodies.Count == 0)
+                return false;
+
+            routesystem.StarCount = spanshDump.System.Bodies.Count(x => x.type.Contains("star", StringComparison.OrdinalIgnoreCase));
+            routesystem.BodyCount = spanshDump.System.bodyCount;
+            DataChanged = true;
+
+            return true;
+        }
 
         public void Dispose()
         {
             sharedData.CurrentSystemChanged -= OnCurrentSystemChanged;
+            settings.ColonisationSettings.StraightLineStarPosChanged -= ColonisationSettings_StraightLineStarPosChanged;
+            settings.ColonisationSettings.StraightLineEndPosChanged -= ColonisationSettings_StraightLineEndPosChanged;
 
-            if(dataChanged && live)
+            if (dataChanged && !IsBusy)
             {
                 DataChangedWarning?.Invoke(this, EventArgs.Empty);
             }
@@ -484,7 +591,7 @@ namespace ODEliteTracker.ViewModels
                     RouteSystems.Insert(0, newSystem);
                     break;
                 case AddSystemToRouteEnum.BeforeSelected:
-                   if (SelectedSystem == null)
+                    if (SelectedSystem == null)
                     {
                         return;
                     }
@@ -584,7 +691,7 @@ namespace ODEliteTracker.ViewModels
 
             sb.AppendLine("\"Hop Number\", \"Address\", \"SystemName\", \"X\", \"Y\", \"Z\", \"Built\", \"Hub\", \"Hop Distance\", \"Total Hop Distance\", \"Dist From Hub\", \"Dist From Start\", \"Notes\"");
 
-            foreach(var item in RouteSystems)
+            foreach (var item in RouteSystems)
             {
                 sb.AppendLine($"\"{item.DataBaseHopNumber}\", \"{item.SystemAddress}\", \"{item.SystemName}\", \"{item.Position.X}\", \"{item.Position.Y}\", \"{item.Position.Z}\", \"{item.Built}\", \"{item.Hub}\", \"{item.Distance}\", \"{item.TotalHopDistance}\", \"{item.TotalDistance}\", \"{item.TotalDistanceFromStart}\", \"{item.Notes}\"");
             }
@@ -630,8 +737,7 @@ namespace ODEliteTracker.ViewModels
             if (selectedSystem == null)
                 return;
 
-            StartPos = selectedSystem.Position.Position;
-            CalcLineValues();
+            settings.ColonisationSettings.LineStart = selectedSystem.Position.Position;
         }
 
         private void SetStartAsCurrent(object? obj)
@@ -639,8 +745,7 @@ namespace ODEliteTracker.ViewModels
             if (sharedData.CurrentSystem == null)
                 return;
 
-            StartPos = sharedData.CurrentSystem.Position;
-            CalcLineValues();
+            settings.ColonisationSettings.LineStart = sharedData.CurrentSystem.Position;
         }
 
         private void SetEndAsSelected(object? obj)
@@ -648,8 +753,7 @@ namespace ODEliteTracker.ViewModels
             if (selectedSystem == null)
                 return;
 
-            EndPos = selectedSystem.Position.Position;
-            CalcLineValues();
+            settings.ColonisationSettings.LineEnd = selectedSystem.Position.Position;
         }
 
         private void SetEndAsCurrent(object? obj)
@@ -657,8 +761,7 @@ namespace ODEliteTracker.ViewModels
             if (sharedData.CurrentSystem == null)
                 return;
 
-            EndPos = sharedData.CurrentSystem.Position;
-            CalcLineValues();
+            settings.ColonisationSettings.LineEnd = sharedData.CurrentSystem.Position;
         }
 
         private void SetEndAsTargetSystem(object? obj)
@@ -666,8 +769,7 @@ namespace ODEliteTracker.ViewModels
             if (TargetSystem == null)
                 return;
 
-            EndPos = TargetSystem.Position.Position;
-            CalcLineValues();
+            settings.ColonisationSettings.LineEnd = TargetSystem.Position.Position;
         }
 
         private void CalcLineValues()
@@ -723,7 +825,7 @@ namespace ODEliteTracker.ViewModels
             return lineStart + lineVector * t;
         }
 
-        private string DirectionText(double current, double point, string lessText, string moreText)
+        private static string DirectionText(double current, double point, string lessText, string moreText)
         {
             var dist = Math.Abs(point - current);
             if (current > point)

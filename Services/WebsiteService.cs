@@ -15,7 +15,7 @@ namespace ODEliteTracker.Services
 
     public static class WebsiteService
     {
-        public static void OpenWebSite(Website website, string name = "", long address = 0, string url = "")
+        public static void OpenWebSite(Website website, string name = "", ulong address = 0, string url = "")
         {
             switch (website)
             {
@@ -36,7 +36,7 @@ namespace ODEliteTracker.Services
             ODMVVM.Helpers.OperatingSystem.OpenUrl($"https://inara.cz/galaxy-starsystem/?search={name.Replace(' ', '+')}");
         }
 
-        public static void OpenSpansh(long address)
+        public static void OpenSpansh(ulong address)
         {
             ODMVVM.Helpers.OperatingSystem.OpenUrl($"https://spansh.co.uk/system/{address}");
         }

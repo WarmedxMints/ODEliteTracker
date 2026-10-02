@@ -19,7 +19,7 @@ namespace ODEliteTracker.ViewModels
                                         BookmarkDataStore bookmarkData,
                                         EdsmApiService edsmApiService,
                                         SettingsStore settings,
-                                        long currentSystemAddress,
+                                        ulong currentSystemAddress,
                                         long currentBodyId,
                                         double currentLatitude,
                                         double currentLongitude) 
@@ -68,7 +68,7 @@ namespace ODEliteTracker.ViewModels
         private readonly BookmarkDataStore bookmarkData;
         private readonly EdsmApiService edsmApiService;
         private readonly SettingsStore settings;
-        private readonly long currentSystemAddress;
+        private readonly ulong currentSystemAddress;
         private readonly long currentBodyId;
         private readonly double currentLatitude;
         private readonly double currentLongitude;

@@ -18,7 +18,7 @@ namespace ODEliteTracker.ViewModels.PopOuts
             this.massacreStore.MissionsUpdatedEvent += OnMissionsUpdated;
 
             if (massacreStore.IsLive)
-                OnStoreLive(null, true);
+                _ = OnStoreLive(null, true);
         }
 
         protected override void Dispose()
@@ -38,7 +38,7 @@ namespace ODEliteTracker.ViewModels.PopOuts
 
         public ObservableCollection<FactionStackVM> FactionStacks { get; private set; } = [];
 
-        private void OnStoreLive(object? sender, bool e)
+        private async Task OnStoreLive(object? sender, bool e)
         {
             if (e)
             {

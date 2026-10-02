@@ -21,7 +21,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Galaxy
         }
 
         public string Name { get; }
-        public long Address { get; }
+        public ulong Address { get; }
         public SystemPositionVM Position { get;  }
         public string? ControllingPower { get;  }
         public string PowerState { get; }

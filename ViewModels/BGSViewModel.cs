@@ -59,10 +59,10 @@ namespace ODEliteTracker.ViewModels
             materialTraders = new(this.notification);
 
             if (this.dataStore.IsLive)
-                OnStoreLive(null, true);
+                _ = OnStoreLive(null, true);
 
             if (this.sharedDataStore.IsLive)
-                OnSharedDataLive(null, true);
+                _ = OnSharedDataLive(null, true);
         }
 
         public override void Dispose()
@@ -210,7 +210,7 @@ namespace ODEliteTracker.ViewModels
             }
         }
 
-        private void OnStoreLive(object? sender, bool e)
+        private async Task OnStoreLive(object? sender, bool e)
         {
             if (e)
             {
@@ -441,7 +441,7 @@ namespace ODEliteTracker.ViewModels
             MaterialTraders.PopulateTraders(sharedDataStore.GetNearestTraders(), e.Position);
         }
 
-        private void OnSharedDataLive(object? sender, bool e)
+        private async Task OnSharedDataLive(object? sender, bool e)
         {
             if (e)
             {

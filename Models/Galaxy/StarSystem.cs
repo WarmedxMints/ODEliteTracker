@@ -45,15 +45,17 @@ namespace ODEliteTracker.Models.Galaxy
         }
 
         public string Name { get; set; }
-        public long Address { get; set; }
+        public ulong Address { get; set; }
         public Position Position { get; set; }
         public string? ControllingPower { get; set; }
         public PowerplayState PowerState { get; set; }
         public string? ControllingFaction { get; set; }
         public string? SystemAllegiance { get; set; }
         public string? Security { get; set; }
-        public Dictionary<long, SystemBody> Bodies { get; set; } = [];
+        public Dictionary<uint, SystemBody> Bodies { get; set; } = [];
         public int FactionCount { get; set;  }
+        public int BodyCount { get; internal set; }
+
         public void UpdateSystem(StarSystem system)
         {
             ControllingPower = system.ControllingPower;
@@ -84,15 +86,15 @@ namespace ODEliteTracker.Models.Galaxy
             Bodies.TryAdd(body.BodyID, body);
         }
 
-        internal void AddBody(ScanEvent.ScanEventArgs scan)
+        internal bool AddBody(ScanEvent.ScanEventArgs scan)
         {
             if (Bodies.TryGetValue(scan.BodyID, out var body))
             {
                 body.UpdateFromScan(scan);
-                return;
+                return true;
             }
 
-            Bodies.TryAdd(scan.BodyID, new(scan, this));
+            return Bodies.TryAdd(scan.BodyID, new(scan, this));
         }
     }
 }

@@ -81,5 +81,10 @@ namespace ODEliteTracker.Controls.Buttons
             if(CloseOnClick)
                 this.ToggleBtn.IsChecked = false;
         }
+
+        public void ClosePopup()
+        {
+            this.Popup.IsOpen = false;
+        }
     }
 }

@@ -17,6 +17,15 @@ namespace ODEliteTracker.Models.Market
             Demand = item.Demand;
         }
 
+        public static StationCommodity AddTotal(int total)
+        {
+            return new()
+            {
+                Name = "Total",
+                Demand = total
+            };
+        }
+
         public string Name { get; set; } = string.Empty;
         public string Name_Localised { get; set; } = string.Empty;
         public string Category { get; set; } = string.Empty;

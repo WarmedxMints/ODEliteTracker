@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using ODEliteTracker.Models.Colonisation;
 using ODEliteTracker.Models.Galaxy;
+using ODEliteTracker.Models.Settings;
 using ODEliteTracker.Models.Spansh;
 using ODEliteTracker.Services;
 using ODEliteTracker.Stores;
@@ -106,7 +107,8 @@ namespace ODEliteTracker.ViewModels
 
             if (routeSystem == null)
                 return;
-            if (FollowRoute)
+
+            if (RouteClipboardBehavior != ColonisationRouteClipboardBehavior.DoNothing)
                 CheckNextSystemOnRoute(routeSystem);
 
             var colonised = e.FactionCount > 1;
@@ -114,7 +116,11 @@ namespace ODEliteTracker.ViewModels
             if (!routeSystem.Built && colonised)
             {
                 routeSystem.Built = true;
-                DataChanged = true;
+                DataChanged = true;        
+            }
+
+            if (AutoSelect)
+            {
                 SelectedSystem = routeSystem;
                 SelectedSystemChanged?.Invoke(this, routeSystem);
             }
@@ -124,15 +130,33 @@ namespace ODEliteTracker.ViewModels
         {
             var index = RouteSystems.IndexOf(routeSystem);
 
-            if (index >= RouteSystems.Count)
+            if (index >= RouteSystems.Count || index < 0)
                 return;
 
-            var next = RouteSystems[index + 1];
+            ColonisationRouteSystemVM systemToCopy;
 
-            if (next.Built)
-                return;
+            switch (RouteClipboardBehavior)
+            {
+                case ColonisationRouteClipboardBehavior.DoNothing:
+                    return;
+                case ColonisationRouteClipboardBehavior.CopyIfNotBuilt:
+                    systemToCopy = RouteSystems[index + 1];
+                    if (!systemToCopy.Built)
+                        return;
+                    break;
+                case ColonisationRouteClipboardBehavior.CopyNext:
+                    systemToCopy = RouteSystems[index + 1];
+                    break;
+                case ColonisationRouteClipboardBehavior.CopyPrevious:
+                    if (index == 0)
+                        return;
+                    systemToCopy = RouteSystems[index - 1];
+                    break;
+                default:
+                    return;
+            }
 
-            SetClipboard(next.SystemName);
+            SetClipboard(systemToCopy.SystemName);
         }
         #region Route Planner
         public ICommand RemoveAfterSelectedCommand { get; }
@@ -171,7 +195,23 @@ namespace ODEliteTracker.ViewModels
         private bool dataChanged;
         public bool DataChanged { get => dataChanged; set { dataChanged = value; OnPropertyChanged(); } }
         public bool UseSpansh { get => settings.ColonisationSettings.CheckSpansh; set { settings.ColonisationSettings.CheckSpansh = value; OnPropertyChanged(); } }
-        public bool FollowRoute { get => settings.ColonisationSettings.FollowRoute; set { settings.ColonisationSettings.FollowRoute = value; OnPropertyChanged(); } }
+        public bool AutoSelect { get => settings.ColonisationSettings.AutoSelect; set { settings.ColonisationSettings.AutoSelect = value; OnPropertyChanged(); } }
+        public ColonisationRouteClipboardBehavior RouteClipboardBehavior { get => settings.ColonisationSettings.RouteClipboardBehavior; set { settings.ColonisationSettings.RouteClipboardBehavior = value; OnPropertyChanged(); OnPropertyChanged(nameof(ClipboardBehaviourText)); } }
+        public string ClipboardBehaviourText
+        {
+            get
+            {
+                return RouteClipboardBehavior switch
+                {
+                    ColonisationRouteClipboardBehavior.DoNothing => "Do not copy to clipboard",
+                    ColonisationRouteClipboardBehavior.CopyIfNotBuilt => "Copy next system to clipboard when arriving in the system before it if the next system is not marked as built",
+                    ColonisationRouteClipboardBehavior.CopyNext => "Copy next system to clipboard when arriving in the system before it",
+                    ColonisationRouteClipboardBehavior.CopyPrevious => "Copy previous system to clipboard when arriving in the system before it",
+                    _ => string.Empty,
+                };
+            }
+        }
+
         public string TargetSystemText => targetSystem == null ?
             string.Empty : $"{targetSystem.Distance:N2} ly away from {targetSystem.SystemName}";
         internal EventHandler? DataChangedWarning;
@@ -689,11 +729,11 @@ namespace ODEliteTracker.ViewModels
         {
             var sb = new StringBuilder();
 
-            sb.AppendLine("\"Hop Number\", \"Address\", \"SystemName\", \"X\", \"Y\", \"Z\", \"Built\", \"Hub\", \"Hop Distance\", \"Total Hop Distance\", \"Dist From Hub\", \"Dist From Start\", \"Notes\"");
+            sb.AppendLine("\"Hop Number\", \"Address\", \"SystemName\", \"X\", \"Y\", \"Z\", \"Bount Count\", \"Star Count\"\"Built\", \"Hub\", \"Hop Distance\", \"Total Hop Distance\", \"Dist From Hub\", \"Dist From Start\", \"Notes\"");
 
             foreach (var item in RouteSystems)
             {
-                sb.AppendLine($"\"{item.DataBaseHopNumber}\", \"{item.SystemAddress}\", \"{item.SystemName}\", \"{item.Position.X}\", \"{item.Position.Y}\", \"{item.Position.Z}\", \"{item.Built}\", \"{item.Hub}\", \"{item.Distance}\", \"{item.TotalHopDistance}\", \"{item.TotalDistance}\", \"{item.TotalDistanceFromStart}\", \"{item.Notes}\"");
+                sb.AppendLine($"\"{item.DataBaseHopNumber}\", \"{item.SystemAddress}\", \"{item.SystemName}\", \"{item.Position.X}\", \"{item.Position.Y}\", \"{item.Position.Z}\", \"{item.BodyCount}\", \"{item.StarCount}\", \"{item.Built}\", \"{item.Hub}\", \"{item.Distance}\", \"{item.TotalHopDistance}\", \"{item.TotalDistance}\", \"{item.TotalDistanceFromStart}\", \"{item.Notes}\"");
             }
 
             try
@@ -783,46 +823,13 @@ namespace ODEliteTracker.ViewModels
                 return;
             }
 
-            point500ly = GetPointAtDistance(StartPos, EndPos, 500);
-            var nearestPointOnline = GetClosestPointOnLineSegment(StartPos, EndPos, sharedData.CurrentSystem.Position);
+            point500ly = Position.GetPointAtDistance(StartPos, EndPos, 500);
+            var nearestPointOnline = Position.GetClosestPointOnLineSegment(StartPos, EndPos, sharedData.CurrentSystem.Position);
 
             DistanceFromStart = $"{Position.Distance(sharedData.CurrentSystem.Position, StartPos):N2} ly";
             DistanceFrom500ly = $"{Position.Distance(sharedData.CurrentSystem.Position, point500ly):N2} ly";
             DistanceFromStraightLine = $"{Position.Distance(sharedData.CurrentSystem.Position, nearestPointOnline):N2} ly";
             DirectionsToStraightLine = $"{DirectionText(nearestPointOnline.X, sharedData.CurrentSystem.Position.X, "Left", "Right")} | {DirectionText(nearestPointOnline.Y, sharedData.CurrentSystem.Position.Y, "Down", "Up")} | {DirectionText(nearestPointOnline.Z, sharedData.CurrentSystem.Position.Z, "Back", "Forward")}";
-        }
-        private Position GetPointAtDistance(Position pointA, Position pointB, float distance)
-        {
-            // 1. Get the direction vector from A to B
-            Position direction = pointB - pointA;
-
-            // 2. Normalize it so its total length becomes 1 unit
-            Position normalizedDirection = Position.Normalize(direction);
-
-            // 3. Multiply the unit direction by your distance and add it to the starting point
-            Position targetPoint = pointA + (normalizedDirection * distance);
-
-            return targetPoint;
-        }
-
-        public static Position GetClosestPointOnLineSegment(Position lineStart, Position lineEnd, Position point)
-        {
-            Position lineVector = lineEnd - lineStart;
-            double lineLengthSqr = lineVector.sqrMagnitude;
-
-            // If the two points are on top of each other, return the start point
-            if (lineLengthSqr == 0f)
-                return lineStart;
-
-            // Project the point onto the line vector to find the percentage 't' along the line
-            Position pointVector = point - lineStart;
-            double t = Position.Dot(pointVector, lineVector) / lineLengthSqr;
-
-            // Clamp 't' to keep the point strictly on the line segment
-            t = Math.Clamp(t, 0f, 1f); // Use Math.Clamp(t, 0f, 1f) for non-Unity C#
-
-            // Calculate the actual 3D coordinates
-            return lineStart + lineVector * t;
         }
 
         private static string DirectionText(double current, double point, string lessText, string moreText)

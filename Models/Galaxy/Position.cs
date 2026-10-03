@@ -107,6 +107,40 @@ namespace ODEliteTracker.Models.Galaxy
             }
         }
 
+        public static Position GetPointAtDistance(Position pointA, Position pointB, float distance)
+        {
+            // 1. Get the direction vector from A to B
+            Position direction = pointB - pointA;
+
+            // 2. Normalize it so its total length becomes 1 unit
+            Position normalizedDirection = Position.Normalize(direction);
+
+            // 3. Multiply the unit direction by your distance and add it to the starting point
+            Position targetPoint = pointA + (normalizedDirection * distance);
+
+            return targetPoint;
+        }
+
+        public static Position GetClosestPointOnLineSegment(Position lineStart, Position lineEnd, Position point)
+        {
+            Position lineVector = lineEnd - lineStart;
+            double lineLengthSqr = lineVector.sqrMagnitude;
+
+            // If the two points are on top of each other, return the start point
+            if (lineLengthSqr == 0f)
+                return lineStart;
+
+            // Project the point onto the line vector to find the percentage 't' along the line
+            Position pointVector = point - lineStart;
+            double t = Dot(pointVector, lineVector) / lineLengthSqr;
+
+            // Clamp 't' to keep the point strictly on the line segment
+            t = Math.Clamp(t, 0f, 1f); // Use Math.Clamp(t, 0f, 1f) for non-Unity C#
+
+            // Calculate the actual 3D coordinates
+            return lineStart + lineVector * t;
+        }
+
         public static double SqrMagnitude(Position position) { return position.X * position.X + position.Y * position.Y + position.Z * position.Z; }
         public static double Dot(Position lhs, Position rhs) { return lhs.X * rhs.X + lhs.Y * rhs.Y + lhs.Z * rhs.Z; }
         public static double Magnitude(Position position) { return Math.Sqrt(position.X * position.X + position.Y * position.Y + position.Z * position.Z); }

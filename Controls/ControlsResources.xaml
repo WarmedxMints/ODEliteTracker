@@ -39,5 +39,6 @@
         <ResourceDictionary Source="/Controls/Styles/SliderStyles.xaml" />
         <ResourceDictionary Source="/Controls/Styles/ToolTipStyle.xaml" />
         <ResourceDictionary Source="/Controls/Styles/MenuStyles.xaml" />
+        <ResourceDictionary Source="/Controls/Styles/ContextMenuStyle.xaml" />
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

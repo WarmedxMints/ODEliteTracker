@@ -1,8 +1,10 @@
-﻿namespace ODEliteTracker.Models.Colonisation.Builds
+﻿using ODEliteTracker.ViewModels.ModelViews.Colonisation;
+
+namespace ODEliteTracker.Models.Colonisation.Builds
 {
-    internal static class SpaceInstalltion_Tier1
+    public sealed class Satellite_Comms : BuildStats
     {
-        internal static readonly Dictionary<string, int> Satellite_Comms = new()
+        public Satellite_Comms() : base(ColonisationBuild.Satellite_Comms, new()
         {
             { "$water_name;", 22 },
             { "$titanium_name;", 1525 },
@@ -21,9 +23,13 @@
             { "$insulatingmembrane_name;", 106 },
             { "$microcontrollers_name;", 13 },
             { "$steel_name;", 2542 }
-        };
+        })
+        { }
+    }
 
-        internal static readonly Dictionary<string, int> SpaceFarm = new()
+    public sealed class SpaceFarm : BuildStats
+    {
+        public SpaceFarm() : base(ColonisationBuild.SpaceFarm, new()
         {
             { "$water_name;", 173 },
             { "$titanium_name;", 1453 },
@@ -44,9 +50,13 @@
             { "$liquidoxygen_name;", 1071 },
             { "$insulatingmembrane_name;", 192 },
             { "$steel_name;", 1912 }
-        };
+        })
+        { }
+    }
 
-        internal static readonly Dictionary<string, int> PirateInstallation = new()
+    public sealed class PirateInstallation : BuildStats
+    {
+        public PirateInstallation() : base(ColonisationBuild.PirateInstallation, new()
         {
             { "$water_name;", 65 },
             { "$titanium_name;", 1594 },
@@ -66,9 +76,13 @@
             { "$liquidoxygen_name;", 911 },
             { "$insulatingmembrane_name;", 95 },
             { "$steel_name;", 1707 }
-        };
+        })
+        { }
+    }
 
-        internal static readonly Dictionary<string, int> MiningOutpost = new()
+    public sealed class MiningOutpost : BuildStats
+    {
+        public MiningOutpost() : base(ColonisationBuild.MiningOutpost, new()
         {
             { "$water_name;", 73 },
             { "$titanium_name;", 1628 },
@@ -90,9 +104,13 @@
             { "$liquidoxygen_name;", 1028 },
             { "$insulatingmembrane_name;", 129 },
             { "$steel_name;", 2141 }
-        };
+        })
+        { }
+    }
 
-        internal static readonly Dictionary<string, int> RelayStation = new()
+    public sealed class RelayStation : BuildStats
+    {
+        public RelayStation() : base(ColonisationBuild.RelayStation, new()
         {
             { "$water_name;", 25 },
             { "$titanium_name;", 1755 },
@@ -110,6 +128,7 @@
             { "$liquidoxygen_name;", 780 },
             { "$insulatingmembrane_name;", 122 },
             { "$steel_name;", 2437 }
-        };
+        })
+        { }
     }
 }

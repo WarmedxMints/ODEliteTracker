@@ -33,7 +33,8 @@ namespace ODEliteTracker.ViewModels
                                      SettingsStore settings,
                                      NotificationService notification,
                                      PopOutService popOutService,
-                                     ColonisationRoutePlannerViewModel routePlanner)
+                                     ColonisationRoutePlannerViewModel routePlanner,
+                                     BuildStatsHelper buildStatsHelper)
         {
             this.colonisationStore = colonisationStore;
             this.sharedData = sharedDataStore;
@@ -42,6 +43,7 @@ namespace ODEliteTracker.ViewModels
             this.notification = notification;
             this.popOutService = popOutService;
             this.routePlanner = routePlanner;
+            this.buildStatsHelper = buildStatsHelper;
 
             this.colonisationStore.StoreLive += OnStoreLive;
             this.colonisationStore.DepotUpdated += OnDepotUpdated;
@@ -57,11 +59,11 @@ namespace ODEliteTracker.ViewModels
             this.sharedData.WatchedMarketUpdated += OnWatchedMarketUpdated;
             this.sharedData.WatchedMarketsUpdated += OnWatchedMarketsUpdated;
             this.sharedData.StoreLive += OnSharedDataLive;
-            ColonisationBuildTotals = new(this.fcDataStore, this.sharedData);
-            
+            ColonisationBuildTotals = new(this.fcDataStore, this.sharedData, buildStatsHelper);
+
             if (this.sharedData.IsLive)
             {
-                _ = OnSharedDataLive(null, true);           
+                _ = OnSharedDataLive(null, true);
             }
 
             SetSelectedDepotCommand = new ODRelayCommand<ConstructionDepotVM?>(SetSelectedDepot);
@@ -95,7 +97,7 @@ namespace ODEliteTracker.ViewModels
             }
 
             this.settings.ColonisationSettings.CommoditySortingChanged += ColonisationSettings_CommoditySortingChanged;
-        }  
+        }
 
         public override void Dispose()
         {
@@ -130,6 +132,7 @@ namespace ODEliteTracker.ViewModels
         private readonly NotificationService notification;
         private readonly PopOutService popOutService;
         private readonly ColonisationRoutePlannerViewModel routePlanner;
+        private readonly BuildStatsHelper buildStatsHelper;
         #endregion
 
         #region Commands
@@ -332,9 +335,9 @@ namespace ODEliteTracker.ViewModels
             {
                 return WatchedMarketSorting switch
                 {
-                    CommoditySorting.Name => selectedWatchedMarket?.Commodities.OrderBy(x => x.Name),
-                    CommoditySorting.Category => selectedWatchedMarket?.Commodities.OrderBy(x => x.Category).ThenBy(x => x.Name),
-                    CommoditySorting.Remaining => selectedWatchedMarket?.Commodities.OrderByDescending(x => x.Demand),
+                    CommoditySorting.Name => selectedWatchedMarket?.Commodities.OrderBy(x => string.IsNullOrEmpty(x.Category)).ThenBy(x => x.Name),
+                    CommoditySorting.Category => selectedWatchedMarket?.Commodities.OrderBy(x => string.IsNullOrEmpty(x.Category)).ThenBy(x => x.Category).ThenBy(x => x.Name),
+                    CommoditySorting.Remaining => selectedWatchedMarket?.Commodities.OrderBy(x => string.IsNullOrEmpty(x.Category)).ThenByDescending(x => x.Demand),
                     _ => selectedWatchedMarket?.Commodities,
                 };
             }
@@ -350,7 +353,7 @@ namespace ODEliteTracker.ViewModels
             set
             {
                 selectedResource = value;
-                if(selectedResource != null)
+                if (selectedResource != null)
                     TabIndex = 3;
                 OnPropertyChanged(nameof(SelectedResource));
                 OnPropertyChanged(nameof(Purchases));
@@ -563,7 +566,7 @@ namespace ODEliteTracker.ViewModels
                     return;
                 }
 
-                
+
                 if (DiscordPostCreator.CreateBuildPost(GetWishListBuildNames(), ColonisationBuildTotals.WishListItems, type))
                 {
                     DiscordButtonText = "Post Created";
@@ -628,7 +631,7 @@ namespace ODEliteTracker.ViewModels
             if (e == null)
                 return;
 
-            var newDepot = new ConstructionDepotVM(e);
+            var newDepot = new ConstructionDepotVM(e, buildStatsHelper);
             newDepot.UpdateMostRecentPurchase(sharedData.MarketPurchases);
             Depots.AddItem(newDepot);
             SelectedDepot = newDepot;
@@ -662,7 +665,7 @@ namespace ODEliteTracker.ViewModels
                 known.Update(e);
                 known.UpdateMostRecentPurchase(sharedData.MarketPurchases);
                 SelectedDepot = known;
-                if(known.Complete)
+                if (known.Complete)
                 {
                     known.Inactive = true;
                     OnPropertyChanged(nameof(ActiveDepots));
@@ -719,14 +722,14 @@ namespace ODEliteTracker.ViewModels
             {
                 foreach (var system in colonisationStore.CommanderSystems)
                 {
-                   var newSystem = new CommanderSystemVM(system.SystemAddress, system.SystemName);
+                    var newSystem = new CommanderSystemVM(system.SystemAddress, system.SystemName);
                     commanderSystems.AddItem(newSystem);
                 }
             }
 
             if (colonisationStore.Depots.Any())
             {
-   
+
                 foreach (var depot in colonisationStore.Depots)
                 {
                     if (depot.Progress >= 1)
@@ -734,7 +737,7 @@ namespace ODEliteTracker.ViewModels
                         depot.Inactive = true;
                     }
 
-                    var newDepot = new ConstructionDepotVM(depot);
+                    var newDepot = new ConstructionDepotVM(depot, buildStatsHelper);
                     newDepot.UpdateMostRecentPurchase(sharedData.MarketPurchases);
                     Depots.AddItem(newDepot);
 
@@ -774,12 +777,12 @@ namespace ODEliteTracker.ViewModels
 
         private void CheckMarket()
         {
-            if(SelectedDepotTab == 0 && selectedDepot == null  || SelectedDepotTab == 1 && ShoppingList.Resources.Count == 0 || sharedData.CurrentMarket == null)
-                return; 
+            if (SelectedDepotTab == 0 && selectedDepot == null || SelectedDepotTab == 1 && ShoppingList.Resources.Count == 0 || sharedData.CurrentMarket == null)
+                return;
 
             var market = StationMarketVM.CreateEmptyItemMarket(sharedData.CurrentMarket);
 
-            foreach(var item in sharedData.CurrentMarket.ItemsForSale)
+            foreach (var item in sharedData.CurrentMarket.ItemsForSale)
             {
                 //Carrier market data includes items which are sold out as it doesn't cancel the sell order when you do
                 //So if the stock level is 0 then we just ignore it
@@ -795,8 +798,8 @@ namespace ODEliteTracker.ViewModels
                         continue;
                     var commodity = new StationCommodityVM(item, true)
                     {
-                        Required = required?.RemainingCount ?? 0,
-                        CarrierStockValue = required?.CarrierStockValue ?? 0
+                        Required = required.RemainingCount,
+                        CarrierStockValue = required.CarrierStockValue
                     };
 
                     market.ItemsForSale.Add(commodity);
@@ -812,8 +815,8 @@ namespace ODEliteTracker.ViewModels
 
                     var commodity = new StationCommodityVM(item, true)
                     {
-                        Required = required?.RemainingCount ?? 0,
-                        CarrierStockValue = required?.CarrierStockValue ?? 0
+                        Required = required.RemainingCount,
+                        CarrierStockValue = required.CarrierStockValue
                     };
 
                     market.ItemsForSale.Add(commodity);
@@ -828,8 +831,8 @@ namespace ODEliteTracker.ViewModels
 
                     var commodity = new StationCommodityVM(item, true)
                     {
-                        Required = required?.Demand ?? 0,
-                        CarrierStockValue = required?.CarrierStockValue ?? 0
+                        Required = required.Demand,
+                        CarrierStockValue = required.CarrierStockValue
                     };
 
                     market.ItemsForSale.Add(commodity);
@@ -846,7 +849,7 @@ namespace ODEliteTracker.ViewModels
                     var commodity = new StationCommodityVM(item, true)
                     {
                         Required = required.RequiredAmount,
-                        CarrierStockValue = required?.CarrierStockValue ?? 0
+                        CarrierStockValue = required.CarrierStockValue
                     };
 
                     market.ItemsForSale.Add(commodity);
@@ -938,29 +941,29 @@ namespace ODEliteTracker.ViewModels
 
         private void OnCarrierStockUpdated(object? sender, FleetCarrier e)
         {
-            if(SelectedDepot == null || SelectedDepotResources == null)
+            if (SelectedDepot != null && SelectedDepotResources != null)
             {
-                return;
-            }
-
-            foreach(var item in SelectedDepotResources)
-            {
-                var onCarrier = e.Stock.FirstOrDefault(x => string.Equals(x.commodity.FdevName, item.FDEVName, StringComparison.OrdinalIgnoreCase)
-                                    && x.Stolen == false);
-
-                if (onCarrier == null)
+                foreach (var item in SelectedDepotResources)
                 {
-                    item.SetCarrierStock(0);
-                    continue;
+                    var onCarrier = e.Stock.FirstOrDefault(x => string.Equals(x.commodity.FdevName, item.FDEVName, StringComparison.OrdinalIgnoreCase)
+                                        && x.Stolen == false);
+
+                    if (onCarrier == null)
+                    {
+                        item.SetCarrierStock(0);
+                        continue;
+                    }
+                    item.SetCarrierStock(onCarrier.StockCount);
                 }
-                item.SetCarrierStock(onCarrier.StockCount);
             }
 
+            ColonisationBuildTotals.OnCarrierStockUpdated(e);
             ShoppingList.UpdateCarrierStock(e);
             CheckMarket();
-            ColonisationBuildTotals.OnCarrierStockUpdated(e);
+
             OnPropertyChanged(nameof(ShoppingListResources));
             OnPropertyChanged(nameof(SelectedDepotResources));
+
         }
 
         public void CopyToClipboard(string? value)
@@ -981,7 +984,7 @@ namespace ODEliteTracker.ViewModels
                 return;
             }
 
-            if(colonisationStore.SetDepotShoppingState(depot))
+            if (colonisationStore.SetDepotShoppingState(depot))
             {
                 ShoppingList.AddDepot(depot, fcDataStore.CarrierData, sharedData.MarketPurchases);
                 OnPropertyChanged(nameof(ShoppingListResources));
@@ -1001,7 +1004,7 @@ namespace ODEliteTracker.ViewModels
 
         private void OnPurchasesUpdated(object? sender, CommodityPurchase e)
         {
-            foreach(var depot in Depots)
+            foreach (var depot in Depots)
             {
                 depot.UpdateMostRecentPurchase(sharedData.MarketPurchases);
             }
@@ -1047,7 +1050,7 @@ namespace ODEliteTracker.ViewModels
 
         private void OnSetAssetFilter(AssetFilter filter)
         {
-            if(ColonisationBuildTotals.AssetFilter.HasFlag(filter))
+            if (ColonisationBuildTotals.AssetFilter.HasFlag(filter))
             {
                 ColonisationBuildTotals.AssetFilter &= ~filter;
                 return;

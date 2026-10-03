@@ -1,8 +1,10 @@
-﻿namespace ODEliteTracker.Models.Colonisation.Builds
+﻿using ODEliteTracker.ViewModels.ModelViews.Colonisation;
+
+namespace ODEliteTracker.Models.Colonisation.Builds
 {
-    internal static class Starport_Tier3
+    public sealed class PrimaryStarport_T3 : BuildStats
     {
-        internal static readonly Dictionary<string, int> Primary = new()
+        public PrimaryStarport_T3() : base(ColonisationBuild.Starport_T3P, new()
         {
             { "$water_name;", 7636 },
             { "$titanium_name;", 39730 },
@@ -23,9 +25,13 @@
             { "$cmmcomposite_name;", 51004 },
             { "$medicaldiagnosticequipment_name;", 50 },
             { "$steel_name;", 67024 }
-        };
+        })
+        { }
+    }
 
-        internal static readonly Dictionary<string, int> Secondary = new()
+    public sealed class SecondaryStarport_T3 : BuildStats
+    {
+        public SecondaryStarport_T3() : base(ColonisationBuild.Starport_T3, new()
         {
             { "$water_name;", 6436 },
             { "$titanium_name;", 32820 },
@@ -46,9 +52,13 @@
             { "$cmmcomposite_name;", 45044 },
             { "$medicaldiagnosticequipment_name;", 50 },
             { "$steel_name;", 58304 }
-        };
+        })
+        { }
+    }
 
-        internal static readonly Dictionary<string, int> DodecPrimary = new()
+    public sealed class DodecPrimary : BuildStats
+    {
+        public DodecPrimary() : base(ColonisationBuild.DodecP, new()
         {
             { "$water_name;", 8441 },
             { "$titanium_name;", 43833 },
@@ -69,9 +79,13 @@
             { "$cmmcomposite_name;", 56635 },
             { "$medicaldiagnosticequipment_name;", 63 },
             { "$steel_name;", 74062 }
-        };
+        })
+        { }
+    }
 
-        internal static readonly Dictionary<string, int> DodecSecondary = new()
+    public sealed class DodecSecondary : BuildStats
+    {
+        public DodecSecondary() : base(ColonisationBuild.Dodec, new()
         {
             { "$water_name;", 7241 },
             { "$titanium_name;", 36923 },
@@ -93,6 +107,7 @@
             { "$cmmcomposite_name;", 50675 },
             { "$medicaldiagnosticequipment_name;", 63 },
             { "$steel_name;", 63342 }
-        };
+        })
+        { }
     }
 }

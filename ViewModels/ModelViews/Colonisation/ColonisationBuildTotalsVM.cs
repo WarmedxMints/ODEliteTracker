@@ -108,6 +108,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Colonisation
         HubHighTech,
         [Description("Industrial Hub")]
         HubIndustrial,
+        Unknown
     }
 
     public enum BuildItemSorting
@@ -117,11 +118,11 @@ namespace ODEliteTracker.ViewModels.ModelViews.Colonisation
         Required,
         Game,
     }
-    public sealed class ColonisationBuildTotalsVM(FleetCarrierDataStore fleetCarrierData, SharedDataStore sharedData) : ODObservableObject
+    public sealed class ColonisationBuildTotalsVM(FleetCarrierDataStore fleetCarrierData, SharedDataStore sharedData, BuildStatsHelper buildStats) : ODObservableObject
     {
         private readonly FleetCarrierDataStore fleetCarrierData = fleetCarrierData;
         private readonly SharedDataStore sharedData = sharedData;
-
+        private readonly BuildStatsHelper buildStats = buildStats;
         private readonly List<ColonisationBuildItemVM> items = [];
         public IEnumerable<ColonisationBuildItemVM> Items
         {
@@ -213,6 +214,9 @@ namespace ODEliteTracker.ViewModels.ModelViews.Colonisation
         }
 
         private string wishListTotal = string.Empty;
+
+
+
         public string WishListTotal
         {
             get => wishListTotal;
@@ -336,65 +340,17 @@ namespace ODEliteTracker.ViewModels.ModelViews.Colonisation
             OnPropertyChanged(nameof(WishListBuilds));
         }
 
-        private static List<ColonisationBuildItemVM> GetBuildItems(ColonisationBuild build, int count = 1)
+        private List<ColonisationBuildItemVM> GetBuildItems(ColonisationBuild build, int count = 1)
         {
-            Dictionary<string, int> items = build switch
+
+            if (buildStats.TryGetBuild(build, out var stats) == false)
             {
-                ColonisationBuild.OutpostP => Outpost.Primary,
-                ColonisationBuild.Outpost => Outpost.Secondary,
-                ColonisationBuild.Starport_T2P => Starport_Tier2.Primary,
-                ColonisationBuild.Starport_T2 => Starport_Tier2.Secondary,
-                ColonisationBuild.Starport_T3P => Starport_Tier3.Primary,
-                ColonisationBuild.Starport_T3 => Starport_Tier3.Secondary,
-                ColonisationBuild.DodecP => Starport_Tier3.DodecPrimary,
-                ColonisationBuild.Dodec => Starport_Tier3.DodecSecondary,
-                ColonisationBuild.Satellite_Comms => SpaceInstalltion_Tier1.Satellite_Comms,
-                ColonisationBuild.SpaceFarm => SpaceInstalltion_Tier1.SpaceFarm,
-                ColonisationBuild.PirateInstallation => SpaceInstalltion_Tier1.PirateInstallation,
-                ColonisationBuild.MiningOutpost => SpaceInstalltion_Tier1.MiningOutpost,
-                ColonisationBuild.RelayStation => SpaceInstalltion_Tier1.RelayStation,
-                ColonisationBuild.MilitaryInstallation => SpaceInstalltion_Tier2.Military,
-                ColonisationBuild.SecurityStation => SpaceInstalltion_Tier2.SecurityStation,
-                ColonisationBuild.GovernmentInstallation => SpaceInstalltion_Tier2.Government,
-                ColonisationBuild.MedicalInstallation => SpaceInstalltion_Tier2.Medical,
-                ColonisationBuild.ResearchStation => SpaceInstalltion_Tier2.ResearchStation,
-                ColonisationBuild.TouristInstallation => SpaceInstalltion_Tier2.Tourist,
-                ColonisationBuild.BarInstallation => SpaceInstalltion_Tier2.Bar,
-                ColonisationBuild.SurfaceOutpostT1 => PlanetaryPort.Outpost_T1,
-                ColonisationBuild.SurfaceOutpostT3 => PlanetaryPort.Outpost_T3,
-                ColonisationBuild.SettlementAgriSmall => Settlement_Tier1.Agriculture_Small,
-                ColonisationBuild.SettlementAgriMedium => Settlement_Tier1.Agriculture_Medium,
-                ColonisationBuild.SettlementAgriLarge => Settlement_Tier1.Agriculture_Large,
-                ColonisationBuild.SettlementExtractionSmall => Settlement_Tier1.Extraction_Small,
-                ColonisationBuild.SettlementExtractionMedium => Settlement_Tier1.Extraction_Medium,
-                ColonisationBuild.SettlementExtractionLarge => Settlement_Tier1.Extraction_Large,
-                ColonisationBuild.SettlementIndustrialSmall => Settlement_Tier1.Industrial_Small,
-                ColonisationBuild.SettlementIndustrialMedium => Settlement_Tier1.Industrial_Medium,
-                ColonisationBuild.SettlementIndustrialLarge => Settlement_Tier1.Industrial_Large,
-                ColonisationBuild.SettlementMiltarySmall => Settlement_Tier1.Military_Small,
-                ColonisationBuild.SettlementMiltaryMedium => Settlement_Tier1.Military_Medium,
-                ColonisationBuild.SettlementMiltaryLarge => Settlement_Tier1.Military_Large,
-                ColonisationBuild.SettlementResearchBioSmall => Settlement_Tier2.ResearchBio_Small,
-                ColonisationBuild.SettlementResearchBioMedium => Settlement_Tier2.ResearchBio_Medium,
-                ColonisationBuild.SettlementResearchBioLarge => Settlement_Tier2.ResearchBio_Large,
-                ColonisationBuild.SettlementTourismSmall => Settlement_Tier2.Tourism_Small,
-                ColonisationBuild.SettlementTourismMedium => Settlement_Tier2.Tourism_Medium,
-                ColonisationBuild.SettlementTourismLarge => Settlement_Tier2.Tourism_Large,
-                ColonisationBuild.HubExtraction => Hub.Extraction,
-                ColonisationBuild.HubCivilian => Hub.Civilian,
-                ColonisationBuild.HubExploration => Hub.Exploration,
-                ColonisationBuild.HubOutpost => Hub.Outpost,
-                ColonisationBuild.HubScientific => Hub.Scientific,
-                ColonisationBuild.HubMilitary => Hub.Military,
-                ColonisationBuild.HubRefinery => Hub.Refinery,
-                ColonisationBuild.HubHighTech => Hub.HighTech,
-                ColonisationBuild.HubIndustrial => Hub.Industrial,
-                _ => Outpost.Primary,
-            };
+                return [];
+            }
 
             var ret = new List<ColonisationBuildItemVM>();
 
-            foreach (var item in items)
+            foreach (var item in stats.Stats)
             {
                 var commodity = EliteCommodityHelpers.GetCommodityDetails(item.Key);
 

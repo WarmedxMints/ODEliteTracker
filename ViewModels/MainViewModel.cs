@@ -1,4 +1,5 @@
 ﻿using ODEliteTracker.Controls.Navigation;
+using ODEliteTracker.Models;
 using ODEliteTracker.Models.Galaxy;
 using ODEliteTracker.Models.Ship;
 using ODEliteTracker.Services;
@@ -51,12 +52,14 @@ namespace ODEliteTracker.ViewModels
 
             ResetWindowPositionCommand = new ODRelayCommand(OnResetWindow);
             RefreshCommanderCommand = new ODRelayCommand(OnRefreshCommander);
-            OpenSystemCommand = new ODRelayCommand(OnOpenSystemCommand);
+            OpenSystemCommand = new ODRelayCommand(OnOpenSystem);
             OpenStationCommand = new ODRelayCommand(OnOpenStationCommand);
             OpenShipyardCommand = new ODRelayCommand(OnOpenShipyardCommand);
+            OpenSystemFromEnumCommand = new ODRelayCommand<SystemWebSite>(OpenSystemFromEnum);
+            OpenStationFromEnumCommand = new ODRelayCommand<SystemWebSite>(OpenStationFromEnum);
+            OpenShipyardFromEnumCommand = new ODRelayCommand<ShipyardWebSite>(OpenShipyardFromEnum);
+            CopyToClipboardCommand = new ODRelayCommand<string?>(CopyToClipboard);
         }
-
-
 
         public override bool IsLive => true;
         private readonly IODNavigationService navigationService;
@@ -200,7 +203,7 @@ namespace ODEliteTracker.ViewModels
         {
             get
             {
-                return UiEnabled ? sharedData.CurrentSystem?.Name.ToUpper() ?? string.Empty : "Reading Logs...";
+                return UiEnabled ? sharedData.CurrentSystem?.Name ?? string.Empty : "Reading Logs...";
             }
         }
 
@@ -208,7 +211,7 @@ namespace ODEliteTracker.ViewModels
         {
             get
             {
-                return UiEnabled ? sharedData.CurrentBody_Station?.ToUpper() ?? string.Empty : string.Empty;
+                return UiEnabled ? sharedData.CurrentBody_Station ?? string.Empty : string.Empty;
             }
         }
 
@@ -235,23 +238,37 @@ namespace ODEliteTracker.ViewModels
         public ICommand RefreshCommanderCommand { get; }
         public ICommand OpenSystemCommand { get; }
         public ICommand OpenStationCommand { get; }
+        public ICommand OpenStationFromEnumCommand { get; }
         public ICommand OpenShipyardCommand { get; }
+        public ICommand OpenShipyardFromEnumCommand { get; }
+        public ICommand OpenSystemFromEnumCommand { get; }
+        public ICommand CopyToClipboardCommand { get; }
 
         private void OnOpenShipyardCommand(object? obj)
         {
+            OpenShipyardFromEnum(settings.StatusBarSettings.ShipyardPreference);
+        }
+
+        private void OpenShipyardFromEnum(ShipyardWebSite site)
+        {
             if (sharedData.CurrentShipInfo == null)
                 return;
-
-            sharedData.CurrentShipInfo.OpenShipyard(settings.StatusBarSettings.ShipyardPreference);
+            sharedData.CurrentShipInfo.OpenShipyard(site);
         }
+
         private void OnOpenStationCommand(object? obj)
+        {
+            OpenStationFromEnum(settings.StatusBarSettings.StationBodyPreference);
+        }
+
+        private void OpenStationFromEnum(SystemWebSite site)
         {
             if (sharedData.CurrentSystem == null || sharedData.CurrentBody_Station == null)
                 return;
 
             if (sharedData.CurrentMarketID > 0)
             {
-                switch (settings.StatusBarSettings.StationBodyPreference)
+                switch (site)
                 {
                     case Models.SystemWebSite.Inara:
                         ODMVVM.Helpers.OperatingSystem.OpenInaraStation(sharedData.CurrentBody_Station, sharedData.CurrentSystem.Name);
@@ -266,7 +283,7 @@ namespace ODEliteTracker.ViewModels
             if (sharedData.CurrentBody == null)
                 return;
 
-            switch (settings.StatusBarSettings.StationBodyPreference)
+            switch (site)
             {
                 case Models.SystemWebSite.Inara:
                     ODMVVM.Helpers.OperatingSystem.OpenUrl($"https://inara.cz/galaxy-starsystem/?search={sharedData.CurrentSystem.Name.Replace(' ', '+')}");
@@ -276,13 +293,17 @@ namespace ODEliteTracker.ViewModels
                     break;
             }
         }
+        private void OnOpenSystem(object? obj)
+        {
+            OpenSystemFromEnum(settings.StatusBarSettings.SystemSitePreference);
+        }
 
-        private void OnOpenSystemCommand(object? obj)
+        private void OpenSystemFromEnum(SystemWebSite site)
         {
             if (sharedData.CurrentSystem == null)
                 return;
 
-            switch (settings.StatusBarSettings.SystemSitePreference)
+            switch (site)
             {
                 case Models.SystemWebSite.Inara:
                     ODMVVM.Helpers.OperatingSystem.OpenInaraSystem(sharedData.CurrentSystem.Name);
@@ -290,7 +311,12 @@ namespace ODEliteTracker.ViewModels
                 case Models.SystemWebSite.Spansh:
                     ODMVVM.Helpers.OperatingSystem.OpenSpanshSystem(sharedData.CurrentSystem.Address);
                     break;
-            }            
+            }
+        }
+
+        private void CopyToClipboard(string? value)
+        {
+            notificationService.SetClipboard(value);
         }
 
         public async Task UpdateCommanders()

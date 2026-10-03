@@ -1,8 +1,10 @@
-﻿namespace ODEliteTracker.Models.Colonisation.Builds
+﻿using ODEliteTracker.ViewModels.ModelViews.Colonisation;
+
+namespace ODEliteTracker.Models.Colonisation.Builds
 {
-    internal static class Outpost
+    public sealed class PrimaryOutpost : BuildStats
     {
-        internal static readonly Dictionary<string, int> Primary = new()
+        public PrimaryOutpost() : base(ColonisationBuild.OutpostP, new()
         {
             { "$water_name;", 741 },
             { "$titanium_name;", 5534 },
@@ -23,9 +25,13 @@
             { "$cmmcomposite_name;", 4508 },
             { "$medicaldiagnosticequipment_name;", 13 },
             { "$steel_name;", 6660 }
-        };
+        })
+        { }
+    }
 
-        internal static readonly Dictionary<string, int> Secondary = new()
+    public sealed class SecondaryOutpost : BuildStats
+    {
+        public SecondaryOutpost() : base(ColonisationBuild.Outpost, new()
         {
             { "$water_name;", 621 },
             { "$titanium_name;", 4843 },
@@ -45,6 +51,7 @@
             { "$cmmcomposite_name;", 3912 },
             { "$medicaldiagnosticequipment_name;", 13 },
             { "$steel_name;", 5588 }
-        };
+        })
+        { }
     }
 }

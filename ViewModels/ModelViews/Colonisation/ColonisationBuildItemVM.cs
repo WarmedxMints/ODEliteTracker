@@ -1,4 +1,5 @@
-﻿using ODMVVM.Helpers;
+﻿using ODEliteTracker.Models.Colonisation;
+using ODMVVM.Helpers;
 using ODMVVM.ViewModels;
 
 namespace ODEliteTracker.ViewModels.ModelViews.Colonisation

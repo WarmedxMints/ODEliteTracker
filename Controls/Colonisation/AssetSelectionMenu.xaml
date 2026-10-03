@@ -39,7 +39,8 @@
                         <StackPanel Orientation="Vertical" />
                     </ItemsPanelTemplate>
                 </Menu.ItemsPanel>
-                <MenuItem Header="Starport">
+                <MenuItem Header="Starport"
+                          Style="{DynamicResource EliteMenuStyle}">
                     <Separator>
                         <Separator.Template>
                             <ControlTemplate TargetType="Separator">
@@ -52,9 +53,11 @@
                         </Separator.Template>
                     </Separator>
                     <MenuItem Header="Outpost [Primary Port]"
+                              Style="{DynamicResource EliteMenuStyle}"
                               Command="{Binding ElementName=Root, Path=Command}"
                               CommandParameter="{x:Static colonisationVM:ColonisationBuild.OutpostP}" />
                     <MenuItem Header="Outpost"
+                              Style="{DynamicResource EliteMenuStyle}"
                               Command="{Binding ElementName=Root, Path=Command}"
                               CommandParameter="{x:Static colonisationVM:ColonisationBuild.Outpost}" />
                     <Separator>
@@ -69,9 +72,11 @@
                         </Separator.Template>
                     </Separator>
                     <MenuItem Header="Coriolis / Asteroid Base [Primary Port]"
+                              Style="{DynamicResource EliteMenuStyle}"
                               Command="{Binding ElementName=Root, Path=Command}"
                               CommandParameter="{x:Static colonisationVM:ColonisationBuild.Starport_T2P}" />
                     <MenuItem Header="Coriolis / Asteroid Base"
+                              Style="{DynamicResource EliteMenuStyle}"
                               Command="{Binding ElementName=Root, Path=Command}"
                               CommandParameter="{x:Static colonisationVM:ColonisationBuild.Starport_T2}" />
                     <Separator>
@@ -86,19 +91,24 @@
                         </Separator.Template>
                     </Separator>
                     <MenuItem Header="Ocellus / Orbis [Primary Port]"
+                              Style="{DynamicResource EliteMenuStyle}"
                               Command="{Binding ElementName=Root, Path=Command}"
                               CommandParameter="{x:Static colonisationVM:ColonisationBuild.Starport_T3P}" />
                     <MenuItem Header="Ocellus / Orbis"
+                              Style="{DynamicResource EliteMenuStyle}"
                               Command="{Binding ElementName=Root, Path=Command}"
                               CommandParameter="{x:Static colonisationVM:ColonisationBuild.Starport_T3}" />
                     <MenuItem Header="Dodec [Primary Port]"
+                              Style="{DynamicResource EliteMenuStyle}"
                               Command="{Binding ElementName=Root, Path=Command}"
                               CommandParameter="{x:Static colonisationVM:ColonisationBuild.DodecP}" />
                     <MenuItem Header="Dodec"
+                              Style="{DynamicResource EliteMenuStyle}"
                               Command="{Binding ElementName=Root, Path=Command}"
                               CommandParameter="{x:Static colonisationVM:ColonisationBuild.Dodec}" />
                 </MenuItem>
-                <MenuItem Header="Installation">
+                <MenuItem Header="Installation"
+                          Style="{DynamicResource EliteMenuStyle}">
                     <Separator>
                         <Separator.Template>
                             <ControlTemplate TargetType="Separator">
@@ -111,18 +121,23 @@
                         </Separator.Template>
                     </Separator>
                     <MenuItem Header="Satellite / Communication Station"
+                              Style="{DynamicResource EliteMenuStyle}"
                               Command="{Binding ElementName=Root, Path=Command}"
                               CommandParameter="{x:Static colonisationVM:ColonisationBuild.Satellite_Comms}" />
                     <MenuItem Header="Space Farm"
+                              Style="{DynamicResource EliteMenuStyle}"
                               Command="{Binding ElementName=Root, Path=Command}"
                               CommandParameter="{x:Static colonisationVM:ColonisationBuild.SpaceFarm}" />
                     <MenuItem Header="Pirate Base"
+                              Style="{DynamicResource EliteMenuStyle}"
                               Command="{Binding ElementName=Root, Path=Command}"
                               CommandParameter="{x:Static colonisationVM:ColonisationBuild.PirateInstallation}" />
                     <MenuItem Header="Mining Outpost"
+                              Style="{DynamicResource EliteMenuStyle}"
                               Command="{Binding ElementName=Root, Path=Command}"
                               CommandParameter="{x:Static colonisationVM:ColonisationBuild.MiningOutpost}" />
                     <MenuItem Header="Relay Station"
+                              Style="{DynamicResource EliteMenuStyle}"
                               Command="{Binding ElementName=Root, Path=Command}"
                               CommandParameter="{x:Static colonisationVM:ColonisationBuild.RelayStation}" />
                     <Separator>
@@ -137,28 +152,36 @@
                         </Separator.Template>
                     </Separator>
                     <MenuItem Header="Military"
+                              Style="{DynamicResource EliteMenuStyle}"
                               Command="{Binding ElementName=Root, Path=Command}"
                               CommandParameter="{x:Static colonisationVM:ColonisationBuild.MilitaryInstallation}" />
                     <MenuItem Header="Security Station"
+                              Style="{DynamicResource EliteMenuStyle}"
                               Command="{Binding ElementName=Root, Path=Command}"
                               CommandParameter="{x:Static colonisationVM:ColonisationBuild.SecurityStation}" />
                     <MenuItem Header="Government"
+                              Style="{DynamicResource EliteMenuStyle}"
                               Command="{Binding ElementName=Root, Path=Command}"
                               CommandParameter="{x:Static colonisationVM:ColonisationBuild.GovernmentInstallation}" />
                     <MenuItem Header="Medical"
+                              Style="{DynamicResource EliteMenuStyle}"
                               Command="{Binding ElementName=Root, Path=Command}"
                               CommandParameter="{x:Static colonisationVM:ColonisationBuild.MedicalInstallation}" />
                     <MenuItem Header="Research Station"
+                              Style="{DynamicResource EliteMenuStyle}"
                               Command="{Binding ElementName=Root, Path=Command}"
                               CommandParameter="{x:Static colonisationVM:ColonisationBuild.ResearchStation}" />
                     <MenuItem Header="Tourist"
+                              Style="{DynamicResource EliteMenuStyle}"
                               Command="{Binding ElementName=Root, Path=Command}"
                               CommandParameter="{x:Static colonisationVM:ColonisationBuild.TouristInstallation}" />
                     <MenuItem Header="Bar"
+                              Style="{DynamicResource EliteMenuStyle}"
                               Command="{Binding ElementName=Root, Path=Command}"
                               CommandParameter="{x:Static colonisationVM:ColonisationBuild.BarInstallation}" />
                 </MenuItem>
-                <MenuItem Header="Surface Outpost">
+                <MenuItem Header="Surface Outpost"
+                          Style="{DynamicResource EliteMenuStyle}">
                     <Separator>
                         <Separator.Template>
                             <ControlTemplate TargetType="Separator">
@@ -171,6 +194,7 @@
                         </Separator.Template>
                     </Separator>
                     <MenuItem Header="Outpost"
+                              Style="{DynamicResource EliteMenuStyle}"
                               Command="{Binding ElementName=Root, Path=Command}"
                               CommandParameter="{x:Static colonisationVM:ColonisationBuild.SurfaceOutpostT1}" />
                     <Separator>
@@ -185,10 +209,12 @@
                         </Separator.Template>
                     </Separator>
                     <MenuItem Header="Outpost"
+                              Style="{DynamicResource EliteMenuStyle}"
                               Command="{Binding ElementName=Root, Path=Command}"
                               CommandParameter="{x:Static colonisationVM:ColonisationBuild.SurfaceOutpostT3}" />
                 </MenuItem>
-                <MenuItem Header="Settlement">
+                <MenuItem Header="Settlement"
+                          Style="{DynamicResource EliteMenuStyle}">
                     <Separator>
                         <Separator.Template>
                             <ControlTemplate TargetType="Separator">
@@ -200,7 +226,8 @@
                             </ControlTemplate>
                         </Separator.Template>
                     </Separator>
-                    <MenuItem Header="Agriculture">
+                    <MenuItem Header="Agriculture"
+                              Style="{DynamicResource EliteMenuStyle}">
                         <Separator>
                             <Separator.Template>
                                 <ControlTemplate TargetType="Separator">
@@ -213,9 +240,11 @@
                             </Separator.Template>
                         </Separator>
                         <MenuItem Header="Small"
+                                  Style="{DynamicResource EliteMenuStyle}"
                                   Command="{Binding ElementName=Root, Path=Command}"
                                   CommandParameter="{x:Static colonisationVM:ColonisationBuild.SettlementAgriSmall}" />
                         <MenuItem Header="Medium"
+                                  Style="{DynamicResource EliteMenuStyle}"
                                   Command="{Binding ElementName=Root, Path=Command}"
                                   CommandParameter="{x:Static colonisationVM:ColonisationBuild.SettlementAgriMedium}" />
                         <Separator>
@@ -230,10 +259,12 @@
                             </Separator.Template>
                         </Separator>
                         <MenuItem Header="Large"
+                                  Style="{DynamicResource EliteMenuStyle}"
                                   Command="{Binding ElementName=Root, Path=Command}"
                                   CommandParameter="{x:Static colonisationVM:ColonisationBuild.SettlementAgriLarge}" />
                     </MenuItem>
-                    <MenuItem Header="Extraction">
+                    <MenuItem Header="Extraction"
+                              Style="{DynamicResource EliteMenuStyle}">
                         <Separator>
                             <Separator.Template>
                                 <ControlTemplate TargetType="Separator">
@@ -246,9 +277,11 @@
                             </Separator.Template>
                         </Separator>
                         <MenuItem Header="Small"
+                                  Style="{DynamicResource EliteMenuStyle}"
                                   Command="{Binding ElementName=Root, Path=Command}"
                                   CommandParameter="{x:Static colonisationVM:ColonisationBuild.SettlementExtractionSmall}" />
                         <MenuItem Header="Medium"
+                                  Style="{DynamicResource EliteMenuStyle}"
                                   Command="{Binding ElementName=Root, Path=Command}"
                                   CommandParameter="{x:Static colonisationVM:ColonisationBuild.SettlementExtractionMedium}" />
                         <Separator>
@@ -263,10 +296,12 @@
                             </Separator.Template>
                         </Separator>
                         <MenuItem Header="Large"
+                                  Style="{DynamicResource EliteMenuStyle}"
                                   Command="{Binding ElementName=Root, Path=Command}"
                                   CommandParameter="{x:Static colonisationVM:ColonisationBuild.SettlementExtractionLarge}" />
                     </MenuItem>
-                    <MenuItem Header="Industrial">
+                    <MenuItem Header="Industrial"
+                              Style="{DynamicResource EliteMenuStyle}">
                         <Separator>
                             <Separator.Template>
                                 <ControlTemplate TargetType="Separator">
@@ -279,6 +314,7 @@
                             </Separator.Template>
                         </Separator>
                         <MenuItem Header="Small"
+                                  Style="{DynamicResource EliteMenuStyle}"
                                   Command="{Binding ElementName=Root, Path=Command}"
                                   CommandParameter="{x:Static colonisationVM:ColonisationBuild.SettlementIndustrialSmall}" />
                         <MenuItem Header="Medium"
@@ -296,10 +332,12 @@
                             </Separator.Template>
                         </Separator>
                         <MenuItem Header="Large"
+                                  Style="{DynamicResource EliteMenuStyle}"
                                   Command="{Binding ElementName=Root, Path=Command}"
                                   CommandParameter="{x:Static colonisationVM:ColonisationBuild.SettlementIndustrialLarge}" />
                     </MenuItem>
-                    <MenuItem Header="Military">
+                    <MenuItem Header="Military"
+                              Style="{DynamicResource EliteMenuStyle}">
                         <Separator>
                             <Separator.Template>
                                 <ControlTemplate TargetType="Separator">
@@ -312,9 +350,11 @@
                             </Separator.Template>
                         </Separator>
                         <MenuItem Header="Small"
+                                  Style="{DynamicResource EliteMenuStyle}"
                                   Command="{Binding ElementName=Root, Path=Command}"
                                   CommandParameter="{x:Static colonisationVM:ColonisationBuild.SettlementMiltarySmall}" />
                         <MenuItem Header="Medium"
+                                  Style="{DynamicResource EliteMenuStyle}"
                                   Command="{Binding ElementName=Root, Path=Command}"
                                   CommandParameter="{x:Static colonisationVM:ColonisationBuild.SettlementMiltaryMedium}" />
                         <Separator>
@@ -329,6 +369,7 @@
                             </Separator.Template>
                         </Separator>
                         <MenuItem Header="Large"
+                                  Style="{DynamicResource EliteMenuStyle}"
                                   Command="{Binding ElementName=Root, Path=Command}"
                                   CommandParameter="{x:Static colonisationVM:ColonisationBuild.SettlementMiltaryLarge}" />
                     </MenuItem>
@@ -343,30 +384,39 @@
                             </ControlTemplate>
                         </Separator.Template>
                     </Separator>
-                    <MenuItem Header="Research Bio">
+                    <MenuItem Header="Research Bio"
+                              Style="{DynamicResource EliteMenuStyle}">
                         <MenuItem Header="Small"
+                                  Style="{DynamicResource EliteMenuStyle}"
                                   Command="{Binding ElementName=Root, Path=Command}"
                                   CommandParameter="{x:Static colonisationVM:ColonisationBuild.SettlementResearchBioSmall}" />
                         <MenuItem Header="Medium"
+                                  Style="{DynamicResource EliteMenuStyle}"
                                   Command="{Binding ElementName=Root, Path=Command}"
                                   CommandParameter="{x:Static colonisationVM:ColonisationBuild.SettlementResearchBioMedium}" />
                         <MenuItem Header="Large"
+                                  Style="{DynamicResource EliteMenuStyle}"
                                   Command="{Binding ElementName=Root, Path=Command}"
                                   CommandParameter="{x:Static colonisationVM:ColonisationBuild.SettlementResearchBioLarge}" />
                     </MenuItem>
-                    <MenuItem Header="Tourism">
+                    <MenuItem Header="Tourism"
+                              Style="{DynamicResource EliteMenuStyle}">
                         <MenuItem Header="Small"
+                                  Style="{DynamicResource EliteMenuStyle}"
                                   Command="{Binding ElementName=Root, Path=Command}"
                                   CommandParameter="{x:Static colonisationVM:ColonisationBuild.SettlementTourismSmall}" />
                         <MenuItem Header="Medium"
+                                  Style="{DynamicResource EliteMenuStyle}"
                                   Command="{Binding ElementName=Root, Path=Command}"
                                   CommandParameter="{x:Static colonisationVM:ColonisationBuild.SettlementTourismMedium}" />
                         <MenuItem Header="Large"
+                                  Style="{DynamicResource EliteMenuStyle}"
                                   Command="{Binding ElementName=Root, Path=Command}"
                                   CommandParameter="{x:Static colonisationVM:ColonisationBuild.SettlementTourismLarge}" />
                     </MenuItem>
                 </MenuItem>
-                <MenuItem Header="Hub">
+                <MenuItem Header="Hub"
+                          Style="{DynamicResource EliteMenuStyle}">
                     <Separator>
                         <Separator.Template>
                             <ControlTemplate TargetType="Separator">
@@ -379,30 +429,39 @@
                         </Separator.Template>
                     </Separator>
                     <MenuItem Header="Extraction"
+                              Style="{DynamicResource EliteMenuStyle}"
                               Command="{Binding ElementName=Root, Path=Command}"
                               CommandParameter="{x:Static colonisationVM:ColonisationBuild.HubExtraction}" />
                     <MenuItem Header="Civilian"
+                              Style="{DynamicResource EliteMenuStyle}"
                               Command="{Binding ElementName=Root, Path=Command}"
                               CommandParameter="{x:Static colonisationVM:ColonisationBuild.HubCivilian}" />
                     <MenuItem Header="Exploration"
+                              Style="{DynamicResource EliteMenuStyle}"
                               Command="{Binding ElementName=Root, Path=Command}"
                               CommandParameter="{x:Static colonisationVM:ColonisationBuild.HubExploration}" />
                     <MenuItem Header="Outpost"
+                              Style="{DynamicResource EliteMenuStyle}"
                               Command="{Binding ElementName=Root, Path=Command}"
                               CommandParameter="{x:Static colonisationVM:ColonisationBuild.HubOutpost}" />
                     <MenuItem Header="Scientific"
+                              Style="{DynamicResource EliteMenuStyle}"
                               Command="{Binding ElementName=Root, Path=Command}"
                               CommandParameter="{x:Static colonisationVM:ColonisationBuild.HubScientific}" />
                     <MenuItem Header="Military"
+                              Style="{DynamicResource EliteMenuStyle}"
                               Command="{Binding ElementName=Root, Path=Command}"
                               CommandParameter="{x:Static colonisationVM:ColonisationBuild.HubMilitary}" />
                     <MenuItem Header="Refinery"
+                              Style="{DynamicResource EliteMenuStyle}"
                               Command="{Binding ElementName=Root, Path=Command}"
                               CommandParameter="{x:Static colonisationVM:ColonisationBuild.HubRefinery}" />
                     <MenuItem Header="High Tech"
+                              Style="{DynamicResource EliteMenuStyle}"
                               Command="{Binding ElementName=Root, Path=Command}"
                               CommandParameter="{x:Static colonisationVM:ColonisationBuild.HubHighTech}" />
                     <MenuItem Header="Industrial"
+                              Style="{DynamicResource EliteMenuStyle}"
                               Command="{Binding ElementName=Root, Path=Command}"
                               CommandParameter="{x:Static colonisationVM:ColonisationBuild.HubIndustrial}" />
                 </MenuItem>

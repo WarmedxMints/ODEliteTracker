@@ -270,6 +270,7 @@ namespace ODEliteTracker.Controls.Colonisation
                 return;
 
             SelectSystem(system, vm);
+            SelectSystemPopup.ClosePopup();
         }
 
         private void SelectLastBuilt(object sender, RoutedEventArgs e)
@@ -283,6 +284,7 @@ namespace ODEliteTracker.Controls.Colonisation
                 return;
 
             SelectSystem(system, vm);
+            SelectSystemPopup.ClosePopup();
         }
 
         private void SelectLastBuiltHub(object sender, RoutedEventArgs e)
@@ -296,6 +298,7 @@ namespace ODEliteTracker.Controls.Colonisation
                 return;
 
             SelectSystem(system, vm);
+            SelectSystemPopup.ClosePopup();
         }
 
         private void SelectNextSystemWithNotes(object sender, RoutedEventArgs e)
@@ -343,6 +346,7 @@ namespace ODEliteTracker.Controls.Colonisation
                 return;
 
             SelectSystem(system, vm);
+            SelectSystemPopup.ClosePopup();
         }
 
         private void SelectLastSystem(object sender, RoutedEventArgs e)
@@ -356,6 +360,7 @@ namespace ODEliteTracker.Controls.Colonisation
                 return;
 
             SelectSystem(system, vm);
+            SelectSystemPopup.ClosePopup();
         }
 
         private void SelectSystem(ColonisationRouteSystemVM system, ColonisationRoutePlannerViewModel vm)

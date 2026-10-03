@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using ODEliteTracker.Models;
 using ODEliteTracker.Models.Colonisation;
+using ODEliteTracker.Models.Colonisation.Builds;
 using ODEliteTracker.Models.FleetCarrier;
 using ODEliteTracker.Models.Settings;
 using ODEliteTracker.Stores;
@@ -13,13 +14,13 @@ namespace ODEliteTracker.ViewModels.PopOuts
 {
     public sealed class ColonisationPopOut : PopOutViewModel
     {
-        public ColonisationPopOut(ColonisationStore store, SharedDataStore sharedData, FleetCarrierDataStore fcDataStore, SettingsStore settings)
+        public ColonisationPopOut(ColonisationStore store, SharedDataStore sharedData, FleetCarrierDataStore fcDataStore, SettingsStore settings, BuildStatsHelper buildStatsHelper)
         {
             this.colonisationStore = store;
             this.sharedData = sharedData;
             this.fcDataStore = fcDataStore;
             this.settings = settings;
-
+            this.buildStatsHelper = buildStatsHelper;
             this.colonisationStore.StoreLive += OnStoreLive;
             this.colonisationStore.DepotUpdated += OnDepotUpdated;
             this.colonisationStore.NewDepot += OnNewDepot;
@@ -65,7 +66,7 @@ namespace ODEliteTracker.ViewModels.PopOuts
         private readonly SharedDataStore sharedData;
         private readonly FleetCarrierDataStore fcDataStore;
         private readonly SettingsStore settings;
-
+        private readonly BuildStatsHelper buildStatsHelper;
         public override string Name => $"Colonisation Overlay";
 
         public override bool IsLive => colonisationStore.IsLive;
@@ -144,7 +145,7 @@ namespace ODEliteTracker.ViewModels.PopOuts
                         if (depot.Inactive || depot.Complete)
                             continue;
 
-                        var newDepot = new ConstructionDepotVM(depot);
+                        var newDepot = new ConstructionDepotVM(depot, buildStatsHelper);
                         Depots.AddItem(newDepot);
                     }
                 }
@@ -163,7 +164,7 @@ namespace ODEliteTracker.ViewModels.PopOuts
             if (known == null)
                 return;
 
-            var newDepot = new ConstructionDepotVM(e);
+            var newDepot = new ConstructionDepotVM(e, buildStatsHelper);
             Depots.AddItem(newDepot);
             SelectedDepot = newDepot;
             OnPropertyChanged(nameof(Depots));

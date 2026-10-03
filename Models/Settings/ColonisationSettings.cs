@@ -1,9 +1,21 @@
 ﻿using ODEliteTracker.Models.Galaxy;
 using ODEliteTracker.ViewModels.ModelViews.Colonisation;
+using System.ComponentModel;
 using System.Windows;
 
 namespace ODEliteTracker.Models.Settings
 {
+    public enum ColonisationRouteClipboardBehavior
+    {
+        [Description("Do Nothing")]
+        DoNothing,
+        [Description("Copy Next If Not Built")]
+        CopyIfNotBuilt,
+        [Description("Copy Next System")]
+        CopyNext,
+        [Description("Copy Previous System")]
+        CopyPrevious,
+    }
     public sealed class ColonisationSettings
     {
         public event EventHandler<CommoditySorting>? CommoditySortingChanged;
@@ -67,8 +79,9 @@ namespace ODEliteTracker.Models.Settings
         public Position? LineStart { get => lineStart; set { lineStart = value; StraightLineStarPosChanged?.Invoke(this, EventArgs.Empty); } }
         public Position? LineEnd { get => lineEnd; set { lineEnd = value; StraightLineEndPosChanged?.Invoke(this, EventArgs.Empty); } }
         public ulong SelectedPlannerAddress { get; set; }
-        public bool CheckSpansh { get; set; } = true;
-        public bool FollowRoute { get; set; }
+        public bool CheckSpansh { get; set; }
+        public bool AutoSelect { get; set; }
+        public ColonisationRouteClipboardBehavior RouteClipboardBehavior { get; set; } = ColonisationRouteClipboardBehavior.DoNothing;
         #endregion
     }
 }

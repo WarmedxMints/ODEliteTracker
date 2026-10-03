@@ -1,8 +1,10 @@
-﻿namespace ODEliteTracker.Models.Colonisation.Builds
+﻿using ODEliteTracker.ViewModels.ModelViews.Colonisation;
+
+namespace ODEliteTracker.Models.Colonisation.Builds
 {
-    internal static class Hub
+    public sealed class ExtractionHub : BuildStats
     {
-        internal static readonly Dictionary<string, int> Extraction = new()
+        public ExtractionHub() : base(ColonisationBuild.HubExtraction, new()
         {
             { "$copper_name;", 84 },
             { "$aluminium_name;", 2352 },
@@ -24,9 +26,13 @@
             { "$emergencypowercells_name;", 42 },
             { "$survivalequipment_name;", 26 },
             { "$steel_name;", 3359 }
-        };
+        })
+        { }
+    }
 
-        internal static readonly Dictionary<string, int> Civilian = new()
+    public sealed class CivilianHub : BuildStats
+    {
+        public CivilianHub() : base(ColonisationBuild.HubCivilian, new()
         {
             { "$copper_name;", 68 },
             { "$aluminium_name;", 2433 },
@@ -48,9 +54,14 @@
             { "$emergencypowercells_name;", 42 },
             { "$survivalequipment_name;", 38 },
             { "$steel_name;", 3775 }
-        };
+        })
+        { }
+    }
 
-        internal static readonly Dictionary<string, int> Exploration = new()
+
+    public sealed class ExplorationHub : BuildStats
+    {
+        public ExplorationHub() : base(ColonisationBuild.HubExploration, new()
         {
             { "$copper_name;", 178 },
             { "$aluminium_name;", 2483 },
@@ -69,9 +80,13 @@
             { "$emergencypowercells_name;", 45 },
             { "$survivalequipment_name;", 18 },
             { "$steel_name;", 3547 }
-        };
+        })
+        { }
+    }
 
-        internal static readonly Dictionary<string, int> Outpost = new()
+    public sealed class OutpostHub : BuildStats
+    {
+        public OutpostHub() : base(ColonisationBuild.HubOutpost, new()
         {
             { "$copper_name;", 78 },
             { "$aluminium_name;", 2797 },
@@ -88,9 +103,13 @@
             { "$emergencypowercells_name;", 49 },
             { "$survivalequipment_name;", 29 },
             { "$steel_name;", 4051 }
-        };
+        })
+        { }
+    }
 
-        internal static readonly Dictionary<string, int> Scientific = new()
+    public sealed class ScientificHub : BuildStats
+    {
+        public ScientificHub() : base(ColonisationBuild.HubScientific, new()
         {
             { "$copper_name;", 112 },
             { "$aluminium_name;", 2581 },
@@ -115,9 +134,14 @@
             { "$medicaldiagnosticequipment_name;", 161 },
             { "$survivalequipment_name;", 27 },
             { "$steel_name;", 3560 }
-        };
+        })
+        { }
 
-        internal static readonly Dictionary<string, int> Military = new()
+    }
+
+    public sealed class MilitaryHub : BuildStats
+    {
+        public MilitaryHub() : base(ColonisationBuild.HubMilitary, new()
         {
             { "$copper_name;", 105 },
             { "$aluminium_name;", 2414 },
@@ -141,9 +165,13 @@
             { "$militarygradefabrics_name;", 42 },
             { "$survivalequipment_name;", 50 },
             { "$steel_name;", 3746 }
-        };
+        })
+        { }
+    }
 
-        internal static readonly Dictionary<string, int> Refinery = new()
+    public sealed class RefineryHub : BuildStats
+    {
+        public RefineryHub() : base(ColonisationBuild.HubRefinery, new()
         {
             { "$copper_name;", 93 },
             { "$aluminium_name;", 2697 },
@@ -165,9 +193,13 @@
             { "$emergencypowercells_name;", 47 },
             { "$survivalequipment_name;", 28 },
             { "$steel_name;", 3720 }
-        };
+        })
+        { }
+    }
 
-        internal static readonly Dictionary<string, int> HighTech = new()
+    public sealed class HighTechHub : BuildStats
+    {
+        public HighTechHub() : base(ColonisationBuild.HubHighTech, new()
         {
             { "$copper_name;", 113 },
             { "$aluminium_name;", 2512 },
@@ -188,9 +220,13 @@
             { "$microcontrollers_name;", 90 },
             { "$survivalequipment_name;", 27 },
             { "$steel_name;", 3768 }
-        };
+        })
+        { }
+    }
 
-        internal static readonly Dictionary<string, int> Industrial = new()
+    public sealed class IndustrialHub : BuildStats
+    {
+        public IndustrialHub() : base(ColonisationBuild.HubIndustrial, new()
         {
             { "$copper_name;", 83 },
             { "$aluminium_name;", 2407 },
@@ -216,6 +252,7 @@
             { "$microcontrollers_name;", 50 },
             { "$survivalequipment_name;", 25 },
             { "$steel_name;", 3320 }
-        };
+        })
+        { }
     }
 }

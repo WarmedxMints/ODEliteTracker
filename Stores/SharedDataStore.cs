@@ -1,5 +1,6 @@
 ﻿using EliteJournalReader;
 using EliteJournalReader.Events;
+using NetTopologySuite.Geometries;
 using Newtonsoft.Json.Linq;
 using ODEliteTracker.Database;
 using ODEliteTracker.Helpers;
@@ -61,6 +62,7 @@ namespace ODEliteTracker.Stores
         {
             get => new()
             {
+                { JournalTypeEnum.LoadGame, true  },
                 { JournalTypeEnum.ApproachBody, true},
                 { JournalTypeEnum.Bounty, true },
                 { JournalTypeEnum.Cargo, false },
@@ -154,6 +156,13 @@ namespace ODEliteTracker.Stores
 
             switch (evt.EventData)
             {
+                case LoadGameEvent.LoadGameEventArgs loadGame:
+                    CurrentBody = null;
+
+                    UpdateCurrentSystem(null);
+                    UpdateCurrentBody_Station(string.Empty);
+                    CurrentMarketID = 0;
+                    break;
                 case ApproachBodyEvent.ApproachBodyEventArgs approachBody:
                     CurrentBody = CurrentSystem?.Bodies.FirstOrDefault(x => x.Key == approachBody.BodyID).Value;
 
@@ -163,7 +172,6 @@ namespace ODEliteTracker.Stores
                     break;
 
                 case BountyEvent.BountyEventArgs bounty:
-
                     if (bounty.Rewards is null || bounty.Rewards.Count == 0)
                         break;
 
@@ -250,14 +258,7 @@ namespace ODEliteTracker.Stores
 
                     if (docked.StationType == "FleetCarrier" && carrierNames.TryGetValue(stationName, out var name))
                     {
-                        stationName = name;
-
-                        if (carrierNamesByMarketID.ContainsKey(docked.MarketID))
-                        {
-                            carrierNamesByMarketID[docked.MarketID] = name;
-                        }
-
-                        carrierNamesByMarketID.TryAdd(docked.MarketID, stationName);
+                        stationName = CheckForCarrierNames(docked.StationType, docked.StationName, docked.MarketID);
                     }
 
                     UpdateCurrentBody_Station(stationName);
@@ -370,7 +371,7 @@ namespace ODEliteTracker.Stores
                     }
                     if (string.IsNullOrEmpty(location.StationName) == false)
                     {
-                        bodyStation = location.StationName;
+                        bodyStation = CheckForCarrierNames(location.StationType, location.StationName, location.MarketID);
                     }
                     UpdateCurrentBody_Station(bodyStation);
                     AddFactions(location.Factions);
@@ -600,12 +601,27 @@ namespace ODEliteTracker.Stores
                     break;
 
                 case FSSDiscoveryScanEvent.FSSDiscoveryScanEventArgs discoveryScan:
-                    if(systems.TryGetValue(discoveryScan.SystemAddress, out var knownSystem))
+                    if (systems.TryGetValue(discoveryScan.SystemAddress, out var knownSystem))
                     {
                         knownSystem.BodyCount = discoveryScan.BodyCount;
                     }
                     break;
             }
+        }
+
+        private string CheckForCarrierNames(string stationType, string stationName, ulong marketId)
+        {
+            if (stationType == "FleetCarrier" && carrierNames.TryGetValue(stationName, out var carrierName))
+            {
+                if (carrierNamesByMarketID.ContainsKey(marketId))
+                {
+                    carrierNamesByMarketID[marketId] = carrierName;
+                    return carrierName;
+                }
+
+                carrierNamesByMarketID.TryAdd(marketId, stationName);
+            }
+            return stationName;
         }
 
         #region Watched Markets
@@ -637,15 +653,15 @@ namespace ODEliteTracker.Stores
             notificationService.ShowBasicNotification(args);
         }
 
-        private void UpdateCurrentSystem(StarSystem starSystem)
+        private void UpdateCurrentSystem(StarSystem? starSystem)
         {
-            if (CurrentSystem != null && starSystem.Address == CurrentSystem.Address && !CurrentSystem.DataChanged(starSystem))
+            if (CurrentSystem != null && starSystem != null && starSystem.Address == CurrentSystem.Address && !CurrentSystem.DataChanged(starSystem))
             {
                 //Nothing to do here
                 return;
             }
 
-            CurrentSystem = AddSystem(starSystem);
+            CurrentSystem = starSystem == null ? null : AddSystem(starSystem);
 
             if (IsLive == false)
             {
@@ -760,7 +776,7 @@ namespace ODEliteTracker.Stores
                 MarketEvent?.Invoke(this, CurrentMarket);
             }
 
-            var watchedMarkets = databaseProvider.GetWatchedMarkets();
+            var watchedMarkets = databaseProvider.GetWatchedMarkets(currentCommanderId);
 
             if (watchedMarkets != null)
             {
@@ -777,9 +793,11 @@ namespace ODEliteTracker.Stores
 
         public void Save()
         {
-            databaseProvider.UpdateWatchedMarkets(WatchedMarkets);
-            if (currentCommanderId > 0)
-                databaseProvider.UpdateColonisationWishList(currentCommanderId, colonisationWishList);
+            if (currentCommanderId <= 0)
+                return;
+
+            databaseProvider.UpdateWatchedMarkets(WatchedMarkets, currentCommanderId);
+            databaseProvider.UpdateColonisationWishList(currentCommanderId, colonisationWishList);
         }
 
         public Tuple<IEnumerable<MaterialTrader>, IEnumerable<MaterialTrader>, IEnumerable<MaterialTrader>> GetNearestTraders()

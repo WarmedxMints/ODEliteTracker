@@ -253,7 +253,9 @@ namespace ODEliteTracker.Migrations
             modelBuilder.Entity("ODEliteTracker.Database.DTOs.WatchedMarketDTO", b =>
                 {
                     b.Property<ulong>("MarketID")
-                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CommanderID")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("CommoditiesJson")
@@ -264,7 +266,7 @@ namespace ODEliteTracker.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.HasKey("MarketID");
+                    b.HasKey("MarketID", "CommanderID");
 
                     b.ToTable("WatchedMarkets");
                 });

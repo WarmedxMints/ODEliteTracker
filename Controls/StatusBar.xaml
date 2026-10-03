@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:ODEliteTracker.Controls"
              xmlns:viewmodels="clr-namespace:ODEliteTracker.ViewModels"
+             xmlns:models="clr-namespace:ODEliteTracker.Models"
              mc:Ignorable="d"
              FontSize="19"
              Foreground="{DynamicResource PrimaryForeground}"
@@ -28,8 +29,26 @@
                 Margin="15,0"
                 Grid.Column="0"
                 HorizontalAlignment="Left"
-                VerticalAlignment="Center" />
-
+                VerticalAlignment="Center">
+            <Button.ContextMenu>
+                <ContextMenu HasDropShadow="False"
+                             TextBlock.FontSize="16"
+                             Placement="Top">
+                    <MenuItem Header="Open On Inara"
+                              Command="{Binding OpenSystemFromEnumCommand}"
+                              CommandParameter="{x:Static models:SystemWebSite.Inara}"
+                              Style="{DynamicResource EliteContextMenuItemStyle}" />
+                    <MenuItem Header="Open On Spansh"
+                              Command="{Binding OpenSystemFromEnumCommand}"
+                              CommandParameter="{x:Static models:SystemWebSite.Spansh}"
+                              Style="{DynamicResource EliteContextMenuItemStyle}" />
+                    <MenuItem Header="Copy To Clipboard"
+                              Command="{Binding CopyToClipboardCommand}"
+                              CommandParameter="{Binding CurrentSystemName}"
+                              Style="{DynamicResource EliteContextMenuItemStyle}" />
+                </ContextMenu>
+            </Button.ContextMenu>
+        </Button>
         <Button Content="{Binding CurrentBody_Station}"
                 Style="{DynamicResource StatusBarBtn}"
                 IsEnabled="{Binding UiEnabled, Mode=OneWay}"
@@ -37,7 +56,26 @@
                 Margin="5,0"
                 Grid.Column="1"
                 HorizontalAlignment="Center"
-                VerticalAlignment="Center" />
+                VerticalAlignment="Center">
+            <Button.ContextMenu>
+                <ContextMenu HasDropShadow="False"
+                             TextBlock.FontSize="16"
+                             Placement="Top">
+                    <MenuItem Header="Open On Inara"
+                              Command="{Binding OpenStationFromEnumCommand}"
+                              CommandParameter="{x:Static models:SystemWebSite.Inara}"
+                              Style="{DynamicResource EliteContextMenuItemStyle}" />
+                    <MenuItem Header="Open On Spansh"
+                              Command="{Binding OpenStationFromEnumCommand}"
+                              CommandParameter="{x:Static models:SystemWebSite.Spansh}"
+                              Style="{DynamicResource EliteContextMenuItemStyle}" />
+                    <MenuItem Header="Copy To Clipboard"
+                              Command="{Binding CopyToClipboardCommand}"
+                              CommandParameter="{Binding CurrentBody_Station}"
+                              Style="{DynamicResource EliteContextMenuItemStyle}" />
+                </ContextMenu>
+            </Button.ContextMenu>
+        </Button>
 
         <Button Content="{Binding CurrentShipName}"
                 Style="{DynamicResource StatusBarBtn}"
@@ -46,7 +84,26 @@
                 Margin="5,0"
                 Grid.Column="2"
                 HorizontalAlignment="Center"
-                VerticalAlignment="Center" />
+                VerticalAlignment="Center">
+            <Button.ContextMenu>
+                <ContextMenu HasDropShadow="False"
+                             TextBlock.FontSize="16"
+                             Placement="Top">
+                    <MenuItem Header="Open On EDSY"
+                              Command="{Binding OpenShipyardFromEnumCommand}"
+                              CommandParameter="{x:Static models:ShipyardWebSite.EDSY}"
+                              Style="{DynamicResource EliteContextMenuItemStyle}" />
+                    <MenuItem Header="Open On Coriolis"
+                              Command="{Binding OpenShipyardFromEnumCommand}"
+                              CommandParameter="{x:Static models:ShipyardWebSite.Coriolis}"
+                              Style="{DynamicResource EliteContextMenuItemStyle}" />
+                    <MenuItem Header="Copy To Clipboard"
+                              Command="{Binding CopyToClipboardCommand}"
+                              CommandParameter="{Binding CurrentShipName}"
+                              Style="{DynamicResource EliteContextMenuItemStyle}" />
+                </ContextMenu>
+            </Button.ContextMenu>
+        </Button>
 
         <StackPanel  Margin="5,5"
                      Grid.Column="3"

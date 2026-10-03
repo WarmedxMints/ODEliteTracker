@@ -1,0 +1,26 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Style TargetType="{x:Type ContextMenu}">
+        <Setter Property="Background"
+                Value="{DynamicResource ViewBackground}" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource PrimaryForeground}" />
+        <Setter Property="BorderBrush"
+                Value="{DynamicResource EliteBtnBG}" />
+        <Setter Property="BorderThickness"
+                Value="2" />
+        <Setter Property="FontSize"
+                Value="18" />
+        <Setter Property="FontFamily"
+                Value="{DynamicResource Eurostile}" />
+        <Setter Property="ItemsPanel"
+                Value="{DynamicResource MenuItemPanelTemplate}" />
+        <Setter Property="OverridesDefaultStyle"
+                Value="False" />
+    </Style>
+
+    <ItemsPanelTemplate x:Key="MenuItemPanelTemplate">
+        <StackPanel Background="{DynamicResource CardBackground}"
+                    Margin="-1,0,0,0" />
+    </ItemsPanelTemplate>
+</ResourceDictionary>

@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ODEliteTracker.ViewModels.ModelViews.Colonisation;
 
 namespace ODEliteTracker.Models.Colonisation.Builds
 {
-    internal static class SpaceInstalltion_Tier2
+    public sealed class MilitaryInstallation : BuildStats
     {
-        internal static readonly Dictionary<string, int> Military = new()
+        public MilitaryInstallation() : base(ColonisationBuild.MilitaryInstallation, new()
         {
             { "$water_name;", 238 },
             { "$titanium_name;", 2373 },
@@ -31,9 +27,13 @@ namespace ODEliteTracker.Models.Colonisation.Builds
             { "$microcontrollers_name;", 18 },
             { "$militarygradefabrics_name;", 36 },
             { "$steel_name;", 2966 }
-        };
+        })
+        { }
+    }
 
-        internal static readonly Dictionary<string, int> SecurityStation = new()
+    public sealed class SecurityStationInstalltion : BuildStats
+    {
+        public SecurityStationInstalltion() : base(ColonisationBuild.SecurityStation, new()
         {
             { "$water_name;", 31 },
             { "$titanium_name;", 2309 },
@@ -53,9 +53,13 @@ namespace ODEliteTracker.Models.Colonisation.Builds
             { "$insulatingmembrane_name;", 183 },
             { "$militarygradefabrics_name;", 19 },
             { "$steel_name;", 3645 }
-        };
+        })
+        { }
+    }
 
-        internal static readonly Dictionary<string, int> Government = new()
+    public sealed class GovernmentInstallation : BuildStats
+    {
+        public GovernmentInstallation() : base(ColonisationBuild.GovernmentInstallation, new()
         {
             { "$water_name;", 154 },
             { "$titanium_name;", 2341 },
@@ -72,9 +76,13 @@ namespace ODEliteTracker.Models.Colonisation.Builds
             { "$liquidoxygen_name;", 1479 },
             { "$insulatingmembrane_name;", 247 },
             { "$steel_name;", 3080 }
-        };
+        })
+        { }
+    }
 
-        internal static readonly Dictionary<string, int> Medical = new()
+    public sealed class MedicalInstallation : BuildStats
+    {
+        public MedicalInstallation() : base(ColonisationBuild.MedicalInstallation, new()
         {
             { "$water_name;", 278 },
             { "$titanium_name;", 2282 },
@@ -94,9 +102,13 @@ namespace ODEliteTracker.Models.Colonisation.Builds
             { "$insulatingmembrane_name;", 309 },
             { "$medicaldiagnosticequipment_name;", 99 },
             { "$steel_name;", 3084 }
-        };
+        })
+        { }
+    }
 
-        internal static readonly Dictionary<string, int> ResearchStation = new()
+    public sealed class ResearchStationInstallation : BuildStats
+    {
+        public ResearchStationInstallation() : base(ColonisationBuild.ResearchStation, new()
         {
             { "$water_name;", 157 },
             { "$titanium_name;", 2383 },
@@ -121,9 +133,13 @@ namespace ODEliteTracker.Models.Colonisation.Builds
             { "$microcontrollers_name;", 13 },
             { "$medicaldiagnosticequipment_name;", 51 },
             { "$steel_name;", 3136 }
-        };
+        })
+        { }
+    }
 
-        internal static readonly Dictionary<string, int> Tourist = new()
+    public sealed class TouristInstallation : BuildStats
+    {
+        public TouristInstallation() : base(ColonisationBuild.TouristInstallation, new()
         {
             { "$water_name;", 324 },
             { "$titanium_name;", 1813 },
@@ -145,9 +161,13 @@ namespace ODEliteTracker.Models.Colonisation.Builds
             { "$liquidoxygen_name;", 1813 },
             { "$insulatingmembrane_name;", 259 },
             { "$steel_name;", 2589 }
-        };
+        })
+        { }
+    }
 
-        internal static readonly Dictionary<string, int> Bar = new()
+    public sealed class BarInstallation : BuildStats
+    {
+        public BarInstallation() : base(ColonisationBuild.BarInstallation, new()
         {
             { "$water_name;", 311 },
             { "$titanium_name;", 1738 },
@@ -169,6 +189,8 @@ namespace ODEliteTracker.Models.Colonisation.Builds
             { "$liquidoxygen_name;", 1738 },
             { "$insulatingmembrane_name;", 249 },
             { "$steel_name;", 2483 }
-        };
+        })
+        { }
     }
 }
+

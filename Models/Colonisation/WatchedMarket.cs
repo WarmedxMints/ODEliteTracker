@@ -12,7 +12,8 @@ namespace ODEliteTracker.Models.Colonisation
         {
             Name = marketInfo.StationName;
             MarketID = marketInfo.MarketID;
-            ItemsForPurchase = [.. marketInfo.Items.Where(x => x.Demand > 0).Select(x => new StationCommodity(x))];
+            UpdatePurchaseOrders(marketInfo);
+            //ItemsForPurchase = [.. marketInfo.Items.Where(x => x.Demand > 0).Select(x => new StationCommodity(x))];
         }
 
         public WatchedMarket(WatchedMarketDTO watchedMarketDTO)
@@ -22,6 +23,15 @@ namespace ODEliteTracker.Models.Colonisation
             try
             {
                 ItemsForPurchase = Json.DeserialiseJsonFromString<List<StationCommodity>>(watchedMarketDTO.CommoditiesJson) ?? [];
+
+                if (ItemsForPurchase.FirstOrDefault(x => x.Name == "Total") != null)
+                    return;
+                var total = ItemsForPurchase.Sum(x => x.Demand);
+
+                if (total <= 0)
+                    return;
+
+                ItemsForPurchase.Add(StationCommodity.AddTotal(total));
             }
             catch
             {
@@ -38,7 +48,7 @@ namespace ODEliteTracker.Models.Colonisation
 
         public string Name { get; set; }
         public ulong MarketID { get; set; }
-        public List<StationCommodity> ItemsForPurchase { get; set; }
+        public List<StationCommodity> ItemsForPurchase { get; set; } = [];
 
         internal void UpdatePurchaseOrders(MarketInfo market)
         {
@@ -51,6 +61,13 @@ namespace ODEliteTracker.Models.Colonisation
                     ItemsForPurchase.Add(new StationCommodity(item));
                 }
             }
+
+            var total = ItemsForPurchase.Sum(x => x.Demand);
+
+            if (total <= 0)
+                return;
+
+            ItemsForPurchase.Add(StationCommodity.AddTotal(total));
         }
     }
 }

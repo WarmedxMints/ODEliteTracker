@@ -1,4 +1,5 @@
 ﻿using ODEliteTracker.Models.Colonisation;
+using ODEliteTracker.Models.Colonisation.Builds;
 using ODEliteTracker.Models.Galaxy;
 using ODEliteTracker.Models.Market;
 using ODMVVM.Helpers;
@@ -7,9 +8,11 @@ using System.Collections.ObjectModel;
 
 namespace ODEliteTracker.ViewModels.ModelViews.Colonisation
 {
-    public sealed class ConstructionDepotVM(ConstructionDepot depot) : ODObservableObject
+    public sealed class ConstructionDepotVM(ConstructionDepot depot, BuildStatsHelper buildStats) : ODObservableObject
     {
         public readonly StarSystem starSystem = depot.StarSystem;
+        private readonly ConstructionDepot depot = depot;
+
         public bool Inactive { get; set; } = depot.Inactive;
         public ulong SystemAddress { get; set; } = depot.SystemAddress;
         public string SystemName { get; set; } = depot.SystemName.ToUpper();
@@ -28,6 +31,19 @@ namespace ODEliteTracker.ViewModels.ModelViews.Colonisation
             {
                 return
                     $"{Resources.Sum(x => x.RemainingCount):N0} t";
+            }
+        }
+        private ColonisationBuild buildType = ColonisationBuild.Unknown;
+        public string BuildType
+        {
+            get
+            {
+                if (buildType == ColonisationBuild.Unknown)
+                {
+                    buildType = buildStats.GetBuildType(depot.Resources);
+                }
+
+                return buildType.GetEnumDescription();
             }
         }
         public ObservableCollection<ConstructionResourceVM> Resources { get; set; } 

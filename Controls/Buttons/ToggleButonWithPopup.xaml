@@ -25,6 +25,7 @@
         <Popup IsOpen="{Binding IsChecked, ElementName=ToggleBtn}"
                Closed="Popup_Closed"
                ButtonBase.Click="Popup_Click"
+               x:Name="Popup"
                PlacementTarget="{Binding ElementName=ToggleBtn}"
                VerticalOffset="5"
                StaysOpen="False">

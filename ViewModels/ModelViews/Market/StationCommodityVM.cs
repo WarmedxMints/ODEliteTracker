@@ -26,7 +26,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Market
         { 
             get
             {
-                return name_Localised ?? Name;
+                return string.IsNullOrEmpty(name_Localised) ? Name : name_Localised;
             }
         }
         public string Category { get; set; }

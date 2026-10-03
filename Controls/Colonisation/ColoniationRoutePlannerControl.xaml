@@ -9,10 +9,21 @@
              xmlns:popouts="clr-namespace:ODEliteTracker.ViewModels.PopOuts"
              xmlns:busyIndicator="https://github.com/moh3ngolshani/BusyIndicator"
              xmlns:controls="clr-namespace:ODEliteTracker.Controls.Buttons"
+             xmlns:setting="clr-namespace:ODEliteTracker.Models.Settings"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewmodels:ColonisationRoutePlannerViewModel}"
              d:DesignHeight="450"
              d:DesignWidth="1920">
+    <UserControl.Resources>
+        <ObjectDataProvider MethodName="GetValues"
+                            ObjectType="{x:Type sys:Enum}"
+                            x:Key="ColonisationRouteClipboardBehavior">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="setting:ColonisationRouteClipboardBehavior" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </UserControl.Resources>
     <Grid TextBlock.FontSize="18">
         <Grid.RowDefinitions>
             <RowDefinition Height="40" />
@@ -142,6 +153,8 @@
                     Style="{DynamicResource EliteStyleButton}" />
 
             <controls:ToggleButonWithPopup ToggleButtonContent="Select System"
+                                           CloseOnClick="False"
+                                           x:Name="SelectSystemPopup"
                                            Width="130"
                                            Height="30"
                                            Margin="5,0">
@@ -209,9 +222,9 @@
                 </controls:ToggleButonWithPopup.ToggleButtonContent>
                 <controls:ToggleButonWithPopup.PopupContent>
 
-                    <Grid Width="400">
+                    <Grid Width="570">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="80" />
+                            <ColumnDefinition Width="220" />
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
@@ -219,9 +232,9 @@
                             <RowDefinition Height="50" />
                             <RowDefinition Height="50" />
                             <RowDefinition Height="50" />
+                            <RowDefinition Height="50" />
                         </Grid.RowDefinitions>
-                        <Button Content="Clear"
-                                Width="55"
+                        <Button Content="Clear Route"
                                 Height="35"
                                 Margin="10,0"
                                 Click="ClearRoute"
@@ -237,6 +250,7 @@
                         <CheckBox Style="{DynamicResource EliteStyleCheckBox}"
                                   Margin="10,0"
                                   IsChecked="{Binding UseSpansh}"
+                                  Content="Check Spansh On Load"
                                   HorizontalAlignment="Center"
                                   VerticalAlignment="Center"
                                   Grid.Row="1" />
@@ -249,33 +263,52 @@
 
 
                         <CheckBox Style="{DynamicResource EliteStyleCheckBox}"
-                                  IsChecked="{Binding FollowRoute}"
+                                  IsChecked="{Binding AutoSelect}"
                                   Margin="10,0"
-                                  HorizontalAlignment="Center"
+                                  Content="Auto Select System"
                                   VerticalAlignment="Center"
                                   Grid.Row="2" />
-                        <TextBlock Text="Copy next system naem to the clipboard when arriving in a system within the route and the next system is not marked built"
+                        <TextBlock Text="Select System In Route When Arriving"
                                    TextWrapping="Wrap"
                                    VerticalAlignment="Center"
                                    Grid.Column="1"
                                    Grid.Row="2"
                                    FontSize="16" />
 
-                        <Button Content="Check"
+                        <Button Content="Recheck Body Counts"
                                 Click="CheckBodyCounts"
                                 Height="35"
-                                Width="55"
                                 Margin="10,0"
                                 Grid.Row="3"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Center"
                                 Style="{DynamicResource EliteStyleButton}" />
-
                         <TextBlock Text="Rechecks system body counts (will check spansh if enabled)"
                                    TextWrapping="Wrap"
                                    VerticalAlignment="Center"
                                    Grid.Column="1"
                                    Grid.Row="3"
+                                   FontSize="16" />
+
+                        <ComboBox ItemsSource="{Binding Source={StaticResource ColonisationRouteClipboardBehavior}}"
+                                  SelectedItem="{Binding RouteClipboardBehavior}"
+                                  Height="30"
+                                  VerticalAlignment="Center"
+                                  Margin="10,0"
+                                  Grid.Row="4">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Left" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <TextBlock Text="{Binding ClipboardBehaviourText}"
+                                   TextWrapping="Wrap"
+                                   VerticalAlignment="Center"
+                                   Grid.Column="1"
+                                   Grid.Row="4"
                                    FontSize="16" />
                     </Grid>
                 </controls:ToggleButonWithPopup.PopupContent>

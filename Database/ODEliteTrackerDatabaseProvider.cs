@@ -452,18 +452,18 @@ namespace ODEliteTracker.Database
             context.SaveChanges();
         }
 
-        public List<WatchedMarket> GetWatchedMarkets()
+        public List<WatchedMarket> GetWatchedMarkets(int commanderId)
         {
             using var context = _contextFactory.CreateDbContext();
 
-            return [.. context.WatchedMarkets.Select(x => new WatchedMarket(x))];
+            return [.. context.WatchedMarkets.Where(x => x.CommanderID == commanderId).Select(x => new WatchedMarket(x))];
         }
 
-        public void UpdateWatchedMarkets(List<WatchedMarket> markets)
+        public void UpdateWatchedMarkets(List<WatchedMarket> markets, int commanderId)
         {
             using var context = _contextFactory.CreateDbContext();
 
-            foreach (var market in context.WatchedMarkets)
+            foreach (var market in context.WatchedMarkets.Where(x => x.CommanderID == commanderId || x.CommanderID <= 0))
             {
                 context.WatchedMarkets.Remove(market);                        
             }
@@ -472,7 +472,7 @@ namespace ODEliteTracker.Database
             {
                 foreach (var market in markets)
                 {
-                    context.WatchedMarkets.Add(new WatchedMarketDTO(market.Name, market.MarketID, Json.SerialiseJsonToString(market.ItemsForPurchase)));
+                    context.WatchedMarkets.Add(new WatchedMarketDTO(market.Name, market.MarketID, Json.SerialiseJsonToString(market.ItemsForPurchase), commanderId));
                 }
             }
             context.SaveChanges();

@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using ODEliteTracker.Models;
 using ODEliteTracker.Models.Colonisation;
+using ODEliteTracker.Models.Colonisation.Builds;
 using ODEliteTracker.Models.FleetCarrier;
 using ODEliteTracker.Models.Market;
 using ODEliteTracker.Models.Settings;
@@ -13,13 +14,13 @@ namespace ODEliteTracker.ViewModels.PopOuts
 {
     public sealed class ShoppingListPopOutVM : PopOutViewModel
     {
-        public ShoppingListPopOutVM(ColonisationStore store, SharedDataStore sharedData, FleetCarrierDataStore fcDataStore, SettingsStore settings)
+        public ShoppingListPopOutVM(ColonisationStore store, SharedDataStore sharedData, FleetCarrierDataStore fcDataStore, SettingsStore settings, BuildStatsHelper buildStatsHelper)
         {
             colonisationStore = store;
             this.sharedData = sharedData;
             this.fcDataStore = fcDataStore;
             this.settings = settings;
-
+            this.buildStatsHelper = buildStatsHelper;
             this.settings.ColonisationSettings.ShoppingListSortingChanged += ColonisationSettings_ShoppingListSortingChanged;
             colonisationStore.StoreLive += OnColonisationStoreLive;
             colonisationStore.ShoppingListUpdated += OnShoppingListUpdated;
@@ -59,7 +60,7 @@ namespace ODEliteTracker.ViewModels.PopOuts
         private readonly SharedDataStore sharedData;
         private readonly FleetCarrierDataStore fcDataStore;
         private readonly SettingsStore settings;
-
+        private readonly BuildStatsHelper buildStatsHelper;
         public override string Name => "Shopping List";
 
         public override bool IsLive => colonisationStore.IsLive;
@@ -130,7 +131,7 @@ namespace ODEliteTracker.ViewModels.PopOuts
 
             if (depots.Any())
             {
-                var shoppingList = depots.Select(x => new ConstructionDepotVM(x));
+                var shoppingList = depots.Select(x => new ConstructionDepotVM(x, buildStatsHelper));
 
                 ShoppingList.AddDepots(shoppingList, fcDataStore.CarrierData, sharedData.MarketPurchases);                
             }

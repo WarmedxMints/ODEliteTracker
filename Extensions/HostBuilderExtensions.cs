@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using ODCapi.Services;
 using ODEliteTracker.Database;
+using ODEliteTracker.Models.Colonisation.Builds;
 using ODEliteTracker.Notifications.Themes;
 using ODEliteTracker.Services;
 using ODEliteTracker.Stores;
@@ -86,6 +87,7 @@ namespace ODEliteTracker.Extensions
         public static void AddServices(this IServiceCollection services, string basePath)
         {
             services.AddSingleton<ThemeManager>();
+            services.AddSingleton<BuildStatsHelper>();
             services.AddSingleton<NotificationThemeManager>();
             services.AddSingleton<OverlayThemeManager>();
             services.AddSingleton<JournalEventParser>();

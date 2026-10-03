@@ -1,8 +1,10 @@
-﻿namespace ODEliteTracker.Models.Colonisation.Builds
+﻿using ODEliteTracker.ViewModels.ModelViews.Colonisation;
+
+namespace ODEliteTracker.Models.Colonisation.Builds
 {
-    internal static class PlanetaryPort
+    public sealed class PlanetaryOutpost_T1 : BuildStats
     {
-        internal static readonly Dictionary<string, int> Outpost_T1 = new()
+        public PlanetaryOutpost_T1() : base(ColonisationBuild.SurfaceOutpostT1, new()
         {
             { "$titanium_name;", 5760 },
             { "$copper_name;", 407 },
@@ -27,9 +29,13 @@
             { "$medicaldiagnosticequipment_name;", 48 },
             { "$survivalequipment_name;", 55 },
             { "$steel_name;", 10164 }
-        };
+        })
+        { }
+    }
 
-        internal static readonly Dictionary<string, int> Outpost_T3 = new()
+    public sealed class PlanetaryOutpost_T3 : BuildStats
+    {
+        public PlanetaryOutpost_T3() : base(ColonisationBuild.SurfaceOutpostT3, new()
         {
             { "$titanium_name;", 34560 },
             { "$copper_name;", 2442 },
@@ -54,6 +60,7 @@
             { "$medicaldiagnosticequipment_name;", 192 },
             { "$survivalequipment_name;", 220 },
             { "$steel_name;", 60984 }
-        };
+        })
+        { }
     }
 }

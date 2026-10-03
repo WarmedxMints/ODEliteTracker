@@ -1,8 +1,10 @@
-﻿namespace ODEliteTracker.Models.Colonisation.Builds
+﻿using ODEliteTracker.ViewModels.ModelViews.Colonisation;
+
+namespace ODEliteTracker.Models.Colonisation.Builds
 {
-    internal static class Starport_Tier2
+    public sealed class PrimaryStarport_T2 : BuildStats
     {
-        internal static readonly Dictionary<string, int> Primary = new()
+        public PrimaryStarport_T2() : base(ColonisationBuild.Starport_T2P, new()
         {
             { "$water_name;", 2209 },
             { "$titanium_name;", 11660 },
@@ -23,9 +25,13 @@
             { "$cmmcomposite_name;", 14241 },
             { "$medicaldiagnosticequipment_name;", 25 },
             { "$steel_name;", 19436 }
-        };
+        })
+        { }
+    }
 
-        internal static readonly Dictionary<string, int> Secondary = new()
+    public sealed class SecondaryStarport_T2 : BuildStats
+    {
+        public SecondaryStarport_T2() : base(ColonisationBuild.Starport_T2, new()
         {
             { "$water_name;", 1609 },
             { "$titanium_name;", 8205 },
@@ -46,6 +52,7 @@
             { "$cmmcomposite_name;", 11261 },
             { "$medicaldiagnosticequipment_name;", 25 },
             { "$steel_name;", 14076 }
-        };
+        })
+        { }
     }
 }

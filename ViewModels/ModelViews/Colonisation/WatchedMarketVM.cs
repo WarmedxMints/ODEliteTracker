@@ -11,5 +11,6 @@ namespace ODEliteTracker.ViewModels.ModelViews.Colonisation
         public string Name => watchedMarket.Name;
         public ulong MarketId => watchedMarket.MarketID;
         public IEnumerable<StationCommodityVM> Commodities => watchedMarket.ItemsForPurchase.Select(x => new StationCommodityVM(x, false));
+        public string Total => $"{Math.Max(Commodities.Sum(x => x.Demand), 0):N0} t";
     }
 }

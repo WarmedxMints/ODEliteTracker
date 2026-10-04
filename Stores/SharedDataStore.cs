@@ -509,7 +509,7 @@ namespace ODEliteTracker.Stores
                         {
                             WatchedMarketUpdated?.Invoke(this, known);
                         }
-                    }
+                    }                   
                     break;
 
                 case PowerplayEvent.PowerplayEventArgs powerPlay:

@@ -21,7 +21,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Market
         public bool RequiredResource { get; set; }
         public string Name { get; set; }
 
-        private string name_Localised;
+        private readonly string name_Localised;
         public string Name_Localised 
         { 
             get
@@ -31,7 +31,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Market
         }
         public string Category { get; set; }
 
-        private string category_Localised;
+        private readonly string category_Localised;
         public string Category_Localised
         {
             get

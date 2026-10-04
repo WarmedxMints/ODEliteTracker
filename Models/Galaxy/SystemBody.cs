@@ -9,11 +9,11 @@ namespace ODEliteTracker.Models.Galaxy
     {
         public StarSystem Owner { get; }
         public uint BodyID { get; private set; }
-        public List<BodyParent>? Parents { get; set; }
+        public List<BodyParent>? Parents { get; private set; }
         public StarType StarType { get; private set; }
         public PlanetClass PlanetClass { get; private set; }
         public double Radius { get; private set; }
-        public string BodyName { get; set; }
+        public string BodyName { get; private set; }
         public string BodyNameLocal
         {
             get
@@ -36,7 +36,10 @@ namespace ODEliteTracker.Models.Galaxy
         public AtmosphereDescription Atmosphere { get; private set; }
         public bool Landable { get; set; }
         public double DistanceFromArrivalLs { get; private set; }
-
+        public uint GeoSignalCount { get; private set; }
+        public uint BioSignalCount { get; private set; }
+        public uint PlanetaryMiningSignalCount { get; private set; }
+        public DateTime ScanTime { get; private set; } = DateTime.MinValue;
         public SystemBody(ScanEvent.ScanEventArgs e, StarSystem owner)
         {
             Owner = owner;
@@ -53,6 +56,7 @@ namespace ODEliteTracker.Models.Galaxy
             Atmosphere = e.Atmosphere;
             BodyName = e.BodyName;
             BodyID = e.BodyID;
+            ScanTime = e.Timestamp;
         }
 
         public SystemBody(LocationEvent.LocationEventArgs args, StarSystem starSystem)

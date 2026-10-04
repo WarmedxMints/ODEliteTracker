@@ -1,7 +1,6 @@
 ﻿using EliteJournalReader.Events;
 using ODEliteTracker.Database.DTOs;
 using ODEliteTracker.Models.Market;
-using ODEliteTracker.ViewModels.ModelViews.Colonisation;
 using ODMVVM.Helpers.IO;
 
 namespace ODEliteTracker.Models.Colonisation
@@ -12,8 +11,7 @@ namespace ODEliteTracker.Models.Colonisation
         {
             Name = marketInfo.StationName;
             MarketID = marketInfo.MarketID;
-            UpdatePurchaseOrders(marketInfo);
-            //ItemsForPurchase = [.. marketInfo.Items.Where(x => x.Demand > 0).Select(x => new StationCommodity(x))];
+            ItemsForPurchase = [.. marketInfo.Items.Where(x => x.Demand > 0).Select(x => new StationCommodity(x))];
         }
 
         public WatchedMarket(WatchedMarketDTO watchedMarketDTO)
@@ -24,14 +22,11 @@ namespace ODEliteTracker.Models.Colonisation
             {
                 ItemsForPurchase = Json.DeserialiseJsonFromString<List<StationCommodity>>(watchedMarketDTO.CommoditiesJson) ?? [];
 
-                if (ItemsForPurchase.FirstOrDefault(x => x.Name == "Total") != null)
-                    return;
-                var total = ItemsForPurchase.Sum(x => x.Demand);
-
-                if (total <= 0)
+                var total = ItemsForPurchase.FirstOrDefault(x => x.Name == "Total");
+                if (total == null)
                     return;
 
-                ItemsForPurchase.Add(StationCommodity.AddTotal(total));
+                ItemsForPurchase.Remove(total);
             }
             catch
             {
@@ -61,13 +56,6 @@ namespace ODEliteTracker.Models.Colonisation
                     ItemsForPurchase.Add(new StationCommodity(item));
                 }
             }
-
-            var total = ItemsForPurchase.Sum(x => x.Demand);
-
-            if (total <= 0)
-                return;
-
-            ItemsForPurchase.Add(StationCommodity.AddTotal(total));
         }
     }
 }

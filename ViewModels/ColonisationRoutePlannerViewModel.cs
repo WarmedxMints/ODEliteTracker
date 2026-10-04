@@ -57,9 +57,10 @@ namespace ODEliteTracker.ViewModels
             }
 
             sharedData.CurrentSystemChanged += OnCurrentSystemChanged;
+            sharedData.SystemDSSScaned += OnSystemDSSScanned;
             settings.ColonisationSettings.StraightLineStarPosChanged += ColonisationSettings_StraightLineStarPosChanged;
             settings.ColonisationSettings.StraightLineEndPosChanged += ColonisationSettings_StraightLineEndPosChanged;
-
+          
             RemoveAfterSelectedCommand = new ODRelayCommand(RemoveAfterSelected, (x) => SelectedSystem != null);
             ToggleSelectedHubCommand = new ODRelayCommand(ToggleSelectedHub, (x) => SelectedSystem != null);
             ToggleSelectedBuiltCommand = new ODRelayCommand(ToggleSelectedBuilt, (x) => SelectedSystem != null);
@@ -124,6 +125,29 @@ namespace ODEliteTracker.ViewModels
                 SelectedSystem = routeSystem;
                 SelectedSystemChanged?.Invoke(this, routeSystem);
             }
+        }
+
+        private void OnSystemDSSScanned(object? sender, StarSystem e)
+        {
+            var routeSystem = RouteSystems.FirstOrDefault(x => x.SystemAddress == e.Address);
+
+            if (routeSystem == null)
+                return;
+
+            Task.Run(() => UpdateBodyCountFromDSSScan(routeSystem, e));
+        }
+
+        private async Task UpdateBodyCountFromDSSScan(ColonisationRouteSystemVM routeSystem, StarSystem system)
+        {
+            //The game will fire the dss event before the scan events
+            //We are in no rush to update the data so we will give it a second
+            await Task.Delay(1000);
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                routeSystem.BodyCount = system.BodyCount;
+                routeSystem.StarCount = system.Bodies.Count(x => x.Value.StarType != EliteJournalReader.StarType.Unknown);
+                DataChanged = true;
+            });
         }
 
         private void CheckNextSystemOnRoute(ColonisationRouteSystemVM routeSystem)
@@ -309,6 +333,7 @@ namespace ODEliteTracker.ViewModels
         public void Dispose()
         {
             sharedData.CurrentSystemChanged -= OnCurrentSystemChanged;
+            sharedData.SystemDSSScaned -= OnSystemDSSScanned;
             settings.ColonisationSettings.StraightLineStarPosChanged -= ColonisationSettings_StraightLineStarPosChanged;
             settings.ColonisationSettings.StraightLineEndPosChanged -= ColonisationSettings_StraightLineEndPosChanged;
 

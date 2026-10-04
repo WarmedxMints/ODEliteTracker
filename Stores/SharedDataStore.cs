@@ -115,6 +115,7 @@ namespace ODEliteTracker.Stores
         public EventHandler<WatchedMarket>? WatchedMarketUpdated;
         public EventHandler<List<WatchedMarket>>? WatchedMarketsUpdated;
         public EventHandler<StarSystem>? SystemBodiesUpdated;
+        public EventHandler<StarSystem>? SystemDSSScaned;
         #endregion
 
         public override void ClearData()
@@ -604,6 +605,7 @@ namespace ODEliteTracker.Stores
                     if (systems.TryGetValue(discoveryScan.SystemAddress, out var knownSystem))
                     {
                         knownSystem.BodyCount = discoveryScan.BodyCount;
+                        SystemDSSScaned?.Invoke(this, knownSystem);
                     }
                     break;
             }

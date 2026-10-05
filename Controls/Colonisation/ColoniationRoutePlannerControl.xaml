@@ -11,6 +11,7 @@
              xmlns:controls="clr-namespace:ODEliteTracker.Controls.Buttons"
              xmlns:setting="clr-namespace:ODEliteTracker.Models.Settings"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:odmvvm="clr-namespace:ODMVVM.Helpers;assembly=ODMVVM"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewmodels:ColonisationRoutePlannerViewModel}"
              d:DesignHeight="450"
@@ -22,7 +23,7 @@
             <ObjectDataProvider.MethodParameters>
                 <x:Type TypeName="setting:ColonisationRouteClipboardBehavior" />
             </ObjectDataProvider.MethodParameters>
-        </ObjectDataProvider>
+        </ObjectDataProvider>      
     </UserControl.Resources>
     <Grid TextBlock.FontSize="18">
         <Grid.RowDefinitions>
@@ -335,7 +336,6 @@
                       AutoGenerateColumns="False"
                       SelectedItem="{Binding SelectedSystem}"
                       Style="{DynamicResource BaseDataGridStyle}"
-                      RowStyle="{DynamicResource CommanderRowStyle}"
                       FontSize="18"
                       SelectionMode="Single"
                       CanUserAddRows="False"
@@ -345,6 +345,38 @@
                       HorizontalAlignment="Left"
                       AlternatingRowBackground="{DynamicResource RowAlternationColour}"
                       Grid.Row="1">
+                <DataGrid.Resources>
+                    <odmvvm:WpfBindingProxy x:Key="proxy"
+                                            Data="{Binding }" />
+
+                    <ContextMenu  x:Key="RowMenu"
+                                  HasDropShadow="False"
+                                  TextBlock.FontSize="16"
+                                  DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
+                        <MenuItem Header="Copy to Clipboard"
+                                  Command="{Binding Data.SetClipboardCommand, Source={StaticResource proxy}}"
+                                  CommandParameter="{Binding SystemName}"
+                                  Style="{DynamicResource EliteContextMenuItemStyle}" />
+                        <MenuItem Header="Toggle Hub"
+                                  Command="{Binding Data.ToggleSelectedHubCommand, Source={StaticResource proxy}}"
+                                  Style="{DynamicResource EliteContextMenuItemStyle}" />
+                        <MenuItem Header="Toggle Built"
+                                  Command="{Binding Data.ToggleSelectedBuiltCommand, Source={StaticResource proxy}}"
+                                  Style="{DynamicResource EliteContextMenuItemStyle}" />
+                        <MenuItem Header="Set As Target"
+                                  Command="{Binding Data.SetSelctedAsTargetCommand, Source={StaticResource proxy}}"
+                                  Style="{DynamicResource EliteContextMenuItemStyle}" />
+                        <Separator Style="{DynamicResource EliteSeparatorStyle}"/>
+                        <MenuItem Header="Delete System"
+                                  Click="DeleteSelectedSystem"
+                                  Style="{DynamicResource EliteContextMenuItemStyle}" />
+                    </ContextMenu>
+                    <Style TargetType="{x:Type DataGridRow}"
+                           BasedOn="{StaticResource CommanderRowStyle}">
+                        <Setter Property="ContextMenu"
+                                Value="{StaticResource RowMenu}" />
+                    </Style>
+                </DataGrid.Resources>
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Hop"
                                         Width="50"

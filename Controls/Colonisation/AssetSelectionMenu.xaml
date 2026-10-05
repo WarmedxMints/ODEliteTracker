@@ -41,17 +41,8 @@
                 </Menu.ItemsPanel>
                 <MenuItem Header="Starport"
                           Style="{DynamicResource EliteMenuStyle}">
-                    <Separator>
-                        <Separator.Template>
-                            <ControlTemplate TargetType="Separator">
-                                <StackPanel Background="{DynamicResource ViewBackground}">
-                                    <TextBlock Text="Tier 1"
-                                               FontSize="16"
-                                               Foreground="{DynamicResource EliteBtnFG}" />
-                                </StackPanel>
-                            </ControlTemplate>
-                        </Separator.Template>
-                    </Separator>
+                    <Separator Style="{DynamicResource AssestMenuSeparatorStyle}"
+                               Tag="Tier 1" />
                     <MenuItem Header="Outpost [Primary Port]"
                               Style="{DynamicResource EliteMenuStyle}"
                               Command="{Binding ElementName=Root, Path=Command}"
@@ -60,17 +51,8 @@
                               Style="{DynamicResource EliteMenuStyle}"
                               Command="{Binding ElementName=Root, Path=Command}"
                               CommandParameter="{x:Static colonisationVM:ColonisationBuild.Outpost}" />
-                    <Separator>
-                        <Separator.Template>
-                            <ControlTemplate TargetType="Separator">
-                                <StackPanel Background="{DynamicResource ViewBackground}">
-                                    <TextBlock Text="Tier 2"
-                                               FontSize="16"
-                                               Foreground="{DynamicResource EliteBtnFG}" />
-                                </StackPanel>
-                            </ControlTemplate>
-                        </Separator.Template>
-                    </Separator>
+                    <Separator Style="{DynamicResource AssestMenuSeparatorStyle}"
+                               Tag="Tier 2" />
                     <MenuItem Header="Coriolis / Asteroid Base [Primary Port]"
                               Style="{DynamicResource EliteMenuStyle}"
                               Command="{Binding ElementName=Root, Path=Command}"
@@ -79,17 +61,8 @@
                               Style="{DynamicResource EliteMenuStyle}"
                               Command="{Binding ElementName=Root, Path=Command}"
                               CommandParameter="{x:Static colonisationVM:ColonisationBuild.Starport_T2}" />
-                    <Separator>
-                        <Separator.Template>
-                            <ControlTemplate TargetType="Separator">
-                                <StackPanel Background="{DynamicResource ViewBackground}">
-                                    <TextBlock Text="Tier 3"
-                                               FontSize="16"
-                                               Foreground="{DynamicResource EliteBtnFG}" />
-                                </StackPanel>
-                            </ControlTemplate>
-                        </Separator.Template>
-                    </Separator>
+                    <Separator Style="{DynamicResource AssestMenuSeparatorStyle}"
+                               Tag="Tier 3" />
                     <MenuItem Header="Ocellus / Orbis [Primary Port]"
                               Style="{DynamicResource EliteMenuStyle}"
                               Command="{Binding ElementName=Root, Path=Command}"
@@ -109,17 +82,8 @@
                 </MenuItem>
                 <MenuItem Header="Installation"
                           Style="{DynamicResource EliteMenuStyle}">
-                    <Separator>
-                        <Separator.Template>
-                            <ControlTemplate TargetType="Separator">
-                                <StackPanel Background="{DynamicResource ViewBackground}">
-                                    <TextBlock Text="Tier 1"
-                                               FontSize="16"
-                                               Foreground="{DynamicResource EliteBtnFG}" />
-                                </StackPanel>
-                            </ControlTemplate>
-                        </Separator.Template>
-                    </Separator>
+                    <Separator Style="{DynamicResource AssestMenuSeparatorStyle}"
+                               Tag="Tier 1" />
                     <MenuItem Header="Satellite / Communication Station"
                               Style="{DynamicResource EliteMenuStyle}"
                               Command="{Binding ElementName=Root, Path=Command}"
@@ -140,17 +104,8 @@
                               Style="{DynamicResource EliteMenuStyle}"
                               Command="{Binding ElementName=Root, Path=Command}"
                               CommandParameter="{x:Static colonisationVM:ColonisationBuild.RelayStation}" />
-                    <Separator>
-                        <Separator.Template>
-                            <ControlTemplate TargetType="Separator">
-                                <StackPanel Background="{DynamicResource ViewBackground}">
-                                    <TextBlock Text="Tier 2"
-                                               FontSize="16"
-                                               Foreground="{DynamicResource EliteBtnFG}" />
-                                </StackPanel>
-                            </ControlTemplate>
-                        </Separator.Template>
-                    </Separator>
+                    <Separator Style="{DynamicResource AssestMenuSeparatorStyle}"
+                               Tag="Tier 2" />
                     <MenuItem Header="Military"
                               Style="{DynamicResource EliteMenuStyle}"
                               Command="{Binding ElementName=Root, Path=Command}"
@@ -182,32 +137,14 @@
                 </MenuItem>
                 <MenuItem Header="Surface Outpost"
                           Style="{DynamicResource EliteMenuStyle}">
-                    <Separator>
-                        <Separator.Template>
-                            <ControlTemplate TargetType="Separator">
-                                <StackPanel Background="{DynamicResource ViewBackground}">
-                                    <TextBlock Text="Tier 1"
-                                               FontSize="16"
-                                               Foreground="{DynamicResource EliteBtnFG}" />
-                                </StackPanel>
-                            </ControlTemplate>
-                        </Separator.Template>
-                    </Separator>
+                    <Separator Style="{DynamicResource AssestMenuSeparatorStyle}"
+                               Tag="Tier 1" />
                     <MenuItem Header="Outpost"
                               Style="{DynamicResource EliteMenuStyle}"
                               Command="{Binding ElementName=Root, Path=Command}"
                               CommandParameter="{x:Static colonisationVM:ColonisationBuild.SurfaceOutpostT1}" />
-                    <Separator>
-                        <Separator.Template>
-                            <ControlTemplate TargetType="Separator">
-                                <StackPanel Background="{DynamicResource ViewBackground}">
-                                    <TextBlock Text="Tier 3"
-                                               FontSize="16"
-                                               Foreground="{DynamicResource EliteBtnFG}" />
-                                </StackPanel>
-                            </ControlTemplate>
-                        </Separator.Template>
-                    </Separator>
+                    <Separator Style="{DynamicResource AssestMenuSeparatorStyle}"
+                               Tag="Tier 3" />
                     <MenuItem Header="Outpost"
                               Style="{DynamicResource EliteMenuStyle}"
                               Command="{Binding ElementName=Root, Path=Command}"
@@ -215,30 +152,12 @@
                 </MenuItem>
                 <MenuItem Header="Settlement"
                           Style="{DynamicResource EliteMenuStyle}">
-                    <Separator>
-                        <Separator.Template>
-                            <ControlTemplate TargetType="Separator">
-                                <StackPanel Background="{DynamicResource ViewBackground}">
-                                    <TextBlock Text="Tier 1"
-                                               FontSize="16"
-                                               Foreground="{DynamicResource EliteBtnFG}" />
-                                </StackPanel>
-                            </ControlTemplate>
-                        </Separator.Template>
-                    </Separator>
+                    <Separator Style="{DynamicResource AssestMenuSeparatorStyle}"
+                               Tag="Tier 1" />
                     <MenuItem Header="Agriculture"
                               Style="{DynamicResource EliteMenuStyle}">
-                        <Separator>
-                            <Separator.Template>
-                                <ControlTemplate TargetType="Separator">
-                                    <StackPanel Background="{DynamicResource ViewBackground}">
-                                        <TextBlock Text="Tier 1"
-                                                   FontSize="16"
-                                                   Foreground="{DynamicResource EliteBtnFG}" />
-                                    </StackPanel>
-                                </ControlTemplate>
-                            </Separator.Template>
-                        </Separator>
+                        <Separator Style="{DynamicResource AssestMenuSeparatorStyle}"
+                                   Tag="Tier 1" />
                         <MenuItem Header="Small"
                                   Style="{DynamicResource EliteMenuStyle}"
                                   Command="{Binding ElementName=Root, Path=Command}"
@@ -247,17 +166,8 @@
                                   Style="{DynamicResource EliteMenuStyle}"
                                   Command="{Binding ElementName=Root, Path=Command}"
                                   CommandParameter="{x:Static colonisationVM:ColonisationBuild.SettlementAgriMedium}" />
-                        <Separator>
-                            <Separator.Template>
-                                <ControlTemplate TargetType="Separator">
-                                    <StackPanel Background="{DynamicResource ViewBackground}">
-                                        <TextBlock Text="Tier 2"
-                                                   FontSize="16"
-                                                   Foreground="{DynamicResource EliteBtnFG}" />
-                                    </StackPanel>
-                                </ControlTemplate>
-                            </Separator.Template>
-                        </Separator>
+                        <Separator Style="{DynamicResource AssestMenuSeparatorStyle}"
+                                   Tag="Tier 2" />
                         <MenuItem Header="Large"
                                   Style="{DynamicResource EliteMenuStyle}"
                                   Command="{Binding ElementName=Root, Path=Command}"
@@ -265,17 +175,8 @@
                     </MenuItem>
                     <MenuItem Header="Extraction"
                               Style="{DynamicResource EliteMenuStyle}">
-                        <Separator>
-                            <Separator.Template>
-                                <ControlTemplate TargetType="Separator">
-                                    <StackPanel Background="{DynamicResource ViewBackground}">
-                                        <TextBlock Text="Tier 1"
-                                                   FontSize="16"
-                                                   Foreground="{DynamicResource EliteBtnFG}" />
-                                    </StackPanel>
-                                </ControlTemplate>
-                            </Separator.Template>
-                        </Separator>
+                        <Separator Style="{DynamicResource AssestMenuSeparatorStyle}"
+                                   Tag="Tier 1" />
                         <MenuItem Header="Small"
                                   Style="{DynamicResource EliteMenuStyle}"
                                   Command="{Binding ElementName=Root, Path=Command}"
@@ -284,17 +185,8 @@
                                   Style="{DynamicResource EliteMenuStyle}"
                                   Command="{Binding ElementName=Root, Path=Command}"
                                   CommandParameter="{x:Static colonisationVM:ColonisationBuild.SettlementExtractionMedium}" />
-                        <Separator>
-                            <Separator.Template>
-                                <ControlTemplate TargetType="Separator">
-                                    <StackPanel Background="{DynamicResource ViewBackground}">
-                                        <TextBlock Text="Tier 2"
-                                                   FontSize="16"
-                                                   Foreground="{DynamicResource EliteBtnFG}" />
-                                    </StackPanel>
-                                </ControlTemplate>
-                            </Separator.Template>
-                        </Separator>
+                        <Separator Style="{DynamicResource AssestMenuSeparatorStyle}"
+                                   Tag="Tier 2" />
                         <MenuItem Header="Large"
                                   Style="{DynamicResource EliteMenuStyle}"
                                   Command="{Binding ElementName=Root, Path=Command}"
@@ -302,35 +194,18 @@
                     </MenuItem>
                     <MenuItem Header="Industrial"
                               Style="{DynamicResource EliteMenuStyle}">
-                        <Separator>
-                            <Separator.Template>
-                                <ControlTemplate TargetType="Separator">
-                                    <StackPanel Background="{DynamicResource ViewBackground}">
-                                        <TextBlock Text="Tier 1"
-                                                   FontSize="16"
-                                                   Foreground="{DynamicResource EliteBtnFG}" />
-                                    </StackPanel>
-                                </ControlTemplate>
-                            </Separator.Template>
-                        </Separator>
+                        <Separator Style="{DynamicResource AssestMenuSeparatorStyle}"
+                                   Tag="Tier 1" />
                         <MenuItem Header="Small"
                                   Style="{DynamicResource EliteMenuStyle}"
                                   Command="{Binding ElementName=Root, Path=Command}"
                                   CommandParameter="{x:Static colonisationVM:ColonisationBuild.SettlementIndustrialSmall}" />
                         <MenuItem Header="Medium"
+                                  Style="{DynamicResource EliteMenuStyle}"
                                   Command="{Binding ElementName=Root, Path=Command}"
                                   CommandParameter="{x:Static colonisationVM:ColonisationBuild.SettlementIndustrialMedium}" />
-                        <Separator>
-                            <Separator.Template>
-                                <ControlTemplate TargetType="Separator">
-                                    <StackPanel Background="{DynamicResource ViewBackground}">
-                                        <TextBlock Text="Tier 2"
-                                                   FontSize="16"
-                                                   Foreground="{DynamicResource EliteBtnFG}" />
-                                    </StackPanel>
-                                </ControlTemplate>
-                            </Separator.Template>
-                        </Separator>
+                        <Separator Style="{DynamicResource AssestMenuSeparatorStyle}"
+                                   Tag="Tier 2" />
                         <MenuItem Header="Large"
                                   Style="{DynamicResource EliteMenuStyle}"
                                   Command="{Binding ElementName=Root, Path=Command}"
@@ -338,17 +213,8 @@
                     </MenuItem>
                     <MenuItem Header="Military"
                               Style="{DynamicResource EliteMenuStyle}">
-                        <Separator>
-                            <Separator.Template>
-                                <ControlTemplate TargetType="Separator">
-                                    <StackPanel Background="{DynamicResource ViewBackground}">
-                                        <TextBlock Text="Tier 1"
-                                                   FontSize="16"
-                                                   Foreground="{DynamicResource EliteBtnFG}" />
-                                    </StackPanel>
-                                </ControlTemplate>
-                            </Separator.Template>
-                        </Separator>
+                        <Separator Style="{DynamicResource AssestMenuSeparatorStyle}"
+                                   Tag="Tier 1" />
                         <MenuItem Header="Small"
                                   Style="{DynamicResource EliteMenuStyle}"
                                   Command="{Binding ElementName=Root, Path=Command}"
@@ -357,33 +223,15 @@
                                   Style="{DynamicResource EliteMenuStyle}"
                                   Command="{Binding ElementName=Root, Path=Command}"
                                   CommandParameter="{x:Static colonisationVM:ColonisationBuild.SettlementMiltaryMedium}" />
-                        <Separator>
-                            <Separator.Template>
-                                <ControlTemplate TargetType="Separator">
-                                    <StackPanel Background="{DynamicResource ViewBackground}">
-                                        <TextBlock Text="Tier 2"
-                                                   FontSize="16"
-                                                   Foreground="{DynamicResource EliteBtnFG}" />
-                                    </StackPanel>
-                                </ControlTemplate>
-                            </Separator.Template>
-                        </Separator>
+                        <Separator Style="{DynamicResource AssestMenuSeparatorStyle}"
+                                   Tag="Tier 2" />
                         <MenuItem Header="Large"
                                   Style="{DynamicResource EliteMenuStyle}"
                                   Command="{Binding ElementName=Root, Path=Command}"
                                   CommandParameter="{x:Static colonisationVM:ColonisationBuild.SettlementMiltaryLarge}" />
                     </MenuItem>
-                    <Separator>
-                        <Separator.Template>
-                            <ControlTemplate TargetType="Separator">
-                                <StackPanel Background="{DynamicResource ViewBackground}">
-                                    <TextBlock Text="Tier 2"
-                                               FontSize="16"
-                                               Foreground="{DynamicResource EliteBtnFG}" />
-                                </StackPanel>
-                            </ControlTemplate>
-                        </Separator.Template>
-                    </Separator>
+                    <Separator Style="{DynamicResource AssestMenuSeparatorStyle}"
+                               Tag="Tier 2" />
                     <MenuItem Header="Research Bio"
                               Style="{DynamicResource EliteMenuStyle}">
                         <MenuItem Header="Small"
@@ -417,17 +265,8 @@
                 </MenuItem>
                 <MenuItem Header="Hub"
                           Style="{DynamicResource EliteMenuStyle}">
-                    <Separator>
-                        <Separator.Template>
-                            <ControlTemplate TargetType="Separator">
-                                <StackPanel Background="{DynamicResource ViewBackground}">
-                                    <TextBlock Text="Tier 2"
-                                               FontSize="16"
-                                               Foreground="{DynamicResource EliteBtnFG}" />
-                                </StackPanel>
-                            </ControlTemplate>
-                        </Separator.Template>
-                    </Separator>
+                    <Separator Style="{DynamicResource AssestMenuSeparatorStyle}"
+                               Tag="Tier 2" />
                     <MenuItem Header="Extraction"
                               Style="{DynamicResource EliteMenuStyle}"
                               Command="{Binding ElementName=Root, Path=Command}"

@@ -216,8 +216,7 @@ namespace ODEliteTracker.ViewModels
             }
         }
 
-        private bool dataChanged;
-        public bool DataChanged { get => dataChanged; set { dataChanged = value; OnPropertyChanged(); } }
+        public bool DataChanged { get; private set; }
         public bool UseSpansh { get => settings.ColonisationSettings.CheckSpansh; set { settings.ColonisationSettings.CheckSpansh = value; OnPropertyChanged(); } }
         public bool AutoSelect { get => settings.ColonisationSettings.AutoSelect; set { settings.ColonisationSettings.AutoSelect = value; OnPropertyChanged(); } }
         public ColonisationRouteClipboardBehavior RouteClipboardBehavior { get => settings.ColonisationSettings.RouteClipboardBehavior; set { settings.ColonisationSettings.RouteClipboardBehavior = value; OnPropertyChanged(); OnPropertyChanged(nameof(ClipboardBehaviourText)); } }
@@ -330,14 +329,21 @@ namespace ODEliteTracker.ViewModels
             return true;
         }
 
+        private bool isDisposing;
         public void Dispose()
         {
+            if (isDisposing)
+            {
+                return;
+            }
+
+            isDisposing = true;
             sharedData.CurrentSystemChanged -= OnCurrentSystemChanged;
             sharedData.SystemDSSScaned -= OnSystemDSSScanned;
             settings.ColonisationSettings.StraightLineStarPosChanged -= ColonisationSettings_StraightLineStarPosChanged;
             settings.ColonisationSettings.StraightLineEndPosChanged -= ColonisationSettings_StraightLineEndPosChanged;
 
-            if (dataChanged && !IsBusy)
+            if (DataChanged && !IsBusy)
             {
                 DataChangedWarning?.Invoke(this, EventArgs.Empty);
             }

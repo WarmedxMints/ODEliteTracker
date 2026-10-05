@@ -1,6 +1,7 @@
 ﻿using ODEliteTracker.ViewModels;
 using ODEliteTracker.ViewModels.ModelViews.Colonisation;
 using ODMVVM.Services.MessageBox;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -65,7 +66,7 @@ namespace ODEliteTracker.Controls.Colonisation
             if (DataContext is ColonisationRoutePlannerViewModel vm)
             {
                 var mb = ODDialogService.ShowWithOwner(Window.GetWindow(this), "Save Colonisation Route Changes?", "Warning : You have unsaved changes that will be lost!\nWould you like to save?", MessageBoxButton.YesNo);
-
+               
                 if (mb == MessageBoxResult.Yes)
                 {
                     vm.SaveRouteCommand.Execute(null);

@@ -54,7 +54,7 @@
                         <TextBlock Text="Commodity Sorting "
                                    VerticalAlignment="Center" />
                         <ComboBox ItemsSource="{Binding Source={StaticResource CommodityEnum}}"
-                                  SelectedItem="{Binding WatchedMarketSorting}"
+                                  SelectedItem="{Binding WatchListController.WatchedMarketSorting}"
                                   Margin="5,0,10,0"
                                   Grid.Column="2"
                                   MinWidth="180"
@@ -67,17 +67,17 @@
                 </Grid>
 
                 <Grid Grid.Row="1">
-                    <ComboBox ItemsSource="{Binding WatchedMarkets}"
+                    <ComboBox ItemsSource="{Binding WatchListController.WatchedMarkets}"
                               DisplayMemberPath="Name"
-                              SelectedItem="{Binding SelectedWatchedMarket}"
+                              SelectedItem="{Binding WatchListController.SelectedWatchedMarket}"
                               FontSize="20"
                               Height="30"
                               Visibility="{Binding IsMouseOver, Converter={StaticResource BoolToVis}}"
                               HorizontalAlignment="Left"
                               Margin="10" />
 
-                    <Button Command="{Binding AddRemoveWatchedMarketsCommand}"
-                            CommandParameter="{Binding SelectedWatchedMarket.MarketId}"
+                    <Button Command="{Binding WatchListController.AddRemoveWatchedMarketsCommand}"
+                            CommandParameter="{Binding WatchListController.SelectedWatchedMarket.MarketId}"
                             Style="{DynamicResource EliteStyleButton}"
                             Content="X"
                             Margin="2"
@@ -90,14 +90,13 @@
                             FontSize="16" />
                 </Grid>
 
-                <DataGrid ItemsSource="{Binding SelectedWatchedMarketCommodities}"
+                <DataGrid ItemsSource="{Binding WatchListController.SelectedWatchedMarketCommodities}"
                           Grid.Row="2"
                           Margin="10"
                           Style="{DynamicResource ConstructionResourcesDataGrid}"
                           RowStyle="{DynamicResource NoSelectRowStyle}"
                           CellStyle="{DynamicResource NoSelectCellNoMargin}"
                           Foreground="{DynamicResource Overlay_ForegroundBrush}"
-                          SelectedItem="{Binding SelectedResource, Mode=TwoWay}"
                           FontSize="20"
                           IsReadOnly="True"
                           SelectionMode="Single"

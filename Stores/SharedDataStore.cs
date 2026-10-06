@@ -113,9 +113,10 @@ namespace ODEliteTracker.Stores
         public EventHandler? BountiesUpdated;
         public EventHandler<CommodityPurchase>? PurchasesUpdated;
         public EventHandler<WatchedMarket>? WatchedMarketUpdated;
-        public EventHandler<List<WatchedMarket>>? WatchedMarketsUpdated;
+        public EventHandler<WatchedMarketsUpdatedEventArgs>? WatchedMarketsUpdated;
         public EventHandler<StarSystem>? SystemBodiesUpdated;
         public EventHandler<StarSystem>? SystemDSSScaned;
+        public EventHandler<Station?>? Docked;
         #endregion
 
         public override void ClearData()
@@ -265,11 +266,14 @@ namespace ODEliteTracker.Stores
                     UpdateCurrentBody_Station(stationName);
 
                     if (CurrentSystem != null)
+                    {
                         currentStation = new(docked, new(CurrentSystem), CurrentSystem);
+                    }
 
                     if (IsLive == false)
                         break;
 
+                    Docked?.Invoke(this, currentStation);
                     var stationFaction = docked.StationFaction.Name;
 
                     if (stationFaction.Equals("FleetCarrier", StringComparison.OrdinalIgnoreCase))
@@ -486,30 +490,46 @@ namespace ODEliteTracker.Stores
                     if (IsLive == false)
                         break;
 
+                    var commod = EliteCommodityHelpers.GetCommodityFromPartial(sell.Type, string.IsNullOrEmpty(sell.Type_Localised) ? sell.Type : sell.Type_Localised);
+
+                    if (CurrentMarket is not null)
+                    {
+                        var marketItem = CurrentMarket.ItemsForPurchase.FirstOrDefault(x => string.Equals(x.Name, commod.FdevName));
+
+                        if (marketItem != null)
+                        {
+                            marketItem.Demand -= sell.Count;
+
+                            if (marketItem.Demand < 0)
+                                marketItem.Demand = 0;
+
+                            MarketEvent?.Invoke(this, CurrentMarket);
+                        }
+                    }
+
                     var known = WatchedMarkets.FirstOrDefault(x => x.MarketID == sell.MarketID);
 
                     if (known == null)
                         break;
 
-                    var commod = EliteCommodityHelpers.GetCommodityFromPartial(sell.Type, string.IsNullOrEmpty(sell.Type_Localised) ? sell.Type : sell.Type_Localised);
-
                     var item = known.ItemsForPurchase.FirstOrDefault(x => string.Equals(x.Name, commod.FdevName));
 
-                    if (item != null)
+                    if (item == null)
                     {
-                        item.Stock += sell.Count;
-                        item.Demand -= sell.Count;
+                        break;
+                    }
+                    item.Stock += sell.Count;
+                    item.Demand -= sell.Count;
 
-                        if (item.Demand <= 0)
-                        {
-                            known.ItemsForPurchase.Remove(item);
-                        }
+                    if (item.Demand <= 0)
+                    {
+                        known.ItemsForPurchase.Remove(item);
+                    }
 
-                        if (IsLive)
-                        {
-                            WatchedMarketUpdated?.Invoke(this, known);
-                        }
-                    }                   
+                    if (IsLive)
+                    {
+                        WatchedMarketUpdated?.Invoke(this, known);
+                    }
                     break;
 
                 case PowerplayEvent.PowerplayEventArgs powerPlay:
@@ -634,14 +654,15 @@ namespace ODEliteTracker.Stores
             if (known != null)
             {
                 WatchedMarkets.Remove(known);
-                WatchedMarketsUpdated?.Invoke(this, WatchedMarkets);
+                WatchedMarketsUpdated?.Invoke(this, new(MarketStatus.Removed, known));
                 return;
             }
 
             if (CurrentMarket != null && marketId == CurrentMarket.MarketID)
             {
-                WatchedMarkets.Add(new WatchedMarket(CurrentMarket));
-                WatchedMarketsUpdated?.Invoke(this, WatchedMarkets);
+                known = new WatchedMarket(CurrentMarket);
+                WatchedMarkets.Add(known);
+                WatchedMarketsUpdated?.Invoke(this, new(MarketStatus.Added, known));
             }
         }
         #endregion

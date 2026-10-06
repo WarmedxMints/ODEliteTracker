@@ -32,6 +32,10 @@ namespace ODEliteTracker.ViewModels.ModelViews.Market
         public string Category { get; set; }
 
         private readonly string category_Localised;
+        private int demand;
+        private long carrierStockValue;
+        private int required;
+
         public string Category_Localised
         {
             get
@@ -42,10 +46,20 @@ namespace ODEliteTracker.ViewModels.ModelViews.Market
         public int BuyPrice { get; set; }
         public int SellPrice { get; set; }
         public int Stock { get; set; }
-        public int Demand { get; set; }
+        public int Demand { get => demand; set { demand = value; OnPropertyChanged(); } }
         public string DemandString => $"{Demand:N0} t";
-        public int Required { get; set; }
-        public long CarrierStockValue { get; set; }
+        public int Required { get => required; set { required = value; OnPropertyChanged(); } }
+        public long CarrierStockValue 
+        { 
+            get => carrierStockValue; 
+            set 
+            { 
+                carrierStockValue = value; 
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(CarrierStock));
+                OnPropertyChanged(nameof(CarrierStockDiff));
+            } 
+        }
         public string CarrierStock => CarrierStockValue > 0 ? $"{CarrierStockValue:N0} t" : string.Empty;
         public string CarrierStockDiff => CarrierStockValue > 0 ? $"{CarrierStockValue - Required:N0} t" : string.Empty;
     }

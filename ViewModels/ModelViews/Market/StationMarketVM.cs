@@ -1,5 +1,8 @@
 ﻿using ODEliteTracker.Models.Market;
+using ODEliteTracker.ViewModels.ModelViews.Colonisation;
+using ODMVVM.Extensions;
 using ODMVVM.ViewModels;
+using System.Collections.ObjectModel;
 
 namespace ODEliteTracker.ViewModels.ModelViews.Market
 {
@@ -24,11 +27,33 @@ namespace ODEliteTracker.ViewModels.ModelViews.Market
         public ulong MarketID { get; set; }
         public string StationName { get; set; }
         public string StarSystem { get; set; }
-        public List<StationCommodityVM> ItemsForSale { get; set; }
+        public ObservableCollection<StationCommodityVM> ItemsForSale { get; set; }
 
         public static StationMarketVM CreateEmptyItemMarket(StationMarket market)
         {
             return new(market.MarketID, market.StationName, market.StarSystem);
+        }
+
+        internal void UpdateWathedMarketDemands(WatchedMarketVM known)
+        {
+            List<StationCommodityVM> itemsToRemove = [.. ItemsForSale];
+
+            foreach (var item in ItemsForSale)
+            {
+                var knownHasDemand = known.Commodities.FirstOrDefault(x => string.Equals(x.Name, item.Name));
+
+                if (knownHasDemand != null && knownHasDemand.Demand > 0)
+                {
+                    item.Required = knownHasDemand.Demand;
+
+                    itemsToRemove.Remove(item);
+                }
+            }
+
+            if(itemsToRemove.Count > 0)
+            {
+                ItemsForSale.RemoveRange(itemsToRemove);
+            }
         }
     }
 }

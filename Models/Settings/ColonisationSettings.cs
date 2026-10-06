@@ -20,7 +20,6 @@ namespace ODEliteTracker.Models.Settings
     {
         public event EventHandler<CommoditySorting>? CommoditySortingChanged;
         public event EventHandler<CommoditySorting>? ShoppingListSortingChanged;
-        public event EventHandler<CommoditySorting>? WatchedMarketSortingChanged;
         public event EventHandler? StraightLineStarPosChanged;
         public event EventHandler? StraightLineEndPosChanged;
 
@@ -64,7 +63,6 @@ namespace ODEliteTracker.Models.Settings
                 if (value != watchedMarketSorting)
                 {
                     watchedMarketSorting = value;
-                    WatchedMarketSortingChanged?.Invoke(this, WatchedMarketSorting);
                 }
             }
 

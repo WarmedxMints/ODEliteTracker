@@ -20,6 +20,9 @@
              x:Name="Root"
              d:DesignHeight="1920"
              d:DesignWidth="1080">
+    <UserControl.Resources>
+        <wpfconverters:ColonisationSelectedTabToIntConverter x:Key="ColonisationTabConverter" />
+    </UserControl.Resources>
     <busyIndicator:BusyMask x:Name="BusyIndicator"
                             IsBusy="{Binding IsBusy}"
                             Background="{DynamicResource IndicatorBackground}"
@@ -312,7 +315,7 @@
                             CornerRadius="5"
                             Margin="5,5,5,5"
                             Padding="5">
-                        <TabControl SelectedIndex="{Binding SelectedDepotTab}">
+                        <TabControl SelectedIndex="{Binding SelectedDepotTab, Converter={StaticResource ColonisationTabConverter}}">
                             <TabItem Header="Selected Depot">
                                 <Grid>
                                     <Grid.RowDefinitions>
@@ -660,7 +663,7 @@
                                 </Grid>
                             </TabItem>
                             <TabItem Header="Market Watchlist">
-                                <Grid>
+                                <Grid DataContext="{Binding WatchListController}">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="Auto" />
@@ -692,7 +695,7 @@
                                                       VerticalAlignment="Center"
                                                       IsReadOnly="True"
                                                       IsSynchronizedWithCurrentItem="False" />
-                                            <Button Command="{Binding OpenPopOut}"
+                                            <Button Command="{Binding ElementName=Root, Path=DataContext.OpenPopOut}"
                                                     CommandParameter="{x:Type popouts:MarketWatchListPopOutViewModel}"
                                                     Style="{DynamicResource EliteStyleImageButton}"
                                                     Width="35"
@@ -1761,7 +1764,7 @@
                                            Grid.ColumnSpan="2" />
 
                                 <Button Style="{DynamicResource EliteStyleButton}"
-                                        Command="{Binding AddRemoveWatchedMarketsCommand}"
+                                        Command="{Binding WatchListController.AddRemoveWatchedMarketsCommand}"
                                         CommandParameter="{Binding CurrentMarket.MarketID}"
                                         Content="Watchlist Add/Remove"
                                         Width="200"

@@ -8,6 +8,7 @@ using ODEliteTracker.Stores;
 using ODEliteTracker.Themes;
 using ODEliteTracker.Themes.Overlay;
 using ODEliteTracker.ViewModels;
+using ODEliteTracker.ViewModels.ModelViews.Colonisation;
 using ODEliteTracker.ViewModels.PopOuts;
 using ODEliteTracker.Views;
 using ODJournalDatabase.Database.Interfaces;
@@ -94,6 +95,8 @@ namespace ODEliteTracker.Extensions
             services.AddSingleton<NotificationService>();
             services.AddSingleton<IManageJournalEvents, JournalManager>();
             services.AddSingleton(provider => new CAPIService(provider.GetRequiredService<OAuthService>(), basePath));
+
+            services.AddScoped<MarketWatchListController>();
         }
 
         public static void AddStores(this IServiceCollection services)

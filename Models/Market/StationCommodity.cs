@@ -17,13 +17,16 @@ namespace ODEliteTracker.Models.Market
             Demand = item.Demand;
         }
 
-        public static StationCommodity AddTotal(int total)
+        public StationCommodity(StationCommodity item)
         {
-            return new()
-            {
-                Name = "Total",
-                Demand = total
-            };
+            Name = item.Name;
+            Name_Localised = item.Name_Localised;
+            Category = item.Category;
+            Category_Localised = item.Category_Localised;
+            BuyPrice = item.BuyPrice;
+            SellPrice = item.SellPrice;
+            Stock = item.Stock;
+            Demand = item.Demand;
         }
 
         public string Name { get; set; } = string.Empty;

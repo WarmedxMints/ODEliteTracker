@@ -38,7 +38,7 @@ namespace ODEliteTracker.Models.Colonisation
         {
             Name = currentMarket.StationName;
             MarketID = currentMarket.MarketID;
-            ItemsForPurchase = [.. currentMarket.ItemsForPurchase];
+            ItemsForPurchase = [.. currentMarket.ItemsForPurchase.Select(x => new StationCommodity(x))];
         }
 
         public string Name { get; set; }

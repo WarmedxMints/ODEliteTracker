@@ -1,20 +1,11 @@
-﻿using NetTopologySuite.GeometriesGraph;
-using Newtonsoft.Json.Linq;
-using ODEliteTracker.Controls;
+﻿using Newtonsoft.Json.Linq;
 using ODEliteTracker.Models;
-using ODEliteTracker.Models.Colonisation;
 using ODEliteTracker.Models.Settings;
 using ODEliteTracker.Stores;
 using ODEliteTracker.ViewModels.ModelViews.Colonisation;
 using ODEliteTracker.ViewModels.ModelViews.Market;
 using ODMVVM.Commands;
-using ODMVVM.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
 
@@ -22,22 +13,21 @@ namespace ODEliteTracker.ViewModels.PopOuts
 {
     public sealed class MarketWatchListPopOutViewModel : PopOutViewModel
     {
-        public MarketWatchListPopOutViewModel(ColonisationStore store, SharedDataStore sharedData, FleetCarrierDataStore fcDataStore, SettingsStore settings)
+        public MarketWatchListPopOutViewModel(ColonisationStore store, SharedDataStore sharedData, SettingsStore settings, MarketWatchListController watchListController)
         {
             this.colonisationStore = store;
             this.sharedData = sharedData;
             this.settings = settings;
-
+            this.watchListController = watchListController;
             this.colonisationStore.StoreLive += OnStoreLive;
-            this.sharedData.WatchedMarketUpdated += OnWatchedMarketUpdated;
-            this.sharedData.WatchedMarketsUpdated += OnWatchedMarketsUpdated;
-            this.sharedData.MarketEvent += (_, _) => CheckMarket();
-            this.settings.ColonisationSettings.WatchedMarketSortingChanged += ColonisationSettings_WatchedMarketSortingChanged;
 
-            AddRemoveWatchedMarketsCommand = new ODRelayCommand<ulong>(OnAddRemoveWatchedMarket);
+            this.watchListController.RecheckMarket += OnWatchlistRecheckMarket;
+            this.watchListController.UpdateWatchListMarket += OnUpdateWatchlistMarket;
+
             OnToggleStationMarket = new ODRelayCommand<bool>(ToggleStationMarket);
             ToggleCategoryColumnCommand = new ODRelayCommand<bool>(ToggleCategoryColumn);
 
+            this.watchListController.PropertyChanged += OnWatchListPropertyChanged;
             if (colonisationStore.IsLive)
             {
                 _ = OnStoreLive(null, true);
@@ -50,23 +40,21 @@ namespace ODEliteTracker.ViewModels.PopOuts
 
             this.sharedData.MarketEvent -= (_, _) => CheckMarket();
 
-            this.sharedData.WatchedMarketUpdated -= OnWatchedMarketUpdated;
-            this.sharedData.WatchedMarketsUpdated -= OnWatchedMarketsUpdated;
-            this.settings.ColonisationSettings.WatchedMarketSortingChanged -= ColonisationSettings_WatchedMarketSortingChanged;
+            this.watchListController.RecheckMarket += OnWatchlistRecheckMarket;
+            this.watchListController.UpdateWatchListMarket += OnUpdateWatchlistMarket;
         }
 
         private readonly ColonisationStore colonisationStore;
         private readonly SharedDataStore sharedData;
         private readonly SettingsStore settings;
+        private readonly MarketWatchListController watchListController;
 
         public override string Name => "Market Watchlist";
 
         public override bool IsLive => colonisationStore.IsLive;
 
         public override Uri TitleBarIcon => new("/Assets/Icons/watchlist.png", UriKind.Relative);
-
-        public ICommand AddRemoveWatchedMarketsCommand { get; }
-        public ICommand OnToggleStationMarket { get; }
+                public ICommand OnToggleStationMarket { get; }
         public ICommand ToggleCategoryColumnCommand { get; }
         public CommoditySorting CommoditySorting
         {
@@ -78,8 +66,9 @@ namespace ODEliteTracker.ViewModels.PopOuts
             }
         }
 
-        public string HeaderText => IsMouseOver ? "Markets" : selectedWatchedMarket?.Name ?? string.Empty;
+        public string HeaderText => IsMouseOver ? "Markets" : WatchListController.SelectedWatchedMarket?.Name ?? string.Empty;
 
+        public MarketWatchListController WatchListController => watchListController;
         private StationMarketVM? currentMarket;
         public StationMarketVM? CurrentMarket
         {
@@ -122,71 +111,13 @@ namespace ODEliteTracker.ViewModels.PopOuts
                     _ => CurrentMarket.ItemsForSale.OrderBy(x => x.Name_Localised),
                 };
             }
-        }
+        }       
 
-        private ObservableCollection<WatchedMarketVM> watchedMarkets = [];
-        public ObservableCollection<WatchedMarketVM> WatchedMarkets
-        {
-            get => watchedMarkets;
-            set
-            {
-                watchedMarkets = value;
-                OnPropertyChanged(nameof(WatchedMarkets));
-            }
-        }
-
-        private WatchedMarketVM? selectedWatchedMarket;
-        public WatchedMarketVM? SelectedWatchedMarket
-        {
-            get => selectedWatchedMarket;
-            set
-            {
-                if (value != selectedWatchedMarket)
-                {
-                    selectedWatchedMarket = value;
-                    CheckMarket();
-                    OnPropertyChanged(nameof(SelectedWatchedMarket));
-                    OnPropertyChanged(nameof(SelectedWatchedMarketCommodities));
-                }
-            }
-        }
-
-        public IEnumerable<StationCommodityVM>? SelectedWatchedMarketCommodities
-        {
-            get
-            {
-                return WatchedMarketSorting switch
-                {
-                    CommoditySorting.Name => selectedWatchedMarket?.Commodities.OrderBy(x => x.Name),
-                    CommoditySorting.Category => selectedWatchedMarket?.Commodities.OrderBy(x => x.Category).ThenBy(x => x.Name),
-                    CommoditySorting.Remaining => selectedWatchedMarket?.Commodities.OrderByDescending(x => x.Demand),
-                    _ => selectedWatchedMarket?.Commodities,
-                };
-            }
-        }
-
-        private CommoditySorting watchedMarketSorting;
-        public CommoditySorting WatchedMarketSorting
-        {
-            get => watchedMarketSorting;
-            set
-            {
-                watchedMarketSorting = value;
-                OnPropertyChanged(nameof(SelectedWatchedMarketCommodities));
-            }
-        }
-
-        public Visibility CategoryColumnVisibilty { get; private set; } = Visibility.Visible;
-
-        private void ColonisationSettings_WatchedMarketSortingChanged(object? sender, CommoditySorting e)
-        {
-            OnPropertyChanged(nameof(WatchedMarketSorting));
-            OnPropertyChanged(nameof(SelectedWatchedMarketCommodities));
-        }
+        public Visibility CategoryColumnVisibilty { get; private set; } = Visibility.Visible;        
 
         private void CheckMarket()
         {
-            if (sharedData.CurrentMarket == null || watchedMarkets.FirstOrDefault(x => x.MarketId == sharedData.CurrentMarket.MarketID) != null)
+            if (sharedData.CurrentMarket == null || WatchListController.SelectedWatchedMarket?.MarketId != sharedData.CurrentMarket.MarketID)
                 return;
 
             var market = StationMarketVM.CreateEmptyItemMarket(sharedData.CurrentMarket);
@@ -198,7 +129,7 @@ namespace ODEliteTracker.ViewModels.PopOuts
                 if (item.Stock <= 0)
                     continue;
 
-                var required = SelectedWatchedMarketCommodities?.FirstOrDefault(x => string.Equals(x.Name, item.Name) && x.Demand > 0);
+                var required = WatchListController.SelectedWatchedMarketCommodities?.FirstOrDefault(x => string.Equals(x.Name, item.Name) && x.Demand > 0);
 
                 if (required == null)
                     continue;
@@ -217,28 +148,30 @@ namespace ODEliteTracker.ViewModels.PopOuts
         private async Task OnStoreLive(object? sender, bool e)
         {
             if (e)
-            {
-                WatchedMarkets.ClearCollection();
-                WatchedMarkets.AddRange(sharedData.WatchedMarkets.Select(x => new WatchedMarketVM(x)));
-                SelectedWatchedMarket = WatchedMarkets.FirstOrDefault();
+            {  
                 OnPropertyChanged(nameof(HeaderText));
+                CheckMarket();
                 OnModelLive();
             }
         }
 
-        private void OnWatchedMarketUpdated(object? sender, WatchedMarket e)
+        private void OnUpdateWatchlistMarket(object? sender, WatchedMarketVM e)
         {
-            //TODO update just the market
-            WatchedMarkets.ClearCollection();
-            WatchedMarkets.AddRange(sharedData.WatchedMarkets.Select(x => new WatchedMarketVM(x)));
-            SelectedWatchedMarket ??= WatchedMarkets.FirstOrDefault(x => x.MarketId == e.MarketID);
+            if (WatchListController.SelectedWatchedMarket == null)
+                return;
+
+            UpdateCurrentMarketDemandForWatched(e);
         }
 
-        private void OnWatchedMarketsUpdated(object? sender, List<WatchedMarket> e)
+        private void UpdateCurrentMarketDemandForWatched(WatchedMarketVM vm)
         {
-            WatchedMarkets.ClearCollection();
-            WatchedMarkets.AddRange(e.Select(x => new WatchedMarketVM(x)));
-            SelectedWatchedMarket ??= WatchedMarkets.FirstOrDefault();
+            CurrentMarket?.UpdateWathedMarketDemands(vm);
+            OnPropertyChanged(nameof(CurrentMarketItems));
+        }
+
+        private void OnWatchlistRecheckMarket(object? sender, EventArgs e)
+        {
+            CheckMarket();
         }
 
         private void ToggleCategoryColumn(bool obj)
@@ -247,27 +180,21 @@ namespace ODEliteTracker.ViewModels.PopOuts
             OnPropertyChanged(nameof(CategoryColumnVisibilty));
         }
 
-        private void OnAddRemoveWatchedMarket(ulong obj)
-        {
-            sharedData.AddRemoveWatchedMarket(obj);
-        }
-
         public override void OnMouseEnter_Leave(bool mouseLeave)
         {
             base.OnMouseEnter_Leave(mouseLeave);
             OnPropertyChanged(nameof(HeaderText));  
         }
 
-        private void ToggleStationMarket(bool obj)
+        private void ToggleStationMarket(bool visiblt)
         {
-            StationMarketVisible = obj;
+            StationMarketVisible = visiblt;
         }
 
         protected override void ParamsUpdated()
         {
             var settings = AdditionalSettings?.ToObject<MarketWatchlistPopOutSettings>() ?? new();
             StationMarketVisible = settings.ShowMarket;
-            WatchedMarketSorting = settings.WatchedMarketSorting;
             CategoryColumnVisibilty = settings.CategoryColumnVisibilty;
         }
 
@@ -276,9 +203,19 @@ namespace ODEliteTracker.ViewModels.PopOuts
             return JObject.FromObject(new MarketWatchlistPopOutSettings()
             {
                 ShowMarket = StationMarketVisible,
-                WatchedMarketSorting = this.WatchedMarketSorting,
                 CategoryColumnVisibilty = this.CategoryColumnVisibilty
             });
+        }
+
+        private void OnWatchListPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            switch(e.PropertyName)
+            {
+                case nameof(watchListController.SelectedWatchedMarket):
+                    OnPropertyChanged(nameof(HeaderText));
+                    break;
+
+            }
         }
     }
 }

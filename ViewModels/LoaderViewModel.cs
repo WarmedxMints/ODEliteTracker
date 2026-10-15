@@ -36,7 +36,7 @@ namespace ODEliteTracker.ViewModels
 
         public async Task Initialise()
         {
-            await Task.Delay(1000);
+            await Task.Delay(3000);
             StatusText = "Checking For App Updates";
             await Task.Delay(1000);
 
@@ -80,6 +80,7 @@ namespace ODEliteTracker.ViewModels
                 }
                 await Task.Delay(1000);
             }
+
             StatusText = "Migrating Database";
             try
             {
@@ -89,6 +90,7 @@ namespace ODEliteTracker.ViewModels
             }
             catch (Microsoft.Data.Sqlite.SqliteException ex)
             {
+                ODDialogService.ShowNoOwner("Error Accessing Database", $"Error message : {ex.Message}");
                 StatusText = "Error Accessing Database\nApplication will now close";
                 Logger.Error(ex.Message);
                 if (ex?.StackTrace != null)
@@ -101,6 +103,7 @@ namespace ODEliteTracker.ViewModels
             }
             catch (Exception ex)
             {
+                ODDialogService.ShowNoOwner("Error Loading", $"Error message : {ex.Message}");
                 StatusText = "Error Loading\nApplication will now close";
                 Logger.Error(ex.Message);
                 if (ex?.StackTrace != null)

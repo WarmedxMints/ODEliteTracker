@@ -23,4 +23,19 @@
         <StackPanel Background="{DynamicResource CardBackground}"
                     Margin="-1,0,0,0" />
     </ItemsPanelTemplate>
+
+    <ContextMenu x:Key="TextBoxContextMenu" >
+        <MenuItem Command="ApplicationCommands.Copy"
+                  Style="{DynamicResource EliteContextMenuItemStyle}" />
+        <MenuItem Command="ApplicationCommands.Cut"
+                  Style="{DynamicResource EliteContextMenuItemStyle}" />
+        <MenuItem Command="ApplicationCommands.Paste"
+                  Style="{DynamicResource EliteContextMenuItemStyle}" />
+    </ContextMenu>
+
+    <Style TargetType="{x:Type TextBox}">
+        <Setter Property="ContextMenu"
+                Value="{StaticResource TextBoxContextMenu}" />
+    </Style>
+
 </ResourceDictionary>

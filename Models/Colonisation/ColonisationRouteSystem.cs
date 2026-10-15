@@ -1,8 +1,6 @@
-﻿using EliteJournalReader;
-using ODEliteTracker.Database.DTOs;
+﻿using ODEliteTracker.Database.DTOs;
 using ODEliteTracker.Models.Galaxy;
 using ODEliteTracker.ViewModels.ModelViews.Colonisation;
-using System.Dynamic;
 
 namespace ODEliteTracker.Models.Colonisation
 {

@@ -1,5 +1,4 @@
-﻿using ODEliteTracker.Models;
-using ODEliteTracker.ViewModels.ModelViews.Colonisation;
+﻿using ODEliteTracker.ViewModels.ModelViews.Colonisation;
 using System.ComponentModel;
 
 namespace ODEliteTracker.Models.Colonisation.Builds

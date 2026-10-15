@@ -1,40 +1,75 @@
-﻿using Newtonsoft.Json;
-
-namespace ODEliteTracker.Models.Settings
+﻿namespace ODEliteTracker.Models.Settings
 {
     public sealed class SpanshCSVSettings
     {
-        [JsonIgnore]
-        public EventHandler<CsvType>? CSVChanged;
-
-        public Dictionary<int, CsvType> SelectedCSV { get; set; } = [];
         public bool AutoCopySystemToClipboard { get; set; } = true;
+        public Dictionary<int,List<SpashAPISave>> CmdrApiSaveData { get; set; } = [];
+        public Dictionary<int, SpanshRouteTypeComboBox> SelectedApi { get; set; } = [];
+        public Dictionary<int, int> SelectedShipID { get; set; } = [];
+        public int RouteControllerSelectedTab { get; set; }
 
-        [JsonIgnore]
-        public CsvType this[int index]
+        internal SpanshRouteTypeComboBox GetApiSelection(int commanderId)
         {
-            get
+            if (SelectedApi.TryGetValue(commanderId, out var apiSelection))
             {
-                if (SelectedCSV.TryGetValue(index, out CsvType csvType))
-                {
-                    return csvType;
-                }
-                SelectedCSV.Add(index, CsvType.RoadToRiches);
-
-                return CsvType.RoadToRiches;
+                return SelectedApi[commanderId];
             }
-            set
+            SelectedApi.Add(commanderId, SpanshRouteTypeComboBox.GalaxyPlotter);
+
+            return SpanshRouteTypeComboBox.GalaxyPlotter;
+        }
+
+        internal void SetApiSelection(int commanderId, SpanshRouteTypeComboBox apiSelection)
+        {
+            if (SelectedApi.ContainsKey(commanderId))
             {
-                if (SelectedCSV.ContainsKey(index))
-                {
-                    SelectedCSV[index] = value;
-                    CSVChanged?.Invoke(this, value);
-                    return;
-                }
-
-                SelectedCSV.TryAdd(index, value);
-                CSVChanged?.Invoke(this, value);
+                SelectedApi[commanderId] = apiSelection;
+                return;
             }
+
+            SelectedApi.TryAdd(commanderId, apiSelection);
+        }        
+
+        internal List<SpashAPISave> GetApiSave(int commanderId)
+        {
+            if (CmdrApiSaveData.TryGetValue(commanderId, out var save))
+                return save;
+
+            var ret = new List<SpashAPISave>();
+            CmdrApiSaveData.TryAdd(commanderId, ret);
+            return ret;
+               
+        }
+
+        internal void SaveAPiData(int selectedCommanderID, List<SpashAPISave> saveData)
+        {
+            if (CmdrApiSaveData.ContainsKey(selectedCommanderID))
+                {
+                CmdrApiSaveData[selectedCommanderID] = saveData;
+                return;
+            }
+
+            CmdrApiSaveData.TryAdd(selectedCommanderID, saveData);
+        }
+
+        internal int GetSelectedShipID(int selectedCommanderID)
+        {
+            if (SelectedShipID.TryGetValue(selectedCommanderID, out var id))
+                return id;
+
+            SelectedShipID.TryAdd(selectedCommanderID, 0);
+            return 0;
+        }
+
+        internal void SetSelectedShipID(int selectedCommanderID, int value)
+        {
+            if (SelectedShipID.ContainsKey(selectedCommanderID))
+            {
+                SelectedShipID[selectedCommanderID] = value;
+                return;
+            }
+
+            SelectedShipID.TryAdd(selectedCommanderID, value);
         }
     }
 }

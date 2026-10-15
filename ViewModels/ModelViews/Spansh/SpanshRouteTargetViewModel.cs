@@ -1,21 +1,16 @@
 ﻿using ODEliteTracker.Models.Spansh;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ODEliteTracker.ViewModels.ModelViews.Spansh
 {
-    public sealed class ExplorationTargetViewModel
+    public sealed class SpanshRouteTargetViewModel
     {
-        public ExplorationTargetViewModel(ExplorationTarget target)
+        public SpanshRouteTargetViewModel(SpanshTargetSystem target)
         {
             Target = target;
             BodiesInfo = target.BodiesInfo?.Select(x => new BodiesInfoViewModel(x)).ToList() ?? [];
         }
 
-        public ExplorationTarget Target { get; }
+        public SpanshTargetSystem Target { get; }
         public string SystemName => Target.SystemName;
         public string? Property1 => Target.Property1;
         public string? Property2 => Target.Property2;

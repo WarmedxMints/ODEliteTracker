@@ -224,7 +224,7 @@ namespace ODEliteTracker.Stores
         }
 
         #region Event Listeners
-        private void OnShipCargoUpdated(object? sender, IEnumerable<ShipCargo>? e)
+        private void OnShipCargoUpdated(object? sender, ShipInfo? e)
         {
             //throw new NotImplementedException();
         }

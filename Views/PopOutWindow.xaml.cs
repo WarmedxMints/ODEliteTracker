@@ -1,7 +1,6 @@
 ﻿using ODEliteTracker.ViewModels.PopOuts;
 using ODMVVM.Helpers;
 using ODMVVM.Views;
-using System.Diagnostics;
 using System.Timers;
 using System.Windows;
 using System.Windows.Input;

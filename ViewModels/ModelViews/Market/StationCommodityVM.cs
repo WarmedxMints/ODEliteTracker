@@ -40,7 +40,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Market
         {
             get
             {
-                return category_Localised ?? Category;
+                return string.IsNullOrEmpty(category_Localised) ? Category : category_Localised;
             }
         }
         public int BuyPrice { get; set; }

@@ -71,7 +71,7 @@ namespace ODEliteTracker.ViewModels.PopOuts
             {
                 CurrentContainer.OnCurrentSessionUpdated(miningData, EventArgs.Empty);
                 OnShipChanged(sharedData, sharedData.CurrentShipInfo);
-                OnCargoUpdated(sharedData, sharedData.CurrentShipCargo);
+                OnCargoUpdated(sharedData, sharedData.CurrentShipInfo);
             }
             OnModelLive();
         }
@@ -81,9 +81,16 @@ namespace ODEliteTracker.ViewModels.PopOuts
             CurrentShip = e == null ? null : new(e);
         }
 
-        private void OnCargoUpdated(object? sender, IEnumerable<ShipCargo>? e)
+        private void OnCargoUpdated(object? sender, ShipInfo? e)
         {
-            CurrentShip?.OnCargoUpdated(e, "Limpet");
+            if (e == null)
+                return;
+
+            if (CurrentShip?.ShipInfo != e)
+            {
+                OnShipChanged(sender, e);
+            }
+            CurrentShip?.OnCargoUpdated(e.Cargo, "Limpet");
             OnPropertyChanged(nameof(LimpetCount));
         }
     }

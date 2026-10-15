@@ -1,5 +1,4 @@
 ﻿using EliteJournalReader;
-using ODEliteTracker.Models.Galaxy;
 using ODEliteTracker.Models.Spansh;
 using Position = ODEliteTracker.Models.Galaxy.Position;
 
@@ -17,7 +16,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Galaxy
             Position = new(starPos);
         }
 
-        public SystemPositionVM(Jump system)
+        public SystemPositionVM(ApiColonisationSystemJump system)
         {
             Position = new(system.X, system.Y, system.Z);
         }

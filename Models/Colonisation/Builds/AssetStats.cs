@@ -1,6 +1,4 @@
-﻿using ODEliteTracker.Models;
-
-namespace ODEliteTracker.Models.Colonisation.Builds
+﻿namespace ODEliteTracker.Models.Colonisation.Builds
 {
     [Flags]
     public enum AssetFilter

@@ -43,6 +43,7 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*" />
                         <RowDefinition Height="300" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
                     <TabControl BorderThickness="0"
@@ -300,6 +301,33 @@
                                                         Binding="{Binding Count}" />
                                 </DataGrid.Columns>
                             </DataGrid>
+                        </Grid>
+                    </Border>
+
+                    <Border Background="{DynamicResource CardBackground}"
+                            Grid.Row="2"
+                            CornerRadius="5"
+                            Margin="5"
+                            Padding="5">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="Carrier Selection"
+                                       FontSize="30"
+                                       Foreground="{DynamicResource Header}" />
+                            <buttons:SwitchToggleButton HorizontalAlignment="Center"
+                                                        VerticalAlignment="Center"
+                                                        Grid.Row="1"
+                                                        FontSize="21"
+                                                        HorizontalContentAlignment="Left"
+                                                        VerticalContentAlignment="Center"
+                                                        IsChecked="{Binding CarrierSelect}"
+                                                        ToolTip="Selects the carrier in use for Colonisation and Trade Views"
+                                                        OffText="Personal Carrier"
+                                                        OnText="Squadron Carrier" />
                         </Grid>
                     </Border>
                 </Grid>

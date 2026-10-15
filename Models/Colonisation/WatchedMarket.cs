@@ -57,5 +57,18 @@ namespace ODEliteTracker.Models.Colonisation
                 }
             }
         }
+
+        internal void UpdatePurchaseOrders(StationMarket market)
+        {
+            ItemsForPurchase.Clear();
+
+            foreach (var item in market.ItemsForPurchase)
+            {
+                if (item.Demand > 0)
+                {
+                    ItemsForPurchase.Add(new StationCommodity(item));
+                }
+            }
+        }
     }
 }

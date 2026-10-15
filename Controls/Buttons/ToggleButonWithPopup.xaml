@@ -23,8 +23,7 @@
                       Style="{Binding ElementName=Root, Path=ButtonStyle}" />
 
         <Popup IsOpen="{Binding IsChecked, ElementName=ToggleBtn}"
-               Closed="Popup_Closed"
-               ButtonBase.Click="Popup_Click"
+               Closed="Popup_Closed"               
                x:Name="Popup"
                PlacementTarget="{Binding ElementName=ToggleBtn}"
                VerticalOffset="5"
@@ -32,6 +31,7 @@
             <Border Background="{DynamicResource ViewBackground}"
                     BorderBrush="{DynamicResource PrimaryControlBorder}"
                     Padding="5"
+                    ButtonBase.Click="Popup_Click"
                     BorderThickness="1">
                 <ContentControl Content="{Binding ElementName=Root, Path=PopupContent}" />
             </Border>

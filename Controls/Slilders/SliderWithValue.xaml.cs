@@ -88,6 +88,18 @@ namespace ODEliteTracker.Controls.Sliders
 
 
 
+        public GridLength NumberColumnWidth
+        {
+            get { return (GridLength)GetValue(NumberColumnWidthProperty); }
+            set { SetValue(NumberColumnWidthProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for NumberColumnWidth.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty NumberColumnWidthProperty =
+            DependencyProperty.Register(nameof(NumberColumnWidth), typeof(GridLength), typeof(SliderWithValue), new PropertyMetadata(new GridLength(70)));
+
+
+
         public double TickFrequency
         {
             get { return (double)GetValue(TickFrequencyProperty); }

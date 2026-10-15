@@ -11,18 +11,36 @@
                     FontFamily="{StaticResource Eurostile}"
                     AllowsTransparency="True"
                     Background="Transparent"
-                    Height="450"
-                    Width="450"
+                    Height="550"
+                    Width="550"
                     WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <DropShadowEffect x:Key="shadow"
                           Opacity="1"
-                          BlurRadius="500"
+                          BlurRadius="50"
                           Color="#FFBE6A1D"
                           RenderingBias="Quality" />
     </Window.Resources>
+    <Window.Triggers>
+        <EventTrigger RoutedEvent="Window.Loaded">
+            <EventTrigger.Actions>
+                <BeginStoryboard>
+                    <Storyboard>
+                        <DoubleAnimation Storyboard.TargetName="Grid"
+                                         Storyboard.TargetProperty="Height"
+                                         To="400"
+                                         Duration="0:0:0.5"
+                                         BeginTime="0:0:0.05"/>
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger.Actions>
+        </EventTrigger>
+    </Window.Triggers>
     <Grid HorizontalAlignment="Center"
-          VerticalAlignment="Center">
+          VerticalAlignment="Center"
+          Height="0"
+          Margin="25"
+          x:Name="Grid">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />

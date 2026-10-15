@@ -102,7 +102,7 @@ namespace ODEliteTracker.ViewModels
                 _ = OnStoreLive(null, true);
             }
 
-            this.fcDataStore.CarrierStockUpdated += OnCarrierStockUpdated;
+            this.fcDataStore.SwitchableCarrierStockUpdated += OnCarrierStockUpdated;
             this.fcDataStore.StoreLive += OnFcStoreLive;
 
             if (fcDataStore.IsLive)
@@ -141,7 +141,7 @@ namespace ODEliteTracker.ViewModels
             this.sharedData.CurrentSystemChanged -= OnCurrentSystemChanged;
             this.sharedData.StoreLive -= OnSharedDataLive;
 
-            this.fcDataStore.CarrierStockUpdated -= OnCarrierStockUpdated;
+            this.fcDataStore.SwitchableCarrierStockUpdated -= OnCarrierStockUpdated;
             this.fcDataStore.StoreLive -= OnFcStoreLive;
 
             this.settings.ColonisationSettings.CommoditySortingChanged -= ColonisationSettings_CommoditySortingChanged;
@@ -185,6 +185,7 @@ namespace ODEliteTracker.ViewModels
         public ColonisationRoutePlannerViewModel RoutePlanner => routePlanner;
         public override bool IsLive { get => colonisationStore.IsLive; }
         public GridSize ColonisationGridSize => settings.ColonisationSettings.ColonisationGridSize;
+
         public string ActiveButtonText
         {
             get
@@ -193,6 +194,24 @@ namespace ODEliteTracker.ViewModels
                     return string.Empty;
 
                 return selectedDepot.Inactive ? "Set Active" : "Set Inactive";
+            }
+        }
+
+        public bool CarrierSelect
+        {
+            get
+            {
+                return fcDataStore.SwitchableCarrierType switch
+                {
+                    CarrierType.Personal => false,
+                    CarrierType.Squadron => true,
+                    _ => false,
+                };
+            }
+            set
+            {
+                fcDataStore.SwitchableCarrierType = value ? CarrierType.Squadron : CarrierType.Personal;
+                OnPropertyChanged();
             }
         }
 
@@ -610,6 +629,11 @@ namespace ODEliteTracker.ViewModels
             if (e == null)
                 return;
 
+            var known = Depots.FirstOrDefault(x => x.MarketID == e.MarketID);
+
+            if (known != null)
+                return;
+
             var newDepot = new ConstructionDepotVM(e, buildStatsHelper);
             newDepot.UpdateMostRecentPurchase(sharedData.MarketPurchases);
             Depots.AddItem(newDepot);
@@ -661,7 +685,7 @@ namespace ODEliteTracker.ViewModels
                 CheckMarket();
                 if (colonisationStore.ShoppingList.Contains(Tuple.Create(known.MarketID, known.SystemAddress)))
                 {
-                    ShoppingList.PopulateResources(fcDataStore.CarrierData, sharedData.MarketPurchases);
+                    ShoppingList.PopulateResources(fcDataStore.SwitchableCarrierData, sharedData.MarketPurchases);
                     OnPropertyChanged(nameof(ShoppingListResources));
                 }
                 return;
@@ -676,7 +700,7 @@ namespace ODEliteTracker.ViewModels
             if (this.sharedData.CurrentShipInfo != null)
                 OnShipChanged(null, this.sharedData.CurrentShipInfo);
             if (this.sharedData.CurrentShipCargo != null)
-                OnCargoUpdated(null, this.sharedData.CurrentShipCargo);
+                OnCargoUpdated(null, this.sharedData.CurrentShipInfo);
 
             ColonisationBuildTotals.OnSharedDataLive();
         }
@@ -734,7 +758,7 @@ namespace ODEliteTracker.ViewModels
 
                 if (depots.Any())
                 {
-                    ShoppingList.AddDepots(depots, fcDataStore.CarrierData, sharedData.MarketPurchases);
+                    ShoppingList.AddDepots(depots, fcDataStore.SwitchableCarrierData, sharedData.MarketPurchases);
                     OnPropertyChanged(nameof(ShoppingListResources));
                 }
             }
@@ -866,13 +890,21 @@ namespace ODEliteTracker.ViewModels
         private void OnShipChanged(object? sender, ShipInfo? e)
         {
             CurrentShip = e == null ? null : new(e);
-            OnCargoUpdated(null, sharedData.CurrentShipCargo);
+            OnCargoUpdated(null, e);
             OnPropertyChanged(nameof(EstimatedTrips));
         }
 
-        private void OnCargoUpdated(object? sender, IEnumerable<ShipCargo>? e)
+        private void OnCargoUpdated(object? sender, ShipInfo? e)
         {
-            CurrentShip?.OnCargoUpdated(e);
+            if (e == null)
+                return;
+
+            if (CurrentShip == null || CurrentShip.ShipInfo != e)
+            {
+                OnShipChanged(sender, e);
+                return;
+            }
+            CurrentShip.OnCargoUpdated(e.Cargo);
         }
 
         private void OnReleaseCommandSystem(object? sender, CommanderSystem e)
@@ -904,9 +936,9 @@ namespace ODEliteTracker.ViewModels
 
         private async Task OnFcStoreLive(object? sender, bool e)
         {
-            if (e && fcDataStore.CarrierData != null)
+            if (e && fcDataStore.SwitchableCarrierData != null)
             {
-                OnCarrierStockUpdated(sender, fcDataStore.CarrierData);
+                OnCarrierStockUpdated(sender, fcDataStore.SwitchableCarrierData);
             }
         }
 
@@ -957,13 +989,13 @@ namespace ODEliteTracker.ViewModels
 
             if (colonisationStore.SetDepotShoppingState(depot))
             {
-                ShoppingList.AddDepot(depot, fcDataStore.CarrierData, sharedData.MarketPurchases);
+                ShoppingList.AddDepot(depot, fcDataStore.SwitchableCarrierData, sharedData.MarketPurchases);
                 OnPropertyChanged(nameof(ShoppingListResources));
                 OnPropertyChanged(nameof(EstimatedTrips));
                 return;
             }
 
-            ShoppingList.RemoveDepot(depot, fcDataStore.CarrierData, sharedData.MarketPurchases);
+            ShoppingList.RemoveDepot(depot, fcDataStore.SwitchableCarrierData, sharedData.MarketPurchases);
             OnPropertyChanged(nameof(ShoppingListResources));
             OnPropertyChanged(nameof(EstimatedTrips));
         }

@@ -9,6 +9,7 @@ using ODEliteTracker.Themes;
 using ODEliteTracker.Themes.Overlay;
 using ODEliteTracker.ViewModels;
 using ODEliteTracker.ViewModels.ModelViews.Colonisation;
+using ODEliteTracker.ViewModels.ModelViews.Spansh;
 using ODEliteTracker.ViewModels.PopOuts;
 using ODEliteTracker.Views;
 using ODJournalDatabase.Database.Interfaces;
@@ -63,6 +64,7 @@ namespace ODEliteTracker.Extensions
             services.AddTransient<MarketWatchListPopOutViewModel>();
             services.AddTransient<SettlementActivityPopOutVM>();
             services.AddTransient<StraightLineToolPopOut>();
+            services.AddTransient<ShipStatsPopOutVM>();
         }
 
         public static void AddViewModels(this IServiceCollection services)
@@ -94,9 +96,15 @@ namespace ODEliteTracker.Extensions
             services.AddSingleton<JournalEventParser>();
             services.AddSingleton<NotificationService>();
             services.AddSingleton<IManageJournalEvents, JournalManager>();
-            services.AddSingleton(provider => new CAPIService(provider.GetRequiredService<OAuthService>(), basePath));
+            services.AddSingleton(provider => new CAPIService(provider.GetRequiredService<OAuthService>(), basePath));            
+        }
 
+        public static void AddControllers(this IServiceCollection services)
+        {
             services.AddScoped<MarketWatchListController>();
+            services.AddScoped<SpanshRouteController>();
+            services.AddSingleton<SpanshAPIController>();
+            services.AddSingleton<StationMarketController>();
         }
 
         public static void AddStores(this IServiceCollection services)
@@ -111,7 +119,7 @@ namespace ODEliteTracker.Extensions
             services.AddSingleton<TickDataStore>();
             services.AddSingleton<FleetCarrierDataStore>();
             services.AddSingleton<BookmarkDataStore>();
-            services.AddSingleton<SpanshCsvStore>();
+            services.AddSingleton<SpanshRouteStore>();
             services.AddSingleton<MiningDataStore>();
         }
 
@@ -164,7 +172,7 @@ namespace ODEliteTracker.Extensions
                 return new SocketsHttpHandler
                 {
                     PooledConnectionLifetime = TimeSpan.FromSeconds(5),
-                    ConnectTimeout = TimeSpan.FromSeconds(10),
+                    ConnectTimeout = TimeSpan.FromSeconds(30),
                 };
             });
 
@@ -207,8 +215,8 @@ namespace ODEliteTracker.Extensions
                 {
                     return new SocketsHttpHandler
                     {
-                        PooledConnectionLifetime = TimeSpan.FromSeconds(5),
-                        ConnectTimeout = TimeSpan.FromSeconds(10),
+                        PooledConnectionLifetime = TimeSpan.FromSeconds(60),
+                        ConnectTimeout = TimeSpan.FromSeconds(30),
                     };
                 });
         }

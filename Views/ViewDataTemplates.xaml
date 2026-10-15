@@ -74,4 +74,7 @@
     <DataTemplate DataType="{x:Type popoutsVMs:StraightLineToolPopOut}">
         <popouts:StraightLinePopOut />
     </DataTemplate>
+    <DataTemplate DataType="{x:Type popoutsVMs:ShipStatsPopOutVM}">
+        <popouts:ShipStatsPopOut />
+    </DataTemplate>
 </ResourceDictionary>

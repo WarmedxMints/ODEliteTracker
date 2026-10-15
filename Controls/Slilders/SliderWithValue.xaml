@@ -10,7 +10,7 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
-            <ColumnDefinition Width="70" />
+            <ColumnDefinition Width="{Binding ElementName=Root, Path=NumberColumnWidth}" />
         </Grid.ColumnDefinitions>
 
         <Slider x:Name="Slider"

@@ -1,6 +1,6 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-
+    
     <Style TargetType="{x:Type MenuItem}"
            x:Key="EliteMenuStyle">
         <Setter Property="Foreground"
@@ -110,6 +110,13 @@
                             <Setter Property="Background"
                                     Value="{DynamicResource EliteBtnFG}" />
                         </Trigger>
+                        <Trigger Property="IsEnabled"
+                                 Value="False">
+                            <Setter Property="Foreground"
+                                    Value="{DynamicResource PrimaryForegroundDisabled}" />
+                            <Setter Property="Background"
+                                    Value="{DynamicResource CardBackground}" />
+                        </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
@@ -133,12 +140,13 @@
                 <ControlTemplate TargetType="{x:Type Separator}">
                     <Rectangle HorizontalAlignment="Stretch"
                                Fill="{DynamicResource EliteBtnBG}"
-                               Height="2" />
+                               Height="2"
+                               Margin="4"/>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-    </Style>
-
+    </Style>  
+    
     <Style TargetType="{x:Type Separator}"
            x:Key="AssestMenuSeparatorStyle">
         <Setter Property="BorderThickness"

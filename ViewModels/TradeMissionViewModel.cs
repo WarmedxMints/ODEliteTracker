@@ -35,7 +35,7 @@ namespace ODEliteTracker.ViewModels
                 _ = OnStoreLive(null, true);
             }
 
-            this.fcDataStore.CarrierStockUpdated += OnCarrierStockUpdated;
+            this.fcDataStore.SwitchableCarrierStockUpdated += OnCarrierStockUpdated;
             this.fcDataStore.StoreLive += OnFcStoreLive;
 
             if (fcDataStore.IsLive)
@@ -52,7 +52,7 @@ namespace ODEliteTracker.ViewModels
 
         public override bool IsLive => missionStore.IsLive;
         public GridSize ActiveMissionsGridSize => settings.TradeSettings.ActiveMissionsGridSize;
-        public List<TradeMissionVM> missions { get; } = [];
+        public List<TradeMissionVM> Missions { get; } = [];
         public IEnumerable<TradeMissionVM> ActiveMissions { get; private set; } = [];
         public IEnumerable<TradeMissionVM> CompletedMissions { get; private set; } = [];
         public ObservableCollection<StationTradeStackVM> StationStacks { get; private set; } = [];
@@ -78,11 +78,11 @@ namespace ODEliteTracker.ViewModels
                     if (sharedData.CurrentShipInfo != null)
                         OnShipChanged(null, sharedData.CurrentShipInfo);
                     if (sharedData.CurrentShipCargo != null)
-                        OnCargoUpdated(null, sharedData.CurrentShipCargo);
+                        OnCargoUpdated(null, sharedData.CurrentShipInfo);
                 }
 
-                missions.Clear();
-                missions.AddRange(missionStore.Missions.Select(x =>  new TradeMissionVM(x)));
+                Missions.Clear();
+                Missions.AddRange(missionStore.Missions.Select(x =>  new TradeMissionVM(x)));
                 BuildStacks();
                 OnModelLive(true);
             }
@@ -90,18 +90,18 @@ namespace ODEliteTracker.ViewModels
 
         private void OnMissionAdded(object? sender, TradeMission e)
         {
-            var known = missions.FirstOrDefault(x => x.MissionID == e.MissionID);
+            var known = Missions.FirstOrDefault(x => x.MissionID == e.MissionID);
 
             if (known != null)
                 return;
 
-            missions.Add(new(e));
+            Missions.Add(new(e));
             BuildStacks();
         }
 
         private void OnMissionUpdated(object? sender, TradeMission e)
         {
-            var known = missions.FirstOrDefault(x => x.MissionID == e.MissionID);
+            var known = Missions.FirstOrDefault(x => x.MissionID == e.MissionID);
 
             if (known == null)
                 return;
@@ -112,14 +112,14 @@ namespace ODEliteTracker.ViewModels
 
         private void OnMissionsUpdated(object? sender, EventArgs e)
         {
-            missions.Clear();
-            missions.AddRange(missionStore.Missions.Select(x => new TradeMissionVM(x)));
+            Missions.Clear();
+            Missions.AddRange(missionStore.Missions.Select(x => new TradeMissionVM(x)));
             BuildStacks();
         }
 
         private void OnCargoDepot(object? sender, TradeMission e)
         {
-            var known = missions.FirstOrDefault(x => x.MissionID == e.MissionID);
+            var known = Missions.FirstOrDefault(x => x.MissionID == e.MissionID);
 
             if (known == null)
                 return;
@@ -133,15 +133,22 @@ namespace ODEliteTracker.ViewModels
             CurrentShip = e == null ? null : new(e);
         }
 
-        private void OnCargoUpdated(object? sender, IEnumerable<ShipCargo>? e)
+        private void OnCargoUpdated(object? sender, ShipInfo? e)
         {
-            CurrentShip?.OnCargoUpdated(e);
+            if (e == null)
+                return;
+
+            if (CurrentShip?.ShipInfo != e)
+            {
+                OnShipChanged(sender, e);
+            }
+            CurrentShip?.OnCargoUpdated(e.Cargo);
         }
 
         private void BuildStacks()
         {
-            ActiveMissions = missions.Where(x => x.CurrentState < MissionState.Completed);
-            CompletedMissions = missions.Where(x => x.CurrentState == MissionState.Completed).OrderByDescending(x => x.CompletionTime);
+            ActiveMissions = Missions.Where(x => x.CurrentState < MissionState.Completed);
+            CompletedMissions = Missions.Where(x => x.CurrentState == MissionState.Completed).OrderByDescending(x => x.CompletionTime);
             OnPropertyChanged(nameof(ActiveMissions));
             OnPropertyChanged(nameof(CompletedMissions));
 
@@ -181,14 +188,16 @@ namespace ODEliteTracker.ViewModels
             missionStore.OnCargoDepot -= OnCargoDepot;
             sharedData.ShipChangedEvent -= OnShipChanged;
             sharedData.ShipCargoUpdatedEvent -= OnCargoUpdated;
+            fcDataStore.SwitchableCarrierStockUpdated -= OnCarrierStockUpdated;
+            fcDataStore.StoreLive -= OnFcStoreLive;
             expiryTimeUpdateTimer.Dispose();
         }
 
         private Task OnFcStoreLive(object? sender, bool e)
         {
-            if (e && fcDataStore.CarrierData != null)
+            if (e && fcDataStore.SwitchableCarrierData != null)
             {
-                OnCarrierStockUpdated(sender, fcDataStore.CarrierData);
+                OnCarrierStockUpdated(sender, fcDataStore.SwitchableCarrierData);
             }
             return Task.CompletedTask;
         }
@@ -207,9 +216,7 @@ namespace ODEliteTracker.ViewModels
 
                 stack.CarrierStockInt = item.StockCount;               
                 stack.CarrierDiffInt = item.StockCount == 0 ? 0 : item.StockCount - stack.CommodityCountInt;
-            }
-
-           
+            }           
         }
     }
 }

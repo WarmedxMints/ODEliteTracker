@@ -1,4 +1,4 @@
-﻿using ODEliteTracker.Models;
+﻿using ODEliteTracker.Models.Spansh;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
@@ -9,7 +9,7 @@ namespace ODEliteTracker.WPFConverters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is CsvType type && parameter is CsvType param)
+            if (value is SpanshRouteType type && parameter is SpanshRouteType param)
             {
                 var visible = type == param;
 

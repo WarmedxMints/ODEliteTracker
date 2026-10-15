@@ -5,16 +5,28 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:ODEliteTracker.Views"
              xmlns:viewmodels="clr-namespace:ODEliteTracker.ViewModels"
-             xmlns:models="clr-namespace:ODEliteTracker.Models"
+             xmlns:spanshModels="clr-namespace:ODEliteTracker.Models.Spansh"
              xmlns:controls="clr-namespace:ODEliteTracker.Controls.Spansh"
              xmlns:busyIndicator="https://github.com/moh3ngolshani/BusyIndicator"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:textbox="clr-namespace:ODEliteTracker.Controls.TextBox"
+             xmlns:models="clr-namespace:ODEliteTracker.Models"
+             xmlns:buttons="clr-namespace:ODEliteTracker.Controls.Buttons"
+             xmlns:sliders="clr-namespace:ODEliteTracker.Controls.Sliders"
+             xmlns:odmvvm="clr-namespace:ODMVVM.Helpers;assembly=ODMVVM"
+             xmlns:popouts="clr-namespace:ODEliteTracker.ViewModels.PopOuts"
              d:DataContext="{d:DesignInstance viewmodels:SpanshViewModel}"
+             x:Name="Root"
              mc:Ignorable="d"
-             d:DesignHeight="450"
-             d:DesignWidth="800">
+             d:DesignHeight="1080"
+             d:DesignWidth="1920">
     <UserControl.Resources>
-        <sys:Double x:Key="ButtonWidth">130</sys:Double>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Controls/Spansh/SpanshAPITemplates.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <sys:Double x:Key="ButtonWidth">130</sys:Double>
+        </ResourceDictionary>
     </UserControl.Resources>
     <busyIndicator:BusyMask x:Name="BusyIndicator"
                             IsBusy="{Binding IsBusy}"
@@ -38,21 +50,71 @@
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition />
                         <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <StackPanel Height="40"
                                 Orientation="Horizontal">
-                        <TextBlock Text="Spansh CSV Parser"
+                        <TextBlock Text="Spansh Route Parser"
                                    Foreground="{DynamicResource Header}"
                                    FontSize="22"
                                    VerticalAlignment="Center"
                                    Margin="10,0,20,0" />
 
-                        <Button Content="Import CSV"
-                                Style="{DynamicResource EliteStyleButton}"
-                                Width="100"
-                                Height="30"
-                                Command="{Binding ImportCSV}"
-                                Margin="0,0,10,0" />
+                        <buttons:ToggleButonWithPopup ToggleButtonContent="Import"
+                                                      Margin="0,0,10,0"
+                                                      Width="100"
+                                                      Height="30">
+                            <buttons:ToggleButonWithPopup.PopupContent>
+                                <Menu FontSize="18"
+                                      Width="200"
+                                      Background="{DynamicResource ViewBackground}"
+                                      HorizontalAlignment="Left">
+                                    <Menu.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Vertical" />
+                                        </ItemsPanelTemplate>
+                                    </Menu.ItemsPanel>
+                                    <MenuItem Header="Import CSV"
+                                              Style="{DynamicResource EliteMenuStyle}"
+                                              Click="ImportCSV" />
+                                    <MenuItem Header="Import Json"
+                                              Style="{DynamicResource EliteMenuStyle}">
+                                        <MenuItem Header="Road To Riches Route"
+                                                  Style="{DynamicResource EliteMenuStyle}"
+                                                  Tag="{x:Static spanshModels:SpanshRouteType.RoadToRiches}"
+                                                  Click="ImportJson" />
+                                        <MenuItem Header="Neutron Route"
+                                                  Style="{DynamicResource EliteMenuStyle}"
+                                                  Tag="{x:Static spanshModels:SpanshRouteType.NeutronRoute}"
+                                                  Click="ImportJson" />
+                                        <MenuItem Header="World Type Route"
+                                                  Style="{DynamicResource EliteMenuStyle}"
+                                                  Tag="{x:Static spanshModels:SpanshRouteType.WorldTypeRoute}"
+                                                  Click="ImportJson" />
+                                        <MenuItem Header="Tourist Planner Route"
+                                                  Style="{DynamicResource EliteMenuStyle}"
+                                                  Tag="{x:Static spanshModels:SpanshRouteType.TouristRoute}"
+                                                  Click="ImportJson" />
+                                        <MenuItem Header="Fleet Carrier Route"
+                                                  Style="{DynamicResource EliteMenuStyle}"
+                                                  Tag="{x:Static spanshModels:SpanshRouteType.FleetCarrier}"
+                                                  Click="ImportJson" />
+                                        <MenuItem Header="Galaxy Plotter Route"
+                                                  Style="{DynamicResource EliteMenuStyle}"
+                                                  Tag="{x:Static spanshModels:SpanshRouteType.GalaxyPlotter}"
+                                                  Click="ImportJson" />
+                                        <MenuItem Header="Exobiology Route"
+                                                  Style="{DynamicResource EliteMenuStyle}"
+                                                  Tag="{x:Static spanshModels:SpanshRouteType.Exobiology}"
+                                                  Click="ImportJson" />
+                                        <MenuItem Header="Colonisation Route"
+                                                  Style="{DynamicResource EliteMenuStyle}"
+                                                  Tag="{x:Static spanshModels:SpanshRouteType.Colonisation}"
+                                                  Click="ImportJson" />
+                                    </MenuItem>
+                                </Menu>
+                            </buttons:ToggleButonWithPopup.PopupContent>
+                        </buttons:ToggleButonWithPopup>
                     </StackPanel>
                     <ScrollViewer HorizontalScrollBarVisibility="Auto"
                                   Grid.Column="1"
@@ -61,69 +123,83 @@
                                     Height="40">
                             <Button Content="Road to Riches"
                                     FontSize="18"
-                                    Command="{Binding SetCurrentCSVType}"
-                                    CommandParameter="{x:Static models:CsvType.RoadToRiches}"
+                                    Command="{Binding RouteController.SetCurrentRouteTypeCommand}"
+                                    CommandParameter="{x:Static spanshModels:SpanshRouteType.RoadToRiches}"
                                     Style="{DynamicResource TabButton}"
                                     Width="{StaticResource ButtonWidth}" />
                             <Button Content="Neutron Plotter"
                                     FontSize="18"
-                                    Command="{Binding SetCurrentCSVType}"
-                                    CommandParameter="{x:Static models:CsvType.NeutronRoute}"
+                                    Command="{Binding RouteController.SetCurrentRouteTypeCommand}"
+                                    CommandParameter="{x:Static spanshModels:SpanshRouteType.NeutronRoute}"
                                     Style="{DynamicResource TabButton}"
-                                    Width="{StaticResource ButtonWidth}"/>
+                                    Width="{StaticResource ButtonWidth}" />
                             <Button Content="World Type"
                                     FontSize="18"
-                                    Command="{Binding SetCurrentCSVType}"
-                                    CommandParameter="{x:Static models:CsvType.WorldTypeRoute}"
+                                    Command="{Binding RouteController.SetCurrentRouteTypeCommand}"
+                                    CommandParameter="{x:Static spanshModels:SpanshRouteType.WorldTypeRoute}"
                                     Style="{DynamicResource TabButton}"
                                     Width="{StaticResource ButtonWidth}" />
                             <Button Content="Tourist Planner"
                                     FontSize="18"
-                                    Command="{Binding SetCurrentCSVType}"
-                                    CommandParameter="{x:Static models:CsvType.TouristRoute}"
+                                    Command="{Binding RouteController.SetCurrentRouteTypeCommand}"
+                                    CommandParameter="{x:Static spanshModels:SpanshRouteType.TouristRoute}"
                                     Style="{DynamicResource TabButton}"
                                     Width="{StaticResource ButtonWidth}" />
                             <Button Content="Fleet Carrier"
                                     FontSize="18"
-                                    Command="{Binding SetCurrentCSVType}"
-                                    CommandParameter="{x:Static models:CsvType.FleetCarrier}"
+                                    Command="{Binding RouteController.SetCurrentRouteTypeCommand}"
+                                    CommandParameter="{x:Static spanshModels:SpanshRouteType.FleetCarrier}"
                                     Style="{DynamicResource TabButton}"
                                     Width="{StaticResource ButtonWidth}" />
                             <Button Content="Galaxy Plotter"
                                     FontSize="18"
-                                    Command="{Binding SetCurrentCSVType}"
-                                    CommandParameter="{x:Static models:CsvType.GalaxyPlotter}"
+                                    Command="{Binding RouteController.SetCurrentRouteTypeCommand}"
+                                    CommandParameter="{x:Static spanshModels:SpanshRouteType.GalaxyPlotter}"
                                     Style="{DynamicResource TabButton}"
                                     Width="140" />
                             <Button Content="Exobiology"
                                     FontSize="18"
-                                    Command="{Binding SetCurrentCSVType}"
-                                    CommandParameter="{x:Static models:CsvType.Exobiology}"
+                                    Command="{Binding RouteController.SetCurrentRouteTypeCommand}"
+                                    CommandParameter="{x:Static spanshModels:SpanshRouteType.Exobiology}"
                                     Style="{DynamicResource TabButton}"
                                     Width="{StaticResource ButtonWidth}" />
                             <Button Content="Colonisation"
                                     FontSize="18"
-                                    Command="{Binding SetCurrentCSVType}"
-                                    CommandParameter="{x:Static models:CsvType.Colonisation}"
+                                    Command="{Binding RouteController.SetCurrentRouteTypeCommand}"
+                                    CommandParameter="{x:Static spanshModels:SpanshRouteType.Colonisation}"
                                     Style="{DynamicResource TabButton}"
                                     Width="{StaticResource ButtonWidth}" />
                         </StackPanel>
                     </ScrollViewer>
                     <CheckBox Style="{DynamicResource EliteStyleCheckBox}"
                               Content="Auto Copy Next System&#10;To Clipboard"
-                              Foreground="{DynamicResource PrimaryControlForeground}"
-                              IsChecked="{Binding AutoCopyNextSystem}"
-                              Margin="10,0"
+                              HorizontalAlignment="Center"
                               VerticalAlignment="Center"
+                              VerticalContentAlignment="Center"
+                              Foreground="{DynamicResource PrimaryControlForeground}"
+                              IsChecked="{Binding RouteController.AutoCopyNextSystem}"
+                              Margin="10,0"
                               Grid.Column="2">
                     </CheckBox>
+                    <Button Command="{Binding OpenPopOut}"
+                            CommandParameter="{x:Type popouts:SpanshPopOutViewModel}"
+                            Style="{DynamicResource EliteStyleImageButton}"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Width="35"
+                            Margin="5,0"
+                            Padding="5"
+                            Grid.Column="3"
+                            ToolTip="Open Overlay">
+                        <Image Source="/Assets/Icons/PopOutBtn.png" />
+                    </Button>
                 </Grid>
             </Border>
 
             <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
-                    <ColumnDefinition />
+                    <ColumnDefinition Width="900" />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition />
@@ -140,51 +216,750 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition />
                         </Grid.RowDefinitions>
-                        <TextBlock Text="CSV Details"
+                        <TextBlock Text="Route Details"
                                    Foreground="{DynamicResource Header}"
+                                   Margin="0 0 0 10"
                                    FontSize="18" />
                         <controls:SpanshCSVDetailsControl Grid.Row="1"
-                                                          DataGridStyle="{StaticResource SpanshDataGrid}"/>
+                                                          DataGridStyle="{StaticResource SpanshDataGrid}" />
                     </Grid>
                 </Border>
 
                 <Border Background="{DynamicResource CardBackground}"
                         CornerRadius="5"
                         Margin="5"
-                        Padding="5"
-                        Grid.Column="2"
-                        Grid.RowSpan="3">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
+                        Height="450"
+                        Grid.Row="1"
+                        Padding="5">
+                    <busyIndicator:BusyMask Background="{DynamicResource CardBackground}"
+                                            FontSize="24"
+                                            Grid.RowSpan="2"
+                                            Grid.Row="1"
+                                            TextBlock.TextAlignment="Center"
+                                            BusyContent="{Binding ApiController.BusyText}"
+                                            IndicatorType="Cupertino"
+                                            IsBusy="{Binding ApiController.IsGenerating}">
+                        <Grid TextBlock.TextAlignment="Left">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="Spansh Api"
+                                       Foreground="{DynamicResource Header}"
+                                       Margin="0 0 0 10"
+                                       FontSize="18" />
 
-                        <TextBlock Text="Route Details"
-                                   Foreground="{DynamicResource Header}"
-                                   FontSize="18" />
 
-                        <DataGrid Style="{DynamicResource SpanshDataGrid}"
-                                  HeadersVisibility="Column"
-                                  Background="Transparent"
-                                  Grid.Row="1"
-                                  BorderThickness="0"
-                                  IsReadOnly="True"
-                                  IsHitTestVisible="True"
-                                  SelectionMode="Single"
-                                  GridLinesVisibility="Horizontal"
-                                  SelectionChanged="DataGrid_SelectionChanged"
-                                  RowStyle="{DynamicResource SpanshDetailsRowStyle}"                                 
-                                  ItemsSource="{Binding Targets}"
-                                  SelectedItem="{Binding CurrentTarget, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
-                            <DataGrid.Columns>
-                                <DataGridTextColumn Header="System"
-                                                    Width="*"
-                                                    Binding="{Binding SystemName}" />
-                            </DataGrid.Columns>
-                        </DataGrid>
-                    </Grid>
+                            <Grid TextBlock.FontSize="18"
+                                  Grid.Row="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Grid Grid.Column="1">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <ComboBox ItemsSource="{Binding Source={StaticResource SpanshRouteTypeEnum}}"
+                                              Grid.Column="1"
+                                              Height="30"
+                                              Width="180"
+                                              HorizontalAlignment="Right"
+                                              VerticalAlignment="Center"
+                                              Margin="10"
+                                              SelectedItem="{Binding ApiController.CurrentTypeBox}">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}" />
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+
+                                    <StackPanel Grid.Row="1"
+                                                Grid.RowSpan="1"
+                                                VerticalAlignment="Top"
+                                                Visibility="{Binding ApiController.ShowWarning, Converter={StaticResource BoolToVis}}">
+                                        <TextBlock Text="WARNING"
+                                                   FontSize="22"
+                                                   Margin="5"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"
+                                                   Foreground="Red" />
+                                        <TextBlock Text="No Fuel Scoop!"
+                                                   Margin="5"
+                                                   FontSize="18"
+                                                   Visibility="{Binding ApiController.WarnAboutScoop, Converter={StaticResource BoolToVis}}"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"
+                                                   Foreground="Red" />
+                                        <TextBlock Text="No DSS!"
+                                                   Margin="5"
+                                                   FontSize="18"
+                                                   Visibility="{Binding ApiController.WarnAboutDSS, Converter={StaticResource BoolToVis}}"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"
+                                                   Foreground="Red" />
+                                        <TextBlock Text="No AFMU!"
+                                                   Margin="5"
+                                                   FontSize="18"
+                                                   Visibility="{Binding ApiController.WarnAboutAFMU, Converter={StaticResource BoolToVis}}"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"
+                                                   Foreground="Red" />
+                                    </StackPanel>
+                                    <Button Content="Apply Ship Stats"
+                                            Grid.Row="3"
+                                            HorizontalAlignment="Right"
+                                            VerticalAlignment="Center"
+                                            Margin="10"
+                                            Height="30"
+                                            Width="150"
+                                            Command="{Binding ApiController.ImportShipStatsCommand}"
+                                            Style="{DynamicResource EliteStyleButton}" />
+
+                                    <buttons:ToggleButonWithPopup ToggleButtonContent="Destinations"
+                                                                  Grid.Row="4"
+                                                                  x:Name="DestinationsBtn"
+                                                                  IsEnabled="{Binding ApiController.CurrentApiArgs.CanImportDestinations}"
+                                                                  HorizontalAlignment="Right"
+                                                                  VerticalAlignment="Center"
+                                                                  CloseOnClick="True"
+                                                                  Margin="10"
+                                                                  Height="30"
+                                                                  Width="150">
+                                        <buttons:ToggleButonWithPopup.PopupContent>
+                                            <Menu FontSize="18"
+                                                  Width="200"
+                                                  Background="{DynamicResource ViewBackground}"
+                                                  HorizontalAlignment="Left">
+                                                <Menu.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <StackPanel Orientation="Vertical" />
+                                                    </ItemsPanelTemplate>
+                                                </Menu.ItemsPanel>
+                                                <MenuItem Header="Import From File"
+                                                          Style="{DynamicResource EliteMenuStyle}"
+                                                          Click="ImportDestinationsFromFile" />
+                                                <MenuItem Header="Import From Clipboard"
+                                                          Style="{DynamicResource EliteMenuStyle}"
+                                                          Click="ImportDestinationsFromClipboard" />
+                                                <Separator Style="{DynamicResource EliteSeparatorStyle}" />
+                                                <MenuItem Header="Clear List"
+                                                          Style="{DynamicResource EliteMenuStyle}"
+                                                          Click="CloseDestinaionsBtn"
+                                                          Command="{Binding ApiController.ClearAdditionDestinationsCommand}" />
+                                            </Menu>
+                                        </buttons:ToggleButonWithPopup.PopupContent>
+                                    </buttons:ToggleButonWithPopup>
+
+                                    <Button Content="Revrese Route"
+                                            Grid.Row="5"
+                                            HorizontalAlignment="Right"
+                                            VerticalAlignment="Center"
+                                            Margin="10"
+                                            Height="30"
+                                            Width="150"
+                                            Command="{Binding ApiController.ReverseRouteCommand}"
+                                            Style="{DynamicResource EliteStyleButton}" />
+
+                                    <Button Content="Generate Route"
+                                            Grid.Row="6"
+                                            HorizontalAlignment="Right"
+                                            VerticalAlignment="Center"
+                                            Margin="10"
+                                            Height="30"
+                                            Width="150"
+                                            Command="{Binding ApiController.GenerateRouteCommand}"
+                                            Style="{DynamicResource EliteStyleButton}" />
+                                </Grid>
+                                <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                                              VerticalScrollBarVisibility="Auto"
+                                              Grid.RowSpan="3"
+                                              Grid.Row="1">
+                                    <ContentControl Grid.Row="0"
+                                                    Grid.RowSpan="3"
+                                                    DataContext="{Binding ApiController}">
+                                        <ContentControl.Style>
+                                            <Style TargetType="{x:Type ContentControl}">
+                                                <Setter Property="ContentTemplate"
+                                                        Value="{StaticResource APINotImplement}" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding CurrentTypeBox}"
+                                                                 Value="{x:Static models:SpanshRouteTypeComboBox.RoadToRiches}">
+                                                        <Setter Property="ContentTemplate"
+                                                                Value="{StaticResource RoadToRichesAPIControl}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding CurrentTypeBox}"
+                                                                 Value="{x:Static models:SpanshRouteTypeComboBox.NeutronRoute}">
+                                                        <Setter Property="ContentTemplate"
+                                                                Value="{StaticResource NeutronRouteAPIControl}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding CurrentTypeBox}"
+                                                                 Value="{x:Static models:SpanshRouteTypeComboBox.Colonisation}">
+                                                        <Setter Property="ContentTemplate"
+                                                                Value="{StaticResource ColonisationRouteAPIControl}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding CurrentTypeBox}"
+                                                                 Value="{x:Static models:SpanshRouteTypeComboBox.FleetCarrier}">
+                                                        <Setter Property="ContentTemplate"
+                                                                Value="{StaticResource FleetCarrierRouteAPIControl}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding CurrentTypeBox}"
+                                                                 Value="{x:Static models:SpanshRouteTypeComboBox.GalaxyPlotter}">
+                                                        <Setter Property="ContentTemplate"
+                                                                Value="{StaticResource GalaxyPlotterAPIControl}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding CurrentTypeBox}"
+                                                                 Value="{x:Static models:SpanshRouteTypeComboBox.WorldTypeRoute}">
+                                                        <Setter Property="ContentTemplate"
+                                                                Value="{StaticResource WorldTypeAPIControl}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding CurrentTypeBox}"
+                                                                 Value="{x:Static models:SpanshRouteTypeComboBox.Exobiology}">
+                                                        <Setter Property="ContentTemplate"
+                                                                Value="{StaticResource ExobiologyAPIControl}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding CurrentTypeBox}"
+                                                                 Value="{x:Static models:SpanshRouteTypeComboBox.TouristRoute}">
+                                                        <Setter Property="ContentTemplate"
+                                                                Value="{StaticResource TouristRouteAPIControl}" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </ContentControl.Style>
+                                    </ContentControl>
+                                </ScrollViewer>
+                            </Grid>
+                        </Grid>
+                    </busyIndicator:BusyMask>
                 </Border>
+
+                <Grid Grid.Column="2"
+                      Grid.RowSpan="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Border Background="{DynamicResource CardBackground}"
+                            CornerRadius="5"
+                            Margin="5"
+                            Padding="5">
+                        <TabControl SelectedIndex="{Binding RouteController.SelectedTab}">
+                            <TabItem Header="Spansh Route">
+                                <DataGrid Style="{DynamicResource SpanshDataGrid}"
+                                          HeadersVisibility="Column"
+                                          Background="Transparent"
+                                          Margin="10"
+                                          BorderThickness="0"
+                                          IsReadOnly="True"
+                                          IsHitTestVisible="True"
+                                          SelectionMode="Single"
+                                          GridLinesVisibility="Horizontal"
+                                          SelectionChanged="DataGrid_SelectionChanged"
+                                          ItemsSource="{Binding RouteController.CurrentContainer.Targets}"
+                                          SelectedItem="{Binding RouteController.CurrentTarget, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+                                    <DataGrid.Resources>
+                                        <odmvvm:WpfBindingProxy x:Key="proxy"
+                                                                Data="{Binding }" />
+                                        <ContextMenu x:Key="RowContextMenu">
+                                            <MenuItem Header="Copy To Clipboard"
+                                                      Style="{DynamicResource EliteMenuStyle}"
+                                                      Command="{Binding Data.RouteController.CopyToClipboardCommand, Source={StaticResource proxy}}"
+                                                      CommandParameter="{Binding }" />
+                                        </ContextMenu>
+                                    </DataGrid.Resources>
+                                    <DataGrid.ItemContainerStyle>
+                                        <Style TargetType="{x:Type DataGridRow}">
+                                            <Setter Property="BorderThickness"
+                                                    Value="0" />
+                                            <Setter Property="OverridesDefaultStyle"
+                                                    Value="False" />
+                                            <Setter Property="IsHitTestVisible"
+                                                    Value="True" />
+                                            <Setter Property="IsManipulationEnabled"
+                                                    Value="False" />
+                                            <Setter Property="ContextMenu"
+                                                    Value="{StaticResource RowContextMenu}" />
+                                            <EventSetter Event="Selected"
+                                                         Handler="SpanshRouteListRowMouseClick" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding FuelStar}"
+                                                             Value="True">
+                                                    <Setter Property="Background"
+                                                            Value="#FFF4A324" />
+                                                    <Setter Property="Foreground"
+                                                            Value="Black" />
+                                                    <Setter Property="FontSize"
+                                                            Value="19" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </DataGrid.ItemContainerStyle>
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="System Name"
+                                                            Width="*"
+                                                            HeaderStyle="{DynamicResource DataGridHeaderLeft}"
+                                                            Binding="{Binding SystemName}" />
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </TabItem>
+                            <TabItem Header="Saved Routes">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+                                    <Grid.Resources>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Padding"
+                                                    Value="5,5,5,5" />
+                                        </Style>
+                                    </Grid.Resources>
+                                    <StackPanel Orientation="Horizontal"
+                                                HorizontalAlignment="Left">
+                                        <Button Style="{DynamicResource EliteStyleButton}"
+                                                Content="Load Route"
+                                                Width="120"
+                                                Margin="5 0"
+                                                Command="{Binding RouteController.LoadSavedRouteCommand}"
+                                                Height="30" />
+                                        <Button Style="{DynamicResource EliteStyleButton}"
+                                                Content="Delete Route"
+                                                Command="{Binding RouteController.DeleteRouteCommand}"
+                                                CommandParameter="{Binding RouteController.SelectedContainer}"
+                                                Width="120"
+                                                Margin="5 0"
+                                                Height="30" />
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal"
+                                                HorizontalAlignment="Right"
+                                                VerticalAlignment="Center">
+                                        <TextBlock Text="Filter"
+                                                   VerticalAlignment="Center"
+                                                   Foreground="{DynamicResource Header}"
+                                                   FontSize="18" />
+                                        <ComboBox ItemsSource="{Binding Source={StaticResource SpanshRouteFilterEnum}}"
+                                                  Grid.Column="1"
+                                                  Height="30"
+                                                  Width="180"
+                                                  HorizontalAlignment="Right"
+                                                  VerticalAlignment="Center"
+                                                  Margin="10,10"
+                                                  SelectedItem="{Binding RouteController.ContainerFilter}">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}" />
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+                                    </StackPanel>
+                                    <DataGrid ItemsSource="{Binding RouteController.FilteredContainers}"
+                                              Style="{DynamicResource SpanshDataGrid}"
+                                              SelectedItem="{Binding RouteController.SelectedContainer}"
+                                              HeadersVisibility="Column"
+                                              Background="Transparent"
+                                              Grid.Row="1"
+                                              BorderThickness="0"
+                                              IsReadOnly="True"
+                                              IsHitTestVisible="True"
+                                              SelectionMode="Single"
+                                              x:Name="SavedRoutesDataGrid"
+                                              LoadingRow="DatagridLoadingRow"
+                                              HorizontalAlignment="Stretch"
+                                              GridLinesVisibility="All">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Route Type"
+                                                                Width="*"
+                                                                HeaderStyle="{DynamicResource DataGridHeaderLeft}"
+                                                                Binding="{Binding RouteType, NotifyOnSourceUpdated=True, Converter={StaticResource EnumDescriptionConverter}}" />
+                                            <DataGridTextColumn Header="From"
+                                                                CellStyle="{DynamicResource CmdrSelectionCellLeftVertCenter}"
+                                                                HeaderStyle="{DynamicResource DataGridHeaderLeft}"
+                                                                Binding="{Binding From, NotifyOnSourceUpdated=True}" />
+                                            <DataGridTextColumn Header="To"
+                                                                CellStyle="{DynamicResource CmdrSelectionCellLeftVertCenter}"
+                                                                HeaderStyle="{DynamicResource DataGridHeaderLeft}"
+                                                                Binding="{Binding To, NotifyOnSourceUpdated=True}" />
+                                            <DataGridTextColumn Header="Ship Name"
+                                                                CellStyle="{DynamicResource CmdrSelectionCellLeftVertCenter}"
+                                                                HeaderStyle="{DynamicResource DataGridHeaderLeft}"
+                                                                Binding="{Binding ShipNameGrid, NotifyOnSourceUpdated=True}" />
+                                            <DataGridTextColumn Header="System Count"
+                                                                HeaderStyle="{DynamicResource DataGridHeaderCenter}"
+                                                                CellStyle="{DynamicResource CmdrSelectionCellRightVertCenter}"
+                                                                Binding="{Binding SystemCount, NotifyOnSourceUpdated=True}" />
+                                        </DataGrid.Columns>
+
+                                    </DataGrid>
+                                </Grid>
+                            </TabItem>
+                            <TabItem Header="Game Route">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button Style="{DynamicResource EliteStyleButton}"
+                                                Margin="5"
+                                                Height="30"
+                                                Command="{Binding ApiController.SetSelectedGameSystemAsSourceCommand}"
+                                                Content="Set as Source System" />
+                                        <Button Style="{DynamicResource EliteStyleButton}"
+                                                Margin="5"
+                                                Height="30"
+                                                Command="{Binding ApiController.SetSelectedGameSystemAsTargetCommand}"
+                                                Content="Set as Target System" />
+                                        <Button Style="{DynamicResource EliteStyleButton}"
+                                                Margin="5"
+                                                Height="30"
+                                                Command="{Binding ApiController.SetLastGameSystemAsTargetCommand}"
+                                                Content="Set Last as Target System" />
+                                    </StackPanel>
+                                    <DataGrid ItemsSource="{Binding ApiController.GameRouteSystems}"
+                                              Style="{DynamicResource SpanshDataGrid}"
+                                              SelectedItem="{Binding ApiController.SelectedGameRouteSystem}"
+                                              HeadersVisibility="Column"
+                                              Background="Transparent"
+                                              Grid.Row="1"
+                                              Margin="10"
+                                              BorderThickness="0"
+                                              IsReadOnly="True"
+                                              IsHitTestVisible="True"
+                                              SelectionMode="Single"
+                                              GridLinesVisibility="Horizontal">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Star"
+                                                                Width="100"
+                                                                HeaderStyle="{DynamicResource DataGridHeaderLeft}"
+                                                                Binding="{Binding StarClass}" />
+                                            <DataGridTextColumn Header="System Name"
+                                                                Width="*"
+                                                                HeaderStyle="{DynamicResource DataGridHeaderLeft}"
+                                                                Binding="{Binding Name}" />
+                                            <DataGridTextColumn Header="Distance"
+                                                                Width="120"
+                                                                HeaderStyle="{DynamicResource DataGridHeaderCenter}"
+                                                                CellStyle="{DynamicResource CmdrSelectionCellRight}"
+                                                                Binding="{Binding Distance}" />
+                                        </DataGrid.Columns>
+
+                                    </DataGrid>
+                                </Grid>
+                            </TabItem>
+                            <TabItem Header="Ships">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <DataGrid ItemsSource="{Binding ApiController.Ships}"
+                                              Style="{DynamicResource SpanshDataGrid}"
+                                              SelectedItem="{Binding ApiController.SelectedShip}"
+                                              SelectionChanged="ShipGridSelectionChanged"
+                                              FontSize="20"
+                                              MinRowHeight="30">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Name"
+                                                                Binding="{Binding Name}"
+                                                                Width="*"
+                                                                HeaderStyle="{DynamicResource DataGridHeaderLeft}"
+                                                                CellStyle="{DynamicResource CmdrSelectionCellLeftVertCenter}" />
+                                            <DataGridTextColumn Header="Ident"
+                                                                Width="110"
+                                                                Binding="{Binding Ident}"
+                                                                HeaderStyle="{DynamicResource DataGridHeaderCenter}"
+                                                                CellStyle="{DynamicResource CmdrSelectionCellCenter}" />
+                                            <DataGridTextColumn Header="Model"
+                                                                Binding="{Binding ShipType}"
+                                                                HeaderStyle="{DynamicResource DataGridHeaderCenter}"
+                                                                CellStyle="{DynamicResource CmdrSelectionCellLeftVertCenter}" />
+                                            <DataGridTextColumn Header="Jump Range"
+                                                                Binding="{Binding JumpRange}"
+                                                                HeaderStyle="{DynamicResource DataGridHeaderCenter}"
+                                                                CellStyle="{DynamicResource CmdrSelectionCellRightVertCenter}" />
+                                            <DataGridCheckBoxColumn  Binding="{Binding HasScoopBool, Mode=OneWay}"
+                                                                     Header="Scoop"
+                                                                     Width="70"
+                                                                     HeaderStyle="{DynamicResource DataGridHeaderCenter}"
+                                                                     ElementStyle="{DynamicResource ShipListCheckBoxStyle}"
+                                                                     CellStyle="{DynamicResource CmdrSelectionCellCenter}" />
+                                            <DataGridCheckBoxColumn  Binding="{Binding HasDSSBool, Mode=OneWay}"
+                                                                     Header="DSS"
+                                                                     Width="70"
+                                                                     HeaderStyle="{DynamicResource DataGridHeaderCenter}"
+                                                                     ElementStyle="{DynamicResource ShipListCheckBoxStyle}"
+                                                                     CellStyle="{DynamicResource CmdrSelectionCellCenter}" />
+                                            <DataGridCheckBoxColumn  Binding="{Binding HasAFMUBool, Mode=OneWay}"
+                                                                     Header="AFMU"
+                                                                     Width="70"
+                                                                     HeaderStyle="{DynamicResource DataGridHeaderCenter}"
+                                                                     ElementStyle="{DynamicResource ShipListCheckBoxStyle}"
+                                                                     CellStyle="{DynamicResource CmdrSelectionCellCenter}" />
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+
+                                    <StackPanel Orientation="Horizontal"
+                                                HorizontalAlignment="Right"
+                                                Margin="10 20 10 5"
+                                                Grid.Row="1">
+                                        <Button Style="{DynamicResource EliteStyleButton}"
+                                                Content="Coriolis"
+                                                Height="30"
+                                                Width="100"
+                                                Command="{Binding ApiController.OpenShipyardCommand}"
+                                                CommandParameter="{x:Static models:ShipyardWebSite.Coriolis}"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                Margin="10 0"
+                                                Grid.Row="1" />
+                                        <Button Style="{DynamicResource EliteStyleButton}"
+                                                Content="Edsy"
+                                                Height="30"
+                                                Width="100"
+                                                Command="{Binding ApiController.OpenShipyardCommand}"
+                                                CommandParameter="{x:Static models:ShipyardWebSite.EDSY}"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                Margin="10 0"
+                                                Grid.Row="1" />
+                                        <Button Style="{DynamicResource EliteStyleButton}"
+                                                Content="Select Current Ship"
+                                                Height="30"
+                                                Width="180"
+                                                Command="{Binding ApiController.SelectCurrentShipCommand}"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                Margin="10 0"
+                                                Grid.Row="1" />
+                                    </StackPanel>
+                                </Grid>
+                            </TabItem>
+                        </TabControl>
+                    </Border>
+
+
+                    <Border Background="{DynamicResource CardBackground}"
+                            Grid.Row="1"
+                            CornerRadius="5"
+                            Margin="5"
+                            HorizontalAlignment="Stretch"
+                            Padding="5">
+                        <Grid Height="200"
+                              HorizontalAlignment="Stretch">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="Selected Ship Info"
+                                       Foreground="{DynamicResource Header}"
+                                       Margin="0 0 0 10"
+                                       FontSize="18" />
+
+                            <Button Command="{Binding OpenPopOut}"
+                                    CommandParameter="{x:Type popouts:ShipStatsPopOutVM}"
+                                    Style="{DynamicResource EliteStyleImageButton}"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center"
+                                    Width="35"
+                                    Margin="5 0"
+                                    Padding="5"
+                                    ToolTip="Open Overlay">
+                                <Image Source="/Assets/Icons/PopOutBtn.png" />
+                            </Button>
+                            <Grid  Grid.Row="1"
+                                   DataContext="{Binding ApiController.SelectedShip, Mode=OneWay}"
+                                   HorizontalAlignment="Stretch"
+                                   Margin="10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="220" />
+                                    <ColumnDefinition Width="220" />
+                                    <ColumnDefinition Width="220" />
+                                    <ColumnDefinition Width="220" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <TextBlock Text="Name"
+                                           Grid.Column="0"
+                                           Grid.Row="0"
+                                           Foreground="{DynamicResource Header}"
+                                           FontSize="20" />
+                                <TextBlock Text="{Binding Name}"
+                                           Grid.Column="0"
+                                           Grid.Row="1"
+                                           Margin="10" />
+                                <TextBlock Text="Ident"
+                                           Grid.Column="0"
+                                           Grid.Row="2"
+                                           Foreground="{DynamicResource Header}"
+                                           FontSize="20" />
+                                <TextBlock Text="{Binding Ident}"
+                                           Grid.Column="0"
+                                           Grid.Row="3"
+                                           Margin="10" />
+                                <TextBlock Text="Model"
+                                           Grid.Column="1"
+                                           Grid.Row="0"
+                                           Foreground="{DynamicResource Header}"
+                                           FontSize="20" />
+                                <TextBlock Text="{Binding ShipType}"
+                                           Grid.Column="1"
+                                           Grid.Row="1"
+                                           Margin="10" />
+                                <TextBlock Text="Cargo   |  Capacity"
+                                           Grid.Column="1"
+                                           Grid.Row="2"
+                                           Foreground="{DynamicResource Header}"
+                                           FontSize="20" />
+                                <Grid Grid.Column="1"
+                                      HorizontalAlignment="Left"
+                                      Grid.Row="3"
+                                      Margin="0 10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="51" />
+                                        <ColumnDefinition Width="30" />
+                                        <ColumnDefinition Width="50" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding CurrentCargo, StringFormat={}{0:N0}}"
+                                               HorizontalAlignment="Right" />
+                                    <TextBlock Text="|"
+                                               HorizontalAlignment="Center"
+                                               Grid.Column="1" />
+                                    <TextBlock Text="{Binding CargoCapacity, StringFormat={}{0:N0}}"
+                                               HorizontalAlignment="Right"
+                                               Grid.Column="2" />
+                                </Grid>
+                                <StackPanel Orientation="Horizontal"
+                                            Grid.Column="2"
+                                            Grid.Row="0">
+                                    <TextBlock Text="Jump Range"
+                                               Grid.Column="1"
+                                               Grid.Row="2"
+                                               VerticalAlignment="Center"
+                                               Foreground="{DynamicResource Header}"
+                                               FontSize="20" />
+                                    <TextBlock Text="(Current)"
+                                               Margin="5 2 0 0"
+                                               VerticalAlignment="Center"
+                                               Foreground="{DynamicResource Header}"
+                                               FontSize="14" />
+                                </StackPanel>
+                                <TextBlock Text="{Binding JumpRangeString}"
+                                           Grid.Column="2"
+                                           Grid.Row="1"
+                                           Margin="10" />
+                                <StackPanel Orientation="Horizontal"
+                                            Grid.Column="2"
+                                            Grid.Row="2">
+                                    <TextBlock Text="Jump Range"
+                                               Grid.Column="1"
+                                               Grid.Row="2"
+                                               VerticalAlignment="Center"
+                                               Foreground="{DynamicResource Header}"
+                                               FontSize="20" />
+                                    <TextBlock Text="(Laden)"
+                                               Margin="5 2 0 0"
+                                               VerticalAlignment="Center"
+                                               Foreground="{DynamicResource Header}"
+                                               FontSize="14" />
+                                </StackPanel>
+                                <TextBlock Text="{Binding JumpRangeLaden}"
+                                           Grid.Column="2"
+                                           Grid.Row="3"
+                                           Margin="10" />
+                                <StackPanel Orientation="Horizontal"
+                                            HorizontalAlignment="Left"
+                                            Grid.Column="3"
+                                            Grid.Row="0">
+                                    <TextBlock Text="Total Range"
+                                               Grid.Column="1"
+                                               Grid.Row="2"
+                                               VerticalAlignment="Center"
+                                               Foreground="{DynamicResource Header}"
+                                               FontSize="20" />
+                                    <TextBlock Text="(Current)"
+                                               Margin="5 2 0 0"
+                                               VerticalAlignment="Center"
+                                               Foreground="{DynamicResource Header}"
+                                               FontSize="14" />
+                                </StackPanel>
+                                <TextBlock Text="{Binding TotalRangeText}"
+                                           Grid.Column="3"
+                                           Grid.Row="1"
+                                           Margin="10" />
+
+                                <Grid Grid.Column="3"
+                                      Grid.Row="2"
+                                      Width="200"
+                                      HorizontalAlignment="Left"
+                                      Grid.RowSpan="2">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Text="Scoop"
+                                               Grid.Column="0"
+                                               Grid.Row="0"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               Foreground="{DynamicResource Header}"
+                                               FontSize="20" />
+                                    <TextBlock Text="{Binding HasScoopYesNo}"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               Grid.Column="0"
+                                               Grid.Row="1"
+                                               Margin="10" />
+
+                                    <TextBlock Text="DSS"
+                                               Grid.Column="1"
+                                               Grid.Row="0"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               Foreground="{DynamicResource Header}"
+                                               FontSize="20" />
+                                    <TextBlock Text="{Binding HasDSS}"
+                                               Grid.Column="1"
+                                               Grid.Row="1"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               Margin="10" />
+                                    <TextBlock Text="AFMU"
+                                               Grid.Column="2"
+                                               Grid.Row="0"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               Foreground="{DynamicResource Header}"
+                                               FontSize="20" />
+                                    <TextBlock Text="{Binding HasAFMU}"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               Grid.Column="2"
+                                               Grid.Row="2" />
+                                </Grid>
+
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </Grid>
             </Grid>
         </Grid>
     </busyIndicator:BusyMask>

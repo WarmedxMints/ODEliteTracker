@@ -1,11 +1,8 @@
 ﻿using ODEliteTracker.ViewModels;
 using ODEliteTracker.ViewModels.ModelViews.Colonisation;
 using ODMVVM.Services.MessageBox;
-using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Input;
 
 namespace ODEliteTracker.Controls.Colonisation
 {

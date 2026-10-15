@@ -41,6 +41,7 @@
 		<None Remove="Assets\Icons\ResetWindow.png" />
 		<None Remove="Assets\Icons\settings.png" />
 		<None Remove="Assets\Icons\settlement_pm.png" />
+		<None Remove="Assets\Icons\shipstatsbtnimage.png" />
 		<None Remove="Assets\Icons\ShoppingCart.png" />
 		<None Remove="Assets\Icons\ShowInTaskBar.png" />
 		<None Remove="Assets\Icons\spansh.png" />
@@ -158,6 +159,7 @@
 		<Resource Include="Assets\Icons\ResetWindow.png" />
 		<Resource Include="Assets\Icons\settings.png" />
 		<Resource Include="Assets\Icons\settlement_pm.png" />
+		<Resource Include="Assets\Icons\shipstatsbtnimage.png" />
 		<Resource Include="Assets\Icons\ShoppingCart.png" />
 		<Resource Include="Assets\Icons\ShowInTaskBar.png" />
 		<Resource Include="Assets\Icons\spansh.png" />

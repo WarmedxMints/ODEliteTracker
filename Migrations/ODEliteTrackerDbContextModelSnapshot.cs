@@ -207,21 +207,30 @@ namespace ODEliteTracker.Migrations
                     b.ToTable("InactiveDepots");
                 });
 
-            modelBuilder.Entity("ODEliteTracker.Database.DTOs.SpanshCsvDTO", b =>
+            modelBuilder.Entity("ODEliteTracker.Database.DTOs.SpanshRouteDTO", b =>
                 {
-                    b.Property<int>("CsvType")
+                    b.Property<int>("CommanderID")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("CommanderID")
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Format")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Json")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.HasKey("CsvType", "CommanderID");
+                    b.Property<DateTime>("LastUsed")
+                        .HasColumnType("TEXT");
 
-                    b.ToTable("SpanshCsvs");
+                    b.Property<int>("RouteType")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("CommanderID", "CreatedDate");
+
+                    b.ToTable("SpanshRoutes");
                 });
 
             modelBuilder.Entity("ODEliteTracker.Database.DTOs.SystemBookmarkDTO", b =>

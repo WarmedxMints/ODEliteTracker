@@ -165,7 +165,7 @@ namespace ODEliteTracker.ViewModels
                     return;
                 case ColonisationRouteClipboardBehavior.CopyIfNotBuilt:
                     systemToCopy = RouteSystems[index + 1];
-                    if (!systemToCopy.Built)
+                    if (systemToCopy.Built)
                         return;
                     break;
                 case ColonisationRouteClipboardBehavior.CopyNext:
@@ -401,7 +401,7 @@ namespace ODEliteTracker.ViewModels
             {
                 string json = File.ReadAllText(fileName, Encoding.UTF8);
 
-                var route = JsonConvert.DeserializeObject<SpanshColonisationRoute>(json);
+                var route = JsonConvert.DeserializeObject<ApiColonisationRoute>(json);
 
                 if (route == null || route.Result == null || route.Result.Jumps == null || route.Result.Jumps.Any() == false)
                     return false;

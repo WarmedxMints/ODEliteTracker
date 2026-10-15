@@ -7,9 +7,35 @@ namespace ODEliteTracker.ViewModels.ModelViews
 {
     public sealed class ShipInfoVM(ShipInfo info) : ODObservableObject
     {
-        public string Name { get; } = info.Name;
-        public string Ident { get; } = info.Ident;
+        private readonly ShipInfo info = info;
+
+        public string Name => info.Name;
+        public string Ident => info.Ident;
+        public string ShipType => info.ShipType;
+        public double JumpRangeFullTank => info.JumpRangeFullTank;
+        public string JumpRangeLaden => $"{JumpRangeLadenValue:N2} ly";
+        public double JumpRangeLadenValue => info.JumpRangeLaden();
+        public string JumpRangeString => $"{JumpRangeValue:N2} ly";
+        public double JumpRangeValue
+        {
+            get
+            {
+                var range = info.CalcJumpRangeCurrentCargo();
+
+                return range;
+            }
+        }
+        public bool HasScoopBool => info.HasScoop;
+        public string HasScoop => info.HasScoop ? string.Empty : $"No Fuel Scoop!";
+        public string HasScoopYesNo => info.HasScoop ? "Yes" : "No";
+        public bool HasAFMUBool => info.Modules.FirstOrDefault(x => x.Item.StartsWith("Int_Repairer", StringComparison.OrdinalIgnoreCase)) != null;
+        public string HasAFMU => HasAFMUBool ? "Yes" : "No";
+        public bool HasDSSBool => info.Modules.FirstOrDefault(x => x.Item.StartsWith("Int_DetailedSurfaceScanner", StringComparison.OrdinalIgnoreCase)) != null;
+        public string HasDSS => HasDSSBool ? "Yes" : "No";
         public int CargoCapacity { get; } = info.CargoCapacity;
+        public double CurrentCargo => info.CurrentCargoCount;
+        public double TotalRange => info.CalcTotalRange();
+        public string TotalRangeText => $"{TotalRange:N2} ly";
         public int CargoCount
         {
             get
@@ -17,6 +43,7 @@ namespace ODEliteTracker.ViewModels.ModelViews
                 return ShipCargo.Sum(x => x.Count);
             }
         }
+
         public string CargoText
         {
             get
@@ -39,6 +66,8 @@ namespace ODEliteTracker.ViewModels.ModelViews
             }
         }
         public ObservableCollection<ShipCargoVM> ShipCargo { get; set; } = [];
+        public int ShipId => info.ShipId;
+        public ShipInfo ShipInfo => info;
 
         internal void OnCargoUpdated(IEnumerable<ShipCargo>? e, string sorting = "")
         {
@@ -58,7 +87,20 @@ namespace ODEliteTracker.ViewModels.ModelViews
             }
             OnPropertyChanged(nameof(CargoText));
             OnPropertyChanged(nameof(CargoRemaining));
+            OnPropertyChanged(nameof(CurrentCargo));
+            OnPropertyChanged(nameof(CargoCapacity));
             OnPropertyChanged(nameof(CargoRemainingValue));
+            OnPropertyChanged(nameof(JumpRangeValue));
+            OnPropertyChanged(nameof(JumpRangeString));
+        }
+
+        internal void UpdateStats()
+        {
+            OnPropertyChanged(nameof(JumpRangeValue));
+            OnPropertyChanged(nameof(JumpRangeString));
+            OnPropertyChanged(nameof(CargoCapacity));
+            OnPropertyChanged(nameof(CurrentCargo));
+            OnPropertyChanged(nameof(TotalRangeText));
         }
     }
 }

@@ -39,24 +39,44 @@ namespace ODEliteTracker.Stores
         private readonly SettingsStore settings;
         private readonly CountdownTimer fleetCarrierTimer = new(new(0, 20, 0), new(0, 0, 1));
         private readonly CountdownTimer squadFleetCarrierTimer = new(new(0, 20, 0), new(0, 0, 1));
-        private FleetCarrier? carrierData;
+        private FleetCarrier? personalCarrierData;
         private FleetCarrier? squadCarrierData;
 
-        private bool dockedOnCarrier = false;
+        private ulong dockedMarketId;
 
-        public FleetCarrier? CarrierData => carrierData;
+        public CarrierType SwitchableCarrierType
+        {
+            get => settings.CarrierSettings.SwitchableCarrierType;
+            set
+            {
+                settings.CarrierSettings.SwitchableCarrierType = value;
+                if (SwitchableCarrierData != null)
+                    SwitchableCarrierStockUpdated?.Invoke(this, SwitchableCarrierData);
+            }
+        }
+
+        public FleetCarrier? SwitchableCarrierData => SwitchableCarrierType switch
+        {
+            CarrierType.Personal => PersonalCarrierData,
+            CarrierType.Squadron => SquadCarrierData,
+            _ => null,
+        };
+
+        public FleetCarrier? PersonalCarrierData => personalCarrierData;
         public FleetCarrier? SquadCarrierData => squadCarrierData;
 
-        public EventHandler<FleetCarrier>? CarrierUpdated;
+        public EventHandler<FleetCarrier>? PersonalCarrierUpdated;
         public EventHandler<FleetCarrier>? SquadCarrierUpdated;
-        public EventHandler<FleetCarrier>? CarrierStockUpdated;
-        public EventHandler<FleetCarrier>? CarrierDestinationUpdated;
+        public EventHandler<FleetCarrier>? PersonalCarrierStockUpdated;
+        public EventHandler<FleetCarrier>? SquadCarrierStockUpdated;
+        public EventHandler<FleetCarrier>? SwitchableCarrierStockUpdated;
+        public EventHandler<FleetCarrier>? PersonalCarrierDestinationUpdated;
         public EventHandler<FleetCarrier>? SquadCarrierDestinationUpdated;
 
         public bool CanCallCAPI => journalManager?.CanCallCAPI ?? false;
 
         #region Events
-        public event EventHandler<string>? OnCarrierTimeTick
+        public event EventHandler<string>? OnPersonalCarrierTimeTick
         {
             add { fleetCarrierTimer.OnTick += value; }
             remove { fleetCarrierTimer.OnTick -= value; }
@@ -110,14 +130,13 @@ namespace ODEliteTracker.Stores
                 { JournalTypeEnum.Docked, true },
                 { JournalTypeEnum.Undocked, true },
                 { JournalTypeEnum.CargoTransfer, false },
-                { JournalTypeEnum.MarketSell, false },
             };
         }
 
         public override void ClearData()
         {
-            carrierData = null;
-            dockedOnCarrier = false;
+            personalCarrierData = null;
+            dockedMarketId = 0;
             fleetCarrierTimer.Stop();
 
             if (this.journalManager != null)
@@ -142,230 +161,218 @@ namespace ODEliteTracker.Stores
 
             switch (evt.EventData)
             {
-                case CarrierStatsEvent.CarrierStatsEventArgs carrier:
-                    if (string.Equals(carrier.CarrierType, "SquadronCarrier", StringComparison.OrdinalIgnoreCase))
+                case CarrierStatsEvent.CarrierStatsEventArgs carrierStats:
+                    if (GetCarrier(carrierStats.CarrierID, out var stats, out var statsType, carrierStats.Callsign))
                     {
-                        squadCarrierData ??= new(carrier);
-                        squadCarrierData.FuelLevel = carrier.FuelLevel;
-                        squadCarrierData.Name = carrier.Name;
-                        squadCarrierData.DockingAccess = carrier.DockingAccess;
-                        squadCarrierData.AllowNotorious = carrier.AllowNotorious;
-                        squadCarrierData.FuelLevel = carrier.FuelLevel;
-                        squadCarrierData.Balance = carrier.Finance.CarrierBalance;
-                        squadCarrierData.CarrierID = carrier.CarrierID;
-                        squadCarrierData.Callsign = carrier.Callsign;
+                        UpdateCarrierDataFromStatsEven(ref stats, carrierStats);
 
-                        squadCarrierData.AssignCrew(carrier.Crew);
-
-                        if (IsLive)
+                        if (!IsLive)
                         {
-                            SquadCarrierUpdated?.Invoke(this, squadCarrierData);
+                            break;
                         }
-                        return;
+
+                        switch (statsType)
+                        {
+                            case CarrierType.Unkown:
+                                break;
+                            case CarrierType.Personal:
+                                if (stats != null)
+                                    PersonalCarrierUpdated?.Invoke(this, stats);
+                                break;
+                            case CarrierType.Squadron:
+                                if (stats != null)
+                                    SquadCarrierUpdated?.Invoke(this, stats);
+                                break;
+                        }
                     }
-                    carrierData ??= new(carrier);
-                    carrierData.FuelLevel = carrier.FuelLevel;
-                    carrierData.Name = carrier.Name;
-                    carrierData.DockingAccess = carrier.DockingAccess;
-                    carrierData.AllowNotorious = carrier.AllowNotorious;
-                    carrierData.FuelLevel = carrier.FuelLevel;
-                    carrierData.Balance = carrier.Finance.CarrierBalance;
-                    carrierData.CarrierID = carrier.CarrierID;
-                    carrierData.Callsign = carrier.Callsign;
-
-                    carrierData.AssignCrew(carrier.Crew);
-
-                    if (IsLive)
+                    if (string.IsNullOrEmpty(carrierStats?.CarrierType))
+                        return;
+                    if (carrierStats.CarrierType.Equals("FleetCarrier"))
                     {
-                        CarrierUpdated?.Invoke(this, carrierData);
+                        UpdateCarrierDataFromStatsEven(ref personalCarrierData, carrierStats);
+                        break;
+                    }
+                    if (carrierStats.CarrierType.Equals("SquadronCarrier"))
+                    {
+                        UpdateCarrierDataFromStatsEven(ref squadCarrierData, carrierStats);
+                        break;
                     }
                     break;
                 case CarrierLocationEvent.CarrierLocationEventArgs cLocation:
-                    if (carrierData != null && string.Equals(cLocation.CarrierType, "FleetCarrier", StringComparison.OrdinalIgnoreCase))
+                    if (!GetCarrier(cLocation.CarrierID, out var locationCar, out var locType))
+                        return;
+
+                    locationCar.StarSystem = cLocation.StarSystem;
+                    locationCar.SystemAddress = cLocation.SystemAddress;
+                    locationCar.BodyID = cLocation.BodyID;
+                    locationCar.Destination.Reset();
+
+                    if (!IsLive)
                     {
-                        carrierData.StarSystem = cLocation.StarSystem;
-                        carrierData.SystemAddress = cLocation.SystemAddress;
-                        carrierData.BodyID = cLocation.BodyID;
-                        carrierData.Destination.Reset();
-                        if (IsLive)
-                        {
-                            CarrierUpdated?.Invoke(this, carrierData);
-                        }
                         break;
                     }
 
-                    if (squadCarrierData != null && string.Equals(cLocation.CarrierType, "SquadronCarrier", StringComparison.OrdinalIgnoreCase))
+                    switch (locType)
                     {
-                        squadCarrierData.StarSystem = cLocation.StarSystem;
-                        squadCarrierData.SystemAddress = cLocation.SystemAddress;
-                        squadCarrierData.BodyID = cLocation.BodyID;
-                        squadCarrierData.Destination.Reset();
-                       
-                        if (IsLive)
-                        {
-                            SquadCarrierUpdated?.Invoke(this, squadCarrierData);
-                        }
-
-                        //Carrier location event is fired when logging in so check that isn't the case
-                        if (squadFleetCarrierTimer.TimerRunning || cLocation.Timestamp  - sharedData.LastLoginTime < TimeSpan.FromSeconds(10))
+                        case CarrierType.Unkown:
                             break;
-
-                        var notificationTime = (cLocation.Timestamp - DateTime.UtcNow) + TimeSpan.FromMinutes(5); 
-
-                        if (notificationTime <= TimeSpan.Zero)
+                        case CarrierType.Personal:
+                            PersonalCarrierUpdated?.Invoke(this, locationCar);
                             break;
+                        case CarrierType.Squadron:
+                            SquadCarrierUpdated?.Invoke(this, locationCar);
+                            //Carrier location event is fired when logging in so check that isn't the case
+                            if (squadFleetCarrierTimer.TimerRunning || cLocation.Timestamp - sharedData.LastLoginTime < TimeSpan.FromSeconds(30))
+                                break;
 
-                        //Jump request only fires for the person who set the jump
-                        //So if we get a new location for the 
-                        squadFleetCarrierTimer.UpdateRuntime(notificationTime);
-                        squadFleetCarrierTimer.Start();
+                            var notificationTime = (cLocation.Timestamp - DateTime.UtcNow) + TimeSpan.FromMinutes(5);
+
+                            if (notificationTime <= TimeSpan.Zero)
+                                break;
+
+                            //Jump request only fires for the person who set the jump
+                            //So if we get a new location for the 
+                            squadFleetCarrierTimer.UpdateRuntime(notificationTime);
+                            squadFleetCarrierTimer.Start();
+                            break;
                     }
                     break;
                 case CarrierJumpRequestEvent.CarrierJumpRequestEventArgs jumpRequest:
+                    if (!GetCarrier(jumpRequest.CarrierID, out var jumpCar, out var jumpType) || !IsLive)
+                        break;
 
-                    if (string.Equals(jumpRequest.CarrierType, "SquadronCarrier", StringComparison.OrdinalIgnoreCase))
+                    jumpCar.Destination = new(jumpRequest.SystemName, jumpRequest.Body, jumpRequest.SystemAddress, jumpRequest.DepartureTime);
+
+                    var timespan = (jumpRequest.DepartureTime - DateTime.UtcNow) + TimeSpan.FromMinutes(5);
+
+                    switch (jumpType)
                     {
-                        if (squadCarrierData is null)
-                            return;
-                        squadCarrierData.Destination = new(jumpRequest.SystemName, jumpRequest.Body, jumpRequest.SystemAddress, jumpRequest.DepartureTime);
+                        case CarrierType.Unkown:
+                            break;
+                        case CarrierType.Personal:
+                            if (timespan > TimeSpan.Zero)
+                            {
+                                fleetCarrierTimer.UpdateRuntime(timespan);
+                                fleetCarrierTimer.Start();
+                            }
+                            PersonalCarrierDestinationUpdated?.Invoke(this, jumpCar);
+                            break;
+                        case CarrierType.Squadron:
+                            if (timespan > TimeSpan.Zero)
+                            {
+                                squadFleetCarrierTimer.UpdateRuntime(timespan);
+                                squadFleetCarrierTimer.Start();
+                            }
 
-                        var timespan = (jumpRequest.DepartureTime - DateTime.UtcNow) + TimeSpan.FromMinutes(5);
-
-                        if (timespan > TimeSpan.Zero)
-                        {
-                            squadFleetCarrierTimer.UpdateRuntime(timespan);
-                            squadFleetCarrierTimer.Start();
-                        }
-
-                        if (IsLive)
-                        {
-                            SquadCarrierDestinationUpdated?.Invoke(this, squadCarrierData);
-                        }
-
-                        return;
-                    }
-
-                    if (carrierData is null)
-                        return;
-                    carrierData.Destination = new(jumpRequest.SystemName, jumpRequest.Body, jumpRequest.SystemAddress, jumpRequest.DepartureTime);
-
-                    var span = (jumpRequest.DepartureTime - DateTime.UtcNow) + TimeSpan.FromMinutes(5);
-
-                    if (span > TimeSpan.Zero)
-                    {
-                        fleetCarrierTimer.UpdateRuntime(span);
-                        fleetCarrierTimer.Start();
-                    }
-
-                    if (IsLive)
-                    {
-                        CarrierDestinationUpdated?.Invoke(this, carrierData);
+                            SquadCarrierDestinationUpdated?.Invoke(this, jumpCar);
+                            break;
                     }
                     break;
                 case CarrierJumpCancelledEvent.CarrierJumpCancelledEventArgs jCancelled:
-                    if (string.Equals(jCancelled.CarrierType, "SquadronCarrier", StringComparison.OrdinalIgnoreCase))
-                    {
-                        if (squadCarrierData is null)
-                            break;
-
-                        squadCarrierData.Destination = new();
-                        squadFleetCarrierTimer.Stop();
-                        if (IsLive)
-                        {
-                            SquadCarrierDestinationUpdated?.Invoke(this, squadCarrierData);
-                        }
-                        return;
-                    }
-
-                    if (carrierData is null)
+                    if (!GetCarrier(jCancelled.CarrierID, out var cancelledCar, out var canType))
                         break;
-                    carrierData.Destination = new();
-                    fleetCarrierTimer.Stop();
-                    if (IsLive)
+
+                    cancelledCar.Destination = new();
+
+                    switch (canType)
                     {
-                        CarrierDestinationUpdated?.Invoke(this, carrierData);
+                        case CarrierType.Unkown:
+                            break;
+                        case CarrierType.Personal:
+                            fleetCarrierTimer.Stop();
+                            if (IsLive)
+                            {
+                                PersonalCarrierDestinationUpdated?.Invoke(this, cancelledCar);
+                            }
+                            break;
+                        case CarrierType.Squadron:
+                            squadFleetCarrierTimer.Stop();
+                            if (IsLive)
+                            {
+                                SquadCarrierDestinationUpdated?.Invoke(this, cancelledCar);
+                            }
+                            break;
                     }
                     break;
                 case CarrierTradeOrderEvent.CarrierTradeOrderEventArgs carrierTradeOrder:
-                    if (carrierData is null || carrierTradeOrder.BlackMarket)
+                    if (carrierTradeOrder.BlackMarket)
                         break;
-
-                    var commodity = EliteCommodityHelpers.GetCommodityFromPartial(carrierTradeOrder.Commodity, string.IsNullOrEmpty(carrierTradeOrder.Commodity_Localised) ? carrierTradeOrder.Commodity : carrierTradeOrder.Commodity_Localised);
-
-                    var known = carrierData.Stock.FirstOrDefault(x => x.commodity == commodity && x.Stolen == false);
-
-                    if (carrierTradeOrder.CancelTrade)
-                    {
-                        if (known != null)
-                        {
-                            known.BuyOrderCount = 0;
-                            known.SalePrice = 0;
-                            if (known.StockCount <= 0)
-                            {
-                                carrierData.Stock.Remove(known);
-                            }
-                            if (IsLive)
-                            {
-                                CarrierStockUpdated?.Invoke(this, carrierData);
-                            }
-                        }
+                    if (!GetCarrier(carrierTradeOrder.CarrierID, out var trade, out var orderType))
                         break;
-                    }
-                    var salePrice = carrierTradeOrder.SaleOrder > 0 ? carrierTradeOrder.Price : 0;
-                    if (known == null)
+                    switch (orderType)
                     {
-                        known = new CarrierCommodity(commodity, false, salePrice);
-                        carrierData.Stock.Add(known);
-                    }
-                    known.SalePrice = salePrice;
-                    known.BuyOrderCount = carrierTradeOrder.PurchaseOrder;
-
-                    if (IsLive)
-                    {
-                        CarrierStockUpdated?.Invoke(this, carrierData);
+                        case CarrierType.Unkown:
+                            break;
+                        case CarrierType.Personal:
+                            ProcessCarrierTradeOrder(ref trade, carrierTradeOrder, CarrierType.Personal);
+                            break;
+                        case CarrierType.Squadron:
+                            ProcessCarrierTradeOrder(ref trade, carrierTradeOrder, CarrierType.Squadron);
+                            break;
                     }
                     break;
                 case CarrierCrewServicesEvent.CarrierCrewServicesEventArgs carrierCrewServicesEventArgs:
-                    if (carrierData is null)
+                    if (!GetCarrier(carrierCrewServicesEventArgs.CarrierID, out var crew, out var crewType))
                         break;
-
-                    carrierData.UpdateCrew(carrierCrewServicesEventArgs);
-
-                    if (IsLive)
+                    if (!crew.UpdateCrew(carrierCrewServicesEventArgs) && IsLive)
+                        return;
+                    switch (crewType)
                     {
-                        CarrierUpdated?.Invoke(this, carrierData);
+                        case CarrierType.Unkown:
+                            break;
+                        case CarrierType.Personal:
+                            PersonalCarrierUpdated?.Invoke(this, crew);
+                            break;
+                        case CarrierType.Squadron:
+                            SquadCarrierUpdated?.Invoke(this, crew);
+                            break;
                     }
                     break;
                 case CarrierBankTransferEvent.CarrierBankTransferEventArgs bank:
-                    if (carrierData is null)
+                    if (!GetCarrier(bank.CarrierID, out var bankCarrier, out var bankType))
                         break;
 
-                    carrierData.Balance = bank.CarrierBalance;
+                    bankCarrier.Balance = bank.CarrierBalance;
 
-                    if (IsLive)
+                    switch (bankType)
                     {
-                        CarrierUpdated?.Invoke(this, carrierData);
+                        case CarrierType.Unkown:
+                            break;
+                        case CarrierType.Personal:
+                            PersonalCarrierUpdated?.Invoke(this, bankCarrier);
+                            break;
+                        case CarrierType.Squadron:
+                            SquadCarrierUpdated?.Invoke(this, bankCarrier);
+                            break;
                     }
                     break;
                 case CarrierDepositFuelEvent.CarrierDepositFuelEventArgs fuel:
-                    if (carrierData is null)
+                    if (!GetCarrier(fuel.CarrierID, out var refueled, out var fuelType))
                         break;
+                    refueled.FuelLevel = fuel.Total;
 
-                    carrierData.FuelLevel = fuel.Total;
-
-                    if (IsLive)
+                    if (!IsLive)
+                        break;
+                    switch (fuelType)
                     {
-                        CarrierUpdated?.Invoke(this, carrierData);
+                        case CarrierType.Unkown:
+                            break;
+                        case CarrierType.Personal:
+                            PersonalCarrierUpdated?.Invoke(this, refueled);
+                            break;
+                        case CarrierType.Squadron:
+                            SquadCarrierUpdated?.Invoke(this, refueled);
+                            break;
                     }
                     break;
                 case DockedEvent.DockedEventArgs docked:
-                    dockedOnCarrier = docked.MarketID == carrierData?.CarrierID;
+                    dockedMarketId = docked.MarketID;
                     break;
                 case UndockedEvent.UndockedEventArgs:
-                    dockedOnCarrier = false;
+                    dockedMarketId = 0;
                     break;
                 case CargoTransferEvent.CargoTransferEventArgs cargoTransfer:
-                    if (dockedOnCarrier == false || CarrierData == null || cargoTransfer.Transfers == null || cargoTransfer.Transfers.Count <= 0)
+                    if (GetCarrier(dockedMarketId, out var carrier, out var transferType) == false || cargoTransfer.Transfers == null || cargoTransfer.Transfers.Count <= 0)
                         break;
 
                     var cargoMoved = false;
@@ -386,32 +393,98 @@ namespace ODEliteTracker.Stores
                                 continue;
                         }
 
-                        cargoMoved = TransferCargo(transfer.Type, transfer.Type, transfer.Count * direction, stolen: false) || cargoMoved;
+                        cargoMoved = TransferCargo(ref carrier, transfer.Type, transfer.Type, transfer.Count * direction, stolen: false) || cargoMoved;
                     }
 
-                    if (IsLive && cargoMoved)
-                        CarrierStockUpdated?.Invoke(this, CarrierData);
-                    break;
-                case MarketSellEvent.MarketSellEventArgs sell:
-                    if (dockedOnCarrier == false || CarrierData is null || CarrierData.CarrierID != sell.MarketID || sell.BlackMarket)
-                        break;
-
-                    var commod = EliteCommodityHelpers.GetCommodityFromPartial(sell.Type, string.IsNullOrEmpty(sell.Type_Localised) ? sell.Type : sell.Type_Localised);
-
-                    var inStock = CarrierData.Stock.FirstOrDefault(x => x.commodity == commod && x.Stolen == false);
-
-                    if (inStock != null)
+                    if (cargoMoved)
                     {
-                        inStock.StockCount += sell.Count;
-                        inStock.BuyOrderCount -= sell.Count;
-
-                        if (IsLive)
-                        {
-                            CarrierStockUpdated?.Invoke(this, CarrierData);
-                        }
+                        FireCarrierStockUpdatedEventsIfLive(transferType);
                     }
                     break;
             }
+        }
+        private bool GetCarrier(ulong id, out FleetCarrier carrier, out CarrierType carrierType, string callsign = "")
+        {
+            if (personalCarrierData?.CarrierID == id)
+            {
+                carrier = personalCarrierData;
+                carrierType = CarrierType.Personal;
+                return true;
+            }
+            if (squadCarrierData?.CarrierID == id)
+            {
+                carrier = squadCarrierData;
+                carrierType = CarrierType.Squadron;
+                return true;
+            }
+            //If we've got this far, maybe we only have the squadron carrier from the CAPI which exludes to ID for some unknown reason
+            if (squadCarrierData != null && string.Equals(squadCarrierData.Callsign, callsign))
+            {
+                carrier = squadCarrierData;
+                carrierType = CarrierType.Squadron;
+                return true;
+            }
+            //Maybe it's the personal carrier, though this should never happen
+            if (personalCarrierData != null && string.Equals(personalCarrierData.Callsign, callsign))
+            {
+                carrier = personalCarrierData;
+                carrierType = CarrierType.Personal;
+                return true;
+            }
+            carrier = new();
+            carrierType = CarrierType.Unkown;
+            return false;
+        }
+        private bool ProcessCarrierTradeOrder(ref FleetCarrier? carrierData, CarrierTradeOrderEvent.CarrierTradeOrderEventArgs carrierTradeOrder, CarrierType carrierType)
+        {
+            if (carrierData == null)
+                return false;
+
+            var commodity = EliteCommodityHelpers.GetCommodityFromPartial(carrierTradeOrder.Commodity, string.IsNullOrEmpty(carrierTradeOrder.Commodity_Localised) ? carrierTradeOrder.Commodity : carrierTradeOrder.Commodity_Localised);
+
+            var known = carrierData.Stock.FirstOrDefault(x => x.commodity == commodity && x.Stolen == false);
+
+            if (carrierTradeOrder.CancelTrade)
+            {
+                if (known != null)
+                {
+                    known.BuyOrderCount = 0;
+                    known.SalePrice = 0;
+                    if (known.StockCount <= 0)
+                    {
+                        carrierData.Stock.Remove(known);
+                    }
+                    FireCarrierStockUpdatedEventsIfLive(carrierType);
+                }
+                return false;
+            }
+            var salePrice = carrierTradeOrder.SaleOrder > 0 ? carrierTradeOrder.Price : 0;
+            if (known == null)
+            {
+                known = new CarrierCommodity(commodity, false, salePrice);
+                carrierData.Stock.Add(known);
+            }
+            known.SalePrice = salePrice;
+            known.BuyOrderCount = carrierTradeOrder.PurchaseOrder;
+
+            FireCarrierStockUpdatedEventsIfLive(carrierType);
+            return true;
+        }
+
+        private static void UpdateCarrierDataFromStatsEven(ref FleetCarrier? carrier, CarrierStatsEvent.CarrierStatsEventArgs eventData)
+        {
+            carrier ??= new(eventData);
+            carrier.FuelLevel = eventData.FuelLevel;
+            carrier.Name = eventData.Name;
+            carrier.DockingAccess = eventData.DockingAccess;
+            carrier.AllowNotorious = eventData.AllowNotorious;
+            carrier.FuelLevel = eventData.FuelLevel;
+            carrier.Balance = eventData.Finance.CarrierBalance;
+            carrier.CarrierID = eventData.CarrierID;
+            carrier.Callsign = eventData.Callsign;
+            carrier.AssignCrew(eventData.Crew);
+            carrier.TotalCapacity = eventData.SpaceUsage.TotalCapacity;
+            carrier.FreeSpace = eventData.SpaceUsage.FreeSpace;
         }
 
         public override void RunAfterParsingHistory()
@@ -426,9 +499,14 @@ namespace ODEliteTracker.Stores
                 }
             }
 
-            if (carrierData != null && carrierData.Destination.Arrived)
+            if (personalCarrierData != null && personalCarrierData.Destination.Arrived)
             {
-                carrierData.Destination = new();
+                personalCarrierData.Destination = new();
+            }
+
+            if (squadCarrierData != null && squadCarrierData.Destination.Arrived)
+            {
+                squadCarrierData.Destination = new();
             }
 
             base.RunAfterParsingHistory();
@@ -463,35 +541,87 @@ namespace ODEliteTracker.Stores
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 #endif
         private async Task OnCAPILive(object? s, bool e)
-#if DEBUG
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
-#endif
         {
             if (e == false)
                 return;
-#if !DEBUG
-            await UpdateCarrierCargo();
-#endif
+
+            await UpdatePersonalCarrierCargo();
+            await UpdateSquadronCarrierCargo();
         }
 
-        public async Task UpdateCarrierCargo()
+        public async Task UpdatePersonalCarrierCargo()
         {
             if (journalManager == null)
             {
                 return;
             }
-            var capiCarrier = await journalManager.GetCarrier();
-
-            if (capiCarrier == null || carrierData != null && carrierData.CarrierID != capiCarrier.Market.Id)
+            var capiCarrier = await journalManager.GetCAPICarrier();
+            await journalManager.GetCAPISquadron();
+            if (capiCarrier == null || personalCarrierData != null && personalCarrierData.CarrierID != capiCarrier.Market.Id)
             {
                 return;
             }
+            capiCarrier.Capacity.totalCapacity = 25000;
+            UpdateCarrier(ref personalCarrierData, capiCarrier);
 
-            carrierData ??= new(capiCarrier);
+            if (personalCarrierData == null)
+                return;
+            FireCarrierStockUpdatedEventsIfLive(CarrierType.Personal);
+        }
 
-            carrierData.FuelLevel = capiCarrier.Fuel;
-            carrierData.Balance = carrierData.Balance;
+        public async Task UpdateSquadronCarrierCargo()
+        {
+            if (journalManager == null)
+            {
+                return;
+            }
+            var squadron = await journalManager.GetCAPISquadron();
 
+            if (squadron == null || squadron.SquadronCarrier == null)
+            {
+                return;
+            }
+            squadron.SquadronCarrier.Capacity.totalCapacity = 60000;
+            UpdateCarrier(ref squadCarrierData, squadron.SquadronCarrier);
+
+            if (squadCarrierData == null)
+                return;
+
+            FireCarrierStockUpdatedEventsIfLive(CarrierType.Squadron);
+        }
+
+        private void FireCarrierStockUpdatedEventsIfLive(CarrierType carrierType)
+        {
+            if (!IsLive || carrierType == CarrierType.Unkown)
+                return;
+
+            switch (carrierType)
+            {
+                case CarrierType.Personal:
+                    if (personalCarrierData == null)
+                        return;
+                    PersonalCarrierUpdated?.Invoke(this, personalCarrierData);
+                    PersonalCarrierStockUpdated?.Invoke(this, personalCarrierData);
+                    if (carrierType == SwitchableCarrierType)
+                        SwitchableCarrierStockUpdated?.Invoke(this, personalCarrierData);
+                    break;
+                case CarrierType.Squadron:
+                    if (squadCarrierData == null)
+                        return;
+                    SquadCarrierUpdated?.Invoke(this, squadCarrierData);
+                    SquadCarrierStockUpdated?.Invoke(this, squadCarrierData);
+                    if (carrierType == SwitchableCarrierType)
+                        SwitchableCarrierStockUpdated?.Invoke(this, squadCarrierData);
+                    break;
+            }
+        }
+        private static void UpdateCarrier(ref FleetCarrier? carrier, ODCapi.Models.CAPIFleetCarrier capiCarrier)
+        {
+            carrier ??= new(capiCarrier);
+
+            carrier.FuelLevel = capiCarrier.Fuel;
+            carrier.Balance = capiCarrier.Balance;
+            carrier.StarSystem = capiCarrier.CurrentStarSystem;
             var cargo = new List<CarrierCommodity>();
 
             foreach (var item in capiCarrier.Cargo)
@@ -545,18 +675,17 @@ namespace ODEliteTracker.Stores
                 known.BuyOrderCount += item.Outstanding;
             }
 
-            carrierData.Stock = cargo;
-            CarrierStockUpdated?.Invoke(this, carrierData);
+            carrier.Stock = cargo;
         }
 
-        private bool TransferCargo(string type, string typeLocalised, int value, bool stolen)
+        private static bool TransferCargo(ref FleetCarrier carrier, string type, string typeLocalised, int value, bool stolen)
         {
-            if (carrierData == null)
+            if (carrier == null)
                 return false;
 
             var commodity = EliteCommodityHelpers.GetCommodityFromPartial(type, typeLocalised);
 
-            var known = carrierData.Stock.FirstOrDefault(x => x.commodity == commodity && x.Stolen == stolen);
+            var known = carrier.Stock.FirstOrDefault(x => x.commodity == commodity && x.Stolen == stolen);
 
             if (known != null)
             {
@@ -568,16 +697,16 @@ namespace ODEliteTracker.Stores
 
             if (known == null && value > 0)
             {
-                carrierData.Stock.Add(new CarrierCommodity(commodity, stolen, 0) { StockCount = value });
+                carrier.Stock.Add(new CarrierCommodity(commodity, stolen, 0) { StockCount = value });
                 return true;
             }
             //If we are still null then check for stolen shite on board as the transfere event doesn't tell us if it is
-            known = carrierData.Stock.FirstOrDefault(x => x.commodity == commodity && x.Stolen == true);
+            known = carrier.Stock.FirstOrDefault(x => x.commodity == commodity && x.Stolen == true);
             if (known != null)
             {
                 known.StockCount += value;
                 if (known.StockCount <= 0)
-                    CarrierData?.Stock.Remove(known);
+                    carrier?.Stock.Remove(known);
                 return true;
             }
             return false;
@@ -585,10 +714,10 @@ namespace ODEliteTracker.Stores
 
         private void OnMarketEvent(object? sender, StationMarket? e)
         {
-            if (carrierData == null || e == null || e.MarketID != carrierData.CarrierID)
-            {
+            if (e == null)
                 return;
-            }
+            if (!GetCarrier(e.MarketID, out var carrier, out var carrierType))
+                return;
 
             var stockUpdated = false;
 
@@ -596,12 +725,12 @@ namespace ODEliteTracker.Stores
             {
                 var commodity = EliteCommodityHelpers.GetCommodityDetails(item.Name);
 
-                var known = carrierData.Stock.FirstOrDefault(x => x.commodity == commodity && x.Stolen == false);
+                var known = carrier.Stock.FirstOrDefault(x => x.commodity == commodity && x.Stolen == false);
 
                 if (known == null)
                 {
                     known = new CarrierCommodity(commodity, stolen: false, item.SellPrice);
-                    carrierData.Stock.Add(known);
+                    carrier.Stock.Add(known);
                 }
 
                 known.StockCount = item.Stock;
@@ -615,13 +744,13 @@ namespace ODEliteTracker.Stores
             }
 
             //Make a copy of the current carrier items for purchase
-            var carrierPurchases = carrierData.Stock.Where(x => x.BuyOrderCount > 0).ToList();
+            var carrierPurchases = carrier.Stock.Where(x => x.BuyOrderCount > 0).ToList();
 
             foreach (var item in e.ItemsForPurchase)
             {
                 var commodity = EliteCommodityHelpers.GetCommodityDetails(item.Name);
 
-                var inStock = carrierData.Stock.FirstOrDefault(x => x.commodity == commodity && x.Stolen == false);
+                var inStock = carrier.Stock.FirstOrDefault(x => x.commodity == commodity && x.Stolen == false);
                 //If we somehow missed the purchase order creation
                 if (inStock == null)
                 {
@@ -629,7 +758,7 @@ namespace ODEliteTracker.Stores
                     {
                         BuyOrderCount = item.Demand
                     };
-                    carrierData.Stock.Add(inStock);
+                    carrier.Stock.Add(inStock);
                     stockUpdated = true;
                 }
 
@@ -644,7 +773,7 @@ namespace ODEliteTracker.Stores
                 {
                     continue;
                 }
-                inStock.StockCount = inStock.StockCount + stockToAdd;
+                inStock.StockCount += stockToAdd;
                 stockUpdated = true;
             }
 
@@ -660,8 +789,21 @@ namespace ODEliteTracker.Stores
                 stockUpdated = true;
             }
 
-            if (IsLive && CarrierData != null && stockUpdated)
-                CarrierStockUpdated?.Invoke(this, CarrierData);
+            if (IsLive && stockUpdated)
+            {
+                switch (carrierType)
+                {
+                    case CarrierType.Unkown:
+                        return;
+                    case CarrierType.Personal:
+                        PersonalCarrierStockUpdated?.Invoke(this, carrier);
+                        break;
+                    case CarrierType.Squadron:
+                        SquadCarrierStockUpdated?.Invoke(this, carrier);
+                        break;
+                }
+                SwitchableCarrierStockUpdated?.Invoke(this, carrier);
+            }
         }
     }
 }

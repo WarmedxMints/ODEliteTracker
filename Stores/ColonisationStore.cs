@@ -156,9 +156,10 @@ namespace ODEliteTracker.Stores
 
                     LastDockedDepotID = depot.MarketID;
                     var key = Tuple.Create(depot.MarketID, CurrentSystemAddress);
-                    if (depots.TryGetValue(key, out ConstructionDepot? value) && value.Update(depot, currentSystem, CurrentStationName))
+                    if (depots.TryGetValue(key, out ConstructionDepot? value))
                     {
-                        TriggerDepotUpdateIfLive(value);
+                        if (value.Update(depot, currentSystem, CurrentStationName))
+                            TriggerDepotUpdateIfLive(value);
                         break;
                     }
                     var newDepot = new ConstructionDepot(depot, currentSystem, CurrentStationName, inactiveDepots.Contains(key));

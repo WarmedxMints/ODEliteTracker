@@ -3,12 +3,8 @@ using EliteJournalReader;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using ODEliteTracker.Database.DTOs;
-using ODEliteTracker.Migrations;
-using ODEliteTracker.Models;
-using ODEliteTracker.Models.BGS;
 using ODEliteTracker.Models.Bookmarks;
 using ODEliteTracker.Models.Colonisation;
-using ODEliteTracker.Models.Colonisation.Builds;
 using ODEliteTracker.Models.Spansh;
 using ODEliteTracker.ViewModels.ModelViews.Bookmarks;
 using ODEliteTracker.ViewModels.ModelViews.Colonisation;
@@ -16,8 +12,6 @@ using ODJournalDatabase.Database.DTOs;
 using ODJournalDatabase.Database.Interfaces;
 using ODJournalDatabase.JournalManagement;
 using ODMVVM.Helpers.IO;
-using System.Drawing;
-using System.Formats.Asn1;
 using BGSIgnoredSystems = ODEliteTracker.Models.BGS.BGSIgnoredSystems;
 
 namespace ODEliteTracker.Database
@@ -129,7 +123,8 @@ namespace ODEliteTracker.Database
 
             await context.JournalEntries.Where(x => x.CommanderID == commanderID).ExecuteDeleteAsync().ConfigureAwait(true);
             await context.IgnoredBounties.Where(x => x.CommanderID == commanderID).ExecuteDeleteAsync().ConfigureAwait(true);
-            await context.SpanshCsvs.Where(x => x.CommanderID == commanderID).ExecuteDeleteAsync().ConfigureAwait(true);
+            await context.SpanshRoutes.Where(x => x.CommanderID == commanderID).ExecuteDeleteAsync().ConfigureAwait(true);
+            await context.WatchedMarkets.Where(x => x.CommanderID == commanderID).ExecuteDeleteAsync().ConfigureAwait(true);
 
             context.JournalCommanders.Remove(cmdr);
 
@@ -140,7 +135,8 @@ namespace ODEliteTracker.Database
                 context.JournalCommanders.Remove(migratedCommander);
                 await context.JournalEntries.Where(x => x.CommanderID == migratedCommander.Id).ExecuteDeleteAsync().ConfigureAwait(true);
                 await context.IgnoredBounties.Where(x => x.CommanderID == migratedCommander.Id).ExecuteDeleteAsync().ConfigureAwait(true);
-                await context.SpanshCsvs.Where(x => x.CommanderID == migratedCommander.Id).ExecuteDeleteAsync().ConfigureAwait(true);
+                await context.SpanshRoutes.Where(x => x.CommanderID == migratedCommander.Id).ExecuteDeleteAsync().ConfigureAwait(true);
+                await context.WatchedMarkets.Where(x => x.CommanderID == migratedCommander.Id).ExecuteDeleteAsync().ConfigureAwait(true);
             }
             await context.SaveChangesAsync(true);
         }
@@ -159,7 +155,8 @@ namespace ODEliteTracker.Database
             await context.Database.ExecuteSqlAsync(
                 @$"UPDATE JournalEntries SET CommanderID = {newCommander.Id} WHERE CommanderID = {oldCommander.Id};
                 UPDATE IgnoredBounties SET CommanderID = {newCommander.Id} WHERE CommanderID = {oldCommander.Id};
-                UPDATE SpanshCsvs SET CommanderID = {newCommander.Id} WHERE CommanderID = {oldCommander.Id};").ConfigureAwait(true);
+                UPDATE SpanshRoutes SET CommanderID = {newCommander.Id} WHERE CommanderID = {oldCommander.Id};
+                UPDATE WatchedMarkets SET CommanderID = {newCommander.Id} WHERE CommanderID = {oldCommander.Id};").ConfigureAwait(true);
 
             oldCommander.MigratedTo = newCommander.Id;
 
@@ -373,7 +370,8 @@ namespace ODEliteTracker.Database
                 "DELETE FROM InactiveDepots;" +
                 "DELETE FROM BGSIgnoredSystems;" +
                 "DELETE FROM IgnoredBounties;" +
-                "DELETE FROM SpanshCsvs;" +
+                "DELETE FROM SpanshRoutes;" +
+                "DELETE FROM WatchedMarkets;" +
                 "DELETE FROM SQLITE_SEQUENCE WHERE name='CommanderIgnoredSystems';" +
                 "DELETE FROM SQLITE_SEQUENCE WHERE name='CartoIgnoredSystems';" +
                 "DELETE FROM SQLITE_SEQUENCE WHERE name='InactiveDepots';");
@@ -820,60 +818,39 @@ namespace ODEliteTracker.Database
         #endregion
 
         #region Spansh
-        internal Dictionary<CsvType, SpanshCsvContainer> GetSpanshCSVsDictionary(int commanderID)
+        internal List<SpanshRouteContainer> GetSpanshRoutes(int commanderId)
         {
             using var context = _contextFactory.CreateDbContext();
 
-            var dict = context.SpanshCsvs
-                .Where(x => x.CommanderID == commanderID)
-                .ToDictionary(x => (CsvType)x.CsvType, y => JsonConvert.DeserializeObject<SpanshCsvContainer>(y.Json));
+            var ret = context.SpanshRoutes.Where(x => x.CommanderID == commanderId).Select(x => new SpanshRouteContainer(x));
 
-            var ret = new Dictionary<CsvType, SpanshCsvContainer>();
-
-            foreach (var kvp in dict)
-            {
-                if (kvp.Value is not null)
-                {
-                    ret.Add(kvp.Key, kvp.Value);
-                }
-            }
-            return ret;
+            return [..ret];
         }
 
-        internal void DeleteCSV(CsvType csvType, int commanderID)
+        internal void DeleteSpanshRoute(SpanshRouteContainer container, int selectedCommanderID)
         {
             using var context = _contextFactory.CreateDbContext();
 
-            var known = context.SpanshCsvs.Where(x => x.CsvType == (int)csvType && x.CommanderID == commanderID).FirstOrDefault();
+            var known = context.SpanshRoutes.Where(x => x.CommanderID == selectedCommanderID
+                                            && x.CreatedDate == container.CreatedDate
+                                            && x.Format == container.Format
+                                            && x.RouteType == container.RouteType).FirstOrDefault();
 
             if (known != null)
             {
-                context.SpanshCsvs.Remove(known);
+                context.SpanshRoutes.Remove(known);
                 context.SaveChanges();
             }
         }
 
-        internal void SaveCVSs(Dictionary<CsvType, SpanshCsvContainer> csvs, int commanderID)
+        internal void SaveSpanshRoutes(IEnumerable<SpanshRouteContainer> routes, int commanderId)
         {
-            List<SpanshCsvDTO> csvList = [];
-
-            foreach (var kvp in csvs)
-            {
-                if (kvp.Value.HasValue == false)
-                    continue;
-
-                var json = JsonConvert.SerializeObject(kvp.Value, Formatting.None);
-
-                if (string.IsNullOrEmpty(json))
-                    continue;
-
-                csvList.Add(new((int)kvp.Key, commanderID, json));
-            }
+            var dtos = routes.Select(x => x.GetDTO(commanderId));
 
             using var context = _contextFactory.CreateDbContext();
 
-            context.SpanshCsvs.UpsertRange(csvList)
-                .On(e => new { e.CsvType, e.CommanderID })
+            context.SpanshRoutes.UpsertRange(dtos)
+                .On(e => new { e.CommanderID, e.CreatedDate })
                 .Run();
 
             context.SaveChanges();

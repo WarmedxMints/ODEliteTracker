@@ -36,7 +36,7 @@ namespace ODEliteTracker.ViewModels.PopOuts
             if (sharedData.IsLive)
                 CheckMarket();
 
-            this.fcDataStore.CarrierStockUpdated += OnCarrierStockUpdated;
+            this.fcDataStore.SwitchableCarrierStockUpdated += OnCarrierStockUpdated;
             this.fcDataStore.StoreLive += OnFcStoreLive;
 
             if (fcDataStore.IsLive)
@@ -52,7 +52,7 @@ namespace ODEliteTracker.ViewModels.PopOuts
             colonisationStore.ShoppingListUpdated -= OnShoppingListUpdated;
             this.colonisationStore.DepotUpdated -= OnDepotUpdated;
             this.sharedData.MarketEvent -= OnMarketEvent;
-            this.fcDataStore.CarrierStockUpdated -= OnCarrierStockUpdated;
+            this.fcDataStore.SwitchableCarrierStockUpdated -= OnCarrierStockUpdated;
             this.fcDataStore.StoreLive -= OnFcStoreLive;
         }
 
@@ -133,7 +133,7 @@ namespace ODEliteTracker.ViewModels.PopOuts
             {
                 var shoppingList = depots.Select(x => new ConstructionDepotVM(x, buildStatsHelper));
 
-                ShoppingList.AddDepots(shoppingList, fcDataStore.CarrierData, sharedData.MarketPurchases);                
+                ShoppingList.AddDepots(shoppingList, fcDataStore.SwitchableCarrierData, sharedData.MarketPurchases);                
             }
             OnPropertyChanged(nameof(ShoppingListResources));
         }
@@ -147,16 +147,16 @@ namespace ODEliteTracker.ViewModels.PopOuts
             if (e == null)
                 return;
 
-            ShoppingList.UpdateDepot(e, fcDataStore.CarrierData);
+            ShoppingList.UpdateDepot(e, fcDataStore.SwitchableCarrierData);
             CheckMarket();
             OnPropertyChanged(nameof(ShoppingListResources));
         }
 
         private Task OnFcStoreLive(object? sender, bool e)
         {
-            if (e && fcDataStore.CarrierData != null)
+            if (e && fcDataStore.SwitchableCarrierData != null)
             {
-                OnCarrierStockUpdated(sender, fcDataStore.CarrierData);
+                OnCarrierStockUpdated(sender, fcDataStore.SwitchableCarrierData);
             }
             return Task.CompletedTask;
         }

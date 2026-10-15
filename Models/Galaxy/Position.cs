@@ -1,6 +1,5 @@
 ﻿using EliteJournalReader;
 using Newtonsoft.Json;
-using ODEliteTracker.Models.Spansh;
 
 namespace ODEliteTracker.Models.Galaxy
 {

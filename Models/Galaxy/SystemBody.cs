@@ -1,7 +1,5 @@
 ﻿using EliteJournalReader;
 using EliteJournalReader.Events;
-using System.Windows.Media.Media3D;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace ODEliteTracker.Models.Galaxy
 {

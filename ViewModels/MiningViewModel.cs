@@ -7,7 +7,6 @@ using ODMVVM.Commands;
 using ODMVVM.Extensions;
 using ODMVVM.ViewModels;
 using System.Collections.ObjectModel;
-using System.Windows;
 using System.Windows.Input;
 
 namespace ODEliteTracker.ViewModels
@@ -125,7 +124,7 @@ namespace ODEliteTracker.ViewModels
                 ProspectorContainer.OnProspectorUpdated(miningData, EventArgs.Empty);
                 OnPreviousSessionsUpdated(miningData, EventArgs.Empty);
                 OnShipChanged(sharedData, sharedData.CurrentShipInfo);
-                OnCargoUpdated(sharedData, sharedData.CurrentShipCargo);
+                OnCargoUpdated(sharedData, sharedData.CurrentShipInfo);
                 OnCurrentSessionUpdated(null, EventArgs.Empty);
             }
             OnModelLive(e);
@@ -136,9 +135,11 @@ namespace ODEliteTracker.ViewModels
             CurrentShip = e == null ? null : new(e);
         }
 
-        private void OnCargoUpdated(object? sender, IEnumerable<ShipCargo>? e)
+        private void OnCargoUpdated(object? sender, ShipInfo? e)
         {
-            CurrentShip?.OnCargoUpdated(e, "Limpet");
+            if (e == null)
+                return;
+            CurrentShip?.OnCargoUpdated(e.Cargo, "Limpet");
         }
 
         private void OnPreviousSessionsUpdated(object? sender, EventArgs e)

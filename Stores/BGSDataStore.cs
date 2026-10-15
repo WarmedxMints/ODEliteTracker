@@ -1,6 +1,5 @@
 ﻿using EliteJournalReader;
 using EliteJournalReader.Events;
-using NetTopologySuite.Geometries;
 using ODEliteTracker.Database;
 using ODEliteTracker.Database.DTOs;
 using ODEliteTracker.Models.BGS;
@@ -9,7 +8,6 @@ using ODEliteTracker.Models.Missions;
 using ODJournalDatabase.Database.Interfaces;
 using ODJournalDatabase.JournalManagement;
 using ODMVVM.Helpers;
-using System.Windows.Navigation;
 
 namespace ODEliteTracker.Stores
 {

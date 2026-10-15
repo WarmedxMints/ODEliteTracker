@@ -37,7 +37,7 @@ namespace ODEliteTracker.ViewModels.PopOuts
                 _ = OnStoreLive(null, true);
             }
 
-            this.fcDataStore.CarrierStockUpdated += OnCarrierStockUpdated;
+            this.fcDataStore.SwitchableCarrierStockUpdated += OnCarrierStockUpdated;
             this.fcDataStore.StoreLive += OnFcStoreLive;
 
             if (fcDataStore.IsLive)
@@ -56,7 +56,7 @@ namespace ODEliteTracker.ViewModels.PopOuts
 
             this.sharedData.MarketEvent -= (_, _) => CheckMarket();
 
-            this.fcDataStore.CarrierStockUpdated -= OnCarrierStockUpdated;
+            this.fcDataStore.SwitchableCarrierStockUpdated -= OnCarrierStockUpdated;
             this.fcDataStore.StoreLive -= OnFcStoreLive;
 
             this.settings.ColonisationSettings.CommoditySortingChanged -= ColonisationSettings_CommoditySortingChanged;
@@ -216,9 +216,9 @@ namespace ODEliteTracker.ViewModels.PopOuts
 
         private async Task OnFcStoreLive(object? sender, bool e)
         {
-            if (e && fcDataStore.CarrierData != null)
+            if (e && fcDataStore.SwitchableCarrierData != null)
             {
-                OnCarrierStockUpdated(sender, fcDataStore.CarrierData);
+                OnCarrierStockUpdated(sender, fcDataStore.SwitchableCarrierData);
             }
         }
 

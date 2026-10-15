@@ -1,15 +1,11 @@
-﻿using EliteJournalReader;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NLog;
 using ODEliteTracker.Extensions;
-using ODEliteTracker.Models.Colonisation.Builds;
 using ODEliteTracker.Stores;
 using ODEliteTracker.Views;
-using System.ComponentModel;
 using System.IO;
 using System.Windows;
-using System.Windows.Controls.Primitives;
 using System.Windows.Threading;
 
 namespace ODEliteTracker
@@ -19,7 +15,7 @@ namespace ODEliteTracker
     /// </summary>
     public partial class App
     {
-        public static Version AppVersion { get; } = new Version(1, 5, 32, 1);
+        public static Version AppVersion { get; } = new Version(1, 5, 33);
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 #if INSTALL || DEBUG
@@ -52,6 +48,8 @@ namespace ODEliteTracker
                 services.AddStores();
                 //http clients
                 services.AddHttpClients(CAPIAppName);
+                //controllers
+                services.AddControllers();
             }).Build();
 
         /// <summary>
@@ -67,7 +65,6 @@ namespace ODEliteTracker
         /// </summary>
         private async void OnStartup(object sender, StartupEventArgs e)
         {
-
             LogManager.Setup().LoadConfiguration(builder => {
                 builder.ForLogger().FilterMinLevel(LogLevel.Debug).WriteToFile(fileName: Path.Combine(BaseDirectory, "Logs", "Error.txt"));
             });
@@ -82,7 +79,7 @@ namespace ODEliteTracker
                 Shutdown(1);
                 return;
             }
-
+           
             var settings = Services.GetRequiredService<SettingsStore>();
             settings.LoadSettings();
 

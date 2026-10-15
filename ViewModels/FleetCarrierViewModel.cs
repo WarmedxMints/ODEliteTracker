@@ -23,12 +23,12 @@ namespace ODEliteTracker.ViewModels
             this.settings = settings;
             this.notificationService = notificationService;
             this.dataStore.StoreLive += OnStoreLive;
-            this.dataStore.CarrierUpdated += OnCarrierUpdated;
+            this.dataStore.PersonalCarrierUpdated += OnPersonalCarrierUpdated;
             this.dataStore.SquadCarrierUpdated += OnSquadCarrierUpdated;
-            this.dataStore.CarrierStockUpdated += OnCarrierStockUpdated;
-            this.dataStore.OnCarrierTimeTick += DataStore_OnCarrierTimeTick;
-            this.dataStore.OnSquadCarrierTimeTick += DataStore_OnSquadCarrierTimeTick;
-            this.dataStore.CarrierDestinationUpdated += OnCarrierDestinationUpdated;
+            this.dataStore.SwitchableCarrierStockUpdated += OnSwitchableCarrierStockUpdated;
+            this.dataStore.OnPersonalCarrierTimeTick += OnPersonalCarrierTimeTick;
+            this.dataStore.OnSquadCarrierTimeTick += OnSquadCarrierTimeTick;
+            this.dataStore.PersonalCarrierDestinationUpdated += OnPersonalCarrierDestinationUpdated;
             this.dataStore.SquadCarrierDestinationUpdated += OnSquadCarrierDestinationUpdated;
 
             RefreshCarrierStockCommand = new ODAsyncRelayCommand(OnRefreshCarrierStock, () => CanCallCAPI);
@@ -44,17 +44,17 @@ namespace ODEliteTracker.ViewModels
 
             if (this.dataStore.IsLive)
                 _ = OnStoreLive(null, true);
-        }       
+        }
 
         public override void Dispose()
         {
             this.dataStore.StoreLive -= OnStoreLive;
-            this.dataStore.CarrierUpdated -= OnCarrierUpdated;
+            this.dataStore.PersonalCarrierUpdated -= OnPersonalCarrierUpdated;
             this.dataStore.SquadCarrierUpdated -= OnSquadCarrierUpdated;
-            this.dataStore.CarrierStockUpdated -= OnCarrierStockUpdated;
-            this.dataStore.OnCarrierTimeTick -= DataStore_OnCarrierTimeTick;
-            this.dataStore.OnSquadCarrierTimeTick -= DataStore_OnSquadCarrierTimeTick;
-            this.dataStore.CarrierDestinationUpdated -= OnCarrierDestinationUpdated;
+            this.dataStore.SwitchableCarrierStockUpdated -= OnSwitchableCarrierStockUpdated;
+            this.dataStore.OnPersonalCarrierTimeTick -= OnPersonalCarrierTimeTick;
+            this.dataStore.OnSquadCarrierTimeTick -= OnSquadCarrierTimeTick;
+            this.dataStore.PersonalCarrierDestinationUpdated -= OnPersonalCarrierDestinationUpdated;
             this.dataStore.SquadCarrierDestinationUpdated -= OnSquadCarrierDestinationUpdated;
         }
 
@@ -74,6 +74,24 @@ namespace ODEliteTracker.ViewModels
                 settings.CarrierSettings.Sorting = value;
                 OnPropertyChanged(nameof(CarrierStock));
                 OnPropertyChanged(nameof(SellOrders));
+            }
+        }
+
+        public bool CarrierSelect
+        {
+            get
+            {
+                return dataStore.SwitchableCarrierType switch
+                {
+                    CarrierType.Personal => false,
+                    CarrierType.Squadron => true,
+                    _ => false,
+                };
+            }
+            set
+            {
+                dataStore.SwitchableCarrierType = value ? CarrierType.Squadron : CarrierType.Personal;
+                OnPropertyChanged();
             }
         }
 
@@ -122,7 +140,14 @@ namespace ODEliteTracker.ViewModels
             }
         }
 
-        public FleetCarrierVM? CarrierData { get; set; } = null;
+        public FleetCarrierVM? CarrierData => settings.CarrierSettings.SwitchableCarrierType switch
+        {
+            CarrierType.Personal => PersonalCarrierData,
+            CarrierType.Squadron => SquadCarrierData,
+            _ => null,
+        };
+
+        public FleetCarrierVM? PersonalCarrierData { get; set; } = null;
         public FleetCarrierVM? SquadCarrierData { get; set; } = null;
 
         public IEnumerable<CarrierCommodityVM>? CarrierStock
@@ -164,7 +189,8 @@ namespace ODEliteTracker.ViewModels
         private async Task OnRefreshCarrierStock()
         {
             StartCAPITimer();
-            await dataStore.UpdateCarrierCargo();
+            await dataStore.UpdatePersonalCarrierCargo();
+            await dataStore.UpdateSquadronCarrierCargo();
         }
 
         private void OnCopyToClipboard(string obj)
@@ -183,7 +209,7 @@ namespace ODEliteTracker.ViewModels
                 return;
 
             settings.FleetCarrierSettings.TimerAudioFile = file;
-            
+
             OnPropertyChanged(nameof(AudioFile));
         }
 
@@ -206,27 +232,29 @@ namespace ODEliteTracker.ViewModels
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    if (dataStore.CarrierData != null)
+                    if (dataStore.PersonalCarrierData != null)
                     {
-                        CarrierData = new(dataStore.CarrierData);
+                        PersonalCarrierData = new(dataStore.PersonalCarrierData);
                     }
 
                     if (dataStore.SquadCarrierData != null)
                     {
                         SquadCarrierData = new(dataStore.SquadCarrierData);
                     }
-                    OnPropertyChanged(nameof(CarrierData));
+                    OnPropertyChanged(nameof(PersonalCarrierData));
+                    OnPropertyChanged(nameof(SquadCarrierData));
                     OnModelLive(true);
                 });
             }
         }
 
-        private void OnCarrierUpdated(object? sender, FleetCarrier e)
+        private void OnPersonalCarrierUpdated(object? sender, FleetCarrier e)
         {
-            if (CarrierData == null)
+            if (PersonalCarrierData == null)
                 return;
 
-            CarrierData.UpdateData(e);
+            PersonalCarrierData.UpdateData(e);
+            OnPropertyChanged(nameof(PersonalCarrierData));
         }
         private void OnSquadCarrierUpdated(object? sender, FleetCarrier e)
         {
@@ -239,26 +267,36 @@ namespace ODEliteTracker.ViewModels
             });
         }
 
-        private void OnCarrierStockUpdated(object? sender, FleetCarrier e)
+        private void OnSwitchableCarrierStockUpdated(object? sender, FleetCarrier e)
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
-                CarrierData?.UpdateStock(e);
-                OnPropertyChanged(nameof(CarrierData));
+                switch (settings.CarrierSettings.SwitchableCarrierType)
+                {
+                    case CarrierType.Personal:
+                        PersonalCarrierData?.UpdateStock(e);
+                        OnPropertyChanged(nameof(PersonalCarrierData));
+
+                        break;
+                    case CarrierType.Squadron:
+                        SquadCarrierData?.UpdateStock(e);
+                        OnPropertyChanged(nameof(SquadCarrierData));
+                        break;
+                }
                 OnPropertyChanged(nameof(CarrierStock));
                 OnPropertyChanged(nameof(SellOrders));
             });
         }
 
-        private void DataStore_OnCarrierTimeTick(object? sender, string e)
+        private void OnPersonalCarrierTimeTick(object? sender, string e)
         {
-            if (CarrierData == null)
+            if (PersonalCarrierData == null)
                 return;
 
-            CarrierData.UpdateTimes();
+            PersonalCarrierData.UpdateTimes();
         }
 
-        private void DataStore_OnSquadCarrierTimeTick(object? sender, string e)
+        private void OnSquadCarrierTimeTick(object? sender, string e)
         {
             if (SquadCarrierData == null)
                 return;
@@ -266,12 +304,12 @@ namespace ODEliteTracker.ViewModels
             SquadCarrierData.UpdateTimes();
         }
 
-        private void OnCarrierDestinationUpdated(object? sender, FleetCarrier e)
+        private void OnPersonalCarrierDestinationUpdated(object? sender, FleetCarrier e)
         {
-            if (CarrierData == null)
+            if (PersonalCarrierData == null)
                 return;
 
-            CarrierData.UpdateDestination(e);
+            PersonalCarrierData.UpdateDestination(e);
         }
 
         private void OnSquadCarrierDestinationUpdated(object? sender, FleetCarrier e)

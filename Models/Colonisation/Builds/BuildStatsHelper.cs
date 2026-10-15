@@ -1,6 +1,5 @@
 ﻿using ODEliteTracker.ViewModels.ModelViews.Colonisation;
 using System.Diagnostics.CodeAnalysis;
-using System.Windows.Controls;
 
 namespace ODEliteTracker.Models.Colonisation.Builds
 {

@@ -2,7 +2,6 @@
 using ODEliteTracker.Database;
 using ODEliteTracker.Models.BGS;
 using ODJournalDatabase.Database.Interfaces;
-using System.Linq;
 
 namespace ODEliteTracker.Managers
 {

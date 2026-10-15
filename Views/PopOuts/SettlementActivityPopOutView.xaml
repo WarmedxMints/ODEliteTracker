@@ -14,7 +14,7 @@
                             Background="{DynamicResource Overlay_CardBackground}"
                             Foreground="{DynamicResource Overlay_ForegroundBrush}"
                             FontSize="30"
-                            BusyContent="Parsing Colonisation Logs"
+                            BusyContent="Parsing BGS Logs"
                             IndicatorType="Cupertino"
                             BusyContentMargin="0,20,0,0">
         <Border CornerRadius="5"

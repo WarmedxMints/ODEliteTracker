@@ -1,0 +1,32 @@
+﻿<UserControl x:Class="ODEliteTracker.Controls.Text.TextWithHeader"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ODEliteTracker.Controls.Text"
+             mc:Ignorable="d"             
+             Background="Transparent"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:TextWithHeader}}, Path=Width}"
+          Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:TextWithHeader}}, Path=Height}">
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:TextWithHeader}}, Path=HeaderText}"
+                   HorizontalAlignment="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:TextWithHeader}}, Path=HeaderHorizontalAlignment}"
+                   VerticalAlignment="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:TextWithHeader}}, Path=HeaderVerticalAlignment}"
+                   FontSize="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:TextWithHeader}}, Path=HeaderFontSize}"
+                   Foreground="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:TextWithHeader}}, Path=HeaderFontColour}"
+                   Margin="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:TextWithHeader}}, Path=HeaderMargin}"/>
+
+        <TextBlock Grid.Row="1"
+                   Text="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:TextWithHeader}}, Path=Text}"
+                   HorizontalAlignment="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:TextWithHeader}}, Path=TextHorizontalAlignment}"
+                   VerticalAlignment="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:TextWithHeader}}, Path=TextVerticalAlignment}"
+                   FontSize="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:TextWithHeader}}, Path=TextSize}"
+                   Foreground="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:TextWithHeader}}, Path=TextColour}"
+                   Margin="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:TextWithHeader}}, Path=TextMargin}"/>
+    </Grid>
+</UserControl>

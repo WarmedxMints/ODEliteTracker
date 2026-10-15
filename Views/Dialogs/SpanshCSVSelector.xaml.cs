@@ -1,4 +1,4 @@
-﻿using ODEliteTracker.Models;
+﻿using ODEliteTracker.Models.Spansh;
 using ODMVVM.Commands;
 using ODMVVM.Views;
 using System.Windows.Input;
@@ -17,13 +17,13 @@ namespace ODEliteTracker.Views.Dialogs
 
             SetAsToolWindow();
 
-            SetCSVType = new ODRelayCommand<CsvType>(SelectCSVType);
+            SetCSVType = new ODRelayCommand<SpanshRouteType>(SelectCSVType);
         }
 
         public ICommand SetCSVType { get; }
-        public CsvType Result { get; private set; } = CsvType.None;
+        public SpanshRouteType Result { get; private set; } = SpanshRouteType.None;
 
-        private void SelectCSVType(CsvType csvType)
+        private void SelectCSVType(SpanshRouteType csvType)
         {
             Result = csvType;
             DialogResult = true;

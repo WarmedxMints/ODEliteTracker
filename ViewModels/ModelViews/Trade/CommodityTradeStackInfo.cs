@@ -1,5 +1,4 @@
 ﻿using ODMVVM.ViewModels;
-using System.Security.Cryptography.X509Certificates;
 
 namespace ODEliteTracker.ViewModels.ModelViews.Trade
 {

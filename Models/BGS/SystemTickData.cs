@@ -1,6 +1,5 @@
 ﻿using EliteJournalReader;
 using EliteJournalReader.Events;
-using System.Windows.Forms;
 
 namespace ODEliteTracker.Models.BGS
 {

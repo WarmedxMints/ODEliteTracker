@@ -1,6 +1,4 @@
-﻿using NetTopologySuite.Utilities;
-using ODEliteTracker.Models.Galaxy;
-using ODEliteTracker.Models.Settings;
+﻿using ODEliteTracker.Models.Settings;
 using ODMVVM.Commands;
 using System.Windows;
 using System.Windows.Input;

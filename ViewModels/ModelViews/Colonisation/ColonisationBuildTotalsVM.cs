@@ -235,8 +235,8 @@ namespace ODEliteTracker.ViewModels.ModelViews.Colonisation
             assetStats.ClearCollection();
             assetStats.AddRange(ColonisationAssetStats.GetAssestStats(build).Select(x => new AssetStatsVM(x)));
 
-            if (fleetCarrierData.IsLive && fleetCarrierData.CarrierData != null)
-                CheckCarrierStock(fleetCarrierData.CarrierData, items);
+            if (fleetCarrierData.IsLive && fleetCarrierData.SwitchableCarrierData != null)
+                CheckCarrierStock(fleetCarrierData.SwitchableCarrierData, items);
 
             Total = $"{items.Sum(x => x.RequiredAmount):N0} t";
             selectedBuild = build;
@@ -331,8 +331,8 @@ namespace ODEliteTracker.ViewModels.ModelViews.Colonisation
                 }
             }
 
-            if (fleetCarrierData.IsLive && fleetCarrierData.CarrierData != null)
-                CheckCarrierStock(fleetCarrierData.CarrierData, wishListItems);
+            if (fleetCarrierData.IsLive && fleetCarrierData.SwitchableCarrierData != null)
+                CheckCarrierStock(fleetCarrierData.SwitchableCarrierData, wishListItems);
 
             WishListTotal = $"{wishListItems.Sum(x => x.RequiredAmount):N0} t";
             SetSelectedBuildLabel(selectedBuild);

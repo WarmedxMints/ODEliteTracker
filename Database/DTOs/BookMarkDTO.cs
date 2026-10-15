@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace ODEliteTracker.Database.DTOs
+﻿namespace ODEliteTracker.Database.DTOs
 {
     public sealed class BookMarkDTO
     {

@@ -12,7 +12,6 @@ using ODMVVM.Navigation;
 using ODMVVM.Navigation.Controls;
 using ODMVVM.ViewModels;
 using System.Collections.ObjectModel;
-using System.Web;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
@@ -26,7 +25,7 @@ namespace ODEliteTracker.ViewModels
                                       IManageJournalEvents journalManager,
                                       SharedDataStore sharedDataStore,
                                       NotificationService notificationService,
-                                      SpanshCsvStore spanshCsv,
+                                      SpanshRouteStore spanshCsv,
                                       SettingsStore settings,
                                       TickDataStore tickDataStore,
                                       FleetCarrierDataStore carrierDataStore,
@@ -66,7 +65,7 @@ namespace ODEliteTracker.ViewModels
         private readonly IManageJournalEvents journalManager;
         private readonly SharedDataStore sharedData;
         private readonly NotificationService notificationService;       
-        private readonly SpanshCsvStore spanshCsv;
+        private readonly SpanshRouteStore spanshCsv;
         private readonly SettingsStore settings;
         private readonly TickDataStore tickDataStore;
         private readonly FleetCarrierDataStore carrierDataStore;
@@ -123,7 +122,7 @@ namespace ODEliteTracker.ViewModels
             {
                 ButtonImage = new BitmapImage(new Uri("/Assets/Icons/spanshbtn.png", UriKind.Relative)),
                 TargetView = typeof(SpanshViewModel),
-                ToolTip = "Spansh CSV Parser"
+                ToolTip = "Spansh Route Parser"
             },
         ];
 

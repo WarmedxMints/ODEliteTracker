@@ -1,165 +1,38 @@
-﻿using Newtonsoft.Json.Linq;
-using ODEliteTracker.Models;
-using ODEliteTracker.Models.Spansh;
-using ODEliteTracker.Services;
+﻿using ODEliteTracker.Services;
 using ODEliteTracker.Stores;
 using ODEliteTracker.ViewModels.ModelViews.Spansh;
 using ODMVVM.Commands;
-using ODMVVM.Extensions;
-using ODMVVM.Services.MessageBox;
 using ODMVVM.ViewModels;
-using System.Collections.ObjectModel;
 using System.Windows.Input;
 
 namespace ODEliteTracker.ViewModels
 {
     public sealed class SpanshViewModel : ODViewModel
     {
-        public SpanshViewModel(SpanshCsvStore csvStore, SettingsStore settingsStore, NotificationService notificationService) 
+        public ICommand OpenPopOut { get; }
+        public SpanshViewModel(SpanshRouteStore spanshStore,
+                               SpanshRouteController routeController,
+                               SpanshAPIController apiController,
+                               PopOutService popOutService,
+                               SettingsStore settings) 
         {
-            this.csvStore = csvStore;
-            this.settingsStore = settingsStore;
-            this.notificationService = notificationService;
+            this.spanshStore = spanshStore;
+            this.routeController = routeController;
+            ApiController = apiController;
+            this.popOutService = popOutService;
+            this.settings = settings;
+            this.spanshStore.StoreLive += OnCSVStoreLive;
 
-            this.csvStore.StoreLive += OnCSVStoreLive;
-            this.csvStore.OnCurrentTargetChanged += OnCurrentTargetChanged;
-            this.csvStore.OnCurrentContainerChanged += CsvStore_OnCurrentContainerChanged;
+            OpenPopOut = new ODRelayCommand<Type>(OnOpenPopOut);
 
-            var currentContainer = this.csvStore.GetCurrentContainer(this.settingsStore.SpanshCSVSettings[this.settingsStore.SelectedCommanderID]);
-            CsvStore_OnCurrentContainerChanged(null, currentContainer);
-
-            PreviousTargetCommand = new ODRelayCommand(SelectPreviousTarget, (_) => CurrentIndex > 0);
-            NextTargetCommand = new ODRelayCommand(SelectNextTarget, (_) => NextTarget != null);
-            SetCurrentCSVType = new ODRelayCommand<CsvType>(SetCSVType, (csvType) => CurrentType != csvType);
-            CopyToClipboard = new ODRelayCommand<ExplorationTargetViewModel>(CopySystemNameToClipboard, (targetVM) => targetVM != null);
-            ImportCSV = new ODRelayCommand(OnImportCSV);
-            DeleteCSVCommand = new ODRelayCommand(OnDeleteCSV, (_) => CurrentTarget != null);
-
-            if (this.csvStore.IsLive)
-                OnCSVStoreLive(this.csvStore, true);
+            if (this.spanshStore.IsLive)
+                OnCSVStoreLive(this.spanshStore, true);
         }
 
-        public override void Dispose()
+        private void OnOpenPopOut(Type type)
         {
-            this.csvStore.StoreLive -= OnCSVStoreLive;
-            this.csvStore.OnCurrentTargetChanged -= OnCurrentTargetChanged;
-            this.csvStore.OnCurrentContainerChanged -= CsvStore_OnCurrentContainerChanged;
+            popOutService.OpenPopOut(type, settings.SelectedCommanderID);
         }
-
-        private readonly SpanshCsvStore csvStore;
-        private readonly SettingsStore settingsStore;
-        private readonly NotificationService notificationService;
-
-        public override bool IsLive => csvStore.IsLive;
-
-        public event EventHandler<SpanshCsvErrorEventArgs>? OnErrorProcessingCSV;
-
-        public CsvType CurrentType
-        {
-            get => settingsStore.SpanshCSVSettings[settingsStore.SelectedCommanderID];
-            set
-            {
-                settingsStore.SpanshCSVSettings[settingsStore.SelectedCommanderID] = value;
-                OnPropertyChanged(nameof(CurrentType));
-            }
-        }
-       
-        public ObservableCollection<ExplorationTargetViewModel> Targets { get; private set; } = [];
-
-        private ExplorationTargetViewModel? currentTarget;
-        public ExplorationTargetViewModel? CurrentTarget
-        {
-            get => currentTarget;
-            private set
-            {
-                currentTarget = value;
-                OnPropertyChanged(nameof(CurrentTarget));
-            }
-        }
-
-        private ExplorationTargetViewModel? nextTarget;
-        public ExplorationTargetViewModel? NextTarget
-        {
-            get => nextTarget;
-            private set
-            {
-                nextTarget = value;
-                OnPropertyChanged(nameof(NextTarget));
-            }
-        }
-
-        public int CurrentIndex => csvStore.CurrentIndex;
-        public int RemainingCount => Targets.Count > 0 ? Targets.Count - CurrentIndex - 1 : 0;
-
-        public bool AutoCopyNextSystem
-        {
-            get => settingsStore.SpanshCSVSettings.AutoCopySystemToClipboard;
-            set
-            {
-                settingsStore.SpanshCSVSettings.AutoCopySystemToClipboard = value;
-                OnPropertyChanged(nameof(AutoCopyNextSystem));
-            }
-        }
-
-        public string TimeRemaining
-        {
-            get
-            {
-                if (CurrentType != CsvType.FleetCarrier)
-                    return string.Empty;
-
-                var duration = TimeSpan.FromMinutes(20) * RemainingCount;
-                return $"{duration.Hours} h {duration.Minutes} m";
-            }
-        }
-        #region Commands
-        public ICommand PreviousTargetCommand { get; }
-        public ICommand NextTargetCommand { get; }
-        public ICommand SetCurrentCSVType { get; }
-        public ICommand CopyToClipboard { get; }
-        public ICommand ImportCSV { get; }
-        public ICommand DeleteCSVCommand { get; }
-
-        private void SelectNextTarget(object? obj)
-        {
-            csvStore.CurrentIndex++;
-        }
-
-        private void SelectPreviousTarget(object? obj)
-        {
-            csvStore.CurrentIndex--;
-        }
-
-        private void SetCSVType(CsvType type)
-        {
-            CurrentType = type;
-        }
-
-        private void OnDeleteCSV(object? obj)
-        {
-            csvStore.DeleteContainer(CurrentType);
-        }
-
-        private void CopySystemNameToClipboard(ExplorationTargetViewModel model)
-        {
-            if (model == null)
-            {
-                return;
-            }
-
-            notificationService.SetClipboard(model.SystemName);
-        }
-
-        private void OnImportCSV(object? obj)
-        {
-            var filename = ODDialogService.OpenFileDialog("Browse csv files", "csv", "csv files (*.csv)|*.csv", 2);
-
-            if (string.IsNullOrEmpty(filename))
-                return;
-
-            ParseCSV(filename);
-        }
-        #endregion
 
         private Task OnCSVStoreLive(object? sender, bool e)
         {
@@ -167,74 +40,21 @@ namespace ODEliteTracker.ViewModels
             return Task.CompletedTask;
         }
 
-        private void CsvStore_OnCurrentContainerChanged(object? sender, SpanshCsvContainer? e)
+        public override void Dispose()
         {
-            CurrentTarget = null;
-            NextTarget = null;
-            Targets.ClearCollection();
-
-            if (csvStore.CurrentContainer == null)
-            {
-                return;
-            }
-
-            Targets.AddRange(csvStore.CurrentContainer?.Targets.Select(x => new ExplorationTargetViewModel(x)) ?? []);
-            OnPropertyChanged(nameof(Targets));
-            OnPropertyChanged(nameof(CurrentIndex));
-            OnPropertyChanged(nameof(RemainingCount));
-            OnCurrentTargetChanged(null, csvStore.CurrentTarget);
+            this.spanshStore.StoreLive -= OnCSVStoreLive;
+            ApiController.SaveAPIData();
         }
 
-        private void OnCurrentTargetChanged(object? sender, ExplorationTarget? e)
-        {
-            if (CurrentIndex < 0)
-            {
-                currentTarget = null;
-                nextTarget = null;
-                OnPropertyChanged(nameof(CurrentTarget));
-                OnPropertyChanged(nameof(NextTarget));
-                OnPropertyChanged(nameof(CurrentIndex));
-                OnPropertyChanged(nameof(RemainingCount));
-                OnPropertyChanged(nameof(CurrentType));
-                OnPropertyChanged(nameof(TimeRemaining));
-                return;
-            }
-            currentTarget = CurrentIndex < Targets.Count - 1 ? Targets[CurrentIndex]
-                : Targets.FirstOrDefault(x => x.SystemName == csvStore.CurrentTarget?.SystemName);
+        private readonly SpanshRouteStore spanshStore;
+        private readonly SpanshRouteController routeController;
+        private readonly PopOutService popOutService;
+        private readonly SettingsStore settings;
 
-            nextTarget = Targets.FirstOrDefault(x => x.SystemName == csvStore.NextTarget?.SystemName);
-            OnPropertyChanged(nameof(CurrentTarget));
-            OnPropertyChanged(nameof(NextTarget));
-            OnPropertyChanged(nameof(CurrentIndex));
-            OnPropertyChanged(nameof(RemainingCount));
-            OnPropertyChanged(nameof(CurrentType));
-            OnPropertyChanged(nameof(TimeRemaining));
-        }
+        public override bool IsLive => spanshStore.IsLive;
 
-        public void ParseCSV(string fileName)
-        {
-            var csv = csvStore.ParseCSV(fileName);
+        public SpanshRouteController RouteController => routeController;
 
-            if (csv)
-            {
-                OnPropertyChanged(nameof(CurrentType));
-                return;
-            }
-
-            OnErrorProcessingCSV?.Invoke(this, new(fileName, SpanshCSVError.Parse));
-        }
-
-        public void ForceParseCSV(string fileName, CsvType csvType)
-        {
-            var csv = csvStore.ForceParseCSV(fileName, csvType);
-
-            if (csv)
-            {
-                OnPropertyChanged(nameof(CurrentType));
-                return;
-            }
-
-            OnErrorProcessingCSV?.Invoke(this, new(fileName, SpanshCSVError.ForcePass));
-        }
+        public SpanshAPIController ApiController { get; }
     }
 }

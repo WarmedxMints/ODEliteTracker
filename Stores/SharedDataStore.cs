@@ -1,7 +1,5 @@
 ﻿using EliteJournalReader;
 using EliteJournalReader.Events;
-using NetTopologySuite.Geometries;
-using Newtonsoft.Json.Linq;
 using ODEliteTracker.Database;
 using ODEliteTracker.Helpers;
 using ODEliteTracker.Managers;
@@ -21,21 +19,24 @@ using ODMVVM.Helpers;
 
 namespace ODEliteTracker.Stores
 {
-    public sealed class SharedDataStore : LogProcessorBase
+    public sealed class SharedDataStore : LogProcessorBase, IWatchStatus
     {
         public SharedDataStore(IManageJournalEvents journalManager,
                                NotificationService notificationService,
                                IODDatabaseProvider databaseProvider,
-                               SettingsStore settings)
+                               SettingsStore settings,
+                               StationMarketController marketController)
         {
             this.journalManager = journalManager;
             this.notificationService = notificationService;
             this.databaseProvider = (ODEliteTrackerDatabaseProvider)databaseProvider;
             this.settings = settings;
+            this.marketController = marketController;
             this.journalManager.RegisterLogProcessor(this);
 
             bountiesManager = new(databaseProvider);
             materialTraderService = new();
+            this.journalManager.OnStatusFileUpdate += JournalManager_OnStatusFileUpdate;
         }
 
         #region Private fields
@@ -43,6 +44,7 @@ namespace ODEliteTracker.Stores
         private readonly NotificationService notificationService;
         private readonly ODEliteTrackerDatabaseProvider databaseProvider;
         private readonly SettingsStore settings;
+        private readonly StationMarketController marketController;
         private readonly Dictionary<string, FactionData> factions = [];
         private readonly Dictionary<ulong, StarSystem> systems = [];
         private string? commanderPower;
@@ -54,6 +56,8 @@ namespace ODEliteTracker.Stores
         private int currentCommanderId = -1;
         private readonly Dictionary<string, string> carrierNames = [];
         private readonly Dictionary<ulong, string> carrierNamesByMarketID = [];
+        private readonly Dictionary<int, ShipInfo> commandersShips = [];
+        private List<SystemInRoute> currentRoute = [];
         #endregion
 
         #region Public Properties
@@ -74,17 +78,22 @@ namespace ODEliteTracker.Stores
                 { JournalTypeEnum.DockingDenied, false },
                 { JournalTypeEnum.FSDJump, true},
                 { JournalTypeEnum.FSSSignalDiscovered, true },
+                { JournalTypeEnum.JetConeBoost, true },
                 { JournalTypeEnum.LeaveBody, true},
                 { JournalTypeEnum.Loadout, true },
                 { JournalTypeEnum.Location, true },
                 { JournalTypeEnum.Market, false },
                 { JournalTypeEnum.MarketBuy, true},
                 { JournalTypeEnum.MarketSell, true},
+                { JournalTypeEnum.NavRoute, false},
+                { JournalTypeEnum.NavRouteClear, false},
                 { JournalTypeEnum.Powerplay, true },
                 { JournalTypeEnum.RedeemVoucher, true},
                 { JournalTypeEnum.Scan, true},
                 { JournalTypeEnum.ShipTargeted, false },
                 { JournalTypeEnum.SupercruiseEntry, true},
+                { JournalTypeEnum.SellShipOnRebuy, true},
+                { JournalTypeEnum.ShipyardSell, true},
                 { JournalTypeEnum.Undocked, true},
                 { JournalTypeEnum.FSSDiscoveryScan, true },
             };
@@ -92,16 +101,18 @@ namespace ODEliteTracker.Stores
         public Dictionary<string, FactionData> Factions => factions;
         public StarSystem? CurrentSystem { get; private set; }
         public SystemBody? CurrentBody { get; private set; }
-        public StationMarket? CurrentMarket { get; private set; }
+        public StationMarket? CurrentMarket { get { return marketController.StationMarket; } }
         public List<WatchedMarket> WatchedMarkets { get; private set; } = [];
         public string? CurrentBody_Station { get; private set; }
         public ulong CurrentMarketID { get; private set; } = 0;
         public ShipInfo? CurrentShipInfo { get; private set; }
-        public IEnumerable<ShipCargo>? CurrentShipCargo { get; private set; }
+        public IEnumerable<ShipCargo>? CurrentShipCargo => CurrentShipInfo?.Cargo;
         public Dictionary<ODMVVM.Helpers.Commodity, List<CommodityPurchase>> MarketPurchases => marketPurchases;
         public DateTime LastLoginTime { get; private set; }
         public Dictionary<ColonisationBuild, int> ColonisationWishList => colonisationWishList;
         public Dictionary<ulong, StarSystem> Systems => systems;
+        public List<SystemInRoute> CurrentRoute => currentRoute;
+        public IEnumerable<ShipInfo> Ships => commandersShips.Values;
         #endregion
 
         #region Events
@@ -109,7 +120,8 @@ namespace ODEliteTracker.Stores
         public EventHandler<string?>? CurrentBody_StationChanged;
         public EventHandler<StationMarket?>? MarketEvent;
         public EventHandler<ShipInfo?>? ShipChangedEvent;
-        public EventHandler<IEnumerable<ShipCargo>?>? ShipCargoUpdatedEvent;
+        public EventHandler<ShipInfo?>? ShipCargoUpdatedEvent;
+        public EventHandler<ShipInfo?>? ShipStatsUpdated;
         public EventHandler? BountiesUpdated;
         public EventHandler<CommodityPurchase>? PurchasesUpdated;
         public EventHandler<WatchedMarket>? WatchedMarketUpdated;
@@ -117,14 +129,13 @@ namespace ODEliteTracker.Stores
         public EventHandler<StarSystem>? SystemBodiesUpdated;
         public EventHandler<StarSystem>? SystemDSSScaned;
         public EventHandler<Station?>? Docked;
+        public EventHandler<List<SystemInRoute>>? CurrentRouteChanged;
         #endregion
 
         public override void ClearData()
         {
-            CurrentSystem = null;
-            CurrentMarket = null;
+            CurrentSystem = null;          
             CurrentShipInfo = null;
-            CurrentShipCargo = null;
             CurrentBody_Station = null;
             CurrentSystemChanged?.Invoke(this, null);
             MarketEvent?.Invoke(this, null);
@@ -132,7 +143,10 @@ namespace ODEliteTracker.Stores
             ShipCargoUpdatedEvent?.Invoke(this, null);
             MarketPurchases.Clear();
             LastLoginTime = DateTime.MinValue;
+            marketController.ClearData();
+            commandersShips.Clear();
             IsLive = false;
+            journalManager.StopStatusWatcher(this);
         }
 
         public override void Dispose()
@@ -160,7 +174,7 @@ namespace ODEliteTracker.Stores
             {
                 case LoadGameEvent.LoadGameEventArgs loadGame:
                     CurrentBody = null;
-
+                    LastLoginTime = loadGame.Timestamp;
                     UpdateCurrentSystem(null);
                     UpdateCurrentBody_Station(string.Empty);
                     CurrentMarketID = 0;
@@ -188,16 +202,16 @@ namespace ODEliteTracker.Stores
                 case CargoEvent.CargoEventArgs:
                     var cargo = journalManager.GetCargo();
 
-                    if (cargo != null && cargo.Vessel.Equals("Ship", StringComparison.OrdinalIgnoreCase))
+                    if (cargo != null && cargo.Vessel.Equals("Ship", StringComparison.OrdinalIgnoreCase) && CurrentShipInfo != null)
                     {
-                        CurrentShipCargo = cargo?.Inventory.Select(x =>
+                        CurrentShipInfo.Cargo = [.. cargo.Inventory.Select(x =>
                         {
                             return new ShipCargo((string.IsNullOrEmpty(x.Name_Localised) ? x.Name : x.Name_Localised).ToTitleCase(), x.Count);
-                        });
+                        })];
 
                         if (CurrentShipCargo != null)
                         {
-                            ShipCargoUpdatedEvent?.Invoke(this, CurrentShipCargo);
+                            ShipCargoUpdatedEvent?.Invoke(this, CurrentShipInfo);
                         }
                     }
                     break;
@@ -253,6 +267,7 @@ namespace ODEliteTracker.Stores
                     break;
 
                 case DockedEvent.DockedEventArgs docked:
+
                     CurrentMarketID = docked.MarketID;
 
                     var stationName = docked.StationName_Localised ?? docked.StationName;
@@ -273,7 +288,17 @@ namespace ODEliteTracker.Stores
                     if (IsLive == false)
                         break;
 
+                    docked.StationName = stationName;
+
                     Docked?.Invoke(this, currentStation);
+
+                    Task.Run(async () =>
+                    {
+                        var market = await marketController.GetMarket(docked);
+
+                        UpdateMarkets(market);
+                    });
+
                     var stationFaction = docked.StationFaction.Name;
 
                     if (stationFaction.Equals("FleetCarrier", StringComparison.OrdinalIgnoreCase))
@@ -298,6 +323,12 @@ namespace ODEliteTracker.Stores
                     break;
 
                 case FSDJumpEvent.FSDJumpEventArgs fsdJump:
+                    if (CurrentShipInfo != null)
+                    {
+                        CurrentShipInfo.CurrentBoostValue = 1;
+                        if (IsLive)
+                            ShipStatsUpdated?.Invoke(this, CurrentShipInfo);
+                    }
                     CurrentBody = null;
                     UpdateCurrentSystem(new(fsdJump));
                     UpdateCurrentBody_Station(null);
@@ -354,15 +385,19 @@ namespace ODEliteTracker.Stores
                         _ = carrierNames.TryAdd(id, fss.SignalName);
                     }
                     break;
-
+                case JetConeBoostEvent.JetConeBoostEventArgs jetConeBoost:
+                    CurrentShipInfo?.UpdateCurrentBoost(jetConeBoost);
+                    if (IsLive)
+                    {
+                        ShipStatsUpdated?.Invoke(this, CurrentShipInfo);                        
+                    }
+                    break;
                 case LeaveBodyEvent.LeaveBodyEventArgs leaveBody:
                     CurrentBody = null;
                     UpdateCurrentBody_Station(null);
                     break;
-
-                case LoadoutEvent.LoadoutEventArgs loadOut:
-                    //Sometimes the ship name comes though as a string with a single space so we trim it
-                    CurrentShipInfo = new ShipInfo(string.IsNullOrEmpty(loadOut.ShipName.Trim()) ? EliteHelpers.ConvertShipName(loadOut.Ship) : loadOut.ShipName, loadOut.ShipIdent, loadOut.CargoCapacity, (JObject)loadOut.OriginalEvent.DeepClone());
+                case LoadoutEvent.LoadoutEventArgs loadout:
+                    UpdateShips(loadout);
                     if (IsLive)
                         ShipChangedEvent?.Invoke(this, CurrentShipInfo);
                     break;
@@ -412,26 +447,15 @@ namespace ODEliteTracker.Stores
                 case MarketEvent.MarketEventArgs marketArgs:
                     Task.Factory.StartNew(async () =>
                     {
-                        await Task.Delay(400);
-                        var market = journalManager.GetMarketInfo();
-                        //Check the market ID.  Since the Kestrel MK2 update the game has a habit of firing the market event while failing to update the market.json file
-                        if (market != null && market.Timestamp >= marketArgs.Timestamp)
+                        //Update the namt if it's a carrier
+                        if (carrierNamesByMarketID.TryGetValue(marketArgs.MarketID, out string? carrierName) && string.IsNullOrEmpty(carrierName) == false)
                         {
-                            if (carrierNamesByMarketID.TryGetValue(market.MarketID, out string? carrierName) && string.IsNullOrEmpty(carrierName) == false)
-                            {
-                                market.StationName = carrierName;
-                            }
-                            CurrentMarket = new(market);
-                            MarketEvent?.Invoke(this, CurrentMarket);
-
-                            var watched = WatchedMarkets.FirstOrDefault(x => x.MarketID == market.MarketID);
-
-                            if (watched != null)
-                            {
-                                watched.UpdatePurchaseOrders(market);
-                                WatchedMarketUpdated?.Invoke(this, watched);
-                            }
+                            marketArgs.StationName = carrierName;
                         }
+
+                        var market = await marketController.GetMarket(marketArgs);
+
+                        UpdateMarkets(market);
                     });
                     break;
 
@@ -443,19 +467,16 @@ namespace ODEliteTracker.Stores
                     }
                     var commodity = EliteCommodityHelpers.GetCommodityFromPartial(marketBuy.Type, marketBuy.Type_Localised);
 
-                    if (CurrentMarket is not null)
+                    var purcashedItem = marketController.GetMarketItemToBuy(commodity.FdevName, marketBuy.Type, commodity.Id);
+
+                    if (purcashedItem != null)
                     {
-                        var marketItem = CurrentMarket.ItemsForSale.FirstOrDefault(x => string.Equals(x.Name, commodity.FdevName));
+                        purcashedItem.Stock -= marketBuy.Count;
 
-                        if (marketItem != null)
-                        {
-                            marketItem.Stock -= marketBuy.Count;
+                        if (purcashedItem.Stock < 0)
+                            purcashedItem.Stock = 0;
 
-                            if (marketItem.Stock < 0)
-                                marketItem.Stock = 0;
-
-                            MarketEvent?.Invoke(this, CurrentMarket);
-                        }
+                        MarketEvent?.Invoke(this, CurrentMarket);
                     }
 
                     //We don't care about fleet carrier purchases for the history
@@ -492,19 +513,16 @@ namespace ODEliteTracker.Stores
 
                     var commod = EliteCommodityHelpers.GetCommodityFromPartial(sell.Type, string.IsNullOrEmpty(sell.Type_Localised) ? sell.Type : sell.Type_Localised);
 
-                    if (CurrentMarket is not null)
+                    var marketItem = marketController.GetMarketItemForSale(commod.FdevName, sell.Type, commod.Id);
+
+                    if (marketItem != null)
                     {
-                        var marketItem = CurrentMarket.ItemsForPurchase.FirstOrDefault(x => string.Equals(x.Name, commod.FdevName));
+                        marketItem.Demand -= sell.Count;
 
-                        if (marketItem != null)
-                        {
-                            marketItem.Demand -= sell.Count;
+                        if (marketItem.Demand < 0)
+                            marketItem.Demand = 0;
 
-                            if (marketItem.Demand < 0)
-                                marketItem.Demand = 0;
-
-                            MarketEvent?.Invoke(this, CurrentMarket);
-                        }
+                        MarketEvent?.Invoke(this, CurrentMarket);
                     }
 
                     var known = WatchedMarkets.FirstOrDefault(x => x.MarketID == sell.MarketID);
@@ -531,7 +549,19 @@ namespace ODEliteTracker.Stores
                         WatchedMarketUpdated?.Invoke(this, known);
                     }
                     break;
+                case NavRouteEvent.NavRouteEventArgs:
+                    var route = journalManager.ReadNavRouteJson(currentCommanderId);
 
+                    if (route == null || route.Route.Any() == false)
+                    {
+                        SetNavRoute(null);
+                        return;
+                    }
+                    SetNavRoute(route);
+                    break;
+                case NavRouteClearEvent.NavRoutClearEventArgs:
+                    SetNavRoute(null);
+                    break;
                 case PowerplayEvent.PowerplayEventArgs powerPlay:
                     commanderPower = powerPlay.Power;
                     break;
@@ -610,6 +640,22 @@ namespace ODEliteTracker.Stores
                     if (IsLive)
                         notificationService.ShowShipTargetedNotification(pilotName, EliteHelpers.ConvertShipName(shipTargeted.Ship), targetType, shipTargeted.Bounty, shipTargeted.Faction, shipTargeted.Power);
                     break;
+                case SellShipOnRebuyEvent.SellShipOnRebuyEventArgs sellOnRebuy:
+                    var soldrebuyShip = commandersShips.FirstOrDefault(x => x.Value.ShipId == sellOnRebuy.SellShipID);
+                    var removed = commandersShips.Remove(sellOnRebuy.SellShipID);
+                    if (IsLive && removed)
+                    {
+                        ShipChangedEvent?.Invoke(this, soldrebuyShip.Value);
+                    }
+                    break;
+                case ShipyardSellEvent.ShipyardSellEventArgs shipyardSell:
+                    var soldShip = commandersShips.FirstOrDefault(x => x.Value.ShipId == shipyardSell.SellShipID);
+                    var shipRemoved = commandersShips.Remove(shipyardSell.SellShipID);
+                    if (IsLive && shipRemoved)
+                    {
+                        ShipChangedEvent?.Invoke(this, soldShip.Value);
+                    }
+                    break;
 
                 case SupercruiseEntryEvent.SupercruiseEntryEventArgs:
                     CurrentBody = null;
@@ -628,6 +674,49 @@ namespace ODEliteTracker.Stores
                         SystemDSSScaned?.Invoke(this, knownSystem);
                     }
                     break;
+            }
+        }
+
+        private void SetNavRoute(NavigationRoute? route)
+        {
+            if (route == null)
+            {
+                currentRoute.Clear();
+                CurrentRouteChanged?.Invoke(this, currentRoute);
+                return;
+            }
+
+            currentRoute = [.. route.Route];
+            CurrentRouteChanged?.Invoke(this, currentRoute);
+        }
+
+        private void UpdateShips(LoadoutEvent.LoadoutEventArgs loadout)
+        {    
+            if (commandersShips.TryGetValue(loadout.ShipID, out ShipInfo? value))
+            {
+                value.Update(loadout);
+                CurrentShipInfo = value;
+                return;
+            }
+
+            var ship = new ShipInfo(loadout);
+            CurrentShipInfo = ship;
+            commandersShips.TryAdd(loadout.ShipID, ship);            
+        }
+
+        private void UpdateMarkets(StationMarket? market)
+        {
+            if (market != null)
+            {
+                MarketEvent?.Invoke(this, CurrentMarket);
+
+                var watched = WatchedMarkets.FirstOrDefault(x => x.MarketID == market.MarketID);
+
+                if (watched != null)
+                {
+                    watched.UpdatePurchaseOrders(market);
+                    WatchedMarketUpdated?.Invoke(this, watched);
+                }
             }
         }
 
@@ -733,7 +822,7 @@ namespace ODEliteTracker.Stores
         {
             currentCommanderId = currentCmdrId;
             bountiesManager.Initialise(currentCmdrId);
-            CurrentMarket = null;
+            marketController.ClearData();
             WatchedMarkets.Clear();
             colonisationWishList.Clear();
             var wishListItem = databaseProvider.GetColonisationWishList(currentCmdrId);
@@ -779,23 +868,23 @@ namespace ODEliteTracker.Stores
 
         public override void RunAfterParsingHistory()
         {
+            journalManager.StartStatusWatcher(this);
             var cargo = journalManager.GetCargo();
 
-            if (cargo != null && cargo.Vessel.Equals("Ship", StringComparison.OrdinalIgnoreCase))
+            if (cargo != null && cargo.Vessel.Equals("Ship", StringComparison.OrdinalIgnoreCase) && CurrentShipInfo != null)
             {
-                CurrentShipCargo = cargo?.Inventory.Select(x => new ShipCargo((string.IsNullOrEmpty(x.Name_Localised) ? x.Name : x.Name_Localised).ToTitleCase(), x.Count));
+                CurrentShipInfo.Cargo = [.. cargo.Inventory.Select(x => new ShipCargo((string.IsNullOrEmpty(x.Name_Localised) ? x.Name : x.Name_Localised).ToTitleCase(), x.Count))];
 
                 if (CurrentShipCargo != null)
                 {
-                    ShipCargoUpdatedEvent?.Invoke(this, CurrentShipCargo);
+                    ShipCargoUpdatedEvent?.Invoke(this, CurrentShipInfo);
                 }
             }
 
-            var market = journalManager.GetMarketInfo();
+            var market = marketController.GetMarket();
 
             if (market != null)
             {
-                CurrentMarket = new(market);
                 MarketEvent?.Invoke(this, CurrentMarket);
             }
 
@@ -847,5 +936,20 @@ namespace ODEliteTracker.Stores
         }
 
         public NavigationRoute? GetNavRoute() => journalManager.ReadNavRouteJson(currentCommanderId);
+
+        private void JournalManager_OnStatusFileUpdate(object? sender, StatusFileEvent e)
+        {
+            if (!IsLive)
+                return;
+
+            if (!e.Flags.HasFlag(StatusFlags.InMainShip))
+                return;
+
+            if (CurrentShipInfo == null)
+                return;
+
+            if (CurrentShipInfo.UpdateFromStatus(e))
+                ShipStatsUpdated?.Invoke(this, CurrentShipInfo);
+        }
     }
 }

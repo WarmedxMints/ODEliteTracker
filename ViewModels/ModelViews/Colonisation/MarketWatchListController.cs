@@ -173,6 +173,4 @@ namespace ODEliteTracker.ViewModels.ModelViews.Colonisation
             this.sharedData.Docked -= OnDocked;
         }
     }
-
-
 }

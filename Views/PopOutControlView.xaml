@@ -427,7 +427,38 @@
                                     </VisualBrush>
                                 </Rectangle.OpacityMask>
                             </Rectangle>
-                            <TextBlock Text="Straight Line Tooly&#x0a;Overlay"
+                            <TextBlock Text="Straight Line Tool&#x0a;Overlay"
+                                       TextWrapping="Wrap"
+                                       Margin="5"
+                                       TextAlignment="Center"
+                                       Grid.Row="1" />
+                        </Grid>
+                    </Button>
+
+                    <Button Style="{DynamicResource EliteStyleButton}"
+                            Command="{Binding OpenPopOut}"
+                            CommandParameter="{x:Type popouts:ShipStatsPopOutVM}"
+                            Margin="5"
+                            Height="{StaticResource BtnSize}"
+                            Width="{StaticResource BtnSize}">
+                        <Grid Height="{StaticResource BtnGridSize}"
+                              Width="{StaticResource BtnGridSize}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Rectangle Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
+                                       Height="48"
+                                       Width="48">
+                                <Rectangle.OpacityMask>
+                                    <VisualBrush>
+                                        <VisualBrush.Visual>
+                                            <Image Source="/Assets/Icons/shipstatsbtnimage.png" />
+                                        </VisualBrush.Visual>
+                                    </VisualBrush>
+                                </Rectangle.OpacityMask>
+                            </Rectangle>
+                            <TextBlock Text="Ship Stats&#x0a;Overlay"
                                        TextWrapping="Wrap"
                                        Margin="5"
                                        TextAlignment="Center"

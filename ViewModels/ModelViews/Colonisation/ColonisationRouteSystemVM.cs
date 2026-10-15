@@ -51,7 +51,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Colonisation
             this.vm = vm;
         }
 
-        public ColonisationRouteSystemVM(Jump system, ColonisationRoutePlannerViewModel vm)
+        public ColonisationRouteSystemVM(ApiColonisationSystemJump system, ColonisationRoutePlannerViewModel vm)
         {
             systemAddress = system.Id64;
             systemName = system.Name;
@@ -99,7 +99,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Colonisation
             StarClass = system.StarClass.ToString();
         }
 
-        internal void UpdateSystemDetails(Jump system)
+        internal void UpdateSystemDetails(ApiColonisationSystemJump system)
         {
             Position = new(system);
         }

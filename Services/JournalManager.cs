@@ -42,7 +42,17 @@ namespace ODEliteTracker.Services
         private readonly List<IWatchStatus> statusWatchers = [];
         private bool ManagerLive { get; set; }
         private bool Processing { get; set; }
-        public bool CanCallCAPI => capiService.CurrentState == ODCapi.Services.State.Authorised && DateTime.UtcNow - lastCAPICall > TimeSpan.FromMinutes(10);
+        public bool CanCallCAPI
+        {
+            get
+            {
+#if DEBUG
+                return true;
+#else
+                return capiService.CurrentState == ODCapi.Services.State.Authorised && DateTime.UtcNow - lastCAPICall > TimeSpan.FromMinutes(10);
+#endif
+            }
+        }
 
         public List<JournalCommander> Commanders { get; private set; } = [];
 
@@ -76,7 +86,7 @@ namespace ODEliteTracker.Services
             remove => capiService.CAPILive -= value;
         }
 
-        private HashSet<Tuple<string, long>> prossedEntries = [];
+        private readonly HashSet<Tuple<string, long>> prossedEntries = [];
 
         #region Event Parser Methods
         private void EventParser_OnJournalEventReceived(object? sender, JournalEntry e)
@@ -109,13 +119,7 @@ namespace ODEliteTracker.Services
                 if (settingsStore.SelectedCommanderID <= 0)
                 {
                     Commanders = await oDDatabase.GetAllJournalCommanders();
-                    SelectedCommander = Commanders.FirstOrDefault(x => x.Id == eventParser.JournalCMDR?.Id);
-
-                    if(SelectedCommander == null)
-                    {
-                        SelectedCommander = Commanders.FirstOrDefault();
-                    }
-
+                    SelectedCommander = Commanders.FirstOrDefault(x => x.Id == eventParser.JournalCMDR?.Id) ?? Commanders.FirstOrDefault();
                     if (SelectedCommander == null)
                         return;
 
@@ -197,7 +201,7 @@ namespace ODEliteTracker.Services
         {
             if (capiService.IsLive == false || selectedCommander == null)
                 return null;
-            await Task.Delay(1000);
+            //await Task.Delay(1000);
             var market = await capiService.GetMarketAsync(selectedCommander.Name);
 
             return market;
@@ -219,7 +223,15 @@ namespace ODEliteTracker.Services
 
             return eventParser.GetMarketInfo(settingsStore.SelectedCommanderID);
         }
+        public async Task<CapiMarket?> GetCapiMarketInfo()
+        {
+            if (selectedCommander == null || string.IsNullOrEmpty(selectedCommander.Name))
+                return null;
 
+            var ret = await capiService.GetMarketAsync(selectedCommander.Name);
+
+            return ret;
+        }
         public CargoEvent.CargoEventArgs? GetCargo()
         {
             if (ManagerLive == false)
@@ -287,7 +299,7 @@ namespace ODEliteTracker.Services
             return await eventParser.StartWatchingAsync(SelectedCommander, false).ConfigureAwait(true);
         }
 
-        internal async Task<CAPIFleetCarrier?> GetCarrier()
+        internal async Task<CAPIFleetCarrier?> GetCAPICarrier()
         {
             if (selectedCommander == null
                 || selectedCommander.UseCAPI == false
@@ -303,6 +315,20 @@ namespace ODEliteTracker.Services
             {
                 lastCAPICall = DateTime.UtcNow;
             }
+
+            return ret;
+        }
+
+        internal async Task<CAPISquadron?> GetCAPISquadron()
+        {
+            if (selectedCommander == null
+                || selectedCommander.UseCAPI == false
+                || string.IsNullOrEmpty(selectedCommander.Name))
+            {
+                return null;
+            }
+
+            var ret = await capiService.GetSquadron(selectedCommander.Name);
 
             return ret;
         }

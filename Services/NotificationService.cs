@@ -1,6 +1,5 @@
 ﻿using EliteJournalReader;
 using EliteJournalReader.Events;
-using ODCapi.Models;
 using ODEliteTracker.Models.Settings;
 using ODEliteTracker.Notifications;
 using ODEliteTracker.Notifications.Docking;

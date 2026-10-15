@@ -258,6 +258,18 @@
         </Style.Triggers>
     </Style>
 
+    <Style x:Key="SpanshApiRowStyle"
+           TargetType="{x:Type DataGridRow}">
+        <Setter Property="BorderThickness"
+                Value="0" />
+        <Setter Property="OverridesDefaultStyle"
+                Value="False" />
+        <Setter Property="IsHitTestVisible"
+                Value="True" />
+        <Setter Property="IsManipulationEnabled"
+                Value="False" />
+    </Style>
+    
     <Style x:Key="SpanshDetailsRowStyle"
            TargetType="{x:Type DataGridRow}">
         <Setter Property="BorderThickness"
@@ -265,7 +277,7 @@
         <Setter Property="OverridesDefaultStyle"
                 Value="False" />
         <Setter Property="IsHitTestVisible"
-                Value="False" />
+                Value="True" />
         <Setter Property="IsManipulationEnabled"
                 Value="False" />
         <Style.Triggers>
@@ -703,9 +715,55 @@
             </Trigger>
         </Style.Triggers>
     </Style>
+    
+    <Style x:Key="CmdrSelectionCellLeftVertCenter"
+           TargetType="{x:Type DataGridCell}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type DataGridCell}">
+                    <Border Name="border"
+                            BorderThickness="0"
+                            Padding="0"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            CornerRadius="0"
+                            Background="{TemplateBinding Background}">
+                        <Grid>
+                            <ContentPresenter HorizontalAlignment="Left"
+                                              VerticalAlignment="Center"
+                                              Name="content" />
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver"
+                     Value="True">
+                <Setter Property="Background"
+                        Value="Transparent" />
+                <Setter Property="BorderBrush"
+                        Value="Transparent" />
+                <Setter Property="BorderThickness"
+                        Value="0" />
+            </Trigger>
+            <Trigger Property="IsSelected"
+                     Value="True">
+                <Setter Property="Background"
+                        Value="{DynamicResource EliteBtnBGMouseOver}" />
+                <Setter Property="Foreground"
+                        Value="{DynamicResource EliteBtnFGMouseOver}" />
+                <Setter Property="BorderBrush"
+                        Value="Transparent" />
+                <Setter Property="BorderThickness"
+                        Value="0" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
 
     <Style x:Key="CmdrSelectionCellCenter"
            TargetType="{x:Type DataGridCell}">
+        <Setter Property="HorizontalContentAlignment"
+                Value="Center" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type DataGridCell}">
@@ -718,7 +776,8 @@
                         <Grid>
                             <ContentPresenter HorizontalAlignment="Center"
                                               VerticalAlignment="Center"
-                                              Name="content" />
+                                              Name="content"
+                                              TextBlock.TextAlignment="Center"/>
                         </Grid>
                     </Border>
                 </ControlTemplate>
@@ -792,7 +851,7 @@
         </Style.Triggers>
     </Style>
 
-    <Style x:Key="CmdrSelectionCellRight"
+    <Style x:Key="CmdrSelectionCellRightVertCenter"
            TargetType="{x:Type DataGridCell}">
         <Setter Property="Template">
             <Setter.Value>
@@ -836,6 +895,50 @@
         </Style.Triggers>
     </Style>
 
+    <Style x:Key="CmdrSelectionCellRight"
+           TargetType="{x:Type DataGridCell}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type DataGridCell}">
+                    <Border Name="border"
+                            BorderThickness="0"
+                            Padding="0"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            CornerRadius="0"
+                            Background="{TemplateBinding Background}">
+                        <Grid>
+                            <ContentPresenter HorizontalAlignment="Right"
+                                              VerticalAlignment="Center"
+                                              Name="content" />
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver"
+                     Value="True">
+                <Setter Property="Background"
+                        Value="Transparent" />
+                <Setter Property="BorderBrush"
+                        Value="Transparent" />
+                <Setter Property="BorderThickness"
+                        Value="0" />
+            </Trigger>
+            <Trigger Property="IsSelected"
+                     Value="True">
+                <Setter Property="Background"
+                        Value="{DynamicResource EliteBtnBGMouseOver}" />
+                <Setter Property="Foreground"
+                        Value="{DynamicResource EliteBtnFGMouseOver}" />
+                <Setter Property="BorderBrush"
+                        Value="Transparent" />
+                <Setter Property="BorderThickness"
+                        Value="0" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    
     <Style x:Key="DataGridElementTradeRemaining"
            TargetType="{x:Type TextBlock}">
         <Setter Property="HorizontalAlignment"
@@ -919,8 +1022,6 @@
                 Value="{DynamicResource RowAlternationColour}" />
         <Setter Property="RowBackground"
                 Value="Transparent" />
-        <Setter Property="RowStyle"
-                Value="{DynamicResource SpanshRowStyle}" />
         <Setter Property="CellStyle"
                 Value="{DynamicResource CmdrSelectionCellLeft}" />
         <Setter Property="ColumnHeaderStyle"

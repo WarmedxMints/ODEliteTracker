@@ -1,7 +1,5 @@
-﻿using NLog.LayoutRenderers;
-using ODEliteTracker.Database;
+﻿using ODEliteTracker.Database;
 using ODEliteTracker.Database.DTOs;
-using ODEliteTracker.Models.BGS;
 using ODEliteTracker.Services;
 using ODJournalDatabase.Database.Interfaces;
 

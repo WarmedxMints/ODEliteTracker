@@ -1,5 +1,6 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:buttons="clr-namespace:ODEliteTracker.Controls.Buttons">
     <Style TargetType="CheckBox"
            x:Key="CheckBoxStyle">
         <Setter Property="SnapsToDevicePixels"
@@ -73,6 +74,81 @@
         </Setter>
     </Style>
 
+    <Style TargetType="CheckBox"
+           x:Key="ShipListCheckBoxStyle">
+        <Setter Property="SnapsToDevicePixels"
+                Value="True" />
+        <Setter Property="OverridesDefaultStyle"
+                Value="True" />
+        <Setter Property="FocusVisualStyle"
+                Value="{x:Null}" />
+        <Setter Property="Focusable"
+                Value="False" />
+        <Setter Property="BorderBrush"
+                Value="{DynamicResource PrimaryControlBorder}" />
+        <Setter Property="VerticalAlignment"
+                Value="Center" />
+        <Setter Property="HorizontalAlignment"
+                Value="Center" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="CheckBox">
+                    <BulletDecorator Background="Transparent">
+                        <BulletDecorator.Bullet>
+                            <Border x:Name="Border"
+                                    Width="15"
+                                    Height="15"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="0"
+                                    ClipToBounds="True">
+                                <Border.Effect>
+                                    <DropShadowEffect BlurRadius="5"
+                                                      ShadowDepth="1" />
+                                </Border.Effect>
+
+                                <Border x:Name="CheckMark"
+                                        Margin="2"
+                                        Background="{DynamicResource PrimaryControlForeground}" />
+                            </Border>
+                        </BulletDecorator.Bullet>
+                        <ContentPresenter Margin="5,0,0,0"
+                                          x:Name="ContentPresenter"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          RecognizesAccessKey="True" />
+                    </BulletDecorator>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked"
+                                 Value="False">
+                            <Setter TargetName="CheckMark"
+                                    Property="Visibility"
+                                    Value="Collapsed" />
+                            <Setter TargetName="Border"
+                                    Property="Visibility"
+                                    Value="Collapsed" />
+                        </Trigger>
+                        <Trigger Property="IsFocused"
+                                 Value="True">
+                            <Setter Property="Foreground"
+                                    Value="Green" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled"
+                                 Value="False">
+                            <Setter Property="BorderBrush"
+                                    Value="{DynamicResource PrimaryDisabled}" />
+                            <Setter Property="Foreground"
+                                    Value="{DynamicResource PrimaryDisabled}" />
+                            <Setter TargetName="CheckMark"
+                                    Property="Background"
+                                    Value="{DynamicResource PrimaryDisabled}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
     <Style TargetType="CheckBox"
            x:Key="DiscordCheckBoxStyle">
         <Setter Property="SnapsToDevicePixels"

@@ -72,6 +72,8 @@ namespace ODEliteTracker.ViewModels.ModelViews.FleetCarrier
         internal void UpdateData(Models.FleetCarrier.FleetCarrier e)
         {
             this.carrier = e;
+            OnPropertyChanged(nameof(Name));
+            OnPropertyChanged(nameof(Callsign));
             OnPropertyChanged(nameof(StarSystem));
             OnPropertyChanged(nameof(Fuel));
             OnPropertyChanged(nameof(Balance));

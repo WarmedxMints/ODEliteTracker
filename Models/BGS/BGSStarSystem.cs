@@ -3,7 +3,6 @@ using EliteJournalReader.Events;
 using ODEliteTracker.Database.DTOs;
 using ODEliteTracker.Extensions;
 using ODEliteTracker.Models.Galaxy;
-using ODEliteTracker.ViewModels.ModelViews.Galaxy;
 
 namespace ODEliteTracker.Models.BGS
 {

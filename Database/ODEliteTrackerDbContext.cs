@@ -11,7 +11,8 @@ namespace ODEliteTracker.Database
         public DbSet<BGSTickData> TickData { get; set; }
         public DbSet<IgnoredBounties> IgnoredBounties { get; set; }
         public DbSet<SystemBookmarkDTO> SystemBookmarks { get; set; }
-        public DbSet<SpanshCsvDTO> SpanshCsvs { get; set; }
+        //public DbSet<SpanshCsvDTO> SpanshCsvs { get; set; }
+        public DbSet<SpanshRouteDTO> SpanshRoutes { get; set; }
         public DbSet<WatchedMarketDTO> WatchedMarkets { get; set; }
         public DbSet<BGSIgnoredSystemsDTO> BGSIgnoredSystems { get; set; }
         public DbSet<ColonisationBuildWishlistItemDTO> ColonisationWishList { get; set; }

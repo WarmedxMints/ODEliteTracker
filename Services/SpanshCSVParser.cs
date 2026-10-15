@@ -1,16 +1,15 @@
 ﻿using Microsoft.VisualBasic.FileIO;
-using ODEliteTracker.Models;
 using ODEliteTracker.Models.Spansh;
 using System.Globalization;
-using System.Runtime.InteropServices.JavaScript;
+using System.IO;
 
 namespace ODEliteTracker.Services
 {
     public class CsvParserReturn
     {
-        public CsvType CsvType { get; set; }
-
-        public required List<ExplorationTarget> Targets;
+        public SpanshRouteType CsvType { get; set; }
+        public required List<SpanshTargetSystem> Targets { get; set; }
+        public DateTime FileCreationDate { get; set; }
     }
 
     public static class SpanshCSVParser
@@ -29,7 +28,7 @@ namespace ODEliteTracker.Services
             ["System Name", "Distance", "Distance Remaining", "Fuel Left", "Fuel Used", "Refuel", "Neutron Star"], //galaxyPlotterRoute old
         ];
 
-        public static CsvParserReturn? ForceParse(string filename, CsvType type)
+        public static CsvParserReturn? ForceParse(string filename, SpanshRouteType type)
         {
             try
             {
@@ -42,19 +41,26 @@ namespace ODEliteTracker.Services
                 if (firstLine is null || firstLine.Length == 0)
                     return null;
 
-                return type switch
+                var container = type switch
                 {
-                    CsvType.RoadToRiches => ProcessRoadToRichesRoute(parser),
-                    CsvType.FleetCarrier => ProcessFleetCarrierRoute(parser),
-                    CsvType.NeutronRoute => ProcessNeutronRoute(parser),
-                    CsvType.GalaxyPlotter => ProcessGalaxyPlotterRoute(parser),
-                    CsvType.WorldTypeRoute => ProcessWorldTypeRoute(parser),
-                    CsvType.TouristRoute => ProcessTouristRoute(parser),
-                    CsvType.ExobiologyOld => ProcessExoRoute(parser, CsvType.ExobiologyOld),
-                    CsvType.Exobiology => ProcessExoRoute(parser, CsvType.Exobiology),
-                    CsvType.Colonisation => ProcessColonisation(parser),
+                    SpanshRouteType.RoadToRiches => ProcessRoadToRichesRoute(parser),
+                    SpanshRouteType.FleetCarrier => ProcessFleetCarrierRoute(parser),
+                    SpanshRouteType.NeutronRoute => ProcessNeutronRoute(parser),
+                    SpanshRouteType.GalaxyPlotter => ProcessGalaxyPlotterRoute(parser),
+                    SpanshRouteType.WorldTypeRoute => ProcessWorldTypeRoute(parser),
+                    SpanshRouteType.TouristRoute => ProcessTouristRoute(parser),
+                    SpanshRouteType.ExobiologyOld => ProcessExoRoute(parser, SpanshRouteType.ExobiologyOld),
+                    SpanshRouteType.Exobiology => ProcessExoRoute(parser, SpanshRouteType.Exobiology),
+                    SpanshRouteType.Colonisation => ProcessColonisation(parser),
                     _ => null,
                 };
+
+                if (container == null)
+                    return null;
+
+                container.FileCreationDate = File.GetCreationTimeUtc(filename);
+
+                return container;
             }
             catch
             {
@@ -75,27 +81,34 @@ namespace ODEliteTracker.Services
                 if (firstLine is null || firstLine.Length == 0)
                     return null;
 
-                Tuple<CsvType, bool> csvType = CheckCsvType(firstLine);
+                Tuple<SpanshRouteType, bool> csvType = CheckCsvType(firstLine);
 
                 if (csvType.Item2 == false)
                 {
                     return null;
                 }
 
-                return csvType.Item1 switch
+                var container = csvType.Item1 switch
                 {
-                    CsvType.RoadToRiches => ProcessRoadToRichesRoute(parser),
-                    CsvType.FleetCarrier => ProcessFleetCarrierRoute(parser),
-                    CsvType.NeutronRoute => ProcessNeutronRoute(parser),
-                    CsvType.GalaxyPlotter => ProcessGalaxyPlotterRoute(parser),
-                    CsvType.WorldTypeRoute => ProcessWorldTypeRoute(parser),
-                    CsvType.TouristRoute => ProcessTouristRoute(parser),
-                    CsvType.ExobiologyOld => ProcessExoRoute(parser, CsvType.ExobiologyOld),
-                    CsvType.Exobiology => ProcessExoRoute(parser, CsvType.Exobiology),
-                    CsvType.Colonisation => ProcessColonisation(parser),
-                    CsvType.GalaxyPlotterOld => ProcessGalaxyPlotterRoute(parser),
+                    SpanshRouteType.RoadToRiches => ProcessRoadToRichesRoute(parser),
+                    SpanshRouteType.FleetCarrier => ProcessFleetCarrierRoute(parser),
+                    SpanshRouteType.NeutronRoute => ProcessNeutronRoute(parser),
+                    SpanshRouteType.GalaxyPlotter => ProcessGalaxyPlotterRoute(parser),
+                    SpanshRouteType.WorldTypeRoute => ProcessWorldTypeRoute(parser),
+                    SpanshRouteType.TouristRoute => ProcessTouristRoute(parser),
+                    SpanshRouteType.ExobiologyOld => ProcessExoRoute(parser, SpanshRouteType.ExobiologyOld),
+                    SpanshRouteType.Exobiology => ProcessExoRoute(parser, SpanshRouteType.Exobiology),
+                    SpanshRouteType.Colonisation => ProcessColonisation(parser),
+                    SpanshRouteType.GalaxyPlotterOld => ProcessGalaxyPlotterRoute(parser),
                     _ => null,
                 };
+
+                if (container == null)
+                    return null;
+
+                container.FileCreationDate = File.GetCreationTimeUtc(filename);
+
+                return container;
             }
             catch
             {
@@ -107,7 +120,7 @@ namespace ODEliteTracker.Services
         {
             CsvParserReturn ret = new()
             {
-                CsvType = CsvType.Colonisation,
+                CsvType = SpanshRouteType.Colonisation,
                 Targets = []
             };
 
@@ -121,11 +134,11 @@ namespace ODEliteTracker.Services
 
                 string systemName = fields[0];
 
-                ExplorationTarget? target = ret.Targets.Find(x => x.SystemName.Contains(systemName, StringComparison.OrdinalIgnoreCase));
+                SpanshTargetSystem? target = ret.Targets.Find(x => x.SystemName.Contains(systemName, StringComparison.OrdinalIgnoreCase));
 
                 if (target == null)
                 {
-                    target = new ExplorationTarget
+                    target = new SpanshTargetSystem
                     {
                         SystemName = systemName.ToUpperInvariant(),
                     };
@@ -147,14 +160,14 @@ namespace ODEliteTracker.Services
             return ret;
         }
 
-        private static CsvParserReturn ProcessExoRoute(TextFieldParser parser, CsvType csvType)
+        private static CsvParserReturn ProcessExoRoute(TextFieldParser parser, SpanshRouteType csvType)
         {
             CsvParserReturn ret = new()
             {
                 CsvType = csvType,
                 Targets = []
             };
-
+            var lastBodyName = string.Empty;
             while (!parser.EndOfData)
             {
                 //Process row
@@ -165,38 +178,28 @@ namespace ODEliteTracker.Services
 
                 string systemName = fields[0];
 
-                ExplorationTarget? target = ret.Targets.Find(x => x.SystemName.Contains(systemName, StringComparison.OrdinalIgnoreCase));
+                SpanshTargetSystem? target = ret.Targets.Find(x => x.SystemName.Contains(systemName, StringComparison.OrdinalIgnoreCase));
 
                 if (target == null)
                 {
-                    target = new ExplorationTarget
+                    target = new SpanshTargetSystem
                     {
                         SystemName = systemName.ToUpperInvariant(),
                     };
 
                     ret.Targets.Add(target);
                 }
-
+               
                 BodiesInfo bodyInfo = new()
                 {
-                    Body = GetBodyName(fields[1], target.SystemName),
+                    Body = GetBodyName(fields[1], target.SystemName, ref lastBodyName),
                     Distance = fields[4].ToUpperInvariant(),
                     Property1 = $"{double.Parse(fields[5], new CultureInfo("en-GB")):N0}"
                 };
 
-
                 target.BodiesInfo ??= [];
-
                 target.BodiesInfo.Add(bodyInfo);
-                target.BodiesInfo.Sort((x, y) =>
-                {
-                    if (x.Body is null)
-                        return 0;
-                    return x.Body.CompareTo(y.Body);
-                });
             }
-
-
             return ret;
         }
 
@@ -204,7 +207,7 @@ namespace ODEliteTracker.Services
         {
             CsvParserReturn ret = new()
             {
-                CsvType = CsvType.TouristRoute,
+                CsvType = SpanshRouteType.TouristRoute,
                 Targets = []
             };
 
@@ -216,7 +219,7 @@ namespace ODEliteTracker.Services
                 if (fields is null || fields.Length == 0)
                     continue;
 
-                ExplorationTarget target = new()
+                SpanshTargetSystem target = new()
                 {
                     SystemName = fields[0].ToUpperInvariant(),
                     Property1 = $"{double.Parse(fields[1], new CultureInfo("en-GB")):N0}", //jumps
@@ -232,10 +235,10 @@ namespace ODEliteTracker.Services
         {
             CsvParserReturn ret = new()
             {
-                CsvType = CsvType.WorldTypeRoute,
+                CsvType = SpanshRouteType.WorldTypeRoute,
                 Targets = []
             };
-
+            var lastBodyname = string.Empty;
             while (!parser.EndOfData)
             {
                 //Process row
@@ -246,22 +249,22 @@ namespace ODEliteTracker.Services
 
                 string systemName = fields[0];
 
-                ExplorationTarget? target = ret.Targets.Find(x => x.SystemName.Contains(systemName, StringComparison.OrdinalIgnoreCase));
+                SpanshTargetSystem? target = ret.Targets.Find(x => x.SystemName.Contains(systemName, StringComparison.OrdinalIgnoreCase));
 
                 if (target == null)
                 {
-                    target = new ExplorationTarget
+                    target = new SpanshTargetSystem
                     {
                         SystemName = systemName.ToUpperInvariant(),
                     };
 
                     ret.Targets.Add(target);
                 }
-
+             
                 BodiesInfo bodyInfo = new()
                 {
-                    Body = GetBodyName(fields[1], target.SystemName),
-                    Distance = $"{double.Parse(fields[2], new CultureInfo("en-GB")):N0} ls",
+                    Body = GetBodyName(fields[1], target.SystemName, ref lastBodyname),
+                    Distance = $"{double.Parse(fields[2], new CultureInfo("en-GB")):N0}",
                     Property1 = $"{double.Parse(fields[3], new CultureInfo("en-GB")):N0}"
                 };
 
@@ -279,7 +282,7 @@ namespace ODEliteTracker.Services
 
             CsvParserReturn ret = new()
             {
-                CsvType = CsvType.GalaxyPlotter,
+                CsvType = SpanshRouteType.GalaxyPlotter,
                 Targets = []
             };
 
@@ -291,7 +294,7 @@ namespace ODEliteTracker.Services
                 if (fields is null || fields.Length == 0)
                     continue;
 
-                ExplorationTarget target = new()
+                SpanshTargetSystem target = new()
                 {
                     SystemName = fields[0].ToUpperInvariant(),
                     Property1 = $"{double.Parse(fields[1], new CultureInfo("en-GB")):N0}", //distance
@@ -312,7 +315,7 @@ namespace ODEliteTracker.Services
 
             CsvParserReturn ret = new()
             {
-                CsvType = CsvType.NeutronRoute,
+                CsvType = SpanshRouteType.NeutronRoute,
                 Targets = []
             };
 
@@ -324,7 +327,7 @@ namespace ODEliteTracker.Services
                 if (fields is null || fields.Length == 0)
                     continue;
 
-                ExplorationTarget target = new()
+                SpanshTargetSystem target = new()
                 {
                     SystemName = fields[0].ToUpperInvariant(),
                     Property1 = $"{double.Parse(fields[1], new CultureInfo("en-GB")):N0}", //distance
@@ -346,7 +349,7 @@ namespace ODEliteTracker.Services
 
             CsvParserReturn ret = new()
             {
-                CsvType = CsvType.FleetCarrier,
+                CsvType = SpanshRouteType.FleetCarrier,
                 Targets = []
             };
 
@@ -358,7 +361,7 @@ namespace ODEliteTracker.Services
                 if (fields is null || fields.Length == 0)
                     continue;
 
-                ExplorationTarget target = new()
+                SpanshTargetSystem target = new()
                 {
                     SystemName = fields[0].ToUpperInvariant(),
                     Property1 = $"{double.Parse(fields[1], new CultureInfo("en-GB")):N0}", //distance
@@ -385,10 +388,10 @@ namespace ODEliteTracker.Services
         {
             CsvParserReturn ret = new()
             {
-                CsvType = CsvType.RoadToRiches,
+                CsvType = SpanshRouteType.RoadToRiches,
                 Targets = []
             };
-
+            var lastBodyName = string.Empty;
             while (!parser.EndOfData)
             {
                 //Process row
@@ -399,11 +402,11 @@ namespace ODEliteTracker.Services
 
                 string systemName = fields[0];
 
-                ExplorationTarget? target = ret.Targets.Find(x => x.SystemName.Contains(systemName, StringComparison.OrdinalIgnoreCase));
+                SpanshTargetSystem? target = ret.Targets.Find(x => x.SystemName.Contains(systemName, StringComparison.OrdinalIgnoreCase));
 
                 if (target == null)
                 {
-                    target = new ExplorationTarget
+                    target = new SpanshTargetSystem
                     {
                         SystemName = systemName.ToUpperInvariant(),
                         Property1 = fields[7] //Jumps to System
@@ -411,10 +414,10 @@ namespace ODEliteTracker.Services
 
                     ret.Targets.Add(target);
                 }
-
+               
                 BodiesInfo bodyInfo = new()
                 {
-                    Body = GetBodyName(fields[1], target.SystemName),
+                    Body = GetBodyName(fields[1], target.SystemName, ref lastBodyName),
                     Distance = $"{double.Parse(fields[4], new CultureInfo("en-GB")):N0} ls",
                     Property1 = $"{double.Parse(fields[6], new CultureInfo("en-GB")):N0}"
                 };
@@ -428,30 +431,33 @@ namespace ODEliteTracker.Services
             return ret;
         }
 
-        private static Tuple<CsvType, bool> CheckCsvType(string[] firstLine)
+        private static Tuple<SpanshRouteType, bool> CheckCsvType(string[] firstLine)
         {
             for (int i = 0; i < csvHeaders.Count; i++)
             {
                 if (firstLine.SequenceEqual(csvHeaders[i]))
                 {
-                    return Tuple.Create((CsvType)i, true);
+                    return Tuple.Create((SpanshRouteType)i, true);
                 }
             }
 
-            return Tuple.Create(CsvType.RoadToRiches, false);
+            return Tuple.Create(SpanshRouteType.RoadToRiches, false);
         }
 
-        private static string GetBodyName(string bodyName, string systemName)
+        private static string GetBodyName(string bodyName, string systemName, ref string lastBodyName)
         {
             if (bodyName.Length > systemName.Length)
             {
                 bodyName = bodyName.Remove(0, systemName.Length);
+            }
 
+            if (!string.Equals(bodyName, lastBodyName))
+            {
+                lastBodyName = bodyName;
                 return bodyName;
             }
 
-            return bodyName.ToUpperInvariant();
-
+            return string.Empty;
         }
     }
 }

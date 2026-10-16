@@ -273,5 +273,10 @@ namespace ODEliteTracker.Stores
 
             this.routeSystems = databaseProvider.GetColonisationRoute(currentCommanderId);
         }
+
+        internal void ImportCommandersColonisationRoute(int id)
+        {
+            routeSystems = databaseProvider.GetColonisationRoute(id);
+        }
     }
 }

@@ -5,6 +5,7 @@ using ODEliteTracker.Models.Settings;
 using ODEliteTracker.Models.Spansh;
 using ODEliteTracker.Services;
 using ODEliteTracker.Stores;
+using ODEliteTracker.ViewModels.ModelViews;
 using ODEliteTracker.ViewModels.ModelViews.Colonisation;
 using ODJournalDatabase.JournalManagement;
 using ODMVVM.Commands;
@@ -34,6 +35,7 @@ namespace ODEliteTracker.ViewModels
         private readonly SettingsStore settings;
         private readonly PopOutService popOutService;
         private readonly SpanshClient spanshClient;
+        private readonly JournalManager journalManager;
         private bool isBusy = true;
         public bool IsBusy { get => isBusy; set { isBusy = value; OnPropertyChanged(); } }
         public ColonisationRoutePlannerViewModel(ColonisationStore store,
@@ -41,7 +43,8 @@ namespace ODEliteTracker.ViewModels
                                                  NotificationService notification,
                                                  SettingsStore settings,
                                                  PopOutService popOutService,
-                                                 SpanshClient spanshClient)
+                                                 SpanshClient spanshClient,
+                                                 IManageJournalEvents journalManager)
         {
             this.store = store;
             this.sharedData = sharedData;
@@ -49,12 +52,8 @@ namespace ODEliteTracker.ViewModels
             this.settings = settings;
             this.popOutService = popOutService;
             this.spanshClient = spanshClient;
-            store.StoreLive += OnStoreLive;
-
-            if (store.IsLive)
-            {
-                _= OnStoreLive(null, true);
-            }
+            this.journalManager = (JournalManager)journalManager;
+            store.StoreLive += OnStoreLive;      
 
             sharedData.CurrentSystemChanged += OnCurrentSystemChanged;
             sharedData.SystemDSSScaned += OnSystemDSSScanned;
@@ -77,8 +76,29 @@ namespace ODEliteTracker.ViewModels
             SetEndAsTargetCommand = new ODRelayCommand(SetEndAsTargetSystem, (x) => TargetSystem != null);
             AddCurrentSystemToRouteCommand = new ODRelayCommand<AddSystemToRouteEnum>(AddCurrentToRoute, (x) => CanAddCurrentSystem(x));
             SelectCurrentSystemCommand = new ODRelayCommand(SelectCurrentSystem, (x) => RouteSystems.Any(x => x.SystemAddress == sharedData.CurrentSystem?.Address));
-
+            ImportCommandersRouteCommand = new ODRelayCommand<JournalCommanderVM>(ImportCmdrsRoute, (x) => x != null);
             OpenPopOut = new ODRelayCommand<Type>(OnOpenPopOut);
+
+            if (store.IsLive)
+            {
+                _ = OnStoreLive(null, true);
+            }
+        }
+
+        private void ImportCmdrsRoute(JournalCommanderVM vM)
+        {
+            store.ImportCommandersColonisationRoute(vM.Id);
+            var routeSystems = store.RouteSystems.Where(x => x.HopNumber >= 0).Select(x => new ColonisationRouteSystemVM(x, this)).ToList();
+
+            if (!routeSystems.Any())
+                return;
+
+            RouteSystems.ClearCollection();
+            RouteSystems.AddRange(routeSystems);
+            TargetSystem = store.RouteSystems.Where(x => x.HopNumber == -1).Select(x => new ColonisationRouteSystemVM(x, this)).FirstOrDefault();
+            CalcDistances();
+            CalcLineValues();
+            DataChanged = true;
         }
 
         private void OnOpenPopOut(Type type)
@@ -123,7 +143,6 @@ namespace ODEliteTracker.ViewModels
             if (AutoSelect)
             {
                 SelectedSystem = routeSystem;
-                SelectedSystemChanged?.Invoke(this, routeSystem);
             }
         }
 
@@ -194,6 +213,7 @@ namespace ODEliteTracker.ViewModels
         public ICommand AddCurrentSystemToRouteCommand { get; }
         public ICommand SelectCurrentSystemCommand { get; }
         public ICommand OpenPopOut { get; }
+        public ICommand ImportCommandersRouteCommand { get; }
         private ObservableCollection<ColonisationRouteSystemVM> routeSystems = [];
         public ObservableCollection<ColonisationRouteSystemVM> RouteSystems { get => routeSystems; set { routeSystems = value; OnPropertyChanged(); } }
 
@@ -211,11 +231,13 @@ namespace ODEliteTracker.ViewModels
                 if (selectedSystem != null && !IsBusy)
                 {
                     settings.ColonisationSettings.SelectedPlannerAddress = selectedSystem.SystemAddress;
+                    SelectedSystemChanged?.Invoke(this, selectedSystem);
                 }
                 OnPropertyChanged();
             }
         }
-
+        public ObservableCollection<JournalCommanderVM> LiveCommanders { get; } = [];
+        public bool HaveCommders => LiveCommanders.Count > 0;
         public bool DataChanged { get; private set; }
         public bool UseSpansh { get => settings.ColonisationSettings.CheckSpansh; set { settings.ColonisationSettings.CheckSpansh = value; OnPropertyChanged(); } }
         public bool AutoSelect { get => settings.ColonisationSettings.AutoSelect; set { settings.ColonisationSettings.AutoSelect = value; OnPropertyChanged(); } }
@@ -244,6 +266,12 @@ namespace ODEliteTracker.ViewModels
         {
             if (e)
             {
+                var cmdrs = journalManager.Commanders.Where(x => !x.IsHidden && !x.IsLegacy && x.Id != journalManager.SelectedCommander?.Id)
+                                             .Select(x => new JournalCommanderVM(x));
+
+                LiveCommanders.ClearCollection();
+                LiveCommanders.AddRange(cmdrs);
+                OnPropertyChanged(nameof(HaveCommders));
                 if (store.RouteSystems.Any() == false)
                 {
                     IsBusy = false;
@@ -251,23 +279,15 @@ namespace ODEliteTracker.ViewModels
                 }
                 await Application.Current.Dispatcher.InvokeAsync(async () =>
                 {
-                    await LoadFromDatabase();
-
-                    if (settings.ColonisationSettings.SelectedPlannerAddress > 0)
-                    {
-                        SelectedSystem = RouteSystems.FirstOrDefault(x => x.SystemAddress == settings.ColonisationSettings.SelectedPlannerAddress);
-                    }
+                    await LoadFromDatabase();                    
 
                     CalcLineValues();
                     IsBusy = false;
 
                     OnViewModelLive?.Invoke(this, EventArgs.Empty);
-                });
-
+                });        
                 return;
             }
-
-            IsBusy = false;
         }
 
         private async Task LoadFromDatabase()
@@ -275,55 +295,62 @@ namespace ODEliteTracker.ViewModels
             RouteSystems.ClearCollection();
             var routeSystems = store.RouteSystems.Where(x => x.HopNumber >= 0).Select(x => new ColonisationRouteSystemVM(x, this)).ToList();
             RouteSystems.AddRange(routeSystems);
-            bool updated = await CheckAllSystemCounts();
 
             Application.Current.Dispatcher.Invoke(() =>
             {
                 TargetSystem = store.RouteSystems.Where(x => x.HopNumber == -1).Select(x => new ColonisationRouteSystemVM(x, this)).FirstOrDefault();
+                _ = CheckAllSystemCounts(false);
                 CalcDistances();
+                if (settings.ColonisationSettings.SelectedPlannerAddress > 0)
+                {
+                    SelectedSystem = RouteSystems.FirstOrDefault(x => x.SystemAddress == settings.ColonisationSettings.SelectedPlannerAddress);
+                }
+                SelectedSystem ??= RouteSystems.LastOrDefault(x => x.Built);
                 DataChanged = false;
-
-                if (updated)
-                    store.SaveColonisationRotue(RouteSystems, targetSystem);
             });
         }
 
-        internal async Task<bool> CheckAllSystemCounts()
+        internal bool ShouldCheckSpansh =>  settings.ColonisationSettings.CheckSpansh;
+
+        internal async Task<bool> CheckAllSystemCounts(bool checkSpansh)
         {
             bool updated = false;
             foreach (var routesystem in routeSystems)
             {
-                if (routesystem.BodyCount > 0)
+                if (routesystem.BodyCount > 0 && routesystem.Built)
                     continue;
 
-                if (await UpdateSystemBodyCounts(routesystem))
+                if (await UpdateSystemBodyCounts(routesystem, checkSpansh))
                     updated = true;
             }
 
             return updated;
         }
-        internal async Task<bool> UpdateSystemBodyCounts(ColonisationRouteSystemVM routesystem)
+        internal async Task<bool> UpdateSystemBodyCounts(ColonisationRouteSystemVM routesystem, bool checkSpansh)
         {
-            if (routesystem.BodyCount > 0)
+            if (routesystem.BodyCount > 0 && routesystem.Built)
                 return false;
 
-            if (sharedData.Systems.TryGetValue(routesystem.SystemAddress, out var system) && system.BodyCount > 0)
+            if (sharedData.Systems.TryGetValue(routesystem.SystemAddress, out var system) && (system.BodyCount > 0 || !routesystem.Built))
             {
                 routesystem.BodyCount = system.BodyCount;
                 routesystem.StarCount = system.Bodies.Count(x => x.Value.StarType != EliteJournalReader.StarType.Unknown);
+                if (!routesystem.Built)
+                    routesystem.Built = system.FactionCount > 1;
                 DataChanged = true;
             }
 
-            if (routesystem.BodyCount > 0 || !settings.ColonisationSettings.CheckSpansh)
-                return true;
+            if (!checkSpansh || routesystem.Built)
+                return DataChanged;
 
             var spanshDump = await spanshClient.GetSystem(routesystem.SystemAddress);
 
-            if (spanshDump == null || spanshDump.System == null || spanshDump.System.bodyCount == 0 || spanshDump.System.Bodies.Count == 0)
+            if (spanshDump == null || spanshDump.System == null)
                 return false;
 
-            routesystem.StarCount = spanshDump.System.Bodies.Count(x => x.type.Contains("star", StringComparison.OrdinalIgnoreCase));
-            routesystem.BodyCount = spanshDump.System.bodyCount;
+            routesystem.StarCount = Math.Max(spanshDump.System.Bodies.Count(x => x.Type.Contains("star", StringComparison.OrdinalIgnoreCase)), routesystem.StarCount);
+            routesystem.BodyCount = Math.Max(spanshDump.System.BodyCount, routesystem.BodyCount);
+            routesystem.Built = spanshDump.System.Factions?.Count > 1;
             DataChanged = true;
 
             return true;
@@ -601,7 +628,6 @@ namespace ODEliteTracker.ViewModels
                 return;
 
             SelectedSystem = inRoute;
-            SelectedSystemChanged?.Invoke(this, inRoute);
         }
 
         internal void ClearRoute()
@@ -873,7 +899,7 @@ namespace ODEliteTracker.ViewModels
                 return $"{lessText} {dist:N2} ly";
 
             return "---";
-        }
+        }        
         #endregion
     }
 }

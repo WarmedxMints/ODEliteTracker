@@ -46,7 +46,7 @@ namespace ODEliteTracker.ViewModels
             this.sharedData.ShipChangedEvent += OnCurrentShipChanged;
 
             this.journalManager.CommandersUpdated += OnCommandersUpdated;
-
+            this.journalManager.ManagerLive += JournalManagerLive;
             navigationService.CurrentViewLive += NavigationService_CurrentViewLive;
 
             ResetWindowPositionCommand = new ODRelayCommand(OnResetWindow);
@@ -345,6 +345,20 @@ namespace ODEliteTracker.ViewModels
             _ = ChangeCommander();
         }
 
+        //When switching commanders the manager will be live after all the views have loaded
+        //So we listen to both and only enable the ui is both are live
+        private void JournalManagerLive(object? sender, bool e)
+        {
+            if (navigationService.CurrentView?.IsLive is bool v && !v)
+            {
+                return;
+            }
+
+            UiEnabled = e;
+            OnPropertyChanged(nameof(CurrentSystemName));
+            OnPropertyChanged(nameof(CurrentBody_Station));
+            OnPropertyChanged(nameof(CurrentShipName));
+        }
         private void NavigationService_CurrentViewLive(object? sender, bool e)
         {
             if (!journalManager.IsLive)
@@ -388,7 +402,7 @@ namespace ODEliteTracker.ViewModels
                 loadingViewModel.StatusText = "Reading History";
                 await Task.Run(journalManager.ChangeCommander).ConfigureAwait(true);
             }
-            navigationService.NavigateTo(settings.CurrentViewModel);            
+            //navigationService.NavigateTo(settings.CurrentViewModel);            
             OnPropertyChanged(nameof(CurrentSystemName));
             OnPropertyChanged(nameof(CurrentBody_Station));
         }
@@ -396,11 +410,9 @@ namespace ODEliteTracker.ViewModels
         private async Task OnStoreLive(object? sender, bool e)
         {
             if (e && journalManager is JournalManager manager)
-            {
-              
+            {              
                 Application.Current.Dispatcher.Invoke(() => 
                 {
-                    navigationService.NavigateTo(settings.CurrentViewModel);
                     
                     var cmdrs = manager.Commanders.Select(x => new JournalCommanderVM(x));
 
@@ -408,7 +420,7 @@ namespace ODEliteTracker.ViewModels
                     JournalCommanders.AddRange(cmdrs.Where(x => x.MigratedTo < 0));
                     SelectedCommander = JournalCommanders.FirstOrDefault(x => x.Id == settings.SelectedCommanderID);
                     popOutService.OpenSavedViews(settings.SelectedCommanderID);
-                    UiEnabled = true;
+                    //UiEnabled = navigationService.CurrentView?.IsLive ?? false;
                     OnPropertyChanged(nameof(JournalCommanders));
                     OnPropertyChanged(nameof(SelectedCommander));
                     OnPropertyChanged(nameof(CurrentSystemName));
@@ -417,6 +429,7 @@ namespace ODEliteTracker.ViewModels
                     OnPropertyChanged(nameof(CurrentSystemName));
                     OnPropertyChanged(nameof(CurrentBody_Station));
                     OnPropertyChanged(nameof(CurrentShipName));
+                    navigationService.NavigateTo(settings.CurrentViewModel);
                 }, DispatcherPriority.DataBind);
             }
         }
@@ -449,6 +462,11 @@ namespace ODEliteTracker.ViewModels
             popOutService.CloseViews(settings.SelectedCommanderID);
             notificationService.Dispose();
             navigationService.CurrentView?.Dispose();
+        }
+
+        public override void Dispose()
+        {
+            
         }
     }
 }

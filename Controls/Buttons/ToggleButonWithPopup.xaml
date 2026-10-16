@@ -31,9 +31,11 @@
             <Border Background="{DynamicResource ViewBackground}"
                     BorderBrush="{DynamicResource PrimaryControlBorder}"
                     Padding="5"
+                    HorizontalAlignment="Stretch"
                     ButtonBase.Click="Popup_Click"
                     BorderThickness="1">
-                <ContentControl Content="{Binding ElementName=Root, Path=PopupContent}" />
+                <ContentControl Content="{Binding ElementName=Root, Path=PopupContent}"
+                                HorizontalAlignment="Stretch" />
             </Border>
         </Popup>
     </Grid>

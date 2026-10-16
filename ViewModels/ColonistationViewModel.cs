@@ -340,8 +340,6 @@ namespace ODEliteTracker.ViewModels
             }
         }
 
-
-
         private ConstructionResourceVM? selectedResource;
         public ConstructionResourceVM? SelectedResource
         {

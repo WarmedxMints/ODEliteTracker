@@ -5,7 +5,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:ODEliteTracker.Views"
              xmlns:viewmodels="clr-namespace:ODEliteTracker.ViewModels"
-             xmlns:busyIndicator="https://github.com/moh3ngolshani/BusyIndicator"
              d:DataContext="{d:DesignInstance viewmodels:TradeMissionViewModel}"
              mc:Ignorable="d"
              d:DesignHeight="450"
@@ -27,504 +26,32 @@
             </Style.Triggers>
         </Style>
     </UserControl.Resources>
-    <busyIndicator:BusyMask x:Name="BusyIndicator"
-                            IsBusy="{Binding IsBusy}"
-                            Background="{DynamicResource IndicatorBackground}"
-                            FontSize="30"
-                            BusyContent="Parsing Trade Mission Logs"
-                            IndicatorType="Cupertino"
-                            BusyContentMargin="0,20,0,0">
-        <TabControl BorderThickness="0"
-                    FontSize="18"
-                    Background="{DynamicResource ViewBackground}"
-                    IsSynchronizedWithCurrentItem="False">
-            <TabItem Header="Active Missions">
-                <Grid TextBlock.FontSize="18">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="{Binding ActiveMissionsGridSize[0], Mode=TwoWay}" />
-                        <RowDefinition Height="{Binding ActiveMissionsGridSize[1], Mode=TwoWay}" />
-                        <RowDefinition Height="{Binding ActiveMissionsGridSize[2], Mode=TwoWay}" />
-                    </Grid.RowDefinitions>
-                    <Border Background="{DynamicResource CardBackground}"
-                            CornerRadius="5"
-                            Margin="5,5,5,5"
-                            Padding="5">
-                        <DataGrid ItemsSource="{Binding ActiveMissions}"
-                                  Style="{DynamicResource DisabledSelectGrid}"
-                                  RowStyle="{DynamicResource NoSelectRowStyle}"
-                                  CellStyle="{DynamicResource NoSelectCellNoMargin}"
-                                  AlternationCount="1"
-                                  AlternatingRowBackground="{DynamicResource RowAlternationColour}"
-                                  GridLinesVisibility="Horizontal"
-                                  HeadersVisibility="Column"
-                                  IsHitTestVisible="True">
-                            <DataGrid.Columns>
-
-                                <DataGridTemplateColumn MinWidth="250"
-                                                        Width="SizeToCells"
-                                                        HeaderStyle="{DynamicResource DataGridHeaderLeft}"
-                                                        CellStyle="{StaticResource SourceColumn}"
-                                                        Header="Source / Destination" />
-
-                                <DataGridTextColumn Header="Title"
-                                                    MinWidth="130"
-                                                    MaxWidth="250"
-                                                    Width="Auto"
-                                                    HeaderStyle="{DynamicResource DataGridHeaderLeft}"
-                                                    Binding="{Binding MissionName}">
-                                    <DataGridTextColumn.ElementStyle>
-                                        <Style TargetType="{x:Type TextBlock}">
-                                            <Setter Property="VerticalAlignment"
-                                                    Value="Top" />
-                                            <Setter Property="TextWrapping"
-                                                    Value="Wrap" />
-                                        </Style>
-                                    </DataGridTextColumn.ElementStyle>
-                                </DataGridTextColumn>
-
-                                <DataGridTemplateColumn Header="Commodities"
-                                                        HeaderStyle="{DynamicResource DataGridHeaderLeft}"
-                                                        CellStyle="{StaticResource CommoditiesColumn}"
-                                                        Width="*" />
-
-                                <DataGridTextColumn Header="Reward"
-                                                    MinWidth="100"
-                                                    Width="SizeToCells"
-                                                    HeaderStyle="{DynamicResource DataGridHeaderLeft}"
-                                                    ElementStyle="{DynamicResource DataGridElementRightMargin}"
-                                                    Binding="{Binding Reward, StringFormat={}{0:N0} cr}" />
-
-                                <DataGridTextColumn Header="Expires"
-                                                    HeaderStyle="{DynamicResource DataGridHeaderCenter}"
-                                                    ElementStyle="{DynamicResource DataGridElementRightMargin}"
-                                                    Width="100"
-                                                    Binding="{Binding ExpiryRelativeTime}" />
-
-                                <DataGridTemplateColumn Header="Wing"
-                                                        HeaderStyle="{DynamicResource DataGridHeaderCenter}"
-                                                        Width="SizeToCells"
-                                                        MinWidth="45">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <Image Source="/Assets/Icons/Wing.png"
-                                                   Width="18"
-                                                   Height="18"
-                                                   Visibility="{Binding Wing, Converter={StaticResource BoolToVis}}" />
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                            </DataGrid.Columns>
-                        </DataGrid>
-                    </Border>
-
-                    <GridSplitter Grid.Row="1"
-                                  Height="4"
-                                  Background="{DynamicResource ScrollBarLine}"
-                                  HorizontalAlignment="Stretch" />
-                    
-                    <Grid Grid.Row="2">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="0.8*" />
-                            <ColumnDefinition Width="0.35*" />
-                            <ColumnDefinition Width="0.85*" />
-                        </Grid.ColumnDefinitions>
-
-                        <Border Background="{DynamicResource CardBackground}"
-                                CornerRadius="5"
-                                Grid.Column="0"
-                                Margin="5,5,5,5"
-                                Padding="5">
-                            <DataGrid ItemsSource="{Binding StationStacks}"
-                                      Style="{DynamicResource BaseDataGridStyle}"
-                                      RowStyle="{DynamicResource ConstructionResourcesStyle}"
-                                      CellStyle="{DynamicResource RouteCells}"
-                                      AlternatingRowBackground="{DynamicResource RowAlternationColour}"
-                                      HorizontalScrollBarVisibility="Disabled"
-                                      RowDetailsVisibilityMode="Visible"
-                                      HorizontalAlignment="Stretch"
-                                      HeadersVisibility="Column"
-                                      IsHitTestVisible="True">
-                                <DataGrid.Columns>
-                                    <DataGridTextColumn Header="SYSTEM"
-                                                        Width="SizeToCells"
-                                                        MinWidth="70"
-                                                        HeaderStyle="{DynamicResource DataGridHeaderLeft}"
-                                                        Binding="{Binding OriginSystem}" />
-                                    <DataGridTextColumn Header="STATION"
-                                                        Width="SizeToCells"
-                                                        MinWidth="70"
-                                                        HeaderStyle="{DynamicResource DataGridHeaderLeft}"
-                                                        Binding="{Binding OriginStation}" />
-
-                                </DataGrid.Columns>
-                                <DataGrid.RowDetailsTemplate>
-                                    <DataTemplate>
-                                        <Grid Margin="25,0,0,10">
-                                            <DataGrid Style="{DynamicResource BaseDataGridStyle}"
-                                                      RowStyle="{DynamicResource ConstructionResourcesStyle}"
-                                                      CellStyle="{DynamicResource RouteCells}"
-                                                      PreviewMouseWheel="DataGrid_PreviewMouseWheel"
-                                                      HorizontalScrollBarVisibility="Disabled"
-                                                      VerticalScrollBarVisibility="Disabled"
-                                                      HorizontalAlignment="Stretch"
-                                                      HeadersVisibility="Column"
-                                                      IsHitTestVisible="True"
-                                                      ItemsSource="{Binding Stacks}">
-                                                <DataGrid.Columns>
-                                                    <DataGridTextColumn Header="Commodity"
-                                                                        Width="*"
-                                                                        MinWidth="110"
-                                                                        HeaderStyle="{DynamicResource DataGridHeaderLeft}"
-                                                                        Binding="{Binding Path=Commodity}" />
-
-                                                    <DataGridTextColumn Header="Count"
-                                                                        MinWidth="80"
-                                                                        Width="SizeToCells"
-                                                                        HeaderStyle="{DynamicResource DataGridHeaderCenter}"
-                                                                        ElementStyle="{DynamicResource DataGridElementRightMargin}"
-                                                                        Binding="{Binding Path=CommodityCount}" />
-
-                                                    <DataGridTextColumn Header="# MIS"
-                                                                        MinWidth="50"
-                                                                        Width="SizeToCells"
-                                                                        HeaderStyle="{DynamicResource DataGridHeaderCenter}"
-                                                                        ElementStyle="{DynamicResource DataGridElementRightMargin}"
-                                                                        Binding="{Binding Path=MissionCount}" />
-
-                                                    <DataGridTextColumn Header="DEL"
-                                                                        MinWidth="60"
-                                                                        Width="SizeToCells"
-                                                                        HeaderStyle="{DynamicResource DataGridHeaderCenter}"
-                                                                        ElementStyle="{DynamicResource DataGridElementRightMargin}"
-                                                                        Binding="{Binding Path=DeliveredCount}" />
-
-                                                    <DataGridTextColumn Header="# REM"
-                                                                        MinWidth="60"
-                                                                        Width="SizeToCells"
-                                                                        HeaderStyle="{DynamicResource DataGridHeaderCenter}"
-                                                                        ElementStyle="{DynamicResource DataGridElementTradeRemaining}"
-                                                                        Binding="{Binding Path=RemainingCount}" />
-
-                                                    <DataGridTextColumn Header="VALUE"
-                                                                        MinWidth="120"
-                                                                        Width="SizeToCells"
-                                                                        HeaderStyle="{DynamicResource DataGridHeaderCenter}"
-                                                                        ElementStyle="{DynamicResource DataGridElementRightMargin}"
-                                                                        Binding="{Binding Path=Value}" />
-
-                                                    <DataGridTextColumn Header="Cr Per T"
-                                                                        MinWidth="100"
-                                                                        Width="SizeToCells"
-                                                                        HeaderStyle="{DynamicResource DataGridHeaderCenter}"
-                                                                        ElementStyle="{DynamicResource DataGridElementCenter}"
-                                                                        Binding="{Binding Path=CreditPerT}" />
-                                                </DataGrid.Columns>
-                                            </DataGrid>
-                                        </Grid>
-                                    </DataTemplate>
-                                </DataGrid.RowDetailsTemplate>
-                            </DataGrid>
-                        </Border>
-                        
-                        <Border Background="{DynamicResource CardBackground}"
-                                CornerRadius="5"
-                                Grid.Column="1"
-                                Margin="5,5,5,5"
-                                Padding="5">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition />
-                                </Grid.RowDefinitions>
-                                <TextBlock Text="{Binding CurrentShip.Name}"
-                                           FontSize="30"
-                                           Foreground="{DynamicResource Header}" />
-
-                                <TextBlock Text="{Binding CurrentShip.Ident}"
-                                           FontSize="20"
-                                           Grid.Row="1" />
-
-                                <TextBlock Text="{Binding CurrentShip.CargoText}"
-                                           FontSize="20"
-                                           Grid.Row="2" />
-                                <TextBlock Text="{Binding CurrentShip.CargoRemaining}"
-                                           HorizontalAlignment="Right"
-                                           FontSize="20"
-                                           Margin="0,0,10,0"
-                                           Grid.Row="2" />
-
-                                <DataGrid ItemsSource="{Binding CurrentShip.ShipCargo}"
-                                          Grid.Row="3"
-                                          Style="{DynamicResource BaseDataGridStyle}"
-                                          RowStyle="{DynamicResource ConstructionResourcesStyle}"
-                                          CellStyle="{DynamicResource RouteCells}"
-                                          Foreground="{DynamicResource PrimaryForeground}"
-                                          FontSize="18"
-                                          ScrollViewer.HorizontalScrollBarVisibility="Visible"
-                                          ScrollViewer.VerticalScrollBarVisibility="Visible"
-                                          AlternatingRowBackground="{DynamicResource RowAlternationColour}"
-                                          HeadersVisibility="Column"
-                                          AutoGenerateColumns="False"
-                                          HorizontalAlignment="Center">
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Header="Commodity"
-                                                            Width="*"
-                                                            MinWidth="150"
-                                                            HeaderStyle="{DynamicResource DataGridHeaderLeft}"
-                                                            ElementStyle="{DynamicResource DataGridElementLeftMarginBody}"
-                                                            Binding="{Binding Name}" />
-                                        <DataGridTextColumn Header="Count"
-                                                            MinWidth="100"
-                                                            HeaderStyle="{DynamicResource DataGridHeaderRight}"
-                                                            ElementStyle="{DynamicResource DataGridElementRightMargin}"
-                                                            Binding="{Binding Count}" />
-                                    </DataGrid.Columns>
-                                </DataGrid>
-                            </Grid>
-                        </Border>
-
-                        <Border Background="{DynamicResource CardBackground}"
-                                CornerRadius="5"
-                                Grid.Column="2"
-                                Margin="5,5,5,5"
-                                Padding="5">
-                            <Grid DataContext="{Binding CommodityTradeStack}">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="*" />
-                                    <RowDefinition Height="Auto" />
-                                </Grid.RowDefinitions>
-                                <DataGrid Grid.Row="0"
-                                          Style="{DynamicResource BaseDataGridStyle}"
-                                          RowStyle="{DynamicResource ConstructionResourcesStyle}"
-                                          CellStyle="{DynamicResource RouteCells}"
-                                          AlternatingRowBackground="{DynamicResource RowAlternationColour}"
-                                          HorizontalAlignment="Stretch"
-                                          HeadersVisibility="Column"
-                                          IsHitTestVisible="True"
-                                          ItemsSource="{Binding Stacks}">
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Header="Commodity"
-                                                            Width="*"
-                                                            MinWidth="110"
-                                                            HeaderStyle="{DynamicResource DataGridHeaderLeft}"
-                                                            Binding="{Binding Path=Commodity}" />
-
-                                        <DataGridTextColumn Header="Count"
-                                                            MinWidth="80"
-                                                            Width="SizeToCells"
-                                                            HeaderStyle="{DynamicResource DataGridHeaderCenter}"
-                                                            ElementStyle="{DynamicResource DataGridElementRightMargin}"
-                                                            Binding="{Binding Path=CommodityCount}" />
-
-                                        <DataGridTextColumn Header="C Stock"
-                                                            MinWidth="80"
-                                                            Width="SizeToCells"
-                                                            ElementStyle="{DynamicResource DataGridElementRightMargin}"
-                                                            Binding="{Binding Path=CarrierStock}">
-                                            <DataGridTextColumn.HeaderStyle>
-                                                <Style TargetType="{x:Type DataGridColumnHeader}"
-                                                       BasedOn="{StaticResource DataGridHeaderCenter}">
-                                                    <Setter Property="ToolTip"
-                                                            Value="Carrier Stock" />
-                                                    <Setter Property="ToolTipService.Placement"
-                                                            Value="Top" />
-                                                </Style>
-                                            </DataGridTextColumn.HeaderStyle>
-                                        </DataGridTextColumn>
-
-                                        <DataGridTextColumn Header="C Diff"
-                                                            MinWidth="80"
-                                                            Width="SizeToCells"
-                                                            Binding="{Binding Path=CarrierDiff}">
-                                            <DataGridTextColumn.HeaderStyle>
-                                                <Style TargetType="{x:Type DataGridColumnHeader}"
-                                                   BasedOn="{StaticResource DataGridHeaderCenter}">
-                                                <Setter Property="ToolTip"
-                                                            Value="Carrier Stock Difference" />
-                                                    <Setter Property="ToolTipService.Placement"
-                                                            Value="Top" />
-                                                </Style>
-                                            </DataGridTextColumn.HeaderStyle>
-                                            <DataGridTextColumn.ElementStyle>
-                                                <Style TargetType="{x:Type TextBlock}">
-                                                    <Setter Property="HorizontalAlignment"
-                                                            Value="Right" />
-                                                    <Setter Property="VerticalAlignment"
-                                                            Value="Center" />
-                                                    <Setter Property="Margin"
-                                                            Value="0,0,5,0" />
-                                                    <Setter Property="Foreground"
-                                                            Value="{Binding CarrierDiffInt, Converter={StaticResource IntToColour}}" />
-                                                </Style>
-                                            </DataGridTextColumn.ElementStyle>
-                                        </DataGridTextColumn>
-
-                                        <DataGridTextColumn Header="# MIS"
-                                                            MinWidth="50"
-                                                            Width="SizeToCells"
-                                                            ElementStyle="{DynamicResource DataGridElementRightMargin}"
-                                                            Binding="{Binding Path=MissionCount}">
-                                            <DataGridTextColumn.HeaderStyle>
-                                                <Style TargetType="{x:Type DataGridColumnHeader}"
-                                                       BasedOn="{StaticResource DataGridHeaderCenter}">
-                                                    <Setter Property="ToolTip"
-                                                            Value="Mission Count" />
-                                                    <Setter Property="ToolTipService.Placement"
-                                                            Value="Top" />
-                                                </Style>
-                                            </DataGridTextColumn.HeaderStyle>
-                                        </DataGridTextColumn>
-
-                                        <DataGridTextColumn Header="DEL"
-                                                            MinWidth="60"
-                                                            Width="SizeToCells"
-                                                            ElementStyle="{DynamicResource DataGridElementRightMargin}"
-                                                            Binding="{Binding Path=DeliveredCount}">
-                                            <DataGridTextColumn.HeaderStyle>
-                                                <Style TargetType="{x:Type DataGridColumnHeader}"
-                                                       BasedOn="{StaticResource DataGridHeaderCenter}">
-                                                    <Setter Property="ToolTip"
-                                                            Value="Total Delivered" />
-                                                    <Setter Property="ToolTipService.Placement"
-                                                            Value="Top" />
-                                                </Style>
-                                            </DataGridTextColumn.HeaderStyle>
-                                        </DataGridTextColumn>
-
-                                        <DataGridTextColumn Header="# REM"
-                                                            MinWidth="60"
-                                                            Width="SizeToCells"
-                                                            ElementStyle="{DynamicResource DataGridElementTradeRemaining}"
-                                                            Binding="{Binding Path=RemainingCount}">
-                                            <DataGridTextColumn.HeaderStyle>
-                                                <Style TargetType="{x:Type DataGridColumnHeader}"
-                                                       BasedOn="{StaticResource DataGridHeaderCenter}">
-                                                    <Setter Property="ToolTip"
-                                                            Value="Total Remaining" />
-                                                    <Setter Property="ToolTipService.Placement"
-                                                            Value="Top" />
-                                                </Style>
-                                            </DataGridTextColumn.HeaderStyle>
-                                        </DataGridTextColumn>
-
-                                        <DataGridTextColumn Header="VALUE"
-                                                            MinWidth="120"
-                                                            Width="SizeToCells"
-                                                            HeaderStyle="{DynamicResource DataGridHeaderCenter}"
-                                                            ElementStyle="{DynamicResource DataGridElementRightMargin}"
-                                                            Binding="{Binding Path=Value}" />
-
-                                        <!--<DataGridTextColumn Header="Cr Per T"
-                                                            MinWidth="100"
-                                                            Width="SizeToCells"
-                                                            HeaderStyle="{DynamicResource DataGridHeaderCenter}"
-                                                            ElementStyle="{DynamicResource DataGridElementRightMargin}"
-                                                            Binding="{Binding Path=CreditPerT}" />-->
-                                    </DataGrid.Columns>
-                                </DataGrid>
-
-                                <Grid Grid.Row="1"
-                                      Margin="5">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition  />
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                    </Grid.RowDefinitions>
-
-                                    <TextBlock Grid.Column="0"
-                                               Grid.Row="0"
-                                               Margin="0,0,10,0"
-                                               Text="Total Delivered" />
-                                    <TextBlock Grid.Column="1"
-                                               Grid.Row="0"
-                                               Text="{Binding TotalDelivered}" />
-
-
-                                    <TextBlock Grid.Column="0"
-                                               Grid.Row="1"
-                                               Margin="0,0,10,0"
-                                               Text="Total Count" />
-                                    <TextBlock Grid.Column="1"
-                                               Grid.Row="1"
-                                               Text="{Binding TotalCount}" />
-
-                                    <TextBlock Grid.Column="0"
-                                               Grid.Row="2"
-                                               Margin="0,0,10,0"
-                                               Text="Total Value" />
-                                    <TextBlock Grid.Column="1"
-                                               Grid.Row="2"
-                                               Text="{Binding TotalValue}" />
-
-                                    <TextBlock Grid.Column="0"
-                                               Grid.Row="3"
-                                               Margin="0,0,10,0"
-                                               Text="Total Turn In Value" />
-                                    <TextBlock Grid.Column="1"
-                                               Grid.Row="3"
-                                               Text="{Binding TotalTurnInValue}" />
-
-                                    <TextBlock Grid.Column="3"
-                                               Grid.Row="0"
-                                               Margin="0,0,10,0"
-                                               Text="Total Remaining" />
-                                    <TextBlock Grid.Column="4"
-                                               Grid.Row="0"
-                                               Text="{Binding TotalRemaining}" />
-
-                                    <TextBlock Grid.Column="3"
-                                               Grid.Row="1"
-                                               Margin="0,0,10,0"
-                                               Text="Shareable Value" />
-                                    <TextBlock Grid.Column="4"
-                                               Grid.Row="1"
-                                               Text="{Binding ShareableValue}" />
-
-                                    <TextBlock Grid.Column="3"
-                                               Grid.Row="2"
-                                               Margin="0,0,10,0"
-                                               Text="Shareable Turn In Value" />
-                                    <TextBlock Grid.Column="4"
-                                               Grid.Row="2"
-                                               Text="{Binding SharableTurnInValue}" />
-
-                                    <TextBlock Grid.Column="3"
-                                               Grid.Row="3"
-                                               Margin="0,0,10,0"
-                                               Text="Missions Progress" />
-                                    <TextBlock Grid.Column="4"
-                                               Grid.Row="3"
-                                               Text="{Binding MissionsProgress}" />
-                                </Grid>
-                            </Grid>
-                        </Border>
-                    </Grid>
-                </Grid>
-            </TabItem>
-            <TabItem Header="Completed Missions">
+    <TabControl BorderThickness="0"
+                FontSize="18"
+                Background="{DynamicResource ViewBackground}"
+                IsSynchronizedWithCurrentItem="False">
+        <TabItem Header="Active Missions">
+            <Grid TextBlock.FontSize="18">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="{Binding ActiveMissionsGridSize[0], Mode=TwoWay}" />
+                    <RowDefinition Height="{Binding ActiveMissionsGridSize[1], Mode=TwoWay}" />
+                    <RowDefinition Height="{Binding ActiveMissionsGridSize[2], Mode=TwoWay}" />
+                </Grid.RowDefinitions>
                 <Border Background="{DynamicResource CardBackground}"
                         CornerRadius="5"
                         Margin="5,5,5,5"
                         Padding="5">
-                    <DataGrid ItemsSource="{Binding CompletedMissions}"
-                              Style="{DynamicResource BaseDataGridStyle}"
-                              RowStyle="{DynamicResource ConstructionResourcesStyle}"
-                              CellStyle="{DynamicResource RouteCells}"
+                    <DataGrid ItemsSource="{Binding ActiveMissions}"
+                              Style="{DynamicResource DisabledSelectGrid}"
+                              RowStyle="{DynamicResource NoSelectRowStyle}"
+                              CellStyle="{DynamicResource NoSelectCellNoMargin}"
+                              AlternationCount="1"
                               AlternatingRowBackground="{DynamicResource RowAlternationColour}"
-                              EnableRowVirtualization="True"
+                              GridLinesVisibility="Horizontal"
                               HeadersVisibility="Column"
                               IsHitTestVisible="True">
                         <DataGrid.Columns>
+
                             <DataGridTemplateColumn MinWidth="250"
                                                     Width="SizeToCells"
                                                     HeaderStyle="{DynamicResource DataGridHeaderLeft}"
@@ -532,20 +59,25 @@
                                                     Header="Source / Destination" />
 
                             <DataGridTextColumn Header="Title"
-                                                Width="*"
+                                                MinWidth="130"
+                                                MaxWidth="250"
+                                                Width="Auto"
                                                 HeaderStyle="{DynamicResource DataGridHeaderLeft}"
                                                 Binding="{Binding MissionName}">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="{x:Type TextBlock}">
                                         <Setter Property="VerticalAlignment"
-                                                Value="Center" />
-                                        <Setter Property="Margin"
-                                                Value="5,0" />
+                                                Value="Top" />
                                         <Setter Property="TextWrapping"
                                                 Value="Wrap" />
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
+
+                            <DataGridTemplateColumn Header="Commodities"
+                                                    HeaderStyle="{DynamicResource DataGridHeaderLeft}"
+                                                    CellStyle="{StaticResource CommoditiesColumn}"
+                                                    Width="*" />
 
                             <DataGridTextColumn Header="Reward"
                                                 MinWidth="100"
@@ -554,11 +86,11 @@
                                                 ElementStyle="{DynamicResource DataGridElementRightMargin}"
                                                 Binding="{Binding Reward, StringFormat={}{0:N0} cr}" />
 
-                            <DataGridTextColumn Header="Completed"
+                            <DataGridTextColumn Header="Expires"
                                                 HeaderStyle="{DynamicResource DataGridHeaderCenter}"
                                                 ElementStyle="{DynamicResource DataGridElementRightMargin}"
-                                                Width="200"
-                                                Binding="{Binding CompletionTime, StringFormat=dd MMM yyyy HH:mm}" />
+                                                Width="100"
+                                                Binding="{Binding ExpiryRelativeTime}" />
 
                             <DataGridTemplateColumn Header="Wing"
                                                     HeaderStyle="{DynamicResource DataGridHeaderCenter}"
@@ -576,7 +108,466 @@
                         </DataGrid.Columns>
                     </DataGrid>
                 </Border>
-            </TabItem>
-        </TabControl>
-    </busyIndicator:BusyMask>
+
+                <GridSplitter Grid.Row="1"
+                              Height="4"
+                              Background="{DynamicResource ScrollBarLine}"
+                              HorizontalAlignment="Stretch" />
+
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.8*" />
+                        <ColumnDefinition Width="0.35*" />
+                        <ColumnDefinition Width="0.85*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Border Background="{DynamicResource CardBackground}"
+                            CornerRadius="5"
+                            Grid.Column="0"
+                            Margin="5,5,5,5"
+                            Padding="5">
+                        <DataGrid ItemsSource="{Binding StationStacks}"
+                                  Style="{DynamicResource BaseDataGridStyle}"
+                                  RowStyle="{DynamicResource ConstructionResourcesStyle}"
+                                  CellStyle="{DynamicResource RouteCells}"
+                                  AlternatingRowBackground="{DynamicResource RowAlternationColour}"
+                                  HorizontalScrollBarVisibility="Disabled"
+                                  RowDetailsVisibilityMode="Visible"
+                                  HorizontalAlignment="Stretch"
+                                  HeadersVisibility="Column"
+                                  IsHitTestVisible="True">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="SYSTEM"
+                                                    Width="SizeToCells"
+                                                    MinWidth="70"
+                                                    HeaderStyle="{DynamicResource DataGridHeaderLeft}"
+                                                    Binding="{Binding OriginSystem}" />
+                                <DataGridTextColumn Header="STATION"
+                                                    Width="SizeToCells"
+                                                    MinWidth="70"
+                                                    HeaderStyle="{DynamicResource DataGridHeaderLeft}"
+                                                    Binding="{Binding OriginStation}" />
+
+                            </DataGrid.Columns>
+                            <DataGrid.RowDetailsTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="25,0,0,10">
+                                        <DataGrid Style="{DynamicResource BaseDataGridStyle}"
+                                                  RowStyle="{DynamicResource ConstructionResourcesStyle}"
+                                                  CellStyle="{DynamicResource RouteCells}"
+                                                  PreviewMouseWheel="DataGrid_PreviewMouseWheel"
+                                                  HorizontalScrollBarVisibility="Disabled"
+                                                  VerticalScrollBarVisibility="Disabled"
+                                                  HorizontalAlignment="Stretch"
+                                                  HeadersVisibility="Column"
+                                                  IsHitTestVisible="True"
+                                                  ItemsSource="{Binding Stacks}">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="Commodity"
+                                                                    Width="*"
+                                                                    MinWidth="110"
+                                                                    HeaderStyle="{DynamicResource DataGridHeaderLeft}"
+                                                                    Binding="{Binding Path=Commodity}" />
+
+                                                <DataGridTextColumn Header="Count"
+                                                                    MinWidth="80"
+                                                                    Width="SizeToCells"
+                                                                    HeaderStyle="{DynamicResource DataGridHeaderCenter}"
+                                                                    ElementStyle="{DynamicResource DataGridElementRightMargin}"
+                                                                    Binding="{Binding Path=CommodityCount}" />
+
+                                                <DataGridTextColumn Header="# MIS"
+                                                                    MinWidth="50"
+                                                                    Width="SizeToCells"
+                                                                    HeaderStyle="{DynamicResource DataGridHeaderCenter}"
+                                                                    ElementStyle="{DynamicResource DataGridElementRightMargin}"
+                                                                    Binding="{Binding Path=MissionCount}" />
+
+                                                <DataGridTextColumn Header="DEL"
+                                                                    MinWidth="60"
+                                                                    Width="SizeToCells"
+                                                                    HeaderStyle="{DynamicResource DataGridHeaderCenter}"
+                                                                    ElementStyle="{DynamicResource DataGridElementRightMargin}"
+                                                                    Binding="{Binding Path=DeliveredCount}" />
+
+                                                <DataGridTextColumn Header="# REM"
+                                                                    MinWidth="60"
+                                                                    Width="SizeToCells"
+                                                                    HeaderStyle="{DynamicResource DataGridHeaderCenter}"
+                                                                    ElementStyle="{DynamicResource DataGridElementTradeRemaining}"
+                                                                    Binding="{Binding Path=RemainingCount}" />
+
+                                                <DataGridTextColumn Header="VALUE"
+                                                                    MinWidth="120"
+                                                                    Width="SizeToCells"
+                                                                    HeaderStyle="{DynamicResource DataGridHeaderCenter}"
+                                                                    ElementStyle="{DynamicResource DataGridElementRightMargin}"
+                                                                    Binding="{Binding Path=Value}" />
+
+                                                <DataGridTextColumn Header="Cr Per T"
+                                                                    MinWidth="100"
+                                                                    Width="SizeToCells"
+                                                                    HeaderStyle="{DynamicResource DataGridHeaderCenter}"
+                                                                    ElementStyle="{DynamicResource DataGridElementCenter}"
+                                                                    Binding="{Binding Path=CreditPerT}" />
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </Grid>
+                                </DataTemplate>
+                            </DataGrid.RowDetailsTemplate>
+                        </DataGrid>
+                    </Border>
+
+                    <Border Background="{DynamicResource CardBackground}"
+                            CornerRadius="5"
+                            Grid.Column="1"
+                            Margin="5,5,5,5"
+                            Padding="5">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="{Binding CurrentShip.Name}"
+                                       FontSize="30"
+                                       Foreground="{DynamicResource Header}" />
+
+                            <TextBlock Text="{Binding CurrentShip.Ident}"
+                                       FontSize="20"
+                                       Grid.Row="1" />
+
+                            <TextBlock Text="{Binding CurrentShip.CargoText}"
+                                       FontSize="20"
+                                       Grid.Row="2" />
+                            <TextBlock Text="{Binding CurrentShip.CargoRemaining}"
+                                       HorizontalAlignment="Right"
+                                       FontSize="20"
+                                       Margin="0,0,10,0"
+                                       Grid.Row="2" />
+
+                            <DataGrid ItemsSource="{Binding CurrentShip.ShipCargo}"
+                                      Grid.Row="3"
+                                      Style="{DynamicResource BaseDataGridStyle}"
+                                      RowStyle="{DynamicResource ConstructionResourcesStyle}"
+                                      CellStyle="{DynamicResource RouteCells}"
+                                      Foreground="{DynamicResource PrimaryForeground}"
+                                      FontSize="18"
+                                      ScrollViewer.HorizontalScrollBarVisibility="Visible"
+                                      ScrollViewer.VerticalScrollBarVisibility="Visible"
+                                      AlternatingRowBackground="{DynamicResource RowAlternationColour}"
+                                      HeadersVisibility="Column"
+                                      AutoGenerateColumns="False"
+                                      HorizontalAlignment="Center">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Commodity"
+                                                        Width="*"
+                                                        MinWidth="150"
+                                                        HeaderStyle="{DynamicResource DataGridHeaderLeft}"
+                                                        ElementStyle="{DynamicResource DataGridElementLeftMarginBody}"
+                                                        Binding="{Binding Name}" />
+                                    <DataGridTextColumn Header="Count"
+                                                        MinWidth="100"
+                                                        HeaderStyle="{DynamicResource DataGridHeaderRight}"
+                                                        ElementStyle="{DynamicResource DataGridElementRightMargin}"
+                                                        Binding="{Binding Count}" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
+                    </Border>
+
+                    <Border Background="{DynamicResource CardBackground}"
+                            CornerRadius="5"
+                            Grid.Column="2"
+                            Margin="5,5,5,5"
+                            Padding="5">
+                        <Grid DataContext="{Binding CommodityTradeStack}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <DataGrid Grid.Row="0"
+                                      Style="{DynamicResource BaseDataGridStyle}"
+                                      RowStyle="{DynamicResource ConstructionResourcesStyle}"
+                                      CellStyle="{DynamicResource RouteCells}"
+                                      AlternatingRowBackground="{DynamicResource RowAlternationColour}"
+                                      HorizontalAlignment="Stretch"
+                                      HeadersVisibility="Column"
+                                      IsHitTestVisible="True"
+                                      ItemsSource="{Binding Stacks}">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Commodity"
+                                                        Width="*"
+                                                        MinWidth="110"
+                                                        HeaderStyle="{DynamicResource DataGridHeaderLeft}"
+                                                        Binding="{Binding Path=Commodity}" />
+
+                                    <DataGridTextColumn Header="Count"
+                                                        MinWidth="80"
+                                                        Width="SizeToCells"
+                                                        HeaderStyle="{DynamicResource DataGridHeaderCenter}"
+                                                        ElementStyle="{DynamicResource DataGridElementRightMargin}"
+                                                        Binding="{Binding Path=CommodityCount}" />
+
+                                    <DataGridTextColumn Header="C Stock"
+                                                        MinWidth="80"
+                                                        Width="SizeToCells"
+                                                        ElementStyle="{DynamicResource DataGridElementRightMargin}"
+                                                        Binding="{Binding Path=CarrierStock}">
+                                        <DataGridTextColumn.HeaderStyle>
+                                            <Style TargetType="{x:Type DataGridColumnHeader}"
+                                                   BasedOn="{StaticResource DataGridHeaderCenter}">
+                                                <Setter Property="ToolTip"
+                                                        Value="Carrier Stock" />
+                                                <Setter Property="ToolTipService.Placement"
+                                                        Value="Top" />
+                                            </Style>
+                                        </DataGridTextColumn.HeaderStyle>
+                                    </DataGridTextColumn>
+
+                                    <DataGridTextColumn Header="C Diff"
+                                                        MinWidth="80"
+                                                        Width="SizeToCells"
+                                                        Binding="{Binding Path=CarrierDiff}">
+                                        <DataGridTextColumn.HeaderStyle>
+                                            <Style TargetType="{x:Type DataGridColumnHeader}"
+                                                   BasedOn="{StaticResource DataGridHeaderCenter}">
+                                                <Setter Property="ToolTip"
+                                                        Value="Carrier Stock Difference" />
+                                                <Setter Property="ToolTipService.Placement"
+                                                        Value="Top" />
+                                            </Style>
+                                        </DataGridTextColumn.HeaderStyle>
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="{x:Type TextBlock}">
+                                                <Setter Property="HorizontalAlignment"
+                                                        Value="Right" />
+                                                <Setter Property="VerticalAlignment"
+                                                        Value="Center" />
+                                                <Setter Property="Margin"
+                                                        Value="0,0,5,0" />
+                                                <Setter Property="Foreground"
+                                                        Value="{Binding CarrierDiffInt, Converter={StaticResource IntToColour}}" />
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+
+                                    <DataGridTextColumn Header="# MIS"
+                                                        MinWidth="50"
+                                                        Width="SizeToCells"
+                                                        ElementStyle="{DynamicResource DataGridElementRightMargin}"
+                                                        Binding="{Binding Path=MissionCount}">
+                                        <DataGridTextColumn.HeaderStyle>
+                                            <Style TargetType="{x:Type DataGridColumnHeader}"
+                                                   BasedOn="{StaticResource DataGridHeaderCenter}">
+                                                <Setter Property="ToolTip"
+                                                        Value="Mission Count" />
+                                                <Setter Property="ToolTipService.Placement"
+                                                        Value="Top" />
+                                            </Style>
+                                        </DataGridTextColumn.HeaderStyle>
+                                    </DataGridTextColumn>
+
+                                    <DataGridTextColumn Header="DEL"
+                                                        MinWidth="60"
+                                                        Width="SizeToCells"
+                                                        ElementStyle="{DynamicResource DataGridElementRightMargin}"
+                                                        Binding="{Binding Path=DeliveredCount}">
+                                        <DataGridTextColumn.HeaderStyle>
+                                            <Style TargetType="{x:Type DataGridColumnHeader}"
+                                                   BasedOn="{StaticResource DataGridHeaderCenter}">
+                                                <Setter Property="ToolTip"
+                                                        Value="Total Delivered" />
+                                                <Setter Property="ToolTipService.Placement"
+                                                        Value="Top" />
+                                            </Style>
+                                        </DataGridTextColumn.HeaderStyle>
+                                    </DataGridTextColumn>
+
+                                    <DataGridTextColumn Header="# REM"
+                                                        MinWidth="60"
+                                                        Width="SizeToCells"
+                                                        ElementStyle="{DynamicResource DataGridElementTradeRemaining}"
+                                                        Binding="{Binding Path=RemainingCount}">
+                                        <DataGridTextColumn.HeaderStyle>
+                                            <Style TargetType="{x:Type DataGridColumnHeader}"
+                                                   BasedOn="{StaticResource DataGridHeaderCenter}">
+                                                <Setter Property="ToolTip"
+                                                        Value="Total Remaining" />
+                                                <Setter Property="ToolTipService.Placement"
+                                                        Value="Top" />
+                                            </Style>
+                                        </DataGridTextColumn.HeaderStyle>
+                                    </DataGridTextColumn>
+
+                                    <DataGridTextColumn Header="VALUE"
+                                                        MinWidth="120"
+                                                        Width="SizeToCells"
+                                                        HeaderStyle="{DynamicResource DataGridHeaderCenter}"
+                                                        ElementStyle="{DynamicResource DataGridElementRightMargin}"
+                                                        Binding="{Binding Path=Value}" />
+
+                                    <!--<DataGridTextColumn Header="Cr Per T"
+                                                            MinWidth="100"
+                                                            Width="SizeToCells"
+                                                            HeaderStyle="{DynamicResource DataGridHeaderCenter}"
+                                                            ElementStyle="{DynamicResource DataGridElementRightMargin}"
+                                                            Binding="{Binding Path=CreditPerT}" />-->
+                                </DataGrid.Columns>
+                            </DataGrid>
+
+                            <Grid Grid.Row="1"
+                                  Margin="5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Grid.Column="0"
+                                           Grid.Row="0"
+                                           Margin="0,0,10,0"
+                                           Text="Total Delivered" />
+                                <TextBlock Grid.Column="1"
+                                           Grid.Row="0"
+                                           Text="{Binding TotalDelivered}" />
+
+
+                                <TextBlock Grid.Column="0"
+                                           Grid.Row="1"
+                                           Margin="0,0,10,0"
+                                           Text="Total Count" />
+                                <TextBlock Grid.Column="1"
+                                           Grid.Row="1"
+                                           Text="{Binding TotalCount}" />
+
+                                <TextBlock Grid.Column="0"
+                                           Grid.Row="2"
+                                           Margin="0,0,10,0"
+                                           Text="Total Value" />
+                                <TextBlock Grid.Column="1"
+                                           Grid.Row="2"
+                                           Text="{Binding TotalValue}" />
+
+                                <TextBlock Grid.Column="0"
+                                           Grid.Row="3"
+                                           Margin="0,0,10,0"
+                                           Text="Total Turn In Value" />
+                                <TextBlock Grid.Column="1"
+                                           Grid.Row="3"
+                                           Text="{Binding TotalTurnInValue}" />
+
+                                <TextBlock Grid.Column="3"
+                                           Grid.Row="0"
+                                           Margin="0,0,10,0"
+                                           Text="Total Remaining" />
+                                <TextBlock Grid.Column="4"
+                                           Grid.Row="0"
+                                           Text="{Binding TotalRemaining}" />
+
+                                <TextBlock Grid.Column="3"
+                                           Grid.Row="1"
+                                           Margin="0,0,10,0"
+                                           Text="Shareable Value" />
+                                <TextBlock Grid.Column="4"
+                                           Grid.Row="1"
+                                           Text="{Binding ShareableValue}" />
+
+                                <TextBlock Grid.Column="3"
+                                           Grid.Row="2"
+                                           Margin="0,0,10,0"
+                                           Text="Shareable Turn In Value" />
+                                <TextBlock Grid.Column="4"
+                                           Grid.Row="2"
+                                           Text="{Binding SharableTurnInValue}" />
+
+                                <TextBlock Grid.Column="3"
+                                           Grid.Row="3"
+                                           Margin="0,0,10,0"
+                                           Text="Missions Progress" />
+                                <TextBlock Grid.Column="4"
+                                           Grid.Row="3"
+                                           Text="{Binding MissionsProgress}" />
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Grid>
+        </TabItem>
+        <TabItem Header="Completed Missions">
+            <Border Background="{DynamicResource CardBackground}"
+                    CornerRadius="5"
+                    Margin="5,5,5,5"
+                    Padding="5">
+                <DataGrid ItemsSource="{Binding CompletedMissions}"
+                          Style="{DynamicResource BaseDataGridStyle}"
+                          RowStyle="{DynamicResource ConstructionResourcesStyle}"
+                          CellStyle="{DynamicResource RouteCells}"
+                          AlternatingRowBackground="{DynamicResource RowAlternationColour}"
+                          EnableRowVirtualization="True"
+                          HeadersVisibility="Column"
+                          IsHitTestVisible="True">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn MinWidth="250"
+                                                Width="SizeToCells"
+                                                HeaderStyle="{DynamicResource DataGridHeaderLeft}"
+                                                CellStyle="{StaticResource SourceColumn}"
+                                                Header="Source / Destination" />
+
+                        <DataGridTextColumn Header="Title"
+                                            Width="*"
+                                            HeaderStyle="{DynamicResource DataGridHeaderLeft}"
+                                            Binding="{Binding MissionName}">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="VerticalAlignment"
+                                            Value="Center" />
+                                    <Setter Property="Margin"
+                                            Value="5,0" />
+                                    <Setter Property="TextWrapping"
+                                            Value="Wrap" />
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+
+                        <DataGridTextColumn Header="Reward"
+                                            MinWidth="100"
+                                            Width="SizeToCells"
+                                            HeaderStyle="{DynamicResource DataGridHeaderLeft}"
+                                            ElementStyle="{DynamicResource DataGridElementRightMargin}"
+                                            Binding="{Binding Reward, StringFormat={}{0:N0} cr}" />
+
+                        <DataGridTextColumn Header="Completed"
+                                            HeaderStyle="{DynamicResource DataGridHeaderCenter}"
+                                            ElementStyle="{DynamicResource DataGridElementRightMargin}"
+                                            Width="200"
+                                            Binding="{Binding CompletionTime, StringFormat=dd MMM yyyy HH:mm}" />
+
+                        <DataGridTemplateColumn Header="Wing"
+                                                HeaderStyle="{DynamicResource DataGridHeaderCenter}"
+                                                Width="SizeToCells"
+                                                MinWidth="45">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Image Source="/Assets/Icons/Wing.png"
+                                           Width="18"
+                                           Height="18"
+                                           Visibility="{Binding Wing, Converter={StaticResource BoolToVis}}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
+        </TabItem>
+    </TabControl>
 </UserControl>

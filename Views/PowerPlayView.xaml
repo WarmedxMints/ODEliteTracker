@@ -5,7 +5,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:ODEliteTracker.Views"
              xmlns:viewmodels="clr-namespace:ODEliteTracker.ViewModels"
-             xmlns:busyIndicator="https://github.com/moh3ngolshani/BusyIndicator"
              xmlns:wpfconverters="clr-namespace:ODEliteTracker.WPFConverters"
              d:DataContext="{d:DesignInstance viewmodels:PowerPlayViewModel}"
              mc:Ignorable="d"
@@ -15,467 +14,551 @@
     <UserControl.Resources>
         <wpfconverters:PowerToImageConverter x:Key="PowerToImage" />
     </UserControl.Resources>
-    <busyIndicator:BusyMask x:Name="BusyIndicator"
-                            IsBusy="{Binding IsBusy}"
-                            Background="{DynamicResource IndicatorBackground}"
-                            FontSize="30"
-                            BusyContent="Parsing Powerplay Logs"
-                            IndicatorType="Cupertino"
-                            BusyContentMargin="0,20,0,0">
-        <Grid TextBlock.FontSize="18">
+    <Grid TextBlock.FontSize="18">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="400" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <Border Background="{DynamicResource CardBackground}"
+                CornerRadius="5"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Top"
+                Margin="5"
+                Padding="5">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="25" />
+                    <RowDefinition Height="130" />
+                </Grid.RowDefinitions>
+
+                <TextBlock Text="Pledge"
+                           Grid.Row="0"
+                           FontSize="20"
+                           Foreground="{DynamicResource Header}"
+                           Background="Transparent" />
+
+                <Rectangle x:Name="Rect"
+                           Margin="10"
+                           Opacity="0.3"
+                           DataContext="{Binding PledgeData}"
+                           Style="{DynamicResource PowerPlayIcon}"
+                           Grid.RowSpan="2">
+                    <Rectangle.OpacityMask>
+                        <VisualBrush Stretch="Uniform">
+                            <VisualBrush.Visual>
+                                <Viewbox Stretch="Uniform">
+                                    <Image Source="{Binding Power, Converter={StaticResource PowerToImage}}" />
+                                </Viewbox>
+                            </VisualBrush.Visual>
+                        </VisualBrush>
+                    </Rectangle.OpacityMask>
+                </Rectangle>
+
+
+                <Grid DataContext="{Binding PledgeData}"
+                      Margin="5"
+                      Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="130" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="25" />
+                        <RowDefinition Height="25" />
+                        <RowDefinition Height="25" />
+                        <RowDefinition Height="25" />
+                        <RowDefinition Height="25" />
+                    </Grid.RowDefinitions>
+
+
+                    <TextBlock Grid.Column="0"
+                               Grid.Row="0"
+                               VerticalAlignment="Center"
+                               Text="Power" />
+                    <TextBlock Grid.Column="1"
+                               Grid.Row="0"
+                               HorizontalAlignment="Right"
+                               VerticalAlignment="Center"
+                               Text="{Binding Power}" />
+
+                    <TextBlock Grid.Column="0"
+                               Grid.Row="1"
+                               VerticalAlignment="Center"
+                               Text="Rank" />
+                    <TextBlock Grid.Column="1"
+                               Grid.Row="1"
+                               HorizontalAlignment="Right"
+                               VerticalAlignment="Center"
+                               Text="{Binding Rank}" />
+
+                    <TextBlock Grid.Column="0"
+                               Grid.Row="2"
+                               VerticalAlignment="Center"
+                               Text="Merits" />
+                    <TextBlock Grid.Column="1"
+                               Grid.Row="2"
+                               HorizontalAlignment="Right"
+                               VerticalAlignment="Center"
+                               Text="{Binding Merits}" />
+
+                    <TextBlock Grid.Column="0"
+                               Grid.Row="3"
+                               VerticalAlignment="Center"
+                               Text="Earned This Cycle" />
+                    <TextBlock Grid.Column="1"
+                               Grid.Row="3"
+                               HorizontalAlignment="Right"
+                               VerticalAlignment="Center"
+                               Text="{Binding MeritsEarnThisCycle}" />
+
+                    <TextBlock Grid.Column="0"
+                               Grid.Row="4"
+                               VerticalAlignment="Center"
+                               Text="Time Pledged" />
+                    <TextBlock Grid.Column="1"
+                               Grid.Row="4"
+                               HorizontalAlignment="Right"
+                               VerticalAlignment="Center"
+                               Text="{Binding TimePledged}" />
+                </Grid>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="1">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
                 <RowDefinition />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="400" />
-                <ColumnDefinition />
-            </Grid.ColumnDefinitions>
+
+            <TabControl BorderThickness="0"
+                        FontSize="18"
+                        Margin="5"
+                        Width="400"
+                        SelectedIndex="{Binding TabIndex, Mode=TwoWay}"
+                        Background="{DynamicResource CardBackground}">
+                <TabItem Header="This Cycle">
+                    <ListBox ItemsSource="{Binding ThisCycleSystems}"
+                             x:Name="ThisCycleList"
+                             SelectedItem="{Binding SelectedSystem, Mode=OneWay}"
+                             ScrollViewer.VerticalScrollBarVisibility="Visible"
+                             ScrollViewer.HorizontalScrollBarVisibility="Visible"
+                             HorizontalAlignment="Stretch"
+                             HorizontalContentAlignment="Stretch"
+                             ItemContainerStyle="{DynamicResource SelectedContainerStyle}"
+                             Background="Transparent"
+                             BorderThickness="0"
+                             Foreground="{DynamicResource PrimaryForeground}"
+                             SelectionChanged="ThisCycleList_SelectionChanged">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Button FontSize="20"
+                                        Tag="1"
+                                        Grid.Column="1"
+                                        HorizontalAlignment="Stretch"
+                                        HorizontalContentAlignment="Stretch"
+                                        Command="{Binding ElementName=Root, Path=DataContext.SetSelectedSystemCommand}"
+                                        CommandParameter="{Binding }"
+                                        Style="{DynamicResource EliteStyleButton}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="40" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Text="{Binding Name}"
+                                                   HorizontalAlignment="Left"
+                                                   VerticalAlignment="Center"
+                                                   TextWrapping="NoWrap"
+                                                   Grid.RowSpan="2"
+                                                   FontWeight="SemiBold"
+                                                   Margin="5,3" />
+                                        <Rectangle Style="{DynamicResource PowerPlayIcon}"
+                                                   Grid.Column="1">
+                                            <Rectangle.OpacityMask>
+                                                <VisualBrush Stretch="Uniform">
+                                                    <VisualBrush.Visual>
+                                                        <Viewbox Stretch="Uniform">
+                                                            <Image Source="{Binding ControllingPower, Converter={StaticResource PowerToImage}}" />
+                                                        </Viewbox>
+                                                    </VisualBrush.Visual>
+                                                </VisualBrush>
+                                            </Rectangle.OpacityMask>
+                                        </Rectangle>
+                                    </Grid>
+                                </Button>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </TabItem>
+
+                <TabItem Header="Last Cycle">
+                    <ListBox ItemsSource="{Binding LastCycleSystems}"
+                             x:Name="PreviousCycleList"
+                             ScrollViewer.VerticalScrollBarVisibility="Visible"
+                             ScrollViewer.HorizontalScrollBarVisibility="Visible"
+                             SelectedItem="{Binding SelectedSystem, Mode=OneWay}"
+                             HorizontalAlignment="Stretch"
+                             HorizontalContentAlignment="Stretch"
+                             Background="Transparent"
+                             Grid.Row="1"
+                             ItemContainerStyle="{DynamicResource SelectedContainerStyle}"
+                             BorderThickness="0"
+                             Foreground="{DynamicResource PrimaryForeground}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Button FontSize="20"
+                                        Tag="1"
+                                        Grid.Column="1"
+                                        Command="{Binding ElementName=Root, Path=DataContext.SetSelectedSystemCommand}"
+                                        CommandParameter="{Binding }"
+                                        HorizontalAlignment="Stretch"
+                                        HorizontalContentAlignment="Stretch"
+                                        Style="{DynamicResource EliteStyleButton}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="40" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="{Binding Name}"
+                                                   HorizontalAlignment="Left"
+                                                   VerticalAlignment="Center"
+                                                   TextWrapping="NoWrap"
+                                                   Grid.RowSpan="2"
+                                                   FontWeight="SemiBold"
+                                                   Margin="5,3" />
+                                        <Rectangle Style="{DynamicResource PowerPlayIcon}"
+                                                   Grid.Column="2">
+                                            <Rectangle.OpacityMask>
+                                                <VisualBrush Stretch="Uniform">
+                                                    <VisualBrush.Visual>
+                                                        <Viewbox Stretch="Uniform">
+                                                            <Image Source="{Binding ControllingPower, Converter={StaticResource PowerToImage}}" />
+                                                        </Viewbox>
+                                                    </VisualBrush.Visual>
+                                                </VisualBrush>
+                                            </Rectangle.OpacityMask>
+                                        </Rectangle>
+                                    </Grid>
+                                </Button>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </TabItem>
+            </TabControl>
 
             <Border Background="{DynamicResource CardBackground}"
                     CornerRadius="5"
-                    HorizontalAlignment="Stretch"
-                    VerticalAlignment="Top"
+                    Grid.Row="2"
                     Margin="5"
                     Padding="5">
                 <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <CheckBox Grid.Column="0"
+                              Content="Hide Systems Without Merits"
+                              HorizontalAlignment="Left"
+                              Margin="10"
+                              FontSize="16"
+                              Style="{StaticResource EliteStyleCheckBox}"
+                              IsChecked="{Binding HideSystemsWithoutMerits, Mode=TwoWay}" />
+
+                    <Button BorderThickness="2"
+                            Height="30"
+                            Margin="5,0"
+                            Grid.Column="1"
+                            Width="120"
+                            FontSize="12"
+                            Command="{Binding CreateDiscordPostCommand}"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            Content="{Binding DiscordButtonText}"
+                            FontFamily="Unispace"
+                            BorderBrush="#FF707BF3">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius"
+                                        Value="5" />
+                            </Style>
+                            <Style TargetType="{x:Type Button}">
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver"
+                                             Value="False">
+                                        <Setter Property="Foreground"
+                                                Value="White" />
+                                        <Setter Property="Background"
+                                                Value="#FF5865F2" />
+                                    </Trigger>
+                                    <Trigger Property="IsMouseOver"
+                                             Value="True">
+                                        <Setter Property="Background"
+                                                Value="White" />
+                                        <Setter Property="Foreground"
+                                                Value="#FF5865F2" />
+                                    </Trigger>
+                                    <Trigger Property="IsPressed"
+                                             Value="True">
+                                        <Setter Property="Background"
+                                                Value="White" />
+                                        <Setter Property="Foreground"
+                                                Value="#FF5865F2" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+                </Grid>
+            </Border>
+        </Grid>
+        <Grid Grid.Column="1"
+              Grid.RowSpan="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Border Background="{DynamicResource CardBackground}"
+                    CornerRadius="5"
+                    HorizontalAlignment="Stretch"
+                    Margin="5"
+                    Padding="5">
+                <Grid Grid.Column="1"
+                      TextBlock.FontSize="20"
+                      Grid.RowSpan="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="200" />
+                    </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="25" />
-                        <RowDefinition Height="130" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
+                        <RowDefinition />
                     </Grid.RowDefinitions>
 
-                    <TextBlock Text="Pledge"
-                               Grid.Row="0"
-                               FontSize="20"
-                               Foreground="{DynamicResource Header}"
-                               Background="Transparent" />
+                    <Grid    DataContext="{Binding SelectedSystem}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <StackPanel Margin="0,5"
+                                    Grid.ColumnSpan="3"
+                                    Orientation="Horizontal">
+                            <TextBlock Text="{Binding NonUpperName}"
+                                       FontSize="35"
+                                       Foreground="{StaticResource Header}" />
+                            <Button Command="{Binding ElementName=Root, Path=DataContext.OpenInaraCommand}"
+                                    Height="30"
+                                    Margin="10,0"
+                                    Cursor="Hand"
+                                    Visibility="{Binding Converter={StaticResource NullToVis}, ConverterParameter=Hidden}"
+                                    Grid.Column="1">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="{x:Type Button}">
+                                        <Image Stretch="Uniform"
+                                               SnapsToDevicePixels="True"
+                                               Source="/Assets/Icons/inaramenulogo.png" />
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                        </StackPanel>
 
-                    <Rectangle x:Name="Rect"
-                               Margin="10"
-                               Opacity="0.3"
-                               DataContext="{Binding PledgeData}"
-                               Style="{DynamicResource PowerPlayIcon}"
-                               Grid.RowSpan="2">
+                        <TextBlock Text="Controlling Power"
+                                   Grid.Row="1"
+                                   Grid.Column="0"
+                                   Margin="5" />
+                        <TextBlock Text="{Binding Power}"
+                                   Grid.Row="1"
+                                   Grid.Column="1"
+                                   Margin="5" />
+
+                        <TextBlock Text="Powerplay State"
+                                   Grid.Row="2"
+                                   Grid.Column="0"
+                                   Margin="5" />
+                        <TextBlock Text="{Binding PowerState}"
+                                   Grid.Row="2"
+                                   Grid.Column="1"
+                                   Margin="5" />
+
+                        <TextBlock Text="Merits Earned"
+                                   Grid.Row="3"
+                                   Grid.Column="0"
+                                   Margin="5" />
+                        <TextBlock Text="{Binding MeritsEarned}"
+                                   Grid.Row="3"
+                                   Grid.Column="1"
+                                   Margin="5" />
+
+                        <TextBlock Text="Controlling Faction"
+                                   Grid.Row="4"
+                                   Grid.Column="0"
+                                   Margin="5" />
+                        <TextBlock Text="{Binding ControllingFaction}"
+                                   Grid.Row="4"
+                                   Grid.Column="1"
+                                   Margin="5" />
+
+                        <TextBlock Text="System Allegiance"
+                                   Grid.Row="5"
+                                   Grid.Column="0"
+                                   Margin="5" />
+                        <TextBlock Text="{Binding SystemAllegiance}"
+                                   Grid.Row="5"
+                                   Grid.Column="1"
+                                   Margin="5" />
+
+                    </Grid>
+
+                    <TextBlock Text="{Binding CurrentCycle}"
+                               FontSize="35"
+                               Margin="0,5"
+                               HorizontalAlignment="Center"
+                               Grid.ColumnSpan="2"
+                               Foreground="{StaticResource Header}" />
+
+                    <Rectangle Style="{DynamicResource PowerPlayIcon}"
+                               Margin="5"
+                               DataContext="{Binding SelectedSystem}"
+                               Grid.Column="2">
                         <Rectangle.OpacityMask>
                             <VisualBrush Stretch="Uniform">
                                 <VisualBrush.Visual>
-                                    <Viewbox Stretch="Uniform">
-                                        <Image Source="{Binding Power, Converter={StaticResource PowerToImage}}" />
+                                    <Viewbox>
+                                        <Image Source="{Binding ControllingPower, Converter={StaticResource PowerToImage}}" />
                                     </Viewbox>
                                 </VisualBrush.Visual>
                             </VisualBrush>
                         </Rectangle.OpacityMask>
                     </Rectangle>
-
-
-                    <Grid DataContext="{Binding PledgeData}"
-                          Margin="5"
-                          Grid.Row="1">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="130" />
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="25" />
-                            <RowDefinition Height="25" />
-                            <RowDefinition Height="25" />
-                            <RowDefinition Height="25" />
-                            <RowDefinition Height="25" />
-                        </Grid.RowDefinitions>
-
-
-                        <TextBlock Grid.Column="0"
-                                   Grid.Row="0"
-                                   VerticalAlignment="Center"
-                                   Text="Power" />
-                        <TextBlock Grid.Column="1"
-                                   Grid.Row="0"
-                                   HorizontalAlignment="Right"
-                                   VerticalAlignment="Center"
-                                   Text="{Binding Power}" />
-
-                        <TextBlock Grid.Column="0"
-                                   Grid.Row="1"
-                                   VerticalAlignment="Center"
-                                   Text="Rank" />
-                        <TextBlock Grid.Column="1"
-                                   Grid.Row="1"
-                                   HorizontalAlignment="Right"
-                                   VerticalAlignment="Center"
-                                   Text="{Binding Rank}" />
-
-                        <TextBlock Grid.Column="0"
-                                   Grid.Row="2"
-                                   VerticalAlignment="Center"
-                                   Text="Merits" />
-                        <TextBlock Grid.Column="1"
-                                   Grid.Row="2"
-                                   HorizontalAlignment="Right"
-                                   VerticalAlignment="Center"
-                                   Text="{Binding Merits}" />
-
-                        <TextBlock Grid.Column="0"
-                                   Grid.Row="3"
-                                   VerticalAlignment="Center"
-                                   Text="Earned This Cycle" />
-                        <TextBlock Grid.Column="1"
-                                   Grid.Row="3"
-                                   HorizontalAlignment="Right"
-                                   VerticalAlignment="Center"
-                                   Text="{Binding MeritsEarnThisCycle}" />
-
-                        <TextBlock Grid.Column="0"
-                                   Grid.Row="4"
-                                   VerticalAlignment="Center"
-                                   Text="Time Pledged" />
-                        <TextBlock Grid.Column="1"
-                                   Grid.Row="4"
-                                   HorizontalAlignment="Right"
-                                   VerticalAlignment="Center"
-                                   Text="{Binding TimePledged}" />
-                    </Grid>
                 </Grid>
             </Border>
 
-            <Grid Grid.Row="1">
-                <Grid.RowDefinitions>
-                    <RowDefinition />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
+            <Border Background="{DynamicResource CardBackground}"
+                    CornerRadius="5"
+                    Grid.Row="1"
+                    HorizontalAlignment="Stretch"
+                    Margin="5"
+                    Padding="5">
+                <Control DataContext="{Binding SelectedSystemData}"
+                         Style="{DynamicResource PowerStateContent}" />
+            </Border>
 
-                <TabControl BorderThickness="0"
-                            FontSize="18"
-                            Margin="5"
-                            Width="400"
-                            SelectedIndex="{Binding TabIndex, Mode=TwoWay}"
-                            Background="{DynamicResource CardBackground}">
-                    <TabItem Header="This Cycle">
-                        <ListBox ItemsSource="{Binding ThisCycleSystems}"
-                                 x:Name="ThisCycleList"
-                                 SelectedItem="{Binding SelectedSystem, Mode=OneWay}"
-                                 ScrollViewer.VerticalScrollBarVisibility="Visible"
-                                 ScrollViewer.HorizontalScrollBarVisibility="Visible"
-                                 HorizontalAlignment="Stretch"
-                                 HorizontalContentAlignment="Stretch"
-                                 ItemContainerStyle="{DynamicResource SelectedContainerStyle}"
-                                 Background="Transparent"
-                                 BorderThickness="0"
-                                 Foreground="{DynamicResource PrimaryForeground}"
-                                 SelectionChanged="ThisCycleList_SelectionChanged">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <Button FontSize="20"
-                                            Tag="1"
-                                            Grid.Column="1"
-                                            HorizontalAlignment="Stretch"
-                                            HorizontalContentAlignment="Stretch"
-                                            Command="{Binding ElementName=Root, Path=DataContext.SetSelectedSystemCommand}"
-                                            CommandParameter="{Binding }"
-                                            Style="{DynamicResource EliteStyleButton}">
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="40" />
-                                            </Grid.ColumnDefinitions>
 
-                                            <TextBlock Text="{Binding Name}"
-                                                       HorizontalAlignment="Left"
-                                                       VerticalAlignment="Center"
-                                                       TextWrapping="NoWrap"
-                                                       Grid.RowSpan="2"
-                                                       FontWeight="SemiBold"
-                                                       Margin="5,3" />
-                                            <Rectangle Style="{DynamicResource PowerPlayIcon}"
-                                                       Grid.Column="1">
-                                                <Rectangle.OpacityMask>
-                                                    <VisualBrush Stretch="Uniform">
-                                                        <VisualBrush.Visual>
-                                                            <Viewbox Stretch="Uniform">
-                                                                <Image Source="{Binding ControllingPower, Converter={StaticResource PowerToImage}}" />
-                                                            </Viewbox>
-                                                        </VisualBrush.Visual>
-                                                    </VisualBrush>
-                                                </Rectangle.OpacityMask>
-                                            </Rectangle>
-                                        </Grid>
-                                    </Button>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
-                    </TabItem>
-
-                    <TabItem Header="Last Cycle">
-                        <ListBox ItemsSource="{Binding LastCycleSystems}"
-                                 x:Name="PreviousCycleList"
-                                 ScrollViewer.VerticalScrollBarVisibility="Visible"
-                                 ScrollViewer.HorizontalScrollBarVisibility="Visible"
-                                 SelectedItem="{Binding SelectedSystem, Mode=OneWay}"
-                                 HorizontalAlignment="Stretch"
-                                 HorizontalContentAlignment="Stretch"
-                                 Background="Transparent"
-                                 Grid.Row="1"
-                                 ItemContainerStyle="{DynamicResource SelectedContainerStyle}"
-                                 BorderThickness="0"
-                                 Foreground="{DynamicResource PrimaryForeground}">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <Button FontSize="20"
-                                            Tag="1"
-                                            Grid.Column="1"
-                                            Command="{Binding ElementName=Root, Path=DataContext.SetSelectedSystemCommand}"
-                                            CommandParameter="{Binding }"
-                                            HorizontalAlignment="Stretch"
-                                            HorizontalContentAlignment="Stretch"
-                                            Style="{DynamicResource EliteStyleButton}">
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="40" />
-                                            </Grid.ColumnDefinitions>
-                                            <TextBlock Text="{Binding Name}"
-                                                       HorizontalAlignment="Left"
-                                                       VerticalAlignment="Center"
-                                                       TextWrapping="NoWrap"
-                                                       Grid.RowSpan="2"
-                                                       FontWeight="SemiBold"
-                                                       Margin="5,3" />
-                                            <Rectangle Style="{DynamicResource PowerPlayIcon}"
-                                                       Grid.Column="2">
-                                                <Rectangle.OpacityMask>
-                                                    <VisualBrush Stretch="Uniform">
-                                                        <VisualBrush.Visual>
-                                                            <Viewbox Stretch="Uniform">
-                                                                <Image Source="{Binding ControllingPower, Converter={StaticResource PowerToImage}}" />
-                                                            </Viewbox>
-                                                        </VisualBrush.Visual>
-                                                    </VisualBrush>
-                                                </Rectangle.OpacityMask>
-                                            </Rectangle>
-                                        </Grid>
-                                    </Button>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
-                    </TabItem>
-                </TabControl>
-
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
                 <Border Background="{DynamicResource CardBackground}"
                         CornerRadius="5"
                         Grid.Row="2"
+                        HorizontalAlignment="Stretch"
                         Margin="5"
                         Padding="5">
                     <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <CheckBox Grid.Column="0"
-                                  Content="Hide Systems Without Merits"
-                                  HorizontalAlignment="Left"
-                                  Margin="10"
-                                  FontSize="16"
-                                  Style="{StaticResource EliteStyleCheckBox}"
-                                  IsChecked="{Binding HideSystemsWithoutMerits, Mode=TwoWay}" />
-
-                        <Button BorderThickness="2"
-                                Height="30"
-                                Margin="5,0"
-                                Grid.Column="1"
-                                Width="120"
-                                FontSize="12"
-                                Command="{Binding CreateDiscordPostCommand}"
-                                HorizontalAlignment="Left"
-                                VerticalAlignment="Center"
-                                Content="{Binding DiscordButtonText}"
-                                FontFamily="Unispace"
-                                BorderBrush="#FF707BF3">
-                            <Button.Resources>
-                                <Style TargetType="Border">
-                                    <Setter Property="CornerRadius"
-                                            Value="5" />
-                                </Style>
-                                <Style TargetType="{x:Type Button}">
-                                    <Style.Triggers>
-                                        <Trigger Property="IsMouseOver"
-                                                 Value="False">
-                                            <Setter Property="Foreground"
-                                                    Value="White" />
-                                            <Setter Property="Background"
-                                                    Value="#FF5865F2" />
-                                        </Trigger>
-                                        <Trigger Property="IsMouseOver"
-                                                 Value="True">
-                                            <Setter Property="Background"
-                                                    Value="White" />
-                                            <Setter Property="Foreground"
-                                                    Value="#FF5865F2" />
-                                        </Trigger>
-                                        <Trigger Property="IsPressed"
-                                                 Value="True">
-                                            <Setter Property="Background"
-                                                    Value="White" />
-                                            <Setter Property="Foreground"
-                                                    Value="#FF5865F2" />
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Resources>
-                        </Button>
-                    </Grid>
-                </Border>
-            </Grid>
-            <Grid Grid.Column="1"
-                  Grid.RowSpan="2">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition />
-                </Grid.RowDefinitions>
-                <Border Background="{DynamicResource CardBackground}"
-                        CornerRadius="5"
-                        HorizontalAlignment="Stretch"
-                        Margin="5"
-                        Padding="5">
-                    <Grid Grid.Column="1"
-                          TextBlock.FontSize="20"
-                          Grid.RowSpan="2">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition Width="200" />
-                        </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition />
                             <RowDefinition />
                         </Grid.RowDefinitions>
-
-                        <Grid    DataContext="{Binding SelectedSystem}">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition />
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition />
-                                <RowDefinition />
-                                <RowDefinition />
-                                <RowDefinition />
-                                <RowDefinition />
-                                <RowDefinition />
-                                <RowDefinition />
-                            </Grid.RowDefinitions>
-                            <StackPanel Margin="0,5"
-                                        Grid.ColumnSpan="3"
-                                        Orientation="Horizontal">
-                                <TextBlock Text="{Binding NonUpperName}"
-                                           FontSize="35"
-                                           Foreground="{StaticResource Header}" />
-                                <Button Command="{Binding ElementName=Root, Path=DataContext.OpenInaraCommand}"
-                                        Height="30"
-                                        Margin="10,0"
-                                        Cursor="Hand"
-                                        Visibility="{Binding Converter={StaticResource NullToVis}, ConverterParameter=Hidden}"
-                                        Grid.Column="1">
-                                    <Button.Template>
-                                        <ControlTemplate TargetType="{x:Type Button}">
-                                            <Image Stretch="Uniform"
-                                                   SnapsToDevicePixels="True"
-                                                   Source="/Assets/Icons/inaramenulogo.png" />
-                                        </ControlTemplate>
-                                    </Button.Template>
-                                </Button>
-                            </StackPanel>
-
-                            <TextBlock Text="Controlling Power"
-                                       Grid.Row="1"
-                                       Grid.Column="0"
-                                       Margin="5" />
-                            <TextBlock Text="{Binding Power}"
-                                       Grid.Row="1"
-                                       Grid.Column="1"
-                                       Margin="5" />
-
-                            <TextBlock Text="Powerplay State"
-                                       Grid.Row="2"
-                                       Grid.Column="0"
-                                       Margin="5" />
-                            <TextBlock Text="{Binding PowerState}"
-                                       Grid.Row="2"
-                                       Grid.Column="1"
-                                       Margin="5" />
-
-                            <TextBlock Text="Merits Earned"
-                                       Grid.Row="3"
-                                       Grid.Column="0"
-                                       Margin="5" />
-                            <TextBlock Text="{Binding MeritsEarned}"
-                                       Grid.Row="3"
-                                       Grid.Column="1"
-                                       Margin="5" />
-
-                            <TextBlock Text="Controlling Faction"
-                                       Grid.Row="4"
-                                       Grid.Column="0"
-                                       Margin="5" />
-                            <TextBlock Text="{Binding ControllingFaction}"
-                                       Grid.Row="4"
-                                       Grid.Column="1"
-                                       Margin="5" />
-
-                            <TextBlock Text="System Allegiance"
-                                       Grid.Row="5"
-                                       Grid.Column="0"
-                                       Margin="5" />
-                            <TextBlock Text="{Binding SystemAllegiance}"
-                                       Grid.Row="5"
-                                       Grid.Column="1"
-                                       Margin="5" />
-
-                        </Grid>
-
-                        <TextBlock Text="{Binding CurrentCycle}"
-                                   FontSize="35"
-                                   Margin="0,5"
-                                   HorizontalAlignment="Center"
-                                   Grid.ColumnSpan="2"
-                                   Foreground="{StaticResource Header}" />
-
-                        <Rectangle Style="{DynamicResource PowerPlayIcon}"
-                                   Margin="5"
-                                   DataContext="{Binding SelectedSystem}"
-                                   Grid.Column="2">
-                            <Rectangle.OpacityMask>
-                                <VisualBrush Stretch="Uniform">
-                                    <VisualBrush.Visual>
-                                        <Viewbox>
-                                            <Image Source="{Binding ControllingPower, Converter={StaticResource PowerToImage}}" />
-                                        </Viewbox>
-                                    </VisualBrush.Visual>
-                                </VisualBrush>
-                            </Rectangle.OpacityMask>
-                        </Rectangle>
+                        <TextBlock Text="Merits Breakdown"
+                                   Foreground="{DynamicResource Header}"
+                                   FontSize="24"
+                                   Margin="5,5" />
+                        <DataGrid ItemsSource="{Binding SelectedSystemData.Merits}"
+                                  Style="{DynamicResource BaseDataGridStyle}"
+                                  RowStyle="{DynamicResource NoSelectRowStyle}"
+                                  CellStyle="{DynamicResource NoSelectCellNoMargin}"
+                                  HeadersVisibility="Column"
+                                  Margin="5"
+                                  Grid.Column="0"
+                                  Grid.Row="1">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Activity"
+                                                    Width="*"
+                                                    HeaderStyle="{DynamicResource DataGridHeaderLeft}"
+                                                    ElementStyle="{DynamicResource DataGridElementLeftMarginBody}"
+                                                    Binding="{Binding Activity}" />
+                                <DataGridTextColumn Header="Count"
+                                                    MinWidth="100"
+                                                    HeaderStyle="{DynamicResource DataGridHeaderCenter}"
+                                                    ElementStyle="{DynamicResource DataGridElementCenter}"
+                                                    Binding="{Binding Count}" />
+                                <DataGridTextColumn Header="Merits"
+                                                    MinWidth="100"
+                                                    HeaderStyle="{DynamicResource DataGridHeaderCenter}"
+                                                    ElementStyle="{DynamicResource DataGridElementRightMargin}"
+                                                    Binding="{Binding Merits}" />
+                            </DataGrid.Columns>
+                        </DataGrid>
                     </Grid>
                 </Border>
 
-                <Border Background="{DynamicResource CardBackground}"
-                        CornerRadius="5"
-                        Grid.Row="1"
-                        HorizontalAlignment="Stretch"
-                        Margin="5"
-                        Padding="5">
-                    <Control DataContext="{Binding SelectedSystemData}"
-                             Style="{DynamicResource PowerStateContent}" />
-                </Border>
+                <Grid Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
 
-
-                <Grid Grid.Row="2">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition />
-                        <ColumnDefinition />
-                    </Grid.ColumnDefinitions>
                     <Border Background="{DynamicResource CardBackground}"
                             CornerRadius="5"
-                            Grid.Row="2"
+                            Grid.Row="0"
+                            HorizontalAlignment="Stretch"
+                            Margin="5"
+                            Padding="5">
+                        <Grid DataContext="{Binding SelectedSystemData}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="Items Collected"
+                                       Foreground="{DynamicResource Header}"
+                                       FontSize="24"
+                                       Margin="5,5"
+                                       Grid.Column="1" />
+                            <DataGrid ItemsSource="{Binding GoodsCollected}"
+                                      Style="{DynamicResource BaseDataGridStyle}"
+                                      RowStyle="{DynamicResource NoSelectRowStyle}"
+                                      CellStyle="{DynamicResource NoSelectCellNoMargin}"
+                                      HeadersVisibility="Column"
+                                      Margin="5"
+                                      Grid.Column="1"
+                                      Grid.Row="1">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Item"
+                                                        Width="*"
+                                                        HeaderStyle="{DynamicResource DataGridHeaderLeft}"
+                                                        ElementStyle="{DynamicResource DataGridElementLeftMarginBody}"
+                                                        Binding="{Binding Name}" />
+                                    <DataGridTextColumn Header="Count"
+                                                        MinWidth="100"
+                                                        HeaderStyle="{DynamicResource DataGridHeaderCenter}"
+                                                        ElementStyle="{DynamicResource DataGridElementCenter}"
+                                                        Binding="{Binding Count}" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
+                    </Border>
+
+                    <Border Background="{DynamicResource CardBackground}"
+                            CornerRadius="5"
+                            Grid.Row="1"
+                            DataContext="{Binding SelectedSystemData}"
                             HorizontalAlignment="Stretch"
                             Margin="5"
                             Padding="5">
@@ -484,128 +567,36 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition />
                             </Grid.RowDefinitions>
-                            <TextBlock Text="Merits Breakdown"
+                            <TextBlock Text="Items Delivered"
                                        Foreground="{DynamicResource Header}"
                                        FontSize="24"
-                                       Margin="5,5" />
-                            <DataGrid ItemsSource="{Binding SelectedSystemData.Merits}"
+                                       Margin="5,5"
+                                       Grid.Column="1" />
+                            <DataGrid ItemsSource="{Binding GoodsDelivered}"
                                       Style="{DynamicResource BaseDataGridStyle}"
                                       RowStyle="{DynamicResource NoSelectRowStyle}"
                                       CellStyle="{DynamicResource NoSelectCellNoMargin}"
                                       HeadersVisibility="Column"
                                       Margin="5"
-                                      Grid.Column="0"
+                                      Grid.Column="1"
                                       Grid.Row="1">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Activity"
+                                    <DataGridTextColumn Header="Item"
                                                         Width="*"
                                                         HeaderStyle="{DynamicResource DataGridHeaderLeft}"
                                                         ElementStyle="{DynamicResource DataGridElementLeftMarginBody}"
-                                                        Binding="{Binding Activity}" />
+                                                        Binding="{Binding Name}" />
                                     <DataGridTextColumn Header="Count"
                                                         MinWidth="100"
                                                         HeaderStyle="{DynamicResource DataGridHeaderCenter}"
                                                         ElementStyle="{DynamicResource DataGridElementCenter}"
                                                         Binding="{Binding Count}" />
-                                    <DataGridTextColumn Header="Merits"
-                                                        MinWidth="100"
-                                                        HeaderStyle="{DynamicResource DataGridHeaderCenter}"
-                                                        ElementStyle="{DynamicResource DataGridElementRightMargin}"
-                                                        Binding="{Binding Merits}" />
                                 </DataGrid.Columns>
                             </DataGrid>
                         </Grid>
                     </Border>
-
-                    <Grid Grid.Column="1">
-                        <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
-
-                        <Border Background="{DynamicResource CardBackground}"
-                                CornerRadius="5"
-                                Grid.Row="0"
-                                HorizontalAlignment="Stretch"
-                                Margin="5"
-                                Padding="5">
-                            <Grid DataContext="{Binding SelectedSystemData}">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition />
-                                </Grid.RowDefinitions>
-                                <TextBlock Text="Items Collected"
-                                           Foreground="{DynamicResource Header}"
-                                           FontSize="24"
-                                           Margin="5,5"
-                                           Grid.Column="1" />
-                                <DataGrid ItemsSource="{Binding GoodsCollected}"
-                                          Style="{DynamicResource BaseDataGridStyle}"
-                                          RowStyle="{DynamicResource NoSelectRowStyle}"
-                                          CellStyle="{DynamicResource NoSelectCellNoMargin}"
-                                          HeadersVisibility="Column"
-                                          Margin="5"
-                                          Grid.Column="1"
-                                          Grid.Row="1">
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Header="Item"
-                                                            Width="*"
-                                                            HeaderStyle="{DynamicResource DataGridHeaderLeft}"
-                                                            ElementStyle="{DynamicResource DataGridElementLeftMarginBody}"
-                                                            Binding="{Binding Name}" />
-                                        <DataGridTextColumn Header="Count"
-                                                            MinWidth="100"
-                                                            HeaderStyle="{DynamicResource DataGridHeaderCenter}"
-                                                            ElementStyle="{DynamicResource DataGridElementCenter}"
-                                                            Binding="{Binding Count}" />
-                                    </DataGrid.Columns>
-                                </DataGrid>
-                            </Grid>
-                        </Border>
-
-                        <Border Background="{DynamicResource CardBackground}"
-                                CornerRadius="5"
-                                Grid.Row="1"
-                                DataContext="{Binding SelectedSystemData}"
-                                HorizontalAlignment="Stretch"
-                                Margin="5"
-                                Padding="5">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition />
-                                </Grid.RowDefinitions>
-                                <TextBlock Text="Items Delivered"
-                                           Foreground="{DynamicResource Header}"
-                                           FontSize="24"
-                                           Margin="5,5"
-                                           Grid.Column="1" />
-                                <DataGrid ItemsSource="{Binding GoodsDelivered}"
-                                          Style="{DynamicResource BaseDataGridStyle}"
-                                          RowStyle="{DynamicResource NoSelectRowStyle}"
-                                          CellStyle="{DynamicResource NoSelectCellNoMargin}"
-                                          HeadersVisibility="Column"
-                                          Margin="5"
-                                          Grid.Column="1"
-                                          Grid.Row="1">
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Header="Item"
-                                                            Width="*"
-                                                            HeaderStyle="{DynamicResource DataGridHeaderLeft}"
-                                                            ElementStyle="{DynamicResource DataGridElementLeftMarginBody}"
-                                                            Binding="{Binding Name}" />
-                                        <DataGridTextColumn Header="Count"
-                                                            MinWidth="100"
-                                                            HeaderStyle="{DynamicResource DataGridHeaderCenter}"
-                                                            ElementStyle="{DynamicResource DataGridElementCenter}"
-                                                            Binding="{Binding Count}" />
-                                    </DataGrid.Columns>
-                                </DataGrid>
-                            </Grid>
-                        </Border>
-                    </Grid>
                 </Grid>
             </Grid>
         </Grid>
-    </busyIndicator:BusyMask>
+    </Grid>
 </UserControl>

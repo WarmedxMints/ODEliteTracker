@@ -2,6 +2,7 @@
 using ODCapi.Models;
 using ODEliteTracker.Models.Market;
 using ODJournalDatabase.JournalManagement;
+using System.Diagnostics;
 
 namespace ODEliteTracker.Stores
 {
@@ -31,7 +32,7 @@ namespace ODEliteTracker.Stores
             if (market != null && market.Timestamp >= marketArgs.Timestamp)
             {
                 stationMarket = new(market);
-                return stationMarket;                
+                return stationMarket;
             }
 
             return null;
@@ -44,20 +45,27 @@ namespace ODEliteTracker.Stores
             {
                 return stationMarket;
             }
-
+            //Give it a little bit for the capi to catch up
+            await Task.Delay(300);
             var market = await journalManager.GetCapiMarketInfo();
-        
+
             //We don't care about construction depots
-            if (market?.Services?.Colonisationcontribution == StationServiceState.Ok)
+            if (market == null || market.Services?.Colonisationcontribution == StationServiceState.Ok)
             {
                 return null;
             }
             //Check we got the right market from the capi
-            if (market?.Id == docked.MarketID)
+            if (market.Id == docked.MarketID)
             {
+#if DEBUG
+                Debug.WriteLine($"CAPI Market Matched");
+#endif
                 stationMarket = new(market, docked);
                 return stationMarket;
             }
+#if DEBUG
+            Debug.WriteLine($"CAPI MarketID doesn't match.\nDocked ID :{docked.MarketID} @ {docked.StationName}\nCAPI ID    :{market.Id} @ {market.Name}");
+#endif
 
             return null;
         }

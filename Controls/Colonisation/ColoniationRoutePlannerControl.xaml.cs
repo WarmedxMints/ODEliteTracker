@@ -1,4 +1,5 @@
-﻿using ODEliteTracker.ViewModels;
+﻿using ODEliteTracker.Models.Settings;
+using ODEliteTracker.ViewModels;
 using ODEliteTracker.ViewModels.ModelViews.Colonisation;
 using ODMVVM.Services.MessageBox;
 using System.Windows;
@@ -252,7 +253,7 @@ namespace ODEliteTracker.Controls.Colonisation
                 return;
 
             btn.IsEnabled = false;
-            await vm.CheckAllSystemCounts();
+            await vm.CheckAllSystemCounts(vm.ShouldCheckSpansh);
 
             btn.IsEnabled = true;
         }
@@ -267,7 +268,7 @@ namespace ODEliteTracker.Controls.Colonisation
             if (system == null)
                 return;
 
-            SelectSystem(system, vm);
+            vm.SelectedSystem = system;
             SelectSystemPopup.ClosePopup();
         }
 
@@ -281,7 +282,7 @@ namespace ODEliteTracker.Controls.Colonisation
             if (system == null)
                 return;
 
-            SelectSystem(system, vm);
+            vm.SelectedSystem = system;
             SelectSystemPopup.ClosePopup();
         }
 
@@ -295,7 +296,7 @@ namespace ODEliteTracker.Controls.Colonisation
             if (system == null)
                 return;
 
-            SelectSystem(system, vm);
+            vm.SelectedSystem = system;
             SelectSystemPopup.ClosePopup();
         }
 
@@ -315,7 +316,7 @@ namespace ODEliteTracker.Controls.Colonisation
 
                 if (system.HasNotes)
                 {
-                    SelectSystem(system, vm);
+                    vm.SelectedSystem = system;
                     return;
                 }
             }
@@ -326,7 +327,7 @@ namespace ODEliteTracker.Controls.Colonisation
 
                 if (system.HasNotes)
                 {
-                    SelectSystem(system, vm);
+                    vm.SelectedSystem = system;
                     return;
                 }
             }
@@ -343,7 +344,7 @@ namespace ODEliteTracker.Controls.Colonisation
             if (system == null)
                 return;
 
-            SelectSystem(system, vm);
+            vm.SelectedSystem = system;
             SelectSystemPopup.ClosePopup();
         }
 
@@ -357,14 +358,8 @@ namespace ODEliteTracker.Controls.Colonisation
             if (system == null)
                 return;
 
-            SelectSystem(system, vm);
-            SelectSystemPopup.ClosePopup();
-        }
-
-        private void SelectSystem(ColonisationRouteSystemVM system, ColonisationRoutePlannerViewModel vm)
-        {
             vm.SelectedSystem = system;
-            ScrollSelectedIntoView(vm);
+            SelectSystemPopup.ClosePopup();
         }
 
         private async void RecheckSelectBodyCount(object sender, RoutedEventArgs e)
@@ -373,8 +368,13 @@ namespace ODEliteTracker.Controls.Colonisation
                 return;
 
             btn.IsEnabled = false;
-            await vm.UpdateSystemBodyCounts(vm.SelectedSystem);
+            await vm.UpdateSystemBodyCounts(vm.SelectedSystem, vm.ShouldCheckSpansh);
             btn.IsEnabled = true;
+        }
+
+        private void ImportSubMenuClicked(object sender, RoutedEventArgs e)
+        {
+            ImportPopup.ClosePopup();
         }
     }
 }

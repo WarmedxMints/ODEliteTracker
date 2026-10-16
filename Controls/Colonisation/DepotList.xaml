@@ -113,6 +113,10 @@
                                          FontSize="18"
                                          Width="280"
                                          Background="{DynamicResource ViewBackground}">
+                                <ContextMenu.Resources>
+                                    <Style TargetType="{x:Type MenuItem}"
+                                           BasedOn="{StaticResource EliteContextMenuItemStyle}" />
+                                </ContextMenu.Resources>
                                 <ContextMenu.Items>
                                     <MenuItem Header="Toggle Active"
                                               IsCheckable="False"

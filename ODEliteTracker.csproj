@@ -8,6 +8,11 @@
 		<UseWPF>true</UseWPF>
 		<ApplicationIcon>Assets\OD.ico</ApplicationIcon>
 		<Configurations>Debug;Release;Install</Configurations>
+		<AssemblyVersion>1.5.33</AssemblyVersion>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Install|AnyCPU'">
+	  <Optimize>True</Optimize>
 	</PropertyGroup>
 
 	<ItemGroup>

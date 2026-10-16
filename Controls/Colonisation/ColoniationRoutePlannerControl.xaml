@@ -13,6 +13,7 @@
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:odmvvm="clr-namespace:ODMVVM.Helpers;assembly=ODMVVM"
              mc:Ignorable="d"
+             x:Name="Root"
              d:DataContext="{d:DesignInstance viewmodels:ColonisationRoutePlannerViewModel}"
              d:DesignHeight="450"
              d:DesignWidth="1920">
@@ -41,41 +42,66 @@
             <controls:ToggleButonWithPopup ToggleButtonContent="Import"
                                            Width="80"
                                            Height="30"
+                                           x:Name="ImportPopup"
                                            BorderThickness="0"
                                            Margin="5,0">
                 <controls:ToggleButonWithPopup.PopupContent>
-                    <StackPanel>
-                        <Button Content="Elite Game NavRoute"
+                    <Menu Width="200"
+                          FontSize="16"
+                          Background="{DynamicResource ViewBackground}"
+                          HorizontalAlignment="Left">
+                        <MenuItem Header="Elite Game NavRoute"
                                 HorizontalAlignment="Stretch"
                                 Margin="0,2"
                                 HorizontalContentAlignment="Left"
                                 Click="LoadGameNavRoute"
-                                Style="{DynamicResource PopOutBtn}" />
-                        <Button Content="Saved Elite NavRoute"
+                                Style="{DynamicResource EliteBtnMenuStyle}" />
+                        <MenuItem Header="Saved Elite NavRoute"
                                 HorizontalAlignment="Stretch"
                                 Margin="0,2"
                                 Click="ImportSavedNavRoute"
                                 HorizontalContentAlignment="Left"
-                                Style="{DynamicResource PopOutBtn}" />
-                        <Button Content="Spansh Colonisation Route Json"
+                                  Style="{DynamicResource EliteBtnMenuStyle}" />
+                        <MenuItem Header="Spansh Colonisation Json"
                                 HorizontalAlignment="Stretch"
                                 Margin="0,2"
                                 Click="ImportSpanshJson"
                                 HorizontalContentAlignment="Left"
-                                Style="{DynamicResource PopOutBtn}" />
-                        <Button Content="Reload from Database"
+                                  Style="{DynamicResource EliteBtnMenuStyle}" />
+                        <MenuItem Header="Reload from Database"
                                 HorizontalAlignment="Stretch"
                                 Margin="0,2"
                                 HorizontalContentAlignment="Left"
                                 Command="{Binding ReloadFromDatabaseCommand}"
-                                Style="{DynamicResource PopOutBtn}" />
-                        <Button Content="Exported Route Json"
+                                  Style="{DynamicResource EliteBtnMenuStyle}" />
+                        <MenuItem Header="Exported Route Json"
                                 HorizontalAlignment="Stretch"
                                 Margin="0,2"
                                 HorizontalContentAlignment="Left"
                                 Click="LoadFromJsonSave"
-                                Style="{DynamicResource PopOutBtn}" />
-                    </StackPanel>
+                                  Style="{DynamicResource EliteBtnMenuStyle}" />
+                        <MenuItem Header="Othe Commanders Route"
+                                  HorizontalAlignment="Stretch"
+                                  Margin="0,2"
+                                  Width="200"
+                                  HorizontalContentAlignment="Stretch"
+                                  ItemsSource="{Binding LiveCommanders}"
+                                  Style="{DynamicResource EliteBtnMenuStyle}">
+                            <MenuItem.ItemContainerStyle>
+                                <Style TargetType="{x:Type MenuItem}"
+                                       BasedOn="{StaticResource EliteBtnMenuStyle}">
+                                    <Setter Property="Header"
+                                            Value="{Binding Name}" />
+                                    <Setter Property="Command"
+                                            Value="{Binding ElementName=Root, Path=DataContext.ImportCommandersRouteCommand}" />
+                                    <Setter Property="CommandParameter"
+                                            Value="{Binding }" />
+                                    <EventSetter Event="MenuItem.Click"
+                                                 Handler="ImportSubMenuClicked" />
+                                </Style>
+                            </MenuItem.ItemContainerStyle>
+                        </MenuItem>
+                    </Menu>
                 </controls:ToggleButonWithPopup.PopupContent>
             </controls:ToggleButonWithPopup>
 
@@ -235,60 +261,47 @@
                             <RowDefinition Height="50" />
                             <RowDefinition Height="50" />
                         </Grid.RowDefinitions>
-                        <Button Content="Clear Route"
-                                Height="35"
-                                Margin="10,0"
-                                Click="ClearRoute"
-                                HorizontalAlignment="Left"
-                                VerticalAlignment="Center"
-                                Style="{DynamicResource EliteStyleButton}" />
-
-                        <TextBlock Text="Clears the route list"
-                                   VerticalAlignment="Center"
-                                   Grid.Column="1"
-                                   FontSize="16" />
-
-                        <CheckBox Style="{DynamicResource EliteStyleCheckBox}"
-                                  Margin="10,0"
-                                  IsChecked="{Binding UseSpansh}"
-                                  Content="Check Spansh On Load"
-                                  HorizontalAlignment="Center"
-                                  VerticalAlignment="Center"
-                                  Grid.Row="1" />
-                        <TextBlock Text="Check Spansh for system body counts on route load"
-                                   TextWrapping="Wrap"
-                                   VerticalAlignment="Center"
-                                   Grid.Column="1"
-                                   Grid.Row="1"
-                                   FontSize="16" />
-
 
                         <CheckBox Style="{DynamicResource EliteStyleCheckBox}"
                                   IsChecked="{Binding AutoSelect}"
                                   Margin="10,0"
                                   Content="Auto Select System"
                                   VerticalAlignment="Center"
-                                  Grid.Row="2" />
+                                  Grid.Row="0" />
                         <TextBlock Text="Select System In Route When Arriving"
                                    TextWrapping="Wrap"
                                    VerticalAlignment="Center"
                                    Grid.Column="1"
-                                   Grid.Row="2"
+                                   Grid.Row="0"
                                    FontSize="16" />
 
-                        <Button Content="Recheck Body Counts"
+                        <Button Content="Recheck System"
                                 Click="CheckBodyCounts"
                                 Height="35"
                                 Margin="10,0"
-                                Grid.Row="3"
+                                Grid.Row="1"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Center"
                                 Style="{DynamicResource EliteStyleButton}" />
-                        <TextBlock Text="Rechecks system body counts (will check spansh if enabled)"
+                        <TextBlock Text="Rechecks system body counts and built status from your logs (will also check spansh if enabled)"
                                    TextWrapping="Wrap"
                                    VerticalAlignment="Center"
                                    Grid.Column="1"
-                                   Grid.Row="3"
+                                   Grid.Row="1"
+                                   FontSize="16" />
+
+                        <CheckBox Style="{DynamicResource EliteStyleCheckBox}"
+                                  Margin="10,0"
+                                  IsChecked="{Binding UseSpansh}"
+                                  Content="Check Spansh"
+                                  HorizontalAlignment="Left"
+                                  VerticalAlignment="Center"
+                                  Grid.Row="2" />
+                        <TextBlock Text="Set if Spansh will be used to check system body counts and built status if they aren't found in your logs"
+                                   TextWrapping="Wrap"
+                                   VerticalAlignment="Center"
+                                   Grid.Column="1"
+                                   Grid.Row="2"
                                    FontSize="16" />
 
                         <ComboBox ItemsSource="{Binding Source={StaticResource ColonisationRouteClipboardBehavior}}"
@@ -296,7 +309,7 @@
                                   Height="30"
                                   VerticalAlignment="Center"
                                   Margin="10,0"
-                                  Grid.Row="4">
+                                  Grid.Row="3">
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}"
@@ -309,8 +322,22 @@
                                    TextWrapping="Wrap"
                                    VerticalAlignment="Center"
                                    Grid.Column="1"
-                                   Grid.Row="4"
+                                   Grid.Row="3"
                                    FontSize="16" />
+                        
+                        <Button Content="Clear Route"
+                                Height="35"
+                                Margin="10,0"
+                                Click="ClearRoute"
+                                Grid.Row="4"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                Style="{DynamicResource EliteStyleButton}" />
+                        <TextBlock Text="Clears the route list"
+                                   VerticalAlignment="Center"
+                                   Grid.Column="1"
+                                   Grid.Row="4"
+                                   FontSize="16" />                       
                     </Grid>
                 </controls:ToggleButonWithPopup.PopupContent>
             </controls:ToggleButonWithPopup>

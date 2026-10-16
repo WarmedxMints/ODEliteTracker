@@ -55,7 +55,6 @@ namespace ODEliteTracker.ViewModels
         public override void Dispose()
         {
             this.capiService.StateChange -= OnCAPIStateChange;
-            base.Dispose();
         }
 
         private readonly ThemeManager themeManager;

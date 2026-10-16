@@ -45,7 +45,7 @@
                               TitleBarMouseOver="{DynamicResource TitlebarMouseOver}" />
 
             <navigation:NavigationView x:Name="NavView"
-                                       Grid.Row="1"
+                                       Grid.Row="1"                                      
                                        UiScale="{Binding ElementName=Root, Path=DataContext.UiScale, Mode=TwoWay}"
                                        IsEnabled="{Binding ElementName=Root, Path=DataContext.UiEnabled}"
                                        MenuButtons="{Binding ElementName=Root, Path=DataContext.MenuButtons}"

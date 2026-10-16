@@ -33,6 +33,13 @@
         </Style.Triggers>
     </Style>
 
+    <Style TargetType="TextBox"
+           x:Key="ApiSystemTextBox"
+           BasedOn="{StaticResource EliteTextBox}">
+        <Setter Property="ContextMenu"
+                Value="{StaticResource TextBoxContextMenu}" />
+    </Style>
+    
     <Style TargetType="{x:Type TextBlock}"
            x:Key="ApiSystemNameTextBlock"
            BasedOn="{StaticResource EliteTextBlock}">
@@ -133,7 +140,7 @@
                                             DataContext="{Binding CurrentApiArgs}"
                                             Text="{Binding DoubleProperty1Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                             HorizontalContentAlignment="Right"
-                                            Style="{DynamicResource ApiSystemNameTextBox}" />
+                                            Style="{DynamicResource ApiSystemTextBox}" />
 
                 <TextBlock Text="Radius (LY)"
                            Grid.Row="0"
@@ -153,7 +160,7 @@
                                             DataContext="{Binding CurrentApiArgs}"
                                             Text="{Binding DoubleProperty2Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                             HorizontalContentAlignment="Right"
-                                            Style="{DynamicResource ApiSystemNameTextBox}" />
+                                            Style="{DynamicResource ApiSystemTextBox}" />
 
                 <TextBlock Text="Maximum Systems"
                            Grid.Row="0"
@@ -174,7 +181,7 @@
                                             DataContext="{Binding CurrentApiArgs}"
                                             Text="{Binding IntProperty1, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                             HorizontalContentAlignment="Right"
-                                            Style="{DynamicResource ApiSystemNameTextBox}" />
+                                            Style="{DynamicResource ApiSystemTextBox}" />
 
             </Grid>
 
@@ -214,7 +221,7 @@
                                             DataContext="{Binding CurrentApiArgs}"
                                             Text="{Binding IntProperty3, StringFormat={}{0:N0}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                             HorizontalContentAlignment="Right"
-                                            Style="{DynamicResource ApiSystemNameTextBox}" />
+                                            Style="{DynamicResource ApiSystemTextBox}" />
                 <Slider Grid.Row="8"
                         Minimum="1"
                         Maximum="1000000"
@@ -246,7 +253,7 @@
                                             DataContext="{Binding CurrentApiArgs}"
                                             Text="{Binding IntProperty2, StringFormat={}{0:N0}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                             HorizontalContentAlignment="Right"
-                                            Style="{DynamicResource ApiSystemNameTextBox}" />
+                                            Style="{DynamicResource ApiSystemTextBox}" />
                 <Slider Grid.Row="8"
                         Minimum="1"
                         Maximum="1000000"
@@ -594,7 +601,7 @@
                      Grid.Row="3"
                      Margin="10"
                      Height="30"
-                     Style="{DynamicResource ApiSystemNameTextBox}" />
+                     Style="{DynamicResource ApiSystemTextBox}" />
 
             <Grid Grid.Row="4">
                 <Grid.ColumnDefinitions>
@@ -622,7 +629,7 @@
                                             AllowDecimals="False"
                                             DataContext="{Binding CurrentApiArgs}"
                                             Text="{Binding IntProperty1, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                            Style="{DynamicResource ApiSystemNameTextBox}" />
+                                            Style="{DynamicResource ApiSystemTextBox}" />
 
                 <TextBlock Text="Carrier Type"
                            Grid.Row="0"
@@ -799,7 +806,7 @@
                                             DataContext="{Binding CurrentApiArgs}"
                                             Text="{Binding IntProperty1, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                             HorizontalContentAlignment="Right"
-                                            Style="{DynamicResource ApiSystemNameTextBox}" />
+                                            Style="{DynamicResource ApiSystemTextBox}" />
 
                 <TextBlock Text="Reserve Fuel (t)"
                            Grid.Row="0"
@@ -820,7 +827,7 @@
                                             DataContext="{Binding CurrentApiArgs}"
                                             Text="{Binding IntProperty3, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                             HorizontalContentAlignment="Right"
-                                            Style="{DynamicResource ApiSystemNameTextBox}" />
+                                            Style="{DynamicResource ApiSystemTextBox}" />
             </Grid>
 
             <WrapPanel  Grid.Row="5"
@@ -908,7 +915,7 @@
                                             DataContext="{Binding CurrentApiArgs}"
                                             Text="{Binding IntProperty2, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                             HorizontalContentAlignment="Right"
-                                            Style="{DynamicResource ApiSystemNameTextBox}" />
+                                            Style="{DynamicResource ApiSystemTextBox}" />
                 <Slider Grid.Row="8"
                         Minimum="60"
                         Maximum="120"
@@ -1045,7 +1052,7 @@
                                             DataContext="{Binding CurrentApiArgs}"
                                             Text="{Binding DoubleProperty1, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                             HorizontalContentAlignment="Right"
-                                            Style="{DynamicResource ApiSystemNameTextBox}" />
+                                            Style="{DynamicResource ApiSystemTextBox}" />
 
                 <TextBlock Text="Radius (LY)"
                            Grid.Row="0"
@@ -1066,7 +1073,7 @@
                                             DataContext="{Binding CurrentApiArgs}"
                                             Text="{Binding DoubleProperty2, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                             HorizontalContentAlignment="Right"
-                                            Style="{DynamicResource ApiSystemNameTextBox}" />
+                                            Style="{DynamicResource ApiSystemTextBox}" />
 
                 <TextBlock Text="Maximum Systems"
                            Grid.Row="0"
@@ -1087,7 +1094,7 @@
                                             DataContext="{Binding CurrentApiArgs}"
                                             Text="{Binding IntProperty1, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                             HorizontalContentAlignment="Right"
-                                            Style="{DynamicResource ApiSystemNameTextBox}" />
+                                            Style="{DynamicResource ApiSystemTextBox}" />
             </Grid>
 
             <TextBlock Text="Body Types"
@@ -1193,7 +1200,7 @@
                                             DataContext="{Binding CurrentApiArgs}"
                                             Text="{Binding IntProperty3,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                             HorizontalContentAlignment="Right"
-                                            Style="{DynamicResource ApiSystemNameTextBox}" />
+                                            Style="{DynamicResource ApiSystemTextBox}" />
                 <Slider Grid.Row="8"
                         Minimum="0"
                         Width="310"
@@ -1307,7 +1314,7 @@
                                             DataContext="{Binding CurrentApiArgs}"
                                             Text="{Binding DoubleProperty1Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                             HorizontalContentAlignment="Right"
-                                            Style="{DynamicResource ApiSystemNameTextBox}" />
+                                            Style="{DynamicResource ApiSystemTextBox}" />
 
                 <TextBlock Text="Radius (LY)"
                            Grid.Row="0"
@@ -1327,7 +1334,7 @@
                                             DataContext="{Binding CurrentApiArgs}"
                                             Text="{Binding DoubleProperty2Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                             HorizontalContentAlignment="Right"
-                                            Style="{DynamicResource ApiSystemNameTextBox}" />
+                                            Style="{DynamicResource ApiSystemTextBox}" />
 
                 <TextBlock Text="Maximum Systems"
                            Grid.Row="0"
@@ -1348,7 +1355,7 @@
                                             DataContext="{Binding CurrentApiArgs}"
                                             Text="{Binding IntProperty1, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                             HorizontalContentAlignment="Right"
-                                            Style="{DynamicResource ApiSystemNameTextBox}" />
+                                            Style="{DynamicResource ApiSystemTextBox}" />
 
             </Grid>
 
@@ -1387,7 +1394,7 @@
                                             DataContext="{Binding CurrentApiArgs}"
                                             Text="{Binding IntProperty2, StringFormat={}{0:N0}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                             HorizontalContentAlignment="Right"
-                                            Style="{DynamicResource ApiSystemNameTextBox}" />
+                                            Style="{DynamicResource ApiSystemTextBox}" />
                 <Slider Grid.Row="8"
                         Minimum="1"
                         Maximum="1000000"
@@ -1419,7 +1426,7 @@
                                             DataContext="{Binding CurrentApiArgs}"
                                             Text="{Binding IntProperty3, StringFormat={}{0:N0}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                             HorizontalContentAlignment="Right"
-                                            Style="{DynamicResource ApiSystemNameTextBox}" />
+                                            Style="{DynamicResource ApiSystemTextBox}" />
                 <Slider Grid.Row="8"
                         Minimum="1000000"
                         Maximum="20000000"
@@ -1519,7 +1526,7 @@
                      Grid.Row="5"
                      Margin="10"
                      Height="30"
-                     Style="{DynamicResource ApiSystemNameTextBox}" />
+                     Style="{DynamicResource ApiSystemTextBox}" />
 
 
             <TextBlock Text="Range (LY)"
@@ -1539,7 +1546,7 @@
                                         AllowDecimals="False"
                                         DataContext="{Binding CurrentApiArgs}"
                                         Text="{Binding DoubleProperty1Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                        Style="{DynamicResource ApiSystemNameTextBox}" />
+                                        Style="{DynamicResource ApiSystemTextBox}" />
 
             <Button Content="Add Destination"
                     Grid.Row="6"

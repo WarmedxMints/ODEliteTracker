@@ -34,5 +34,95 @@ namespace ODEliteTracker.Extensions
 
             return foundParent;
         }
+
+        public static T? FindChildByName<T>(this DependencyObject parent, string childName) where T : DependencyObject
+        {
+            // Confirm parent and childName are valid. 
+            if (parent == null) return null;
+
+            T? foundChild = null;
+            int childrenCount = VisualTreeHelper.GetChildrenCount(parent);
+            for (int i = 0; i < childrenCount; i++)
+            {
+                var child = VisualTreeHelper.GetChild(parent, i);
+                var tmpFoundChild = GetChildByName<T>(childName, child);
+                if (tmpFoundChild != null)
+                {
+                    foundChild = tmpFoundChild;
+                    break;
+                }
+            }
+
+            return foundChild;
+        }
+
+        private static T? GetChildByName<T>(string childName, DependencyObject child) where T : DependencyObject
+        {
+            // If the child is not of the request child type child
+            if ((child is T childType) == false)
+            {
+                // recursively drill down the tree
+                return FindChildByName<T>(child, childName);
+            }
+
+            if (string.IsNullOrEmpty(childName) == false)
+            {
+                // If the child's name is set for search
+                if (child is FrameworkElement frameworkElement && frameworkElement.Name == childName)
+                {
+                    return (T)child;
+                }
+
+                return null;
+            }
+
+            // child element found.
+            return (T)child;
+        }
+
+        public static T? FindChildByTag<T>(this DependencyObject parent, string tag) where T : DependencyObject
+        {
+            // Confirm parent and childName are valid. 
+            if (parent == null) return null;
+
+            T? foundChild = null;
+            int childrenCount = VisualTreeHelper.GetChildrenCount(parent);
+            for (int i = 0; i < childrenCount; i++)
+            {
+                var child = VisualTreeHelper.GetChild(parent, i);
+                var tmpFoundChild = GetChildByTag<T>(tag, child);
+                if (tmpFoundChild != null)
+                {
+                    foundChild = tmpFoundChild;
+                    break;
+                }
+            }
+
+            return foundChild;
+        }
+
+        private static T? GetChildByTag<T>(string tag, DependencyObject child) where T : DependencyObject
+        {
+            // If the child is not of the request child type child
+            if ((child is T childType) == false)
+            {
+                // recursively drill down the tree
+                return FindChildByTag<T>(child, tag);
+            }
+
+            if (string.IsNullOrEmpty(tag) == false)
+            {
+                // If the child's name is set for search
+                if (child is FrameworkElement frameworkElement && frameworkElement.Tag is string t && t == tag)
+                {
+                    return (T)child;
+                }
+
+                return null;
+            }
+
+            // child element found.
+            return (T)child;
+        }
     }
 }

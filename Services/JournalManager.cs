@@ -40,7 +40,7 @@ namespace ODEliteTracker.Services
         private readonly List<IProcessJournalLogs> journalLogParserList = [];
         private DateTime lastCAPICall = DateTime.MinValue;
         private readonly List<IWatchStatus> statusWatchers = [];
-        private bool ManagerLive { get; set; }
+        private bool managerLive { get; set; }
         private bool Processing { get; set; }
         public bool CanCallCAPI
         {
@@ -86,7 +86,21 @@ namespace ODEliteTracker.Services
             remove => capiService.CAPILive -= value;
         }
 
+        public event EventHandler<bool>? ManagerLive;
         private readonly HashSet<Tuple<string, long>> prossedEntries = [];
+
+        public bool IsLive
+        {
+            get => managerLive;
+            set
+            {
+                if (managerLive == value)
+                    return;
+
+                managerLive = value;
+                ManagerLive?.Invoke(this, value);
+            }
+        }
 
         #region Event Parser Methods
         private void EventParser_OnJournalEventReceived(object? sender, JournalEntry e)
@@ -135,17 +149,16 @@ namespace ODEliteTracker.Services
 
                 var history = journalLogParserList.Where(x => x.EventsToParse.Count != 0).ToList();
                 if (SelectedCommander?.UseCAPI == true && string.IsNullOrEmpty(SelectedCommander.Name) == false)
-                    _= Task.Run(() => capiService.Login(SelectedCommander.Name, SelectedCommander.Name.Contains("(Legacy)")).ConfigureAwait(true));
+                    _= Task.Run(() => capiService.Login(SelectedCommander.Name, SelectedCommander.IsLegacy).ConfigureAwait(true));
 
                 await eventParser.StreamJournalHistoryOfTypeAsync(settingsStore.SelectedCommanderID, history, settingsStore.JournalAgeDateTime).ConfigureAwait(true);
-                ManagerLive = true;
+                IsLive = true;
                 Processing = false;
             }
         }
         #endregion
 
-        #region IManageJournalEvents Implementation
-        public bool IsLive => ManagerLive;
+        #region IManageJournalEvents Implementation    
 
         public async Task RegisterLogProcessor(IProcessJournalLogs logProcesser)
         {
@@ -171,14 +184,14 @@ namespace ODEliteTracker.Services
 
         public async Task<bool> Initialise()
         {
-            ManagerLive = false;
+            IsLive = false;
             Commanders = await oDDatabase.GetAllJournalCommanders();
             return await ReadSelectedCommander();
         }
 
         public async Task ChangeCommander()
         {
-            ManagerLive = false;
+            IsLive = false;
             foreach (var parser in journalLogParserList)
             {
                 parser.SaveData();
@@ -190,7 +203,7 @@ namespace ODEliteTracker.Services
 
         public async Task ReadNewDirectory(string path)
         {
-            ManagerLive = false;
+            IsLive = false;
             var commander = new JournalCommander(-1, "Reading History", path, "", false, false, -1);
 
             await eventParser.StartWatchingAsync(commander, false).ConfigureAwait(true);
@@ -210,7 +223,7 @@ namespace ODEliteTracker.Services
 
         public NavigationRoute? ReadNavRouteJson(int commanderId)
         {
-            if (ManagerLive == false)
+            if (managerLive == false)
                 return null;
 
             return eventParser.ReadNavRouteJson(commanderId);
@@ -218,7 +231,7 @@ namespace ODEliteTracker.Services
 
         public MarketInfo? GetMarketInfo()
         {
-            if (ManagerLive == false)
+            if (managerLive == false)
                 return null;
 
             return eventParser.GetMarketInfo(settingsStore.SelectedCommanderID);
@@ -234,7 +247,7 @@ namespace ODEliteTracker.Services
         }
         public CargoEvent.CargoEventArgs? GetCargo()
         {
-            if (ManagerLive == false)
+            if (managerLive == false)
                 return null;
 
             return eventParser.GetCargo(settingsStore.SelectedCommanderID);
@@ -257,7 +270,7 @@ namespace ODEliteTracker.Services
 
         public async Task ResetDatabase()
         {
-            ManagerLive = false;
+            IsLive = false;
             eventParser.StopWatcher();
             Commanders.Clear();
             CommandersUpdated?.Invoke(this, EventArgs.Empty);

@@ -44,7 +44,7 @@ namespace ODEliteTracker.Extensions
 
         public static void AddNavigation(this IServiceCollection services)
         {
-            services.AddSingleton<IODNavigationService, ODNavigationService>();
+            services.AddSingleton<IODNavigationService, NavigationService>();
             services.AddSingleton<Func<Type, ODViewModel>>(provider => viewModelType => (ODViewModel)provider.GetRequiredService(viewModelType));
         }
 

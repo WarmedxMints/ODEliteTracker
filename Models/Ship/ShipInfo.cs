@@ -34,6 +34,7 @@ namespace ODEliteTracker.Models.Ship
         public EDModule? FSDBooster { get; private set; }
         public double UnladenMass { get; private set; }
         public double FuelReserve;
+        public int InjectionMultipler = 1;
         private LoadoutEvent.LoadoutEventArgs loadout;
         private double currentFuel;
         public double CurrentFuel
@@ -191,7 +192,7 @@ namespace ODEliteTracker.Models.Ship
 
             if (shipStatsInfo == null)
                 return 0d;
-            var fuel = CurrentFuel;
+            var fuel = CurrentFuel + FuelReserve;
             return CalcJumpRange(shipStatsInfo, fuel, CurrentCargoCount) * CurrentBoostValue;
         }
 
@@ -208,14 +209,14 @@ namespace ODEliteTracker.Models.Ship
             var optimalMass = GetOptimalMass(fsdData);
             var mk2Fsd = OverchargedBoost;
             var superchargeMultipler = mk2Fsd ? 6 : 4;
-            var injectionMulplier = mk2Fsd ? 2 : 1;
+            InjectionMultipler = mk2Fsd ? 2 : 1;
             var rangeBoost = 0d;
 
             if (FSDBooster != null)
             {
                 rangeBoost = GuardianFSDBoosterInfo.GetBoostValue(FSDBooster.Item);
             }
-            var baseMass = UnladenMass;// + FuelReserve).RoundDownDouble(2);
+            var baseMass = (UnladenMass + FuelReserve);
 
             var totalFuelCapacity = FuelTankInfomation.GetFuelTankSize(MainTank.Item);
             totalFuelCapacity += AdditionalTanks?.Sum(x => FuelTankInfomation.GetFuelTankSize(x.Item)) ?? 0;
@@ -229,7 +230,7 @@ namespace ODEliteTracker.Models.Ship
                                            rangeBoost,
                                            GetSelf(),
                                            superchargeMultipler,
-                                           injectionMulplier,
+                                           InjectionMultipler,
                                            totalFuelCapacity);
             return (stats, "Ok");
         }
@@ -239,12 +240,18 @@ namespace ODEliteTracker.Models.Ship
             if (shipStatsInfo == null)
                 return 0;
 
-            double fuelRemaining = shipStatsInfo.TankSize;
+            double fuelRemaining = shipStatsInfo.TankSize + shipStatsInfo.FuelReserve;
             double totalRange = 0d;
-
-            while (fuelRemaining > 0)
+            //Add boosted range
+            if (CurrentBoostValue > 1)
             {
                 var fuelForJump = Math.Min(fuelRemaining, shipStatsInfo.MaxfuelPerJump);
+                totalRange += CalcJumpRange(shipStatsInfo, fuelRemaining, CurrentCargoCount) * CurrentBoostValue;
+                fuelRemaining -= fuelForJump;
+            }
+            while (fuelRemaining > 0)
+            {
+                var fuelForJump = Math.Min(fuelRemaining, shipStatsInfo.MaxfuelPerJump);                
                 totalRange += CalcJumpRange(shipStatsInfo, fuelRemaining, CurrentCargoCount);
                 fuelRemaining -= fuelForJump;
             }
@@ -253,12 +260,12 @@ namespace ODEliteTracker.Models.Ship
 
         private double CalcJumpRange(ShipStatsInfo info, double fuel, int cargo)
         {         
-            double totalMass = info.BaseMass + fuel + cargo;
+            double totalMass = UnladenMass + fuel + cargo;
             double fuelForJump = Math.Min(fuel, info.MaxfuelPerJump);
 
             var range =  (Math.Pow(fuelForJump / info.Fuelmul, 1.0d / info.FuelPower) * info.OptimalMass / totalMass) + info.GFSDRangeBoost;
 
-            return range;
+            return range; 
         }
         private double GetOptimalMass(ModuleInfo fsdData)
         {
@@ -303,6 +310,28 @@ namespace ODEliteTracker.Models.Ship
         internal void UpdateCurrentBoost(JetConeBoostEvent.JetConeBoostEventArgs jetConeBoost)
         {
             CurrentBoostValue = jetConeBoost.BoostValue;
+        }
+
+        internal bool ProcessSynth(SynthesisEvent.SynthesisEventArgs synthesisEventArgs)
+        {
+            if (!synthesisEventArgs.Name.StartsWith("FSD", StringComparison.InvariantCultureIgnoreCase))
+                return false;
+            if (string.Equals("FSD Basic", synthesisEventArgs.Name, StringComparison.InvariantCultureIgnoreCase))
+            {
+                CurrentBoostValue = 1.25 * InjectionMultipler;
+                return true;
+            }
+            if (string.Equals("FSD Standard", synthesisEventArgs.Name, StringComparison.InvariantCultureIgnoreCase))
+            {
+                CurrentBoostValue = 1.5 * InjectionMultipler;
+                return true;
+            }
+            if (string.Equals("FSD Premium", synthesisEventArgs.Name, StringComparison.InvariantCultureIgnoreCase))
+            {
+                CurrentBoostValue = 2 * InjectionMultipler;
+                return true;
+            }
+            return false;
         }
     }
 }

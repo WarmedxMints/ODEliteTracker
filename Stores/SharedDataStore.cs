@@ -94,6 +94,7 @@ namespace ODEliteTracker.Stores
                 { JournalTypeEnum.SupercruiseEntry, true},
                 { JournalTypeEnum.SellShipOnRebuy, true},
                 { JournalTypeEnum.ShipyardSell, true},
+                { JournalTypeEnum.Synthesis, true},
                 { JournalTypeEnum.Undocked, true},
                 { JournalTypeEnum.FSSDiscoveryScan, true },
             };
@@ -656,11 +657,17 @@ namespace ODEliteTracker.Stores
                         ShipChangedEvent?.Invoke(this, soldShip.Value);
                     }
                     break;
-
                 case SupercruiseEntryEvent.SupercruiseEntryEventArgs:
                     CurrentBody = null;
                     break;
-
+                    case SynthesisEvent.SynthesisEventArgs synthesisEventArgs:
+                    if (CurrentShipInfo == null)
+                        break;
+                    if(CurrentShipInfo.ProcessSynth(synthesisEventArgs) && IsLive)
+                    {
+                        ShipStatsUpdated?.Invoke(this, CurrentShipInfo);
+                    }
+                    break;
                 case UndockedEvent.UndockedEventArgs:
                     CurrentMarketID = 0;
                     currentStation = null;

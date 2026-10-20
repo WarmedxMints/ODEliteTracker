@@ -791,15 +791,22 @@
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="250" />
                                         <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="100" />
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Text="Total"
                                                Margin="1"
                                                FontSize="20" />
-
-                                    <TextBlock Text="{Binding Total}"
+                                    
+                                    <TextBlock Text="{Binding ElementName=Root, Path=DataContext.EstimatedTrips}"
                                                FontSize="20"
                                                Grid.Column="2"
+                                               Margin="1"
+                                               HorizontalAlignment="Right" />
+                                    
+                                    <TextBlock Text="{Binding Total}"
+                                               FontSize="20"
+                                               Grid.Column="3"
                                                Margin="1"
                                                HorizontalAlignment="Right" />
                                 </Grid>

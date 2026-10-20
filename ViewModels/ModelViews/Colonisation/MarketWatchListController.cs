@@ -1,4 +1,5 @@
-﻿using ODEliteTracker.Models;
+﻿using ODCapi.Models;
+using ODEliteTracker.Models;
 using ODEliteTracker.Models.Colonisation;
 using ODEliteTracker.Models.Galaxy;
 using ODEliteTracker.Stores;
@@ -70,7 +71,10 @@ namespace ODEliteTracker.ViewModels.ModelViews.Colonisation
                     selectedWatchedMarket = value;
                     if (colonisationStore.IsLive)
                         RecheckMarket?.Invoke(this, EventArgs.Empty);
+                    if (selectedWatchedMarket != null)
+                        UpdateWatchListMarket?.Invoke(this, selectedWatchedMarket);
                 }
+               
                 OnPropertyChanged(nameof(SelectedWatchedMarket));
                 OnPropertyChanged(nameof(SelectedWatchedMarketCommodities));
             }

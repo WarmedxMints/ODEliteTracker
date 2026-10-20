@@ -463,7 +463,7 @@ namespace ODEliteTracker.Database
 
             foreach (var market in context.WatchedMarkets.Where(x => x.CommanderID == commanderId || x.CommanderID <= 0))
             {
-                context.WatchedMarkets.Remove(market);                        
+                context.WatchedMarkets.Remove(market);
             }
 
             if (markets.Count > 0)

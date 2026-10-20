@@ -13,10 +13,8 @@
                             Padding="2"
                             Margin="0,2"
                             BorderThickness="0"
+                            Background="{TemplateBinding Background}"
                             SnapsToDevicePixels="true">
-                        <Border.Background>
-                            <SolidColorBrush Color="Transparent" />
-                        </Border.Background>
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="SelectionStates">
                                 <VisualState x:Name="Unselected" />
@@ -32,45 +30,75 @@
 
     <Style TargetType="{x:Type ListBoxItem}"
            x:Key="SelectedContainerStyle">
-    <Setter Property="Template">
-        <Setter.Value>
-            <ControlTemplate TargetType="{x:Type ListBoxItem}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ListBoxItem}">
                     <Border x:Name="Border"
                             Padding="2"
                             Margin="0,2"
                             BorderThickness="0"
-                            Background="Transparent"
+                            Background="{TemplateBinding Background}"
                             SnapsToDevicePixels="true">
                         <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="5" />
-                        <ColumnDefinition />
-                    </Grid.ColumnDefinitions>
-                     
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="5" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+
                             <Rectangle x:Name="Highlighter"
                                        Margin="0,2"
                                        Fill="{DynamicResource NavBtnForeground}" />
                             <ContentPresenter Grid.Column="1"
                                               Margin="5,0" />
-                        
-                    </Grid>
+
+                        </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
-                    <Trigger Property="IsSelected"
-                             Value="True">
-                        <Setter TargetName="Highlighter"
-                                Property="Visibility"
-                                Value="Visible" />
-                    </Trigger>
-                    <Trigger Property="IsSelected"
-                             Value="False">
-                        <Setter TargetName="Highlighter"
-                                Property="Visibility"
-                                Value="Hidden" />
-                    </Trigger>
-                </ControlTemplate.Triggers>
-            </ControlTemplate>
-        </Setter.Value>
-    </Setter>
+                        <Trigger Property="IsSelected"
+                                 Value="True">
+                            <Setter TargetName="Highlighter"
+                                    Property="Visibility"
+                                    Value="Visible" />
+                        </Trigger>
+                        <Trigger Property="IsSelected"
+                                 Value="False">
+                            <Setter TargetName="Highlighter"
+                                    Property="Visibility"
+                                    Value="Hidden" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
+
+    <ControlTemplate x:Key="EliteListBox"
+                     TargetType="{x:Type ListBox}">
+        <Border x:Name="Bd"
+                Background="{TemplateBinding Background}"
+                BorderBrush="{TemplateBinding BorderBrush}"
+                BorderThickness="{TemplateBinding BorderThickness}"
+                Padding="1"
+                SnapsToDevicePixels="true">
+            <ScrollViewer Focusable="false"
+                          Padding="{TemplateBinding Padding}">
+                <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+            </ScrollViewer>
+        </Border>
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsEnabled"
+                     Value="false">
+            </Trigger>
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition Property="IsGrouping"
+                               Value="true" />
+                    <Condition Property="VirtualizingPanel.IsVirtualizingWhenGrouping"
+                               Value="false" />
+                </MultiTrigger.Conditions>
+                <Setter Property="ScrollViewer.CanContentScroll"
+                        Value="false" />
+            </MultiTrigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
 </ResourceDictionary>

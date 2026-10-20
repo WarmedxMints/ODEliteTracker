@@ -157,7 +157,7 @@ namespace ODEliteTracker.Stores
             };
         }
 
-        public override string StoreName => "Spansh CSV Store";
+        public override string StoreName => "Spansh Route Store";
 
         public override void ClearData()
         {

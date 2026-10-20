@@ -149,7 +149,8 @@ namespace ODEliteTracker.Models.Spansh
                     CapacityUsed = IntProperties[0],
                     CurrentFuel = IntProperties[1],
                     Capacity = BoolProperties[0] ? 60000 : 25000,
-                    CalculateStartingFuel = BoolProperties[1].ToInt()
+                    CalculateStartingFuel = BoolProperties[1].ToInt(),
+                    JobId = JobId
                 },
                 SpanshRouteTypeComboBox.GalaxyPlotter => new ApiGalaxyRouteParameters()
                 {
@@ -175,6 +176,7 @@ namespace ODEliteTracker.Models.Spansh
                     MaxTime = (int)IntProperties[1],
                     ReserveSize = IntProperties[2],                    
                     Algorithm = (SpanshRoutingAlgorithm)IntProperties[3],
+                    JobId = JobId
                 },
                 SpanshRouteTypeComboBox.WorldTypeRoute => new ApiWorldTypeParameters()
                 {
@@ -188,6 +190,7 @@ namespace ODEliteTracker.Models.Spansh
                     Radius = DoubleProperties[1],
                     Range = DoubleProperties[0],
                     MaxDistance = IntProperties[2],
+                    JobId = JobId
                 },
                 SpanshRouteTypeComboBox.Exobiology => new ApiExobiologyRouteParameters()
                 {

@@ -1,4 +1,5 @@
 ﻿using ODEliteTracker.ViewModels;
+using ODJournalDatabase.JournalManagement;
 using ODMVVM.Navigation;
 using ODMVVM.Navigation.Controls;
 using ODMVVM.ViewModels;
@@ -7,6 +8,7 @@ namespace ODEliteTracker.Services
 {
     public sealed class NavigationService(Func<Type, ODViewModel> odViewModelFactory) : ODNavigationService(odViewModelFactory)
     {
+        public override bool CanChangeViews { get; set; } = false;
         protected override bool NavigateToView(ODViewModel? newView)
         {
             CurrentView = _viewModelFactory.Invoke(typeof(LoadingViewModel));
@@ -22,6 +24,19 @@ namespace ODEliteTracker.Services
             }
 
             return true;
+        }
+
+        protected override void OnCurrentViewLive(object? sender, bool v)
+        {
+            Task.Run(async () =>
+            {
+                while (!CanChangeViews)
+                {
+                    await Task.Delay(200);
+                }
+
+                base.OnCurrentViewLive(sender, v);
+            });
         }
     }
 }

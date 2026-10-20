@@ -119,6 +119,7 @@ namespace ODEliteTracker.ViewModels
                 return;
 
             UpdateCurrentMarketDemandForWatched(e);
+            OnPropertyChanged(nameof(EstimatedTrips));
         }
 
         private void OnWatchlistRecheckMarket(object? sender, EventArgs e)
@@ -293,6 +294,10 @@ namespace ODEliteTracker.ViewModels
                         if (ShoppingList == null || ShoppingList.Depots.Count == 0)
                             return string.Empty;
                         return $"Estimated Trips {Math.Ceiling((double)ShoppingList.Resources.Sum(x => x.RemainingCount) / capacity):N0}";
+                    case ColonisationSelectedTab.MarketWatchlist:
+                        if (WatchListController.SelectedWatchedMarket == null || WatchListController.WatchedMarkets.Count == 0)
+                            return string.Empty;
+                        return $"Estimated Trips {Math.Ceiling((double)WatchListController.SelectedWatchedMarket.Commodities.Sum(x => x.Demand) / capacity):N0}";
                     default:
                         return string.Empty;
 

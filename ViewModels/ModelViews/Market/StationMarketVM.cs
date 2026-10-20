@@ -36,7 +36,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Market
 
         internal void UpdateWathedMarketDemands(WatchedMarketVM known)
         {
-            List<StationCommodityVM> itemsToRemove = [.. ItemsForSale];
+            List<StationCommodityVM> itemsToRemove = [];
 
             foreach (var item in ItemsForSale)
             {
@@ -45,9 +45,9 @@ namespace ODEliteTracker.ViewModels.ModelViews.Market
                 if (knownHasDemand != null && knownHasDemand.Demand > 0)
                 {
                     item.Required = knownHasDemand.Demand;
-
-                    itemsToRemove.Remove(item);
+                    continue;
                 }
+                itemsToRemove.Add(item);
             }
 
             if(itemsToRemove.Count > 0)

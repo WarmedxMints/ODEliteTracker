@@ -25,16 +25,28 @@ namespace ODEliteTracker.Stores
             {
                 return stationMarket;
             }
-
+            //Appears to take a bit before the game writes the json since hte Kestrel update.  Rather than write the json and then fire the event, it appears the game does it the other way round so give it some time
             await Task.Delay(400);
             var market = journalManager.GetMarketInfo();
-            //Check the market ID.  Since the Kestrel MK2 update the game has a habit of firing the market event while failing to update the market.json file
-            if (market != null && market.Timestamp >= marketArgs.Timestamp)
+            if (market == null)
             {
-                stationMarket = new(market);
+#if DEBUG
+                Debug.WriteLine($"JSON Market Null");
+#endif
+                return null;
+            }
+            //Check the market ID.  Since the Kestrel MK2 update the game has a habit of firing the market event while failing to update the market.json file
+            if (marketArgs.MarketID == market.MarketID && market.Timestamp >= marketArgs.Timestamp)
+            {
+#if DEBUG
+                Debug.WriteLine($"JSON Market Matched");
+#endif
+                stationMarket = new(market, marketArgs);
                 return stationMarket;
             }
-
+#if DEBUG
+            Debug.WriteLine($"JSON Market did not match.");
+#endif
             return null;
         }
 
@@ -46,12 +58,15 @@ namespace ODEliteTracker.Stores
                 return stationMarket;
             }
             //Give it a little bit for the capi to catch up
-            await Task.Delay(300);
+            await Task.Delay(400);
             var market = await journalManager.GetCapiMarketInfo();
 
             //We don't care about construction depots
             if (market == null || market.Services?.Colonisationcontribution == StationServiceState.Ok)
             {
+#if DEBUG
+                Debug.WriteLine($"CAPI Market Ignored as it appears to be a contruction depot or null ({market == null})\nDocked Id {docked.MarketID}\nCapi Id   {market?.Id ?? 0}");
+#endif
                 return null;
             }
             //Check we got the right market from the capi
@@ -75,7 +90,7 @@ namespace ODEliteTracker.Stores
             var market = journalManager.GetMarketInfo();
             //Check the market ID.  Since the Kestrel MK2 update the game has a habit of firing the market event while failing to update the market.json file
             if (market != null)
-            {
+            {      
                 stationMarket = new(market);
                 return stationMarket;
             }

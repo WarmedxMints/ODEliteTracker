@@ -232,8 +232,7 @@ namespace ODEliteTracker.Services
             if (token.Value.Type == JTokenType.Boolean)
             {
                 var b = token.Value.ToObject<bool>();
-                //Spansh doesn't seem to like True or False and wants them lower case, I think.
-                var res = b ? "true" : "false";
+                var res = b ? "1" : "0";
                 return $"{token.Name}={res}";
             }
             return string.Format(CultureInfo.InvariantCulture, "{0}={1}", token.Name, token.Value);

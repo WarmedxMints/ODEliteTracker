@@ -275,9 +275,10 @@
                                    Grid.Row="0"
                                    FontSize="16" />
 
-                        <Button Content="Recheck System"
+                        <Button Content="Recheck Systems"
                                 Click="CheckBodyCounts"
                                 Height="35"
+                                Width="150"
                                 Margin="10,0"
                                 Grid.Row="1"
                                 HorizontalAlignment="Left"
@@ -327,6 +328,7 @@
                         
                         <Button Content="Clear Route"
                                 Height="35"
+                                Width="150"
                                 Margin="10,0"
                                 Click="ClearRoute"
                                 Grid.Row="4"
@@ -341,13 +343,6 @@
                     </Grid>
                 </controls:ToggleButonWithPopup.PopupContent>
             </controls:ToggleButonWithPopup>
-
-            <!--<Button Content="Clear"
-                        Width="50"
-                        Height="30"
-                        Margin="5,0"
-                        Click="ClearRoute"
-                        Style="{DynamicResource EliteStyleButton}" />-->
         </StackPanel>
         <busyIndicator:BusyMask x:Name="BusyIndicator"
                                 IsBusy="{Binding IsBusy}"

@@ -45,15 +45,16 @@
             </Setter>
         </Style>
     </UserControl.Resources>
-    <Grid>
+    <Grid Background="{DynamicResource CardBackground}">
         <ListBox ItemsSource="{Binding ElementName=DepotListBox, Path=Depots}"
                  ScrollViewer.VerticalScrollBarVisibility="Visible"
-                 ScrollViewer.HorizontalScrollBarVisibility="Visible"
-                 Background="Transparent"
+                 ScrollViewer.HorizontalScrollBarVisibility="Visible"                
                  SelectedItem="{Binding ElementName=DepotListBox, Path=SelectedDepot, Mode=OneWay}"
                  BorderThickness="0"
-                 ItemContainerStyle="{DynamicResource SelectedContainerStyle}"
-                 Foreground="{DynamicResource PrimaryForeground}">
+                 Template="{DynamicResource EliteListBox}"
+                 Background="{DynamicResource CardBackground}"
+                 Foreground="{DynamicResource PrimaryForeground}"
+                 ItemContainerStyle="{DynamicResource SelectedContainerStyle}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Button FontSize="20"

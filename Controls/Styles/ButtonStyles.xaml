@@ -46,7 +46,7 @@
                             <Setter Property="Foreground"
                                     Value="{DynamicResource PrimaryForegroundDisabled}" />
                             <Setter Property="Background"
-                                    Value="Red" />
+                                    Value="{DynamicResource PrimaryControlPressed}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                     <Border Background="{TemplateBinding Background}"

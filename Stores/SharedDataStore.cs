@@ -146,6 +146,7 @@ namespace ODEliteTracker.Stores
             LastLoginTime = DateTime.MinValue;
             marketController.ClearData();
             commandersShips.Clear();
+            WatchedMarkets.Clear();
             IsLive = false;
             journalManager.StopStatusWatcher(this);
         }
@@ -218,6 +219,7 @@ namespace ODEliteTracker.Stores
                     break;
 
                 case CarrierJumpEvent.CarrierJumpEventArgs carrierJump:
+                    carrierJump.StationName = CheckForCarrierNames(carrierJump.StationType, carrierJump.StationName, carrierJump.MarketID);
                     UpdateCurrentSystem(new(carrierJump));
                     string? bodyStn = null;
                     if (string.IsNullOrEmpty(carrierJump.Body) == false)
@@ -271,15 +273,15 @@ namespace ODEliteTracker.Stores
 
                     CurrentMarketID = docked.MarketID;
 
-                    var stationName = docked.StationName_Localised ?? docked.StationName;
-                    stationName = stationName.Replace("$EXT_PANEL_ColonisationShip;", "Colonisation Ship -");
+                    docked.StationName = docked.StationName_Localised ?? docked.StationName;
+                    docked.StationName = docked.StationName.Replace("$EXT_PANEL_ColonisationShip;", "Colonisation Ship -");
 
-                    if (docked.StationType == "FleetCarrier" && carrierNames.TryGetValue(stationName, out var name))
+                    if (docked.StationType == "FleetCarrier" && carrierNames.TryGetValue(docked.StationName, out var name))
                     {
-                        stationName = CheckForCarrierNames(docked.StationType, docked.StationName, docked.MarketID);
+                        docked.StationName = name;
                     }
 
-                    UpdateCurrentBody_Station(stationName);
+                    UpdateCurrentBody_Station(docked.StationName);
 
                     if (CurrentSystem != null)
                     {
@@ -288,8 +290,6 @@ namespace ODEliteTracker.Stores
 
                     if (IsLive == false)
                         break;
-
-                    docked.StationName = stationName;
 
                     Docked?.Invoke(this, currentStation);
 
@@ -306,7 +306,7 @@ namespace ODEliteTracker.Stores
                     {
                         stationFaction = docked.StationServices.Contains("squadronBank") ? "Squadron Carrier" : "Personal Carrier";
                     }
-                    var args = new NotificationArgs(stationName,
+                    var args = new NotificationArgs(docked.StationName,
                         [
                             $"{EliteJournalReaderHelpers.StationTypeText(docked.StationType)}",
                             $"{stationFaction}",
@@ -404,6 +404,7 @@ namespace ODEliteTracker.Stores
                     break;
 
                 case LocationEvent.LocationEventArgs location:
+                    location.StationName = CheckForCarrierNames(location.StationType, location.StationName, location.MarketID);
                     UpdateCurrentSystem(new(location));
                     string? bodyStation = null;
                     if (string.IsNullOrEmpty(location.Body) == false)
@@ -448,14 +449,8 @@ namespace ODEliteTracker.Stores
                 case MarketEvent.MarketEventArgs marketArgs:
                     Task.Factory.StartNew(async () =>
                     {
-                        //Update the namt if it's a carrier
-                        if (carrierNamesByMarketID.TryGetValue(marketArgs.MarketID, out string? carrierName) && string.IsNullOrEmpty(carrierName) == false)
-                        {
-                            marketArgs.StationName = carrierName;
-                        }
-
+                        marketArgs.StationName = CheckForCarrierNames(marketArgs.StationType, marketArgs.StationName, marketArgs.MarketID);
                         var market = await marketController.GetMarket(marketArgs);
-
                         UpdateMarkets(market);
                     });
                     break;
@@ -892,6 +887,10 @@ namespace ODEliteTracker.Stores
 
             if (market != null)
             {
+                if (carrierNames.TryGetValue(market.StationName, out var name))
+                {
+                    market.StationName = name;
+                }
                 MarketEvent?.Invoke(this, CurrentMarket);
             }
 
@@ -914,7 +913,6 @@ namespace ODEliteTracker.Stores
         {
             if (currentCommanderId <= 0)
                 return;
-
             databaseProvider.UpdateWatchedMarkets(WatchedMarkets, currentCommanderId);
             databaseProvider.UpdateColonisationWishList(currentCommanderId, colonisationWishList);
         }

@@ -25,10 +25,10 @@ namespace ODEliteTracker.ViewModels
                                       IManageJournalEvents journalManager,
                                       SharedDataStore sharedDataStore,
                                       NotificationService notificationService,
+                                      FleetCarrierDataStore carrierDataStore,
                                       SpanshRouteStore spanshCsv,
                                       SettingsStore settings,
                                       TickDataStore tickDataStore,
-                                      FleetCarrierDataStore carrierDataStore,
                                       PopOutService popOutService)
         {
             navigationService = oDNavigationService;
@@ -71,7 +71,7 @@ namespace ODEliteTracker.ViewModels
         private readonly FleetCarrierDataStore carrierDataStore;
         private readonly PopOutService popOutService;
         public EventHandler? WindowPositionReset;
-
+        internal JournalManager JournalManager => (JournalManager)journalManager;
         public string Title => $"Elite Tracker v{App.AppVersion}";
 
         public ObservableCollection<ODNavigationButton> MenuButtons { get; } =
@@ -349,6 +349,7 @@ namespace ODEliteTracker.ViewModels
         //So we listen to both and only enable the ui is both are live
         private void JournalManagerLive(object? sender, bool e)
         {
+            navigationService.CanChangeViews = e;
             if (navigationService.CurrentView?.IsLive is bool v && !v)
             {
                 return;
@@ -401,8 +402,7 @@ namespace ODEliteTracker.ViewModels
             {
                 loadingViewModel.StatusText = "Reading History";
                 await Task.Run(journalManager.ChangeCommander).ConfigureAwait(true);
-            }
-            //navigationService.NavigateTo(settings.CurrentViewModel);            
+            }           
             OnPropertyChanged(nameof(CurrentSystemName));
             OnPropertyChanged(nameof(CurrentBody_Station));
         }
@@ -420,7 +420,6 @@ namespace ODEliteTracker.ViewModels
                     JournalCommanders.AddRange(cmdrs.Where(x => x.MigratedTo < 0));
                     SelectedCommander = JournalCommanders.FirstOrDefault(x => x.Id == settings.SelectedCommanderID);
                     popOutService.OpenSavedViews(settings.SelectedCommanderID);
-                    //UiEnabled = navigationService.CurrentView?.IsLive ?? false;
                     OnPropertyChanged(nameof(JournalCommanders));
                     OnPropertyChanged(nameof(SelectedCommander));
                     OnPropertyChanged(nameof(CurrentSystemName));

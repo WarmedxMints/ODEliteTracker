@@ -82,10 +82,22 @@
                                 KeyboardNavigation.DirectionalNavigation="Contained"
                                 KeyboardNavigation.TabIndex="2">
                             <ContentPresenter x:Name="PART_SelectedContentHost"
-                                              Margin="4"
+                                              Margin="4"                                              
                                               ContentSource="SelectedContent" />
                         </Border>
                     </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsEnabled"
+                                 Value="False">
+                            <Setter TargetName="Border"
+                                    Property="Background"
+                                    Value="{DynamicResource CardBackgroundMouseOver}" />
+                            <Setter Property="Background"
+                                    Value="{DynamicResource NavBtnBackgroundDisabled}" />
+                            <Setter Property="Foreground"
+                                    Value="{DynamicResource NavBtnForegroundDisabled}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

@@ -26,7 +26,6 @@ namespace ODEliteTracker.Services
             this.eventParser.OnJournalEventReceived += EventParser_OnJournalEventReceived;
             this.eventParser.LiveStatusChange += async (sender, e) => await EventParser_LiveStatusChange(sender, e);
 
-            this.capiService.ErrorString += OnCAPIErrorString;
             this.capiService.ErrorException += OnCAPIErrorException;
         }
         #endregion
@@ -66,6 +65,12 @@ namespace ODEliteTracker.Services
                 if (selectedCommander != null)
                     OnCommanderChanged?.Invoke(this, selectedCommander);
             }
+        }
+
+        public event EventHandler<string>? CAPIErrorMessage
+        {
+            add { capiService.ErrorString += value;  }
+            remove { capiService.ErrorString -= value; }
         }
 
         public EventHandler<JournalCommander>? OnCommanderChanged;
@@ -192,6 +197,7 @@ namespace ODEliteTracker.Services
         public async Task ChangeCommander()
         {
             IsLive = false;
+
             foreach (var parser in journalLogParserList)
             {
                 parser.SaveData();
@@ -349,14 +355,6 @@ namespace ODEliteTracker.Services
         private void OnCAPIErrorException(object? sender, Exception e)
         {
             Logger.Error(e);
-        }
-
-        private void OnCAPIErrorString(object? sender, string e)
-        {
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                ODDialogService.ShowNoOwner("CAPI Error", e, MessageBoxButton.OK);
-            });
         }
     }
 }

@@ -1,15 +1,26 @@
 ﻿using EliteJournalReader.Events;
+using Microsoft.Extensions.DependencyModel;
 using ODCapi.Models;
 
 namespace ODEliteTracker.Models.Market
 {
     public sealed class StationMarket
     {
-        public StationMarket(MarketInfo marketInfo)
+        public StationMarket(MarketInfo market)
         {
-            MarketID = marketInfo.MarketID;
-            StationName = marketInfo.StationName;
-            StarSystem = marketInfo.StarSystem;
+            MarketID = market.MarketID;
+            StationName = market.StationName;
+            StarSystem = market.StarSystem;
+            ItemsForSale = [.. market.Items.Where(x => x.BuyPrice > 0).Select(x => new StationCommodity(x))];
+            ItemsForPurchase = [.. market.Items.Where(x => x.Demand > 0).Select(x => new StationCommodity(x))];
+            TimeStamp = market.Timestamp;
+        }
+
+        public StationMarket(MarketInfo marketInfo, MarketEvent.MarketEventArgs marketArgs)
+        {
+            MarketID = marketArgs.MarketID;
+            StationName = marketArgs.StationName;
+            StarSystem = marketArgs.StarSystem;
             ItemsForSale = [.. marketInfo.Items.Where(x => x.BuyPrice > 0).Select(x => new StationCommodity(x))];
             ItemsForPurchase = [.. marketInfo.Items.Where(x => x.Demand > 0).Select(x => new StationCommodity(x))];
             TimeStamp = marketInfo.Timestamp;

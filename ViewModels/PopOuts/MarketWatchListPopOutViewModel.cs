@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using ODEliteTracker.Models;
+using ODEliteTracker.Models.Market;
 using ODEliteTracker.Models.Settings;
 using ODEliteTracker.Stores;
 using ODEliteTracker.ViewModels.ModelViews.Colonisation;
@@ -20,6 +21,7 @@ namespace ODEliteTracker.ViewModels.PopOuts
             this.settings = settings;
             this.watchListController = watchListController;
             this.colonisationStore.StoreLive += OnStoreLive;
+            this.sharedData.MarketEvent += CheckMarket;
 
             this.watchListController.RecheckMarket += OnWatchlistRecheckMarket;
             this.watchListController.UpdateWatchListMarket += OnUpdateWatchlistMarket;
@@ -38,7 +40,7 @@ namespace ODEliteTracker.ViewModels.PopOuts
         {
             this.colonisationStore.StoreLive -= OnStoreLive;
 
-            this.sharedData.MarketEvent -= (_, _) => CheckMarket();
+            this.sharedData.MarketEvent -= CheckMarket;
 
             this.watchListController.RecheckMarket += OnWatchlistRecheckMarket;
             this.watchListController.UpdateWatchListMarket += OnUpdateWatchlistMarket;
@@ -115,14 +117,14 @@ namespace ODEliteTracker.ViewModels.PopOuts
 
         public Visibility CategoryColumnVisibilty { get; private set; } = Visibility.Visible;        
 
-        private void CheckMarket()
+        private void CheckMarket(object? sender, StationMarket? market)
         {
-            if (sharedData.CurrentMarket == null || WatchListController.SelectedWatchedMarket?.MarketId != sharedData.CurrentMarket.MarketID)
+            if (market == null || WatchListController.SelectedWatchedMarket?.MarketId == market.MarketID)
                 return;
 
-            var market = StationMarketVM.CreateEmptyItemMarket(sharedData.CurrentMarket);
+            var newMarket = StationMarketVM.CreateEmptyItemMarket(market);
 
-            foreach (var item in sharedData.CurrentMarket.ItemsForSale)
+            foreach (var item in market.ItemsForSale)
             {
                 //Carrier market data includes items which are sold out as it doesn't cancel the sell order when you do
                 //So if the stock level is 0 then we just ignore it
@@ -139,10 +141,10 @@ namespace ODEliteTracker.ViewModels.PopOuts
                     Required = required?.Demand ?? 0
                 };
 
-                market.ItemsForSale.Add(commodity);
+                newMarket.ItemsForSale.Add(commodity);
             }
 
-            Application.Current.Dispatcher.Invoke(() => CurrentMarket = market);
+            Application.Current.Dispatcher.Invoke(() => CurrentMarket = newMarket);
         }
 
         private async Task OnStoreLive(object? sender, bool e)
@@ -150,7 +152,7 @@ namespace ODEliteTracker.ViewModels.PopOuts
             if (e)
             {  
                 OnPropertyChanged(nameof(HeaderText));
-                CheckMarket();
+                CheckMarket(null, sharedData.CurrentMarket);
                 OnModelLive();
             }
         }
@@ -171,7 +173,7 @@ namespace ODEliteTracker.ViewModels.PopOuts
 
         private void OnWatchlistRecheckMarket(object? sender, EventArgs e)
         {
-            CheckMarket();
+            CheckMarket(null, sharedData.CurrentMarket);
         }
 
         private void ToggleCategoryColumn(bool obj)

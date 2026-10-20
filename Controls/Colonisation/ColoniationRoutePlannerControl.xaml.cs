@@ -16,15 +16,22 @@ namespace ODEliteTracker.Controls.Colonisation
         {
             InitializeComponent();
             Loaded += ColoniationRoutePlannerControl_Loaded;
+            Unloaded += ColoniationRoutePlannerControl_Unloaded;
+        }
 
-
+        private void ColoniationRoutePlannerControl_Unloaded(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is ColonisationRoutePlannerViewModel vm)
+            {
+                vm.OnViewModelLive -= OnViewModelLive;
+                vm.SelectedSystemChanged -= OnSelectedSystemChanged;
+            }
         }
 
         private void ColoniationRoutePlannerControl_Loaded(object sender, RoutedEventArgs e)
         {
             if (DataContext is ColonisationRoutePlannerViewModel vm)
             {
-                vm.DataChangedWarning += DataChangedWarning;
                 vm.OnViewModelLive += OnViewModelLive;
                 vm.SelectedSystemChanged += OnSelectedSystemChanged;
                 ScrollSelectedIntoView(vm);

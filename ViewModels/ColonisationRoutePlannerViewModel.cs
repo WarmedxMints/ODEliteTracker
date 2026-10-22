@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json;
+using ODEliteTracker.Helpers;
+using ODEliteTracker.Models;
 using ODEliteTracker.Models.Colonisation;
 using ODEliteTracker.Models.Galaxy;
 using ODEliteTracker.Models.Settings;
@@ -14,6 +16,7 @@ using ODMVVM.ViewModels;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
+using System.Web;
 using System.Windows;
 using System.Windows.Input;
 using Position = ODEliteTracker.Models.Galaxy.Position;
@@ -60,29 +63,38 @@ namespace ODEliteTracker.ViewModels
             settings.ColonisationSettings.StraightLineStarPosChanged += ColonisationSettings_StraightLineStarPosChanged;
             settings.ColonisationSettings.StraightLineEndPosChanged += ColonisationSettings_StraightLineEndPosChanged;
           
-            RemoveAfterSelectedCommand = new ODRelayCommand(RemoveAfterSelected, (x) => SelectedSystem != null);
-            ToggleSelectedHubCommand = new ODRelayCommand(ToggleSelectedHub, (x) => SelectedSystem != null);
-            ToggleSelectedBuiltCommand = new ODRelayCommand(ToggleSelectedBuilt, (x) => SelectedSystem != null);
-            DeleteSelectedSystemCommand = new ODRelayCommand(DeleteSelectedSystem, (x) => SelectedSystem != null);
-            SetClipboardCommand = new ODRelayCommand<string>(SetClipboard, (x) => SelectedSystem != null);
-            SaveRouteCommand = new ODRelayCommand(SaveRoute, (x) => DataChanged);
+            RemoveAfterSelectedCommand = new ODRelayCommand(RemoveAfterSelected, (_) => SelectedSystem != null);
+            ToggleSelectedHubCommand = new ODRelayCommand(ToggleSelectedHub, (_) => SelectedSystem != null);
+            ToggleSelectedBuiltCommand = new ODRelayCommand(ToggleSelectedBuilt, (_) => SelectedSystem != null);
+            DeleteSelectedSystemCommand = new ODRelayCommand(DeleteSelectedSystem, (_) => SelectedSystem != null);
+            SetClipboardCommand = new ODRelayCommand<string>(SetClipboard, (_) => SelectedSystem != null);
+            SaveRouteCommand = new ODRelayCommand(SaveRoute, (_) => DataChanged);
             ReloadFromDatabaseCommand = new ODAsyncRelayCommand(LoadFromDatabase);
-            SetSelctedAsTargetCommand = new ODRelayCommand(SetSelectedAsTarget, (x) => SelectedSystem != null && SelectedSystem.SystemAddress != targetSystem?.SystemAddress);
+            SetSelctedAsTargetCommand = new ODRelayCommand(SetSelectedAsTarget, (_) => SelectedSystem != null && SelectedSystem.SystemAddress != targetSystem?.SystemAddress);
 
-            SetStartAsSelectedCommand = new ODRelayCommand(SetStartAsSelected, (x) => SelectedSystem != null);
-            SetStartAsCurrentCommand = new ODRelayCommand(SetStartAsCurrent, (x) => sharedData.CurrentSystem != null);
-            SetEndAsSelectedCommand = new ODRelayCommand(SetEndAsSelected, (x) => SelectedSystem != null);
-            SetEndAsCurrentCommand = new ODRelayCommand(SetEndAsCurrent, (x) => sharedData.CurrentSystem != null);
-            SetEndAsTargetCommand = new ODRelayCommand(SetEndAsTargetSystem, (x) => TargetSystem != null);
+            SetStartAsSelectedCommand = new ODRelayCommand(SetStartAsSelected, (_) => SelectedSystem != null);
+            SetStartAsCurrentCommand = new ODRelayCommand(SetStartAsCurrent, (_) => sharedData.CurrentSystem != null);
+            SetEndAsSelectedCommand = new ODRelayCommand(SetEndAsSelected, (_) => SelectedSystem != null);
+            SetEndAsCurrentCommand = new ODRelayCommand(SetEndAsCurrent, (_) => sharedData.CurrentSystem != null);
+            SetEndAsTargetCommand = new ODRelayCommand(SetEndAsTargetSystem, (_) => TargetSystem != null);
             AddCurrentSystemToRouteCommand = new ODRelayCommand<AddSystemToRouteEnum>(AddCurrentToRoute, (x) => CanAddCurrentSystem(x));
             SelectCurrentSystemCommand = new ODRelayCommand(SelectCurrentSystem, (x) => RouteSystems.Any(x => x.SystemAddress == sharedData.CurrentSystem?.Address));
             ImportCommandersRouteCommand = new ODRelayCommand<JournalCommanderVM>(ImportCmdrsRoute, (x) => x != null);
+            OpenSystemWebPageCommand = new ODRelayCommand<SystemWebSite>(OpenSystemWebPage, (_) => SelectedSystem != null);
             OpenPopOut = new ODRelayCommand<Type>(OnOpenPopOut);
 
             if (store.IsLive)
             {
                 _ = OnStoreLive(null, true);
             }
+        }
+
+        private void OpenSystemWebPage(SystemWebSite site)
+        {
+            if (SelectedSystem == null)
+                return;
+
+            StarSystemHelpers.OpenSystemPage(site, SelectedSystem);
         }
 
         private void ImportCmdrsRoute(JournalCommanderVM vM)
@@ -214,6 +226,7 @@ namespace ODEliteTracker.ViewModels
         public ICommand SelectCurrentSystemCommand { get; }
         public ICommand OpenPopOut { get; }
         public ICommand ImportCommandersRouteCommand { get; }
+        public ICommand OpenSystemWebPageCommand { get; }
         private ObservableCollection<ColonisationRouteSystemVM> routeSystems = [];
         public ObservableCollection<ColonisationRouteSystemVM> RouteSystems { get => routeSystems; set { routeSystems = value; OnPropertyChanged(); } }
 

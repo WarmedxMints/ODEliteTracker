@@ -1,4 +1,5 @@
 ﻿using ODEliteTracker.Controls.Navigation;
+using ODEliteTracker.Helpers;
 using ODEliteTracker.Models;
 using ODEliteTracker.Models.Galaxy;
 using ODEliteTracker.Models.Ship;
@@ -221,6 +222,18 @@ namespace ODEliteTracker.ViewModels
                 return UiEnabled ? sharedData.CurrentShipInfo?.Name ?? string.Empty : string.Empty;
             }
         }
+
+        public string CurrentRegion
+        {
+            get
+            {
+                if (!UiEnabled)
+                    return string.Empty;
+
+                return Services.GalacticRegion.RegionMap.GetRegionName(sharedData.CurrentSystem);
+            }
+        }
+
         public double UiScale
         {
             get => settings.UiScale;
@@ -265,15 +278,15 @@ namespace ODEliteTracker.ViewModels
             if (sharedData.CurrentSystem == null || sharedData.CurrentBody_Station == null)
                 return;
 
-            if (sharedData.CurrentMarketID > 0)
+            if (sharedData.CurrentStation != null)
             {
                 switch (site)
                 {
                     case Models.SystemWebSite.Inara:
-                        ODMVVM.Helpers.OperatingSystem.OpenInaraStation(sharedData.CurrentBody_Station, sharedData.CurrentSystem.Name);
+                        ODMVVM.Helpers.OperatingSystem.OpenInaraStation(sharedData.CurrentSystem.Name, sharedData.CurrentStation.StationName);
                         break;
                     case Models.SystemWebSite.Spansh:
-                        ODMVVM.Helpers.OperatingSystem.OpenUrl($"https://spansh.co.uk/station/{sharedData.CurrentMarketID}");
+                        ODMVVM.Helpers.OperatingSystem.OpenUrl($"https://spansh.co.uk/station/{sharedData.CurrentStation.MarketID}");
                         break;
                 }
                 return;
@@ -302,15 +315,7 @@ namespace ODEliteTracker.ViewModels
             if (sharedData.CurrentSystem == null)
                 return;
 
-            switch (site)
-            {
-                case Models.SystemWebSite.Inara:
-                    ODMVVM.Helpers.OperatingSystem.OpenInaraSystem(sharedData.CurrentSystem.Name);
-                    break;
-                case Models.SystemWebSite.Spansh:
-                    ODMVVM.Helpers.OperatingSystem.OpenSpanshSystem(sharedData.CurrentSystem.Address);
-                    break;
-            }
+            StarSystemHelpers.OpenSystemPage(site, sharedData.CurrentSystem);           
         }
 
         private void CopyToClipboard(string? value)
@@ -359,6 +364,7 @@ namespace ODEliteTracker.ViewModels
             OnPropertyChanged(nameof(CurrentSystemName));
             OnPropertyChanged(nameof(CurrentBody_Station));
             OnPropertyChanged(nameof(CurrentShipName));
+            OnPropertyChanged(nameof(CurrentRegion));
         }
         private void NavigationService_CurrentViewLive(object? sender, bool e)
         {
@@ -371,6 +377,7 @@ namespace ODEliteTracker.ViewModels
             OnPropertyChanged(nameof(CurrentSystemName));
             OnPropertyChanged(nameof(CurrentBody_Station));
             OnPropertyChanged(nameof(CurrentShipName));
+            OnPropertyChanged(nameof(CurrentRegion));
         }
 
         public async Task Initialise()
@@ -424,7 +431,9 @@ namespace ODEliteTracker.ViewModels
                     OnPropertyChanged(nameof(SelectedCommander));
                     OnPropertyChanged(nameof(CurrentSystemName));
                     OnPropertyChanged(nameof(CurrentBody_Station));
+                    OnPropertyChanged(nameof(CurrentRegion));
                     OnPropertyChanged(nameof(CurrentShipName));
+                    OnPropertyChanged(nameof(CurrentRegion));
                     OnPropertyChanged(nameof(CurrentSystemName));
                     OnPropertyChanged(nameof(CurrentBody_Station));
                     OnPropertyChanged(nameof(CurrentShipName));
@@ -442,6 +451,7 @@ namespace ODEliteTracker.ViewModels
         {
             OnPropertyChanged(nameof(CurrentSystemName));
             OnPropertyChanged(nameof(CurrentBody_Station));
+            OnPropertyChanged(nameof(CurrentRegion));
         }
 
         private void OnCurrentBody_StationChanged(object? sender, string? e)

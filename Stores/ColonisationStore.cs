@@ -55,7 +55,6 @@ namespace ODEliteTracker.Stores
                 { JournalTypeEnum.ColonisationSystemClaimRelease, true},
                 { JournalTypeEnum.Docked, true},
                 { JournalTypeEnum.Undocked, true},
-                { JournalTypeEnum.Cargo, false},
             };
         }
 
@@ -187,6 +186,9 @@ namespace ODEliteTracker.Stores
                     break;
                 case DockedEvent.DockedEventArgs docked:
                     CurrentStationName = string.IsNullOrEmpty(docked.StationName_Localised) ? docked.StationName : docked.StationName_Localised;
+                    break;
+                case UndockedEvent.UndockedEventArgs:
+                    CurrentStationName = string.Empty;
                     break;
             }
         }

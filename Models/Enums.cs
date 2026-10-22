@@ -166,7 +166,8 @@ namespace ODEliteTracker.Models
     public enum SystemWebSite
     {
         Inara,
-        Spansh
+        Spansh,
+        RavenColonial
     }
 
     public enum  ShipyardWebSite

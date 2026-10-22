@@ -11,6 +11,7 @@ namespace ODEliteTracker.Services
         public override bool CanChangeViews { get; set; } = false;
         protected override bool NavigateToView(ODViewModel? newView)
         {
+            var currentView = CurrentView;
             CurrentView = _viewModelFactory.Invoke(typeof(LoadingViewModel));
             if (newView?.GetType() == typeof(LoadingViewModel))
                 return false;
@@ -20,7 +21,7 @@ namespace ODEliteTracker.Services
             if (_nextCurrentView != null)
             {
                 _nextCurrentView.ModelLive += OnCurrentViewLive;
-                _nextCurrentView.NavigatedFrom(_nextCurrentView);
+                _nextCurrentView.NavigatedFrom(currentView);
             }
 
             return true;

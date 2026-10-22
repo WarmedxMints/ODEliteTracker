@@ -12,6 +12,7 @@
              xmlns:setting="clr-namespace:ODEliteTracker.Models.Settings"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:odmvvm="clr-namespace:ODMVVM.Helpers;assembly=ODMVVM"
+             xmlns:models="clr-namespace:ODEliteTracker.Models"
              mc:Ignorable="d"
              x:Name="Root"
              d:DataContext="{d:DesignInstance viewmodels:ColonisationRoutePlannerViewModel}"
@@ -223,9 +224,41 @@
                                 HorizontalContentAlignment="Left"
                                 Click="SelectLastSystem"
                                 Style="{DynamicResource PopOutBtn}" />
-                    </StackPanel>
+                    </StackPanel> 
                 </controls:ToggleButonWithPopup.PopupContent>
             </controls:ToggleButonWithPopup>
+
+            <controls:ToggleButonWithPopup ToggleButtonContent="Open Web Page"
+                                           CloseOnClick="True"
+                                           Width="130"
+                                           Height="30"
+                                           Margin="5,0">
+                <controls:ToggleButonWithPopup.PopupContent>
+                    <StackPanel>
+                        <Button Content="Inara"
+                                HorizontalAlignment="Stretch"
+                                Margin="0,2"
+                                HorizontalContentAlignment="Left"
+                                Command="{Binding OpenSystemWebPageCommand}"
+                                CommandParameter="{x:Static models:SystemWebSite.Inara}"
+                                Style="{DynamicResource PopOutBtn}" />
+                        <Button Content="Spansh"
+                                HorizontalAlignment="Stretch"
+                                Margin="0,2"
+                                HorizontalContentAlignment="Left"
+                                Command="{Binding OpenSystemWebPageCommand}"
+                                CommandParameter="{x:Static models:SystemWebSite.Spansh}"
+                                Style="{DynamicResource PopOutBtn}" />
+                        <Button Content="Raven Colonial"
+                                HorizontalAlignment="Stretch"
+                                Margin="0,2"
+                                HorizontalContentAlignment="Left"
+                                Command="{Binding OpenSystemWebPageCommand}"
+                                CommandParameter="{x:Static models:SystemWebSite.RavenColonial}"
+                                Style="{DynamicResource PopOutBtn}" />
+                    </StackPanel>
+                </controls:ToggleButonWithPopup.PopupContent>
+            </controls:ToggleButonWithPopup>            
         </StackPanel>
 
         <StackPanel Orientation="Horizontal"

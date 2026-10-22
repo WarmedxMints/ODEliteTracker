@@ -69,7 +69,7 @@ namespace ODEliteTracker.Services
 
         public event EventHandler<string>? CAPIErrorMessage
         {
-            add { capiService.ErrorString += value;  }
+            add { capiService.ErrorString += value; }
             remove { capiService.ErrorString -= value; }
         }
 
@@ -145,8 +145,10 @@ namespace ODEliteTracker.Services
                     settingsStore.SelectedCommanderID = SelectedCommander.Id;
                 }
 
-                
-                foreach (var parser in journalLogParserList)
+                //Make a copy as when switching views during load it will add to this list
+                var currentParsers = journalLogParserList.ToArray();
+
+                foreach (var parser in currentParsers)
                 {
                     parser.ClearData();
                     parser.RunBeforeParsingHistory(settingsStore.SelectedCommanderID);
@@ -154,11 +156,16 @@ namespace ODEliteTracker.Services
 
                 var history = journalLogParserList.Where(x => x.EventsToParse.Count != 0).ToList();
                 if (SelectedCommander?.UseCAPI == true && string.IsNullOrEmpty(SelectedCommander.Name) == false)
-                    _= Task.Run(() => capiService.Login(SelectedCommander.Name, SelectedCommander.IsLegacy).ConfigureAwait(true));
+                    _ = Task.Run(() => capiService.Login(SelectedCommander.Name, SelectedCommander.IsLegacy).ConfigureAwait(true));
 
                 await eventParser.StreamJournalHistoryOfTypeAsync(settingsStore.SelectedCommanderID, history, settingsStore.JournalAgeDateTime).ConfigureAwait(true);
                 IsLive = true;
                 Processing = false;
+
+                foreach (var parser in currentParsers)
+                {
+                    parser.IsLive = true;
+                }
             }
         }
         #endregion
@@ -168,7 +175,7 @@ namespace ODEliteTracker.Services
         public async Task RegisterLogProcessor(IProcessJournalLogs logProcesser)
         {
             journalLogParserList.Add(logProcesser);
-            while (Processing) 
+            while (Processing)
             {
                 await Task.Delay(100);
             }
@@ -178,7 +185,9 @@ namespace ODEliteTracker.Services
                 logProcesser.ClearData();
                 logProcesser.RunBeforeParsingHistory(settingsStore.SelectedCommanderID);
 
-               await Task.Run(async () => await eventParser.StreamJournalHistoryOfTypeAsync(settingsStore.SelectedCommanderID, [logProcesser], settingsStore.JournalAgeDateTime)).ConfigureAwait(true);
+                await Task.Run(async () => await eventParser.StreamJournalHistoryOfTypeAsync(settingsStore.SelectedCommanderID, [logProcesser], settingsStore.JournalAgeDateTime)).ConfigureAwait(true);
+
+                logProcesser.IsLive = true;
             }
         }
 
@@ -288,7 +297,7 @@ namespace ODEliteTracker.Services
             if (selectedCommander == null)
                 return false;
 
-            if(statusWatchers.Contains(watcher) == false)
+            if (statusWatchers.Contains(watcher) == false)
                 statusWatchers.Add(watcher);
             return eventParser.StartStatusWatcher();
         }
@@ -326,7 +335,7 @@ namespace ODEliteTracker.Services
                 || CanCallCAPI == false)
             {
                 return null;
-            }           
+            }
 
             var ret = await capiService.GetCarrier(selectedCommander.Name);
 

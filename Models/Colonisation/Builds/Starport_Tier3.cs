@@ -60,25 +60,26 @@ namespace ODEliteTracker.Models.Colonisation.Builds
     {
         public DodecPrimary() : base(ColonisationBuild.DodecP, new()
         {
-            { "$water_name;", 8441 },
-            { "$titanium_name;", 43833 },
-            { "$copper_name;", 3138 },
             { "$aluminium_name;", 50248 },
-            { "$fruitandvegetables_name;", 363 },
-            { "$foodcartridges_name;", 605 },
-            { "$polymers_name;", 2885 },
-            { "$semiconductors_name;", 523 },
-            { "$superconductors_name;", 825 },
-            { "$powergenerators_name;", 163 },
-            { "$waterpurifiers_name;", 263 },
-            { "$computercomponents_name;", 483 },
-            { "$nonlethalweapons_name;", 63 },
+            { "$autofabricators_name;", 314 },
             { "$ceramiccomposites_name;", 5672 },
-            { "$liquidoxygen_name;", 19405 },
-            { "$insulatingmembrane_name;", 1970 },
             { "$cmmcomposite_name;", 56635 },
+            { "$computercomponents_name;", 483 },
+            { "$copper_name;", 3138 },
+            { "$foodcartridges_name;", 605 },
+            { "$fruitandvegetables_name;", 363 },
+            { "$insulatingmembrane_name;", 1970 },
+            { "$liquidoxygen_name;", 19405 },
             { "$medicaldiagnosticequipment_name;", 63 },
-            { "$steel_name;", 74062 }
+            { "$nonlethalweapons_name;", 63 },
+            { "$polymers_name;", 2855 },
+            { "$powergenerators_name;", 163 },
+            { "$semiconductors_name;", 523 },
+            { "$steel_name;", 74062 },
+            { "$superconductors_name;", 825 },
+            { "$titanium_name;", 43833 },
+            { "$water_name;", 8441 },
+            { "$waterpurifiers_name;", 263 },
         })
         { }
     }

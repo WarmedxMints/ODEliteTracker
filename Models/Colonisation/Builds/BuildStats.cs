@@ -12,6 +12,7 @@ namespace ODEliteTracker.Models.Colonisation.Builds
         {
             foreach (var resource in resources)
             {
+          
                 if (Stats.TryGetValue(resource.FDEVName, out int value) && value == resource.RequiredAmount)
                 {
                     continue;

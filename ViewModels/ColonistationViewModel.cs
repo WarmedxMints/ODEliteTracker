@@ -1027,26 +1027,31 @@ namespace ODEliteTracker.ViewModels
         {
             SelectedBuild = build;
             ColonisationBuildTotals.BuildItemList(build);
+            CheckMarket();
         }
 
         private void OnAddSelectedBuildToWishList(object? obj)
         {
             ColonisationBuildTotals.AddSelectedToWishList();
+            CheckMarket();
         }
 
         private void OnRemoveSelectedFromWishList(object? obj)
         {
             ColonisationBuildTotals.RemoveSelectedFromWishList();
+            CheckMarket();
         }
 
         private void OnRemoveBuildFromWishList(ColonisationBuild build)
         {
             ColonisationBuildTotals.RemoveFromWishlist(build);
+            CheckMarket();
         }
 
         private void OnAddBuildToWishList(ColonisationBuild build)
         {
             ColonisationBuildTotals.AddToWishlist(build);
+            CheckMarket();
         }
 
         private void OnSetAssetFilter(AssetFilter filter)

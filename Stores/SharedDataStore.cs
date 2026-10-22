@@ -78,6 +78,7 @@ namespace ODEliteTracker.Stores
                 { JournalTypeEnum.DockingDenied, false },
                 { JournalTypeEnum.FSDJump, true},
                 { JournalTypeEnum.FSSSignalDiscovered, true },
+                { JournalTypeEnum.FSSSignalsDiscoveredEvent, true },
                 { JournalTypeEnum.JetConeBoost, true },
                 { JournalTypeEnum.LeaveBody, true},
                 { JournalTypeEnum.Loadout, true },
@@ -114,6 +115,7 @@ namespace ODEliteTracker.Stores
         public Dictionary<ulong, StarSystem> Systems => systems;
         public List<SystemInRoute> CurrentRoute => currentRoute;
         public IEnumerable<ShipInfo> Ships => commandersShips.Values;
+        public Station? CurrentStation => currentStation;
         #endregion
 
         #region Events
@@ -202,22 +204,8 @@ namespace ODEliteTracker.Stores
                     break;
 
                 case CargoEvent.CargoEventArgs:
-                    var cargo = journalManager.GetCargo();
-
-                    if (cargo != null && cargo.Vessel.Equals("Ship", StringComparison.OrdinalIgnoreCase) && CurrentShipInfo != null)
-                    {
-                        CurrentShipInfo.Cargo = [.. cargo.Inventory.Select(x =>
-                        {
-                            return new ShipCargo((string.IsNullOrEmpty(x.Name_Localised) ? x.Name : x.Name_Localised).ToTitleCase(), x.Count);
-                        })];
-
-                        if (CurrentShipCargo != null)
-                        {
-                            ShipCargoUpdatedEvent?.Invoke(this, CurrentShipInfo);
-                        }
-                    }
+                    GetShipCargo();
                     break;
-
                 case CarrierJumpEvent.CarrierJumpEventArgs carrierJump:
                     carrierJump.StationName = CheckForCarrierNames(carrierJump.StationType, carrierJump.StationName, carrierJump.MarketID);
                     UpdateCurrentSystem(new(carrierJump));
@@ -356,34 +344,12 @@ namespace ODEliteTracker.Stores
                     break;
 
                 case FSSSignalDiscoveredEvent.FSSSignalDiscoveredEventArgs fss:
-                    if (fss.IsStation == false)
-                        break;
-
-                    if (string.Equals(fss.SignalType, "FleetCarrier", StringComparison.OrdinalIgnoreCase) && string.IsNullOrEmpty(fss.SignalName) == false)
+                    ProcessFSSSignals(fss);
+                    break;
+                case FSSSignalsDiscoveredEvent.FSSSignalsDiscoveredEventArgs fssSignals:
+                    foreach(var signal in fssSignals.Signals)
                     {
-                        var id = fss.SignalName.Split(' ').Last();
-
-                        if (carrierNames.ContainsKey(id))
-                        {
-                            carrierNames[id] = fss.SignalName;
-                            break;
-                        }
-
-                        _ = carrierNames.TryAdd(id, fss.SignalName);
-                        break;
-                    }
-
-                    if (string.Equals(fss.SignalType, "SquadronCarrier", StringComparison.OrdinalIgnoreCase) && string.IsNullOrEmpty(fss.SignalName) == false)
-                    {
-                        var id = fss.SignalName.Split('|').Last().Trim();
-
-                        if (carrierNames.ContainsKey(id))
-                        {
-                            carrierNames[id] = fss.SignalName;
-                            break;
-                        }
-
-                        _ = carrierNames.TryAdd(id, fss.SignalName);
+                        ProcessFSSSignals(signal);
                     }
                     break;
                 case JetConeBoostEvent.JetConeBoostEventArgs jetConeBoost:
@@ -679,6 +645,59 @@ namespace ODEliteTracker.Stores
             }
         }
 
+        private void GetShipCargo()
+        {
+            var cargo = journalManager.GetCargo();
+
+            if (cargo != null && cargo.Vessel.Equals("Ship", StringComparison.OrdinalIgnoreCase) && CurrentShipInfo != null)
+            {
+                CurrentShipInfo.Cargo = [.. cargo.Inventory.Select(x =>
+                        {
+                            return new ShipCargo((string.IsNullOrEmpty(x.Name_Localised) ? x.Name : x.Name_Localised).ToTitleCase(), x.Count);
+                        })];
+
+                if (CurrentShipCargo != null)
+                {
+                    ShipCargoUpdatedEvent?.Invoke(this, CurrentShipInfo);
+                }
+            }
+        }
+
+        private void ProcessFSSSignals(FSSSignalDiscoveredEvent.FSSSignalDiscoveredEventArgs fss)
+        {
+            if (fss.IsStation == false)
+                return;
+
+            if (string.Equals(fss.SignalType, "FleetCarrier", StringComparison.OrdinalIgnoreCase) && string.IsNullOrEmpty(fss.SignalName) == false)
+            {
+                var id = fss.SignalName.Split(' ').Last();
+
+                if (carrierNames.ContainsKey(id))
+                {
+                    carrierNames[id] = fss.SignalName;
+                    return;
+                }
+
+                _ = carrierNames.TryAdd(id, fss.SignalName);
+                return;
+            }
+
+            if (string.Equals(fss.SignalType, "SquadronCarrier", StringComparison.OrdinalIgnoreCase) && string.IsNullOrEmpty(fss.SignalName) == false)
+            {
+                var id = fss.SignalName.Split('|').Last().Trim();
+
+                if (carrierNames.ContainsKey(id))
+                {
+                    carrierNames[id] = fss.SignalName;
+                    return;
+                }
+
+                _ = carrierNames.TryAdd(id, fss.SignalName);
+            }
+
+            return;
+        }
+
         private void SetNavRoute(NavigationRoute? route)
         {
             if (route == null)
@@ -871,17 +890,8 @@ namespace ODEliteTracker.Stores
         public override void RunAfterParsingHistory()
         {
             journalManager.StartStatusWatcher(this);
-            var cargo = journalManager.GetCargo();
 
-            if (cargo != null && cargo.Vessel.Equals("Ship", StringComparison.OrdinalIgnoreCase) && CurrentShipInfo != null)
-            {
-                CurrentShipInfo.Cargo = [.. cargo.Inventory.Select(x => new ShipCargo((string.IsNullOrEmpty(x.Name_Localised) ? x.Name : x.Name_Localised).ToTitleCase(), x.Count))];
-
-                if (CurrentShipCargo != null)
-                {
-                    ShipCargoUpdatedEvent?.Invoke(this, CurrentShipInfo);
-                }
-            }
+            GetShipCargo();
 
             var market = marketController.GetMarket();
 
@@ -901,7 +911,7 @@ namespace ODEliteTracker.Stores
                 WatchedMarkets = watchedMarkets;
             }
 
-            IsLive = true;
+            base.RunAfterParsingHistory();
         }
 
         public override void SaveData()

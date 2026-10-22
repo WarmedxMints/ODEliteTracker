@@ -15,7 +15,8 @@
     <Grid Background="{DynamicResource TitleBarBackGround}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition  MinWidth="230"
-                               Width="Auto" />
+                               Width="*" />
+            <ColumnDefinition  Width="*" />
             <ColumnDefinition  Width="*" />
             <ColumnDefinition  Width="*" />
             <ColumnDefinition  MinWidth="230"
@@ -41,6 +42,10 @@
                     <MenuItem Header="Open On Spansh"
                               Command="{Binding OpenSystemFromEnumCommand}"
                               CommandParameter="{x:Static models:SystemWebSite.Spansh}"
+                              Style="{DynamicResource EliteContextMenuItemStyle}" />
+                    <MenuItem Header="Open On Raven Colonial"
+                              Command="{Binding OpenSystemFromEnumCommand}"
+                              CommandParameter="{x:Static models:SystemWebSite.RavenColonial}"
                               Style="{DynamicResource EliteContextMenuItemStyle}" />
                     <MenuItem Header="Copy To Clipboard"
                               Command="{Binding CopyToClipboardCommand}"
@@ -77,12 +82,19 @@
             </Button.ContextMenu>
         </Button>
 
+        <TextBlock Text="{Binding CurrentRegion}"
+                   Foreground="{DynamicResource PrimaryForeground}"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   Grid.Column="2"
+                   Margin="5,0" />
+        
         <Button Content="{Binding CurrentShipName}"
                 Style="{DynamicResource StatusBarBtn}"
                 IsEnabled="{Binding UiEnabled, Mode=OneWay}"
                 Command="{Binding OpenShipyardCommand}"
                 Margin="5,0"
-                Grid.Column="2"
+                Grid.Column="3"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center">
             <Button.ContextMenu>
@@ -106,7 +118,7 @@
         </Button>
 
         <StackPanel  Margin="5,5"
-                     Grid.Column="3"
+                     Grid.Column="4"
                      Orientation="Horizontal"
                      HorizontalAlignment="Right"
                      VerticalAlignment="Center">

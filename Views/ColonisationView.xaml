@@ -797,13 +797,13 @@
                                     <TextBlock Text="Total"
                                                Margin="1"
                                                FontSize="20" />
-                                    
+
                                     <TextBlock Text="{Binding ElementName=Root, Path=DataContext.EstimatedTrips}"
                                                FontSize="20"
                                                Grid.Column="2"
                                                Margin="1"
                                                HorizontalAlignment="Right" />
-                                    
+
                                     <TextBlock Text="{Binding Total}"
                                                FontSize="20"
                                                Grid.Column="3"
@@ -1437,7 +1437,6 @@
                                 <DataGrid ItemsSource="{Binding ColonisationBuildTotals.AllAssetStats}"
                                           Grid.Row="2"
                                           Style="{DynamicResource ConstructionResourcesDataGrid}"
-                                          RowStyle="{DynamicResource NoSelectRowStyle}"
                                           CellStyle="{DynamicResource NoSelectCellNoMargin}"
                                           Foreground="{DynamicResource PrimaryForeground}"
                                           FontSize="20"
@@ -1450,19 +1449,80 @@
                                           HeadersVisibility="Column"
                                           AutoGenerateColumns="False"
                                           HorizontalAlignment="Center">
+                                    <DataGrid.RowStyle>
+                                        <Style TargetType="DataGridRow"
+                                               BasedOn="{StaticResource NoSelectRowStyle}">
+                                            <Setter Property="DetailsVisibility"
+                                                    Value="{Binding ShowSubTypes, Converter={StaticResource BoolToVis}, UpdateSourceTrigger=PropertyChanged}" />
+                                        </Style>
+                                    </DataGrid.RowStyle>
+                                    <DataGrid.RowDetailsTemplate>
+                                        <DataTemplate>
+                                            <Grid Background="{DynamicResource CardBackground}">
+                                                <DataGrid ItemsSource="{Binding SubTypes}"
+                                                          Margin="10"
+                                                          Background="{DynamicResource CardBackground}"
+                                                          Style="{DynamicResource ConstructionResourcesDataGrid}"
+                                                          RowStyle="{DynamicResource NoSelectRowStyle}"
+                                                          CellStyle="{DynamicResource NoSelectCellNoMargin}"
+                                                          Foreground="{DynamicResource PrimaryForeground}"
+                                                          FontSize="18"
+                                                          IsReadOnly="True"
+                                                          SelectionMode="Single"
+                                                          CanUserSortColumns="True"
+                                                          ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                                          ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                                          AlternatingRowBackground="{DynamicResource RowAlternationColour}"
+                                                          HeadersVisibility="Column"
+                                                          AutoGenerateColumns="False"
+                                                          HorizontalAlignment="Left">
+                                                    <DataGrid.Columns>
+                                                        <DataGridTextColumn Header="Name"
+                                                                            Width="200"
+                                                                            HeaderStyle="{DynamicResource DataGridHeaderLeft}"
+                                                                            ElementStyle="{DynamicResource DataGridElementLeftMarginBody}"
+                                                                            Binding="{Binding Name}" />
+                                                        <DataGridTextColumn Header="Small Pads"
+                                                                            Width="120"
+                                                                            HeaderStyle="{DynamicResource DataGridHeaderCenter}"
+                                                                            ElementStyle="{DynamicResource DataGridElementCenter}"
+                                                                            Binding="{Binding SPad}" />
+                                                        <DataGridTextColumn Header="Medium Pads"
+                                                                            Width="120"
+                                                                            HeaderStyle="{DynamicResource DataGridHeaderCenter}"
+                                                                            ElementStyle="{DynamicResource DataGridElementCenter}"
+                                                                            Binding="{Binding MPad}" />
+                                                        <DataGridTextColumn Header="Large Pads"
+                                                                            Width="120"
+                                                                            HeaderStyle="{DynamicResource DataGridHeaderCenter}"
+                                                                            ElementStyle="{DynamicResource DataGridElementCenter}"
+                                                                            Binding="{Binding LPad}" />
+                                                    </DataGrid.Columns>
+                                                </DataGrid>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </DataGrid.RowDetailsTemplate>
                                     <DataGrid.Columns>
+                                        <DataGridTemplateColumn IsReadOnly="False">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <CheckBox IsChecked="{Binding ShowSubTypes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                              Style="{DynamicResource RowDetailsCheckBoxStyle}" />
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
                                         <DataGridTemplateColumn Header="Type"
                                                                 HeaderStyle="{DynamicResource DataGridHeaderLeft}"
+                                                                IsReadOnly="True"
                                                                 SortMemberPath="Filter"
                                                                 Width="*">
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <StackPanel Orientation="Vertical"
                                                                 Margin="0,0,10,0">
-                                                        <TextBlock Text="{Binding Type}"
+                                                        <TextBlock Text="{Binding Type, Mode=OneWay}"
                                                                    Foreground="{DynamicResource Header}" />
-                                                        <TextBlock Text="{Binding SubType}"
-                                                                   MaxWidth="270"
+                                                        <TextBlock Text="{Binding SubType, Mode=OneWay}"
                                                                    HorizontalAlignment="Left"
                                                                    TextWrapping="Wrap"
                                                                    FontSize="15" />
@@ -1472,25 +1532,28 @@
                                         </DataGridTemplateColumn>
                                         <DataGridTextColumn Header="Tier"
                                                             Width="60"
+                                                            IsReadOnly="True"
                                                             SortMemberPath="TierInt"
                                                             HeaderStyle="{DynamicResource DataGridHeaderCenter}"
                                                             ElementStyle="{DynamicResource DataGridElementCenter}"
-                                                            Binding="{Binding Tier}" />
+                                                            Binding="{Binding Tier, Mode=OneWay}" />
                                         <DataGridTextColumn Header="Pad Size"
                                                             Width="90"
+                                                            IsReadOnly="True"
                                                             SortMemberPath="PadEnum"
                                                             HeaderStyle="{DynamicResource DataGridHeaderCenter}"
                                                             ElementStyle="{DynamicResource DataGridElementCenter}"
-                                                            Binding="{Binding Pad}" />
+                                                            Binding="{Binding Pad, Mode=OneWay}" />
                                         <DataGridTemplateColumn Header="Cost"
                                                                 Width="60"
+                                                                IsReadOnly="True"
                                                                 SortMemberPath="CostSorting"
                                                                 HeaderStyle="{StaticResource DataGridHeaderCenter}">
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <StackPanel Orientation="Horizontal"
                                                                 HorizontalAlignment="Center">
-                                                        <TextBlock Text="{Binding PointCost}"
+                                                        <TextBlock Text="{Binding PointCost, Mode=OneWay}"
                                                                    VerticalAlignment="Center" />
                                                         <Image Width="25"
                                                                Height="25">
@@ -1524,12 +1587,13 @@
                                         </DataGridTemplateColumn>
                                         <DataGridTemplateColumn Header="Gain"
                                                                 Width="60"
+                                                                IsReadOnly="True"
                                                                 SortMemberPath="GainSorting"
                                                                 HeaderStyle="{StaticResource DataGridHeaderCenter}">
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="{Binding PointGain}"
+                                                        <TextBlock Text="{Binding PointGain, Mode=OneWay}"
                                                                    VerticalAlignment="Center" />
                                                         <Image Width="25"
                                                                Height="25">
@@ -1564,6 +1628,7 @@
                                         <DataGridTemplateColumn Header="Economy"
                                                                 SortMemberPath="Economy"
                                                                 Width="100"
+                                                                IsReadOnly="True"
                                                                 HeaderStyle="{StaticResource DataGridHeaderCenter}">
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
@@ -1597,6 +1662,7 @@
                                         </DataGridTemplateColumn>
                                         <DataGridTemplateColumn Header="Pop"
                                                                 Width="60"
+                                                                IsReadOnly="True"
                                                                 SortMemberPath="Population"
                                                                 HeaderStyle="{StaticResource DataGridHeaderCenter}">
                                             <DataGridTemplateColumn.CellTemplate>
@@ -1611,6 +1677,7 @@
                                         </DataGridTemplateColumn>
                                         <DataGridTemplateColumn Header="M Pop"
                                                                 Width="60"
+                                                                IsReadOnly="True"
                                                                 SortMemberPath="MaxPopulation"
                                                                 HeaderStyle="{StaticResource DataGridHeaderCenter}">
                                             <DataGridTemplateColumn.CellTemplate>
@@ -1625,6 +1692,7 @@
                                         </DataGridTemplateColumn>
                                         <DataGridTemplateColumn Header="Sec"
                                                                 Width="60"
+                                                                IsReadOnly="True"
                                                                 SortMemberPath="Security"
                                                                 HeaderStyle="{StaticResource DataGridHeaderCenter}">
                                             <DataGridTemplateColumn.CellTemplate>
@@ -1639,6 +1707,7 @@
                                         </DataGridTemplateColumn>
                                         <DataGridTemplateColumn Header="Wealth"
                                                                 Width="60"
+                                                                IsReadOnly="True"
                                                                 SortMemberPath="Wealth"
                                                                 HeaderStyle="{StaticResource DataGridHeaderCenter}">
                                             <DataGridTemplateColumn.CellTemplate>
@@ -1653,6 +1722,7 @@
                                         </DataGridTemplateColumn>
                                         <DataGridTemplateColumn Header="Tech"
                                                                 Width="60"
+                                                                IsReadOnly="True"
                                                                 SortMemberPath="TechLevel"
                                                                 HeaderStyle="{StaticResource DataGridHeaderCenter}">
                                             <DataGridTemplateColumn.CellTemplate>
@@ -1667,6 +1737,7 @@
                                         </DataGridTemplateColumn>
                                         <DataGridTemplateColumn Header="SoL"
                                                                 Width="60"
+                                                                IsReadOnly="True"
                                                                 SortMemberPath="StandardOfLiving"
                                                                 HeaderStyle="{StaticResource DataGridHeaderCenter}">
                                             <DataGridTemplateColumn.CellTemplate>
@@ -1681,6 +1752,7 @@
                                         </DataGridTemplateColumn>
                                         <DataGridTemplateColumn Header="Dev"
                                                                 Width="60"
+                                                                IsReadOnly="True"
                                                                 SortMemberPath="Development"
                                                                 HeaderStyle="{StaticResource DataGridHeaderCenter}">
                                             <DataGridTemplateColumn.CellTemplate>
@@ -1695,6 +1767,7 @@
                                         </DataGridTemplateColumn>
                                         <DataGridTextColumn Header="Score"
                                                             Width="60"
+                                                            IsReadOnly="True"
                                                             SortMemberPath="Score"
                                                             HeaderStyle="{StaticResource DataGridHeaderCenter}"
                                                             ElementStyle="{StaticResource DataGridElementCenter}"

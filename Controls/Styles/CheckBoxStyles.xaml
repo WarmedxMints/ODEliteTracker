@@ -61,12 +61,87 @@
                         <Trigger Property="IsEnabled"
                                  Value="False">
                             <Setter Property="BorderBrush"
-                                    Value="{DynamicResource PrimaryDisabled}" />
+                                    Value="{DynamicResource PrimaryControlForegroundDisabled}" />
                             <Setter Property="Foreground"
-                                    Value="{DynamicResource PrimaryDisabled}" />
+                                    Value="{DynamicResource PrimaryControlForegroundDisabled}" />
                             <Setter TargetName="CheckMark"
                                     Property="Background"
-                                    Value="{DynamicResource PrimaryDisabled}" />
+                                    Value="{DynamicResource PrimaryControlForegroundDisabled}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="CheckBox"
+           x:Key="RowDetailsCheckBoxStyle">
+        <Setter Property="SnapsToDevicePixels"
+                Value="True" />
+        <Setter Property="OverridesDefaultStyle"
+                Value="True" />
+        <Setter Property="FocusVisualStyle"
+                Value="{x:Null}" />
+        <Setter Property="Focusable"
+                Value="False" />
+        <Setter Property="BorderBrush"
+                Value="{DynamicResource PrimaryControlBorder}" />
+        <Setter Property="VerticalAlignment"
+                Value="Center" />
+        <Setter Property="HorizontalAlignment"
+                Value="Center" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="CheckBox">
+                    <BulletDecorator Background="Transparent">
+                        <BulletDecorator.Bullet>
+                            <Border x:Name="Border"
+                                    Width="15"
+                                    Height="15"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="1"
+                                    ClipToBounds="True">
+                                <Border.Effect>
+                                    <DropShadowEffect BlurRadius="5"
+                                                      ShadowDepth="1" />
+                                </Border.Effect>
+
+                                <TextBlock FontFamily="Segoe MDL2 Assets"
+                                           x:Name="CheckMark"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Margin="2"
+                                           Text="&#xE738;" />
+                            </Border>
+                        </BulletDecorator.Bullet>
+                        <ContentPresenter Margin="5,0,0,0"
+                                          x:Name="ContentPresenter"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          RecognizesAccessKey="True" />
+                    </BulletDecorator>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked"
+                                 Value="False">
+                            <Setter TargetName="CheckMark"
+                                    Property="Text"
+                                    Value="&#xE710;" />
+                        </Trigger>
+                        <Trigger Property="IsFocused"
+                                 Value="True">
+                            <Setter Property="Foreground"
+                                    Value="Green" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled"
+                                 Value="False">
+                            <Setter Property="BorderBrush"
+                                    Value="{DynamicResource PrimaryControlForegroundDisabled}" />
+                            <Setter Property="Foreground"
+                                    Value="{DynamicResource PrimaryControlForegroundDisabled}" />
+                            <Setter TargetName="CheckMark"
+                                    Property="Foreground"
+                                    Value="{DynamicResource PrimaryControlForegroundDisabled}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -148,7 +223,7 @@
             </Setter.Value>
         </Setter>
     </Style>
-    
+
     <Style TargetType="CheckBox"
            x:Key="DiscordCheckBoxStyle">
         <Setter Property="SnapsToDevicePixels"
@@ -181,8 +256,7 @@
                                 <Rectangle.OpacityMask>
                                     <VisualBrush Stretch="Uniform">
                                         <VisualBrush.Visual>
-                                            <Image Source="/Assets/Icons/Discord-Symbol-White.png"
-                                                   />
+                                            <Image Source="/Assets/Icons/Discord-Symbol-White.png" />
                                         </VisualBrush.Visual>
                                     </VisualBrush>
                                 </Rectangle.OpacityMask>

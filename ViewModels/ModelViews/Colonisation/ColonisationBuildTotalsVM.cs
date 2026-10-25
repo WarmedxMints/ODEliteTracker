@@ -164,21 +164,21 @@ namespace ODEliteTracker.ViewModels.ModelViews.Colonisation
             }
         }
 
-        private readonly IEnumerable<AssetStatsVM> allAssetStats = ColonisationAssetStats.GetAll().Select(x => new AssetStatsVM(x));
-        public IEnumerable<AssetStatsVM> AllAssetStats
+        private readonly List<AssetStatsVM> allAssetStats = [.. ColonisationAssetStats.GetAll().Select(x => new AssetStatsVM(x))];
+        public List<AssetStatsVM> AllAssetStats
         {
-            get => allAssetStats.Where(x => assetFilter.HasFlag(x.Filter));
+            get => [.. allAssetStats.Where(x => assetFilter.HasFlag(x.Filter))];
         }
 
         private readonly ObservableCollection<AssetStatsVM> assetStats = [];
-        public IEnumerable<AssetStatsVM> AssetStats => assetStats;
+        public ObservableCollection<AssetStatsVM> AssetStats => assetStats;
        
         private BuildItemSorting sorting = BuildItemSorting.Category;
 
         private ColonisationBuild selectedBuild = ColonisationBuild.OutpostP;
 
         private readonly ObservableCollection<ColonisationBuildWishListItem> wishListBuilds = [];
-        public IEnumerable<ColonisationBuildWishListItem> WishListBuilds => wishListBuilds;
+        public ObservableCollection<ColonisationBuildWishListItem> WishListBuilds => wishListBuilds;
 
         private string buildName = string.Empty;
         public string BuildName

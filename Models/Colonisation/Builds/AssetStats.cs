@@ -12,8 +12,12 @@
         All = SpaceOutpost | Starport | SpaceInstallation | SurfaceOutpost | Settlement | Hub
     }
 
+    public record AssetSubType(string Name,
+                                short SmallPads = 0,
+                                short MediumPads = 0,
+                                short LargePads = 0);
     public record AssetStats(string Type,
-                              string SubType,
+                              IReadOnlyList<AssetSubType> SubTypes,
                               LandingPadSize Padsize,
                               short Tier,
                               short PointCost,

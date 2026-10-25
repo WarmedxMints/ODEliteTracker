@@ -1,14 +1,18 @@
 ﻿using ODEliteTracker.Models.Colonisation.Builds;
 using ODMVVM.Helpers;
+using ODMVVM.ViewModels;
 
 namespace ODEliteTracker.ViewModels.ModelViews.Colonisation
 {
-    public sealed class AssetStatsVM(AssetStats stats)
+    public sealed class AssetStatsVM(AssetStats stats) : ODObservableObject
     {
         private readonly AssetStats stats = stats;
 
         public string Type => stats.Type;
-        public string SubType => stats.SubType;
+        public string SubType => string.Join(", ", stats.SubTypes.Select(x => x.Name));
+        public IEnumerable<AssetSubTypeVM> SubTypes => stats.SubTypes.Select(x => new AssetSubTypeVM(x));
+        private bool showSubTypes;
+        public bool ShowSubTypes { get => showSubTypes; set { showSubTypes = value; OnPropertyChanged(nameof(ShowSubTypes)); } }
         public string Pad
         {
             get

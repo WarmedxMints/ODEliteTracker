@@ -16,6 +16,7 @@ using ODEliteTracker.ViewModels.ModelViews.Colonisation;
 using ODJournalDatabase.Database.Interfaces;
 using ODJournalDatabase.JournalManagement;
 using ODMVVM.Helpers;
+using System.Diagnostics;
 
 namespace ODEliteTracker.Stores
 {
@@ -54,7 +55,8 @@ namespace ODEliteTracker.Stores
         private Station? currentStation;
         private readonly Dictionary<ColonisationBuild, int> colonisationWishList = [];
         private int currentCommanderId = -1;
-        private readonly Dictionary<string, string> carrierNames = [];
+        private readonly Dictionary<string, string> stationTypes = new(StringComparer.InvariantCultureIgnoreCase);
+        private readonly Dictionary<string, string> carrierNames = new(StringComparer.InvariantCultureIgnoreCase);
         private readonly Dictionary<ulong, string> carrierNamesByMarketID = [];
         private readonly Dictionary<int, ShipInfo> commandersShips = [];
         private List<SystemInRoute> currentRoute = [];
@@ -207,6 +209,8 @@ namespace ODEliteTracker.Stores
                     GetShipCargo();
                     break;
                 case CarrierJumpEvent.CarrierJumpEventArgs carrierJump:
+                    if (carrierJump.SystemAddress != CurrentSystem?.Address)
+                        stationTypes.Clear();
                     carrierJump.StationName = CheckForCarrierNames(carrierJump.StationType, carrierJump.StationName, carrierJump.MarketID);
                     UpdateCurrentSystem(new(carrierJump));
                     string? bodyStn = null;
@@ -260,7 +264,7 @@ namespace ODEliteTracker.Stores
                 case DockedEvent.DockedEventArgs docked:
 
                     CurrentMarketID = docked.MarketID;
-
+                    var originalName = docked.StationName;
                     docked.StationName = docked.StationName_Localised ?? docked.StationName;
                     docked.StationName = docked.StationName.Replace("$EXT_PANEL_ColonisationShip;", "Colonisation Ship -");
 
@@ -294,9 +298,19 @@ namespace ODEliteTracker.Stores
                     {
                         stationFaction = docked.StationServices.Contains("squadronBank") ? "Squadron Carrier" : "Personal Carrier";
                     }
+
+                    var stationType = EliteJournalReaderHelpers.StationTypeText(docked.StationType);
+
+                    if (string.Equals(docked.StationState, "Construction") && stationTypes.TryGetValue(originalName, out var type))
+                    {
+#if DEBUG 
+                        Trace.WriteLine($"Converted Station Type from {stationType} to {type}");
+#endif
+                        stationType = type;
+                    }
                     var args = new NotificationArgs(docked.StationName,
                         [
-                            $"{EliteJournalReaderHelpers.StationTypeText(docked.StationType)}",
+                            $"{stationType}",
                             $"{stationFaction}",
                             $"{docked.StationGovernment_Localised ?? docked.StationGovernment}",
                             $"{docked.StationEconomy_Localised ?? docked.StationEconomy}",
@@ -312,6 +326,8 @@ namespace ODEliteTracker.Stores
                     break;
 
                 case FSDJumpEvent.FSDJumpEventArgs fsdJump:
+                    if (fsdJump.SystemAddress != CurrentSystem?.Address)
+                        stationTypes.Clear();
                     if (CurrentShipInfo != null)
                     {
                         CurrentShipInfo.CurrentBoostValue = 1;
@@ -370,6 +386,8 @@ namespace ODEliteTracker.Stores
                     break;
 
                 case LocationEvent.LocationEventArgs location:
+                    if (location.SystemAddress != CurrentSystem?.Address)
+                        stationTypes.Clear();
                     location.StationName = CheckForCarrierNames(location.StationType, location.StationName, location.MarketID);
                     UpdateCurrentSystem(new(location));
                     string? bodyStation = null;
@@ -665,37 +683,54 @@ namespace ODEliteTracker.Stores
 
         private void ProcessFSSSignals(FSSSignalDiscoveredEvent.FSSSignalDiscoveredEventArgs fss)
         {
-            if (fss.IsStation == false)
+            if ((!string.Equals("Outpost", fss.SignalType) || fss.IsStation == false) && string.IsNullOrEmpty(fss.SignalName)) 
                 return;
 
-            if (string.Equals(fss.SignalType, "FleetCarrier", StringComparison.OrdinalIgnoreCase) && string.IsNullOrEmpty(fss.SignalName) == false)
+            switch (fss.SignalType)
             {
-                var id = fss.SignalName.Split(' ').Last();
+                case "FleetCarrier":
+                    var id = fss.SignalName.Split(' ').Last();
 
-                if (carrierNames.ContainsKey(id))
-                {
-                    carrierNames[id] = fss.SignalName;
-                    return;
-                }
+                    if (carrierNames.ContainsKey(id))
+                    {
+                        carrierNames[id] = fss.SignalName;
+                        return;
+                    }
 
-                _ = carrierNames.TryAdd(id, fss.SignalName);
-                return;
+                    _ = carrierNames.TryAdd(id, fss.SignalName);
+                    break;
+                case "SquadronCarrier":
+                    var ids = fss.SignalName.Split('|').Last().Trim();
+
+                    if (carrierNames.ContainsKey(ids))
+                    {
+                        carrierNames[ids] = fss.SignalName;
+                        return;
+                    }
+
+                    _ = carrierNames.TryAdd(ids, fss.SignalName);
+                    break;
+
+                case "StationAsteroid":                    
+                case "StationBernalSphere" :
+                case "StationCoriolis" :
+                case "StationDodec" :
+                case "StationMegaShip" :
+                case "StationONeilCylinder" :
+                case "StationONeilOrbis" :
+                    if (stationTypes.ContainsKey(fss.SignalName))
+                        return;
+
+                    stationTypes.TryAdd(fss.SignalName, EliteJournalReaderHelpers.FSSStationTypeToName(fss.SignalType));
+                    break;
+                case "Outpost":
+                    if (stationTypes.ContainsKey(fss.SignalName))
+                        return;
+
+                    stationTypes.TryAdd(fss.SignalName, "Outpost");
+                    break;
+
             }
-
-            if (string.Equals(fss.SignalType, "SquadronCarrier", StringComparison.OrdinalIgnoreCase) && string.IsNullOrEmpty(fss.SignalName) == false)
-            {
-                var id = fss.SignalName.Split('|').Last().Trim();
-
-                if (carrierNames.ContainsKey(id))
-                {
-                    carrierNames[id] = fss.SignalName;
-                    return;
-                }
-
-                _ = carrierNames.TryAdd(id, fss.SignalName);
-            }
-
-            return;
         }
 
         private void SetNavRoute(NavigationRoute? route)

@@ -422,6 +422,28 @@
                                   Command="{Binding Data.SetSelctedAsTargetCommand, Source={StaticResource proxy}}"
                                   Style="{DynamicResource EliteContextMenuItemStyle}" />
                         <Separator Style="{DynamicResource EliteSeparatorStyle}"/>
+                        <MenuItem Header="Open on Inara"
+                                HorizontalAlignment="Stretch"
+                                Margin="0,2"
+                                HorizontalContentAlignment="Left"
+                                  Command="{Binding Data.OpenSystemWebPageCommand, Source={StaticResource proxy}}"
+                                CommandParameter="{x:Static models:SystemWebSite.Inara}"
+                                  Style="{DynamicResource EliteContextMenuItemStyle}" />
+                        <MenuItem Header="Open on Spansh"
+                                HorizontalAlignment="Stretch"
+                                Margin="0,2"
+                                HorizontalContentAlignment="Left"
+                                  Command="{Binding Data.OpenSystemWebPageCommand, Source={StaticResource proxy}}"
+                                CommandParameter="{x:Static models:SystemWebSite.Spansh}"
+                                  Style="{DynamicResource EliteContextMenuItemStyle}" />
+                        <MenuItem Header="Open on Raven Colonial"
+                                HorizontalAlignment="Stretch"
+                                Margin="0,2"
+                                HorizontalContentAlignment="Left"
+                                  Command="{Binding Data.OpenSystemWebPageCommand, Source={StaticResource proxy}}"
+                                CommandParameter="{x:Static models:SystemWebSite.RavenColonial}"
+                                  Style="{DynamicResource EliteContextMenuItemStyle}" />
+                        <Separator Style="{DynamicResource EliteSeparatorStyle}" />
                         <MenuItem Header="Delete System"
                                   Click="DeleteSelectedSystem"
                                   Style="{DynamicResource EliteContextMenuItemStyle}" />

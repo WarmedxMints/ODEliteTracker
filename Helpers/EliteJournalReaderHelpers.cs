@@ -1,4 +1,6 @@
-﻿namespace ODEliteTracker.Helpers
+﻿using ODEliteTracker.Models.BGS;
+
+namespace ODEliteTracker.Helpers
 {
     public static class EliteJournalReaderHelpers
     {
@@ -32,6 +34,21 @@
                 "CraterPort" => "Crater Port",
                 "PlanetaryConstructionDepot" => "Surface Construction Depot",
                 "SpaceConstructionDepot" => "Orbital Construction Depot",
+                _ => stationType,
+            };
+        }
+
+        public static string FSSStationTypeToName(string stationType)
+        {
+            return stationType switch
+            {
+                "StationAsteroid" => "Asteroid Base",
+                "StationBernalSphere" or
+                "StationONeilCylinder" => "Ocellus",
+                "StationCoriolis" => "Coriolis",
+                "StationDodec" => "Dodec",
+                "StationMegaShip" => "Mega Ship",
+                "StationONeilOrbis" => "Orbis",
                 _ => stationType,
             };
         }

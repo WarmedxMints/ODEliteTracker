@@ -556,7 +556,6 @@ namespace ODEliteTracker.Stores
                 return;
             }
             var capiCarrier = await journalManager.GetCAPICarrier();
-            await journalManager.GetCAPISquadron();
             if (capiCarrier == null || personalCarrierData != null && personalCarrierData.CarrierID != capiCarrier.Market.Id)
             {
                 return;
@@ -576,7 +575,6 @@ namespace ODEliteTracker.Stores
                 return;
             }
             var squadron = await journalManager.GetCAPISquadron();
-
             if (squadron == null || squadron.SquadronCarrier == null)
             {
                 return;

@@ -12,14 +12,11 @@
              x:Name="Root"
              d:DesignHeight="450"
              d:DesignWidth="800">
-    <UserControl.Resources>
-        <converter:SpanshCSVTypeToVisibility x:Key="VisConverter" />
-    </UserControl.Resources>
     <Grid DataContext="{Binding RouteController}">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="350"/>
+            <ColumnDefinition Width="310" />
             <ColumnDefinition Width="5" />
-            <ColumnDefinition  />
+            <ColumnDefinition MinWidth="300"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition />
@@ -55,14 +52,14 @@
                         Visibility="{Binding ElementName=Root, Path=ButtonsVisibility}"
                         Style="{DynamicResource EliteStyleButton}"
                         Command="{Binding CopyToClipboardCommand}"
-                        CommandParameter="{Binding CurrentTarget}"
+                        CommandParameter="{Binding CurrentTarget.SystemName}"
                         FontFamily="Segoe MDL2 Assets"
                         Content="&#xE77F;" />
                 <TextBlock VerticalAlignment="Center"
                            Grid.Row="1"
                            Text="{Binding CurrentTarget.SystemName}" />
             </StackPanel>
-            
+
             <TextBlock Text="Next System"
                        Grid.Row="2"
                        HorizontalAlignment="Left"
@@ -77,7 +74,7 @@
                         Visibility="{Binding ElementName=Root, Path=ButtonsVisibility}"
                         Style="{DynamicResource EliteStyleButton}"
                         Command="{Binding CopyToClipboardCommand}"
-                        CommandParameter="{Binding NextTarget}"
+                        CommandParameter="{Binding NextTarget.SystemName}"
                         FontFamily="Segoe MDL2 Assets"
                         Content="&#xE77F;" />
 
@@ -131,301 +128,60 @@
                 Height="30" />
         <!--#endregion-->
 
-        <!--#region R2R-->
-        <Grid Grid.Column="2"
-              Visibility="{Binding CurrentType, Converter={StaticResource VisConverter}, ConverterParameter={x:Static models:SpanshRouteType.RoadToRiches}}">
-            <DataGrid Style="{Binding ElementName=Root, Path=DataGridStyle}"
-                      RowHeight="25"
-                      ItemsSource="{Binding CurrentTarget.BodiesInfo}">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Body"
-                                        MinWidth="100"
-                                        Width="*"
-                                        CellStyle="{DynamicResource CmdrSelectionCellLeftVertCenter}"
-                                        Binding="{Binding Path=Body}" />
-                    <DataGridTextColumn MinWidth="100"
-                                        Header="Distance"
-                                        CellStyle="{DynamicResource CmdrSelectionCellRightVertCenter}"
-                                        Binding="{Binding Path=Distance}" />
-                    <DataGridTextColumn MinWidth="60"
-                                        CellStyle="{DynamicResource CmdrSelectionCellRightVertCenter}"
-                                        Binding="{Binding Path=Property1}"
-                                        Header="Value" />
-                </DataGrid.Columns>
-            </DataGrid>
-        </Grid>
-        <!--#endregion-->
-
-        <!--#region Neutron Route Info-->
-        <Grid Grid.Column="2"
-              MinWidth="300"
-              Visibility="{Binding CurrentType, Converter={StaticResource VisConverter}, ConverterParameter={x:Static models:SpanshRouteType.NeutronRoute}}">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="30" />
-                <RowDefinition Height="30" />
-                <RowDefinition Height="30" />
-                <RowDefinition Height="30" />
-                <RowDefinition />
-            </Grid.RowDefinitions>
-
-            <StackPanel Orientation="Horizontal"
-                        Grid.Row="0">
-                <TextBlock Text="Jump Distance"
-                           HorizontalAlignment="Left"
-                           VerticalAlignment="Center"
-                           Width="180" />
-                <TextBlock Text="{Binding NextTarget.Property1, StringFormat={}{0} ly}"
-                           VerticalAlignment="Center" />
-            </StackPanel>
-
-            <StackPanel Orientation="Horizontal"
-                        Grid.Row="1">
-                <TextBlock Text="Remaing Distance"
-                           HorizontalAlignment="Left"
-                           VerticalAlignment="Center"
-                           Width="180" />
-                <TextBlock Text="{Binding CurrentTarget.Property2, StringFormat={}{0} ly}"
-                           VerticalAlignment="Center" />
-            </StackPanel>
-
-            <StackPanel Orientation="Horizontal"
-                        Grid.Row="2">
-                <TextBlock Text="Jumps To System"
-                           HorizontalAlignment="Left"
-                           VerticalAlignment="Center"
-                           Width="180" />
-                <TextBlock Text="{Binding NextTarget.Property3}"
-                           VerticalAlignment="Center" />
-            </StackPanel>
-
-            <StackPanel Orientation="Horizontal"
-                        Grid.Row="3">
-                <TextBlock Text="Neutron Star"
-                           HorizontalAlignment="Left"
-                           VerticalAlignment="Center"
-                           Width="180" />
-                <TextBlock Text="{Binding CurrentTarget.Property4}"
-                           VerticalAlignment="Center" />
-            </StackPanel>
-        </Grid>
-        <!--#endregion-->
-
-        <!--#region World Type-->
-        <Grid Grid.Column="2"
-              Visibility="{Binding CurrentType, Converter={StaticResource VisConverter}, ConverterParameter={x:Static models:SpanshRouteType.WorldTypeRoute}}">
-            <DataGrid Style="{Binding ElementName=Root, Path=DataGridStyle}"
-                      Margin="0 5 5 10"
-                      RowHeight="25"
-                      ItemsSource="{Binding CurrentTarget.BodiesInfo}">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Body"
-                                        MinWidth="100"
-                                        Width="*"
-                                        CellStyle="{DynamicResource CmdrSelectionCellLeftVertCenter}"
-                                        Binding="{Binding Path=Body}" />
-                    <DataGridTextColumn MinWidth="100"
-                                        Header="Distance"
-                                        CellStyle="{DynamicResource CmdrSelectionCellRightVertCenter}"
-                                        Binding="{Binding Path=Distance, StringFormat={}{0} ls}" />
-                    <DataGridTextColumn MinWidth="60"
-                                        CellStyle="{DynamicResource CmdrSelectionCellRightVertCenter}"
-                                        Binding="{Binding Path=Property1}"
-                                        Header="Jumps" />
-                </DataGrid.Columns>
-            </DataGrid>
-        </Grid>
-        <!--#endregion-->
-
-        <!--#region Tourist Type-->
-        <Grid Grid.Column="2"
-              MinWidth="300"
-              Visibility="{Binding CurrentType, Converter={StaticResource VisConverter}, ConverterParameter={x:Static models:SpanshRouteType.TouristRoute}}">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="30" />
-                <RowDefinition Height="30" />
-                <RowDefinition Height="30" />
-                <RowDefinition Height="30" />
-                <RowDefinition />
-            </Grid.RowDefinitions>
-            <StackPanel   Orientation="Horizontal">
-                <TextBlock Text="Jump To System"
-                           HorizontalAlignment="Left"
-                           VerticalAlignment="Center"
-                           Width="180" />
-                <TextBlock Text="{Binding NextTarget.Property1}"
-                           VerticalAlignment="Center" />
-            </StackPanel>
-        </Grid>
-        <!--#endregion-->
-
-        <!--#region Fleet Carrier-->
-        <Grid Grid.Column="2"
-              MinWidth="300"
-              Visibility="{Binding CurrentType, Converter={StaticResource VisConverter}, ConverterParameter={x:Static models:SpanshRouteType.FleetCarrier}}">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="30" />
-                <RowDefinition Height="30" />
-                <RowDefinition Height="30" />
-                <RowDefinition Height="30" />
-                <RowDefinition Height="30" />
-                <RowDefinition />
-            </Grid.RowDefinitions>
-            <StackPanel Orientation="Horizontal"
-                        Grid.Column="1"
-                        Grid.Row="0">
-                <TextBlock Text="Jump Distance"
-                           HorizontalAlignment="Left"
-                           VerticalAlignment="Center"
-                           Width="180" />
-                <TextBlock HorizontalAlignment="Left"
-                           Text="{Binding NextTarget.Property1, StringFormat={}{0} ly}"
-                           VerticalAlignment="Center" />
-            </StackPanel>
-
-            <StackPanel Orientation="Horizontal"
-                        Grid.Row="1">
-                <TextBlock Text="Remaing Distance"
-                           HorizontalAlignment="Left"
-                           VerticalAlignment="Center"
-                           Width="180" />
-                <TextBlock Text="{Binding CurrentTarget.Property2, StringFormat={}{0} ly}"
-                           VerticalAlignment="Center" />
-            </StackPanel>
-
-            <StackPanel Orientation="Horizontal"
-                        Grid.Row="2">
-                <TextBlock Text="Icy Ring"
-                           HorizontalAlignment="Left"
-                           VerticalAlignment="Center"
-                           Width="180" />
-                <TextBlock HorizontalAlignment="Left"
-                           VerticalAlignment="Center"
-                           Text="{Binding CurrentTarget.Property3}" />
-            </StackPanel>
-
-            <StackPanel Orientation="Horizontal"
-                        Grid.Row="3">
-                <TextBlock Text="Est Time Remaining"
-                           HorizontalAlignment="Left"
-                           VerticalAlignment="Center"
-                           Width="180" />
-                <TextBlock HorizontalAlignment="Left"
-                           VerticalAlignment="Center"
-                           Text="{Binding TimeRemaining}" />
-            </StackPanel>
-        </Grid>
-        <!--#endregion-->
-
-        <!--#region Galaxy Plotter-->
-        <Grid Grid.Column="2"
-              MinWidth="300"
-              Visibility="{Binding CurrentType, Converter={StaticResource VisConverter}, ConverterParameter={x:Static models:SpanshRouteType.GalaxyPlotter}}">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="30" />
-                <RowDefinition Height="30" />
-                <RowDefinition Height="30" />
-                <RowDefinition Height="30" />
-                <RowDefinition />
-            </Grid.RowDefinitions>
-            <StackPanel Orientation="Horizontal"
-                        Grid.Row="0">
-                <TextBlock Text="Jump Distance"
-                           HorizontalAlignment="Left"
-                           VerticalAlignment="Center"
-                           Width="180" />
-                <TextBlock Text="{Binding NextTarget.Property1, StringFormat={}{0} ly}"
-                           VerticalAlignment="Center" />
-            </StackPanel>
-
-            <StackPanel Orientation="Horizontal"
-                        Grid.Row="1">
-                <TextBlock Text="Remaing Distance"
-                           HorizontalAlignment="Left"
-                           VerticalAlignment="Center"
-                           Width="180" />
-                <TextBlock Text="{Binding CurrentTarget.Property2, StringFormat={}{0} ly}"
-                           VerticalAlignment="Center" />
-            </StackPanel>
-
-            <StackPanel Orientation="Horizontal"
-                        Grid.Row="2">
-                <TextBlock Text="Refuel"
-                           HorizontalAlignment="Left"
-                           VerticalAlignment="Center"
-                           Width="180" />
-                <TextBlock Text="{Binding CurrentTarget.Property3}"
-                           VerticalAlignment="Center" />
-            </StackPanel>
-
-            <StackPanel Orientation="Horizontal"
-                        Grid.Row="3">
-                <TextBlock Text="Neutron Star"
-                           HorizontalAlignment="Left"
-                           VerticalAlignment="Center"
-                           Width="180" />
-                <TextBlock Text="{Binding CurrentTarget.Property4}"
-                           VerticalAlignment="Center" />
-            </StackPanel>
-        </Grid>
-        <!--#endregion-->
-
-        <!--#region Exobiology-->
-        <Grid Grid.Column="2"
-              Visibility="{Binding CurrentType, Converter={StaticResource VisConverter}, ConverterParameter={x:Static models:SpanshRouteType.Exobiology}}">
-            <DataGrid Style="{Binding ElementName=Root, Path=DataGridStyle}"
-                      HorizontalScrollBarVisibility="Auto"
-                      RowHeight="25"
-                      ItemsSource="{Binding CurrentTarget.BodiesInfo}">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Body"
-                                        MinWidth="150"                                     
-                                        CellStyle="{DynamicResource CmdrSelectionCellLeftVertCenter}"
-                                        Binding="{Binding Path=Body}" />
-                    <DataGridTextColumn MinWidth="250"
-                                        Width="*"
-                                        Header="Species"
-                                        CellStyle="{DynamicResource CmdrSelectionCellLeftVertCenter}"
-                                        Binding="{Binding Path=Distance}" />
-                    <DataGridTextColumn MinWidth="60"
-                                        CellStyle="{DynamicResource CmdrSelectionCellRightVertCenter}"
-                                        Binding="{Binding Path=Property1}"
-                                        Header="Value" />
-                </DataGrid.Columns>
-            </DataGrid>
-        </Grid>
-        <!--#endregion-->
-
-        <!--#region Colonisation Plotter-->
-        <Grid Grid.Column="2"
-              MinWidth="300"
-              Visibility="{Binding CurrentType, Converter={StaticResource VisConverter}, ConverterParameter={x:Static models:SpanshRouteType.Colonisation}}">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="30" />
-                <RowDefinition Height="30" />
-                <RowDefinition Height="30" />
-                <RowDefinition Height="30" />
-                <RowDefinition />
-            </Grid.RowDefinitions>
-            <StackPanel Orientation="Horizontal"
-                        Grid.Row="0">
-                <TextBlock Text="Distance"
-                           HorizontalAlignment="Left"
-                           VerticalAlignment="Center"
-                           Width="180" />
-                <TextBlock Text="{Binding CurrentTarget.Property1, StringFormat={}{0} ly}"
-                           VerticalAlignment="Center" />
-            </StackPanel>
-
-            <StackPanel Orientation="Horizontal"
-                        Grid.Row="1">
-                <TextBlock Text="Remaing Distance"
-                           HorizontalAlignment="Left"
-                           VerticalAlignment="Center"
-                           Width="180" />
-                <TextBlock Text="{Binding CurrentTarget.Property2, StringFormat={}{0} ly}"
-                           VerticalAlignment="Center" />
-            </StackPanel>
-        </Grid>
-        <!--#endregion-->
+        <ContentControl Grid.Column="2"
+                        MinWidth="300"
+                        Margin="0 0 10 0">
+            <ContentControl.Style>
+                <Style TargetType="{x:Type ContentControl}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding CurrentType}"
+                                     Value="{x:Static models:SpanshRouteType.RoadToRiches}">
+                            <Setter Property="ContentTemplate"
+                                    Value="{StaticResource RoadToRichesDetails}" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding CurrentType}"
+                                     Value="{x:Static models:SpanshRouteType.NeutronRoute}">
+                            <Setter Property="ContentTemplate"
+                                    Value="{StaticResource NetronRouteDetails}" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding CurrentType}"
+                                     Value="{x:Static models:SpanshRouteType.Colonisation}">
+                            <Setter Property="ContentTemplate"
+                                    Value="{StaticResource ColonisationPlotterRouteDetails}" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding CurrentType}"
+                                     Value="{x:Static models:SpanshRouteType.FleetCarrier}">
+                            <Setter Property="ContentTemplate"
+                                    Value="{StaticResource FleetCarrierRouteDetails}" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding CurrentType}"
+                                     Value="{x:Static models:SpanshRouteType.GalaxyPlotter}">
+                            <Setter Property="ContentTemplate"
+                                    Value="{StaticResource GalaxyPlotterRouteDetails}" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding CurrentType}"
+                                     Value="{x:Static models:SpanshRouteType.WorldTypeRoute}">
+                            <Setter Property="ContentTemplate"
+                                    Value="{StaticResource WorldTypeRouteDetails}" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding CurrentType}"
+                                     Value="{x:Static models:SpanshRouteType.Exobiology}">
+                            <Setter Property="ContentTemplate"
+                                    Value="{StaticResource ExobiologyRouteDetails}" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding CurrentType}"
+                                     Value="{x:Static models:SpanshRouteType.TouristRoute}">
+                            <Setter Property="ContentTemplate"
+                                    Value="{StaticResource TouristRouteDetails}" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding CurrentType}"
+                                     Value="{x:Static models:SpanshRouteType.TradePlanner}">
+                            <Setter Property="ContentTemplate"
+                                    Value="{StaticResource TradePlannerRouteDetails}" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ContentControl.Style>
+        </ContentControl>        
     </Grid>
 </UserControl>

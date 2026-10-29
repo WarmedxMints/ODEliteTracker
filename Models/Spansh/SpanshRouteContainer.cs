@@ -126,6 +126,10 @@ namespace ODEliteTracker.Models.Spansh
                     ret.RouteType = SpanshRouteType.TouristRoute;
                     ret.Targets = [.. touristRoute.Result.SystemJumps.Select(x => SpanshTargetSystem.CreateFromApi(SpanshRouteType.TouristRoute, x))];
                     break;
+                    case ApiTradePlannerRoute tradePlannerRoute:
+                    ret.RouteType = SpanshRouteType.TradePlanner;
+                    ret.Targets = [.. tradePlannerRoute.Result.Select(x => SpanshTargetSystem.CreateFromApi(SpanshRouteType.TradePlanner, x))];
+                    break;
 
             }
             ret.CurrentTarget = ret.Targets.FirstOrDefault();

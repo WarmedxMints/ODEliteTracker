@@ -1,5 +1,4 @@
-﻿using EliteJournalReader;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 namespace ODEliteTracker.Models.Spansh
 {
     public sealed class Position
@@ -51,7 +50,7 @@ namespace ODEliteTracker.Models.Spansh
         public DateTimeOffset Date { get; set; }
 
         [JsonProperty("factions")]
-        public IReadOnlyList<Faction>? Factions { get; set; }
+        public IReadOnlyList<SpanshFaction>? Factions { get; set; }
 
         [JsonProperty("government")]
         public string? Government { get; set; }
@@ -74,8 +73,8 @@ namespace ODEliteTracker.Models.Spansh
         [JsonProperty("security")]
         public string? Security { get; set; }
 
-        //[JsonProperty("stations")]
-        //public List<SystemStation> Stations { get; set; }
+        [JsonProperty("stations")]
+        public IReadOnlyList<SpanshStation> Stations { get; set; } = [];
 
         //[JsonProperty("timestamps")]
         //public SystemTimestamps Timestamps { get; set; }
@@ -147,7 +146,7 @@ namespace ODEliteTracker.Models.Spansh
         public double SemiMajorAxis { get; set; }
 
         [JsonProperty("stations")]
-        public List<BodyStation>? Stations { get; set; }
+        public IReadOnlyList<SpanshStation> Stations { get; set; } = [];
 
         [JsonProperty("timestamps")]
         public BodyTimestamps? Timestamps { get; set; }
@@ -330,7 +329,7 @@ namespace ODEliteTracker.Models.Spansh
         public DateTimeOffset? DistanceToArrival { get; set; }
     }
 
-    public partial class BodyStation
+    public partial class SpanshStation
     {
         [JsonProperty("controllingFaction")]
         public string? ControllingFaction { get; set; }
@@ -348,7 +347,7 @@ namespace ODEliteTracker.Models.Spansh
         public string? Government { get; set; }
 
         [JsonProperty("id")]
-        public long Id { get; set; }
+        public ulong Id { get; set; }
 
         [JsonProperty("landingPads", NullValueHandling = NullValueHandling.Ignore)]
         public LandingPads? LandingPads { get; set; }
@@ -478,5 +477,38 @@ namespace ODEliteTracker.Models.Spansh
 
         [JsonProperty("ship", NullValueHandling = NullValueHandling.Ignore)]
         public string? Ship { get; set; }
+    }
+
+    public partial class SpanshFaction
+    {
+        [JsonProperty("allegiance")]
+        public string Allegiance { get; set; } = string.Empty;
+
+        [JsonProperty("government")]
+        public string Government { get; set; } = string.Empty;
+
+        [JsonProperty("influence")]
+        public double Influence { get; set; }
+
+        [JsonProperty("name")]
+        public string Name { get; set; } = string.Empty;
+
+        [JsonProperty("state")]
+        public string State { get; set; } = string.Empty;
+
+        [JsonProperty("activeStates", NullValueHandling = NullValueHandling.Ignore)]
+        public IReadOnlyList<FactionState>? ActiveStates { get; set; }
+
+        [JsonProperty("pendingStates", NullValueHandling = NullValueHandling.Ignore)]
+        public IReadOnlyList<FactionState>? PendingStates { get; set; }
+    }
+
+    public struct FactionState
+    {
+        [JsonProperty("state")]
+        public string State { get; set; }
+
+        [JsonProperty("trend")]
+        public double Trend { get; set; }
     }
 }

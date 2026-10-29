@@ -1,6 +1,9 @@
 ﻿
+using Accessibility;
 using ODEliteTracker.Extensions;
+using ODEliteTracker.ViewModels;
 using ODEliteTracker.ViewModels.ModelViews.Spansh;
+using ODEliteTracker.ViewModels.ModelViews.Spansh.Api;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -19,7 +22,7 @@ namespace ODEliteTracker.Controls.Spansh
             {
                 var parent = btn.FindParentByType<ListBox>();
 
-                if (parent != null && parent.DataContext is ApiArgsVM vm)
+                if (parent != null && parent.DataContext is ApiBase vm)
                 {
                     vm.AdditionalSystems.Remove(routeSystem);
                 }
@@ -44,6 +47,33 @@ namespace ODEliteTracker.Controls.Spansh
                     return;
                 }
             }
+        }
+
+        System.Windows.Controls.TextBox? TextBoxInUse;       
+
+        private void TextBoxLoaded(object sender, RoutedEventArgs e)
+        {
+            if (sender is System.Windows.Controls.TextBox textBox && textBox.DataContext is SpanshAPIController controller)
+            {
+                controller.AdditionalSystemAdded += OnAdditionalSystemAdded;
+                TextBoxInUse = textBox;
+            }
+        }
+
+        private void TextBoxUnloaded(object sender, RoutedEventArgs e)
+        {
+            if (sender is System.Windows.Controls.TextBox textBox && textBox.DataContext is SpanshAPIController controller)
+            {
+                controller.AdditionalSystemAdded -= OnAdditionalSystemAdded;
+            }
+        }
+
+        private void OnAdditionalSystemAdded(object? sender, AdditionalSystemAddedEventArgs e)
+        {
+            if (!e.Added || TextBoxInUse == null)
+                return;
+
+            TextBoxInUse.Text = string.Empty;
         }
     }
 }

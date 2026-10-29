@@ -65,7 +65,7 @@ namespace ODEliteTracker.Stores
         public CarrierSettings CarrierSettings { get; internal set; } = new();
         public OverlaySettings OverlaySettings { get; internal set; } = new();
         public Dictionary<int, List<PopOutParams>> PopOutParams { get; set; } = [];
-        public SpanshCSVSettings SpanshCSVSettings { get; set; } = new();
+        public SpanshRouteSettings SpanshRouteSettings { get; set; } = new();
         public FleetCarrierSettings FleetCarrierSettings { get; set; } = new();
 
         #region Persistance
@@ -90,7 +90,7 @@ namespace ODEliteTracker.Stores
                 TradeSettings = SettingsDTOHelpers.SettingDtoToObject(settings.GetSettingDTO(nameof(TradeSettings)), TradeSettings.GetDefault());
                 PopOutParams = SettingsDTOHelpers.SettingDtoToObject(settings.GetSettingDTO(nameof(PopOutParams)), new Dictionary<int, List<PopOutParams>>());
                 OverlaySettings = SettingsDTOHelpers.SettingDtoToObject(settings.GetSettingDTO(nameof(OverlaySettings)), OverlaySettings);
-                SpanshCSVSettings = SettingsDTOHelpers.SettingDtoToObject(settings.GetSettingDTO(nameof(SpanshCSVSettings)), SpanshCSVSettings);
+                SpanshRouteSettings = SettingsDTOHelpers.SettingDtoToObject(settings.GetSettingDTO(nameof(SpanshRouteSettings)), SpanshRouteSettings);
                 StatusBarSettings = SettingsDTOHelpers.SettingDtoToObject(settings.GetSettingDTO(nameof(StatusBarSettings)), StatusBarSettings);
                 FleetCarrierSettings = SettingsDTOHelpers.SettingDtoToObject(settings.GetSettingDTO(nameof(FleetCarrierSettings)), new FleetCarrierSettings());
             }
@@ -126,7 +126,7 @@ namespace ODEliteTracker.Stores
                 SettingsDTOHelpers.ObjectToJsonStringDto(nameof(TradeSettings), TradeSettings),
                 SettingsDTOHelpers.ObjectToJsonStringDto(nameof(PopOutParams), PopOutParams),
                 SettingsDTOHelpers.ObjectToJsonStringDto(nameof(OverlaySettings), OverlaySettings),
-                SettingsDTOHelpers.ObjectToJsonStringDto(nameof(SpanshCSVSettings), SpanshCSVSettings),
+                SettingsDTOHelpers.ObjectToJsonStringDto(nameof(SpanshRouteSettings), SpanshRouteSettings),
                 SettingsDTOHelpers.ObjectToJsonStringDto(nameof(StatusBarSettings), StatusBarSettings),
                 SettingsDTOHelpers.ObjectToJsonStringDto(nameof(FleetCarrierSettings), FleetCarrierSettings),
             };

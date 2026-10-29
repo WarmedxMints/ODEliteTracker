@@ -1,6 +1,4 @@
-﻿using ODEliteTracker.Models.BGS;
-
-namespace ODEliteTracker.Helpers
+﻿namespace ODEliteTracker.Helpers
 {
     public static class EliteJournalReaderHelpers
     {

@@ -51,6 +51,7 @@
 		<None Remove="Assets\Icons\ShowInTaskBar.png" />
 		<None Remove="Assets\Icons\spansh.png" />
 		<None Remove="Assets\Icons\spanshbtn.png" />
+		<None Remove="Assets\Icons\spanshlogo.png" />
 		<None Remove="Assets\Icons\squadfleetcarrier.png" />
 		<None Remove="Assets\Icons\T2Point.png" />
 		<None Remove="Assets\Icons\T3point.png" />
@@ -169,6 +170,9 @@
 		<Resource Include="Assets\Icons\ShowInTaskBar.png" />
 		<Resource Include="Assets\Icons\spansh.png" />
 		<Resource Include="Assets\Icons\spanshbtn.png" />
+		<Resource Include="Assets\Icons\spanshlogo.png">
+		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Resource>
 		<Resource Include="Assets\Icons\squadfleetcarrier.png" />
 		<Resource Include="Assets\Icons\T2Point.png" />
 		<Resource Include="Assets\Icons\T3point.png" />
@@ -216,6 +220,57 @@
 		<Resource Include="Assets\PowerPlay\yuri-grom.png" />
 		<Resource Include="Assets\PowerPlay\zachary-hudson.png" />
 		<Resource Include="Assets\PowerPlay\zemina-torval.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Page Update="Controls\Styles\BorderStyles.xaml">
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </Page>
+	  <Page Update="Controls\Styles\ButtonStyles.xaml">
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </Page>
+	  <Page Update="Controls\Styles\CheckBoxStyles.xaml">
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </Page>
+	  <Page Update="Controls\Styles\ComboBoxStyle.xaml">
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </Page>
+	  <Page Update="Controls\Styles\ContextMenuStyle.xaml">
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </Page>
+	  <Page Update="Controls\Styles\DataGridStyles.xaml">
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </Page>
+	  <Page Update="Controls\Styles\ListBoxStyles.xaml">
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </Page>
+	  <Page Update="Controls\Styles\MenuStyles.xaml">
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </Page>
+	  <Page Update="Controls\Styles\PowerPlayStyles.xaml">
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </Page>
+	  <Page Update="Controls\Styles\RadioButton.xaml">
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </Page>
+	  <Page Update="Controls\Styles\RectangleStyles.xaml">
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </Page>
+	  <Page Update="Controls\Styles\ScrollbarStyle.xaml">
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </Page>
+	  <Page Update="Controls\Styles\SliderStyles.xaml">
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </Page>
+	  <Page Update="Controls\Styles\TabControlStyles.xaml">
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </Page>
+	  <Page Update="Controls\Styles\TextBoxStyles.xaml">
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </Page>
+	  <Page Update="Controls\Styles\ToolTipStyle.xaml">
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </Page>
 	</ItemGroup>
 
 </Project>

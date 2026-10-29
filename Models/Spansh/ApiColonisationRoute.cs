@@ -10,26 +10,23 @@ namespace ODEliteTracker.Models.Spansh
         public ApiColonisationResult? Result { get; set; }
     }
 
-    public record ApiColonisationParameters : SpanshApiParameters
+    public sealed record ApiColonisationParameters : SpanshApiParameters
     {
         [JsonProperty("source_system")]
         public string SourceSystem { get; set; } = string.Empty;
         [JsonProperty("destination_system")]
         public string DestinationSystem { get; set; } = string.Empty;
 
-        public override SpanshRouteType GetRouteType()
-        {
-            return SpanshRouteType.Colonisation;
-        }
+        public override SpanshRouteType GetRouteType() =>  SpanshRouteType.Colonisation;
     }
 
-    public record ApiColonisationResult
+    public sealed record ApiColonisationResult
     {
         [JsonProperty("jumps")]
         public IReadOnlyList<ApiColonisationSystemJump> Jumps { get; set; } = [];
     }
 
-    public record ApiColonisationSystemJump : ISpanshApiSystem
+    public sealed record ApiColonisationSystemJump : ISpanshApiSystem
     {
         [JsonProperty("body_count", NullValueHandling = NullValueHandling.Ignore)]
         public int? BodyCount { get; set; }

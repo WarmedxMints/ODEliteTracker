@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using ODEliteTracker.Helpers.JsonCoverters;
 
 namespace ODEliteTracker.Models.Spansh
 {
@@ -20,13 +21,13 @@ namespace ODEliteTracker.Models.Spansh
         public IReadOnlyList<string> DestinationSystems { get; set; } = [];
 
         [JsonProperty("avoid_thargoids")]
-        public int AvoidThargoids { get; set; }
+        public bool AvoidThargoids { get; set; } = true;
 
-        [JsonProperty("loop")]
-        public int Loop { get; set; }
+        [JsonProperty("loop"), JsonConverter(typeof(BoolConvertor))]
+        public bool Loop { get; set; } = true;
 
         [JsonProperty("max_results")]
-        public long MaxResults { get; set; }
+        public int MaxResults { get; set; }
 
         [JsonProperty("radius")]
         public double Radius { get; set; }
@@ -35,13 +36,13 @@ namespace ODEliteTracker.Models.Spansh
         public double Range { get; set; }
 
         [JsonProperty("from")]
-        public required string From { get; set; }
+        public string From { get; set; } = string.Empty;
 
         [JsonProperty("source")]
         public string? Source { get; set; }
 
-        [JsonProperty("use_mapping_value")]
-        public int UseMappingValue { get; set; }
+        [JsonProperty("use_mapping_value"), JsonConverter(typeof(BoolConvertor))]
+        public bool UseMappingValue { get; set; }
 
         [JsonProperty("user_id")]
         public int UserId { get; set; }
@@ -50,15 +51,12 @@ namespace ODEliteTracker.Models.Spansh
         public List<string>? BodyTypes { get; set; }
 
         [JsonProperty("max_distance")]
-        public long? MaxDistance { get; set; }
+        public long MaxDistance { get; set; }
 
         [JsonProperty("min_value")]
-        public long? MinValue { get; set; }
+        public long MinValue { get; set; }
 
-        public override SpanshRouteType GetRouteType()
-        {
-            return SpanshRouteType.RoadToRiches;
-        }
+        public override SpanshRouteType GetRouteType() => SpanshRouteType.RoadToRiches;
     }
 
     public sealed record ApiRoadToRichesReult : ISpanshApiSystem

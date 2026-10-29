@@ -43,7 +43,7 @@ namespace ODEliteTracker.Views
             {
                 var filename = ODDialogService.OpenFileDialog("Browse csv files", "csv", "csv files (*.csv)|*.csv", 2);
 
-                if (!string.IsNullOrEmpty(filename)) 
+                if (!string.IsNullOrEmpty(filename))
                     vm.RouteController.ImportCSV(filename);
             }
         }
@@ -110,7 +110,7 @@ namespace ODEliteTracker.Views
 
                 var lines = File.ReadAllLines(filename);
 
-                CheckLineCount(vm, lines);
+                CheckLineCount(vm, [.. lines]);
             }
         }
         private void ImportDestinationsFromClipboard(object sender, RoutedEventArgs e)
@@ -137,35 +137,25 @@ namespace ODEliteTracker.Views
             }
         }
 
-        private void CheckLineCount(SpanshViewModel vm, IEnumerable<string> lines)
+        private void CheckLineCount(SpanshViewModel vm, List<string> lines)
         {
-            if (vm.ApiController.CurrentApiArgs.RouteType != Models.SpanshRouteTypeComboBox.TouristRoute)
+            if (!vm.ApiController.CurrentApiArgs.CanImportDestinations)
+                return;    
+
+            if (!vm.ApiController.CurrentApiArgs.CanAddAdditional(lines))
             {
-                var lineCount = lines.Count();
-                var count = 0;
-
-                foreach (var s in lines)
-                {
-                    if (vm.ApiController.CurrentApiArgs.AdditionalSystems.FirstOrDefault(x => string.Equals(x.SystemName, s, StringComparison.OrdinalIgnoreCase)) == null)
-                        continue;
-                    count++;
-                }
-
-                if (lineCount + count > 10)
-                {
-                    _ = ODDialogService.ShowWithOwner(Window.GetWindow(this), "Error", $"A maximum of 10 additional systems can be sent to the api{Environment.NewLine}{Environment.NewLine}Adding this would put the total at {lineCount + count}");
-
-                    return;
-                }
+                _ = ODDialogService.ShowWithOwner(Window.GetWindow(this), "Error", $"A maximum of 10 additional systems can be sent to the api");
+                return;
             }
+
             vm.ApiController.ImportDestinationsCommand.Execute(lines);
             return;
-        }        
+        }
 
         private void ImportJson(object sender, RoutedEventArgs e)
-        {       
-            CloseDestinaionsBtn(sender,e);
-            if (sender is MenuItem item 
+        {
+            CloseDestinaionsBtn(sender, e);
+            if (sender is MenuItem item
                 && item.Tag is SpanshRouteType routeType
                 && DataContext is SpanshViewModel vm)
             {

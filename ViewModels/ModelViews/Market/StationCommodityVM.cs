@@ -32,9 +32,9 @@ namespace ODEliteTracker.ViewModels.ModelViews.Market
         public string Category { get; set; }
 
         private readonly string category_Localised;
-        private int demand;
+        private long demand;
         private long carrierStockValue;
-        private int required;
+        private long required;
 
         public string Category_Localised
         {
@@ -44,11 +44,11 @@ namespace ODEliteTracker.ViewModels.ModelViews.Market
             }
         }
         public int BuyPrice { get; set; }
-        public int SellPrice { get; set; }
-        public int Stock { get; set; }
-        public int Demand { get => demand; set { demand = value; OnPropertyChanged(); } }
+        public long SellPrice { get; set; }
+        public long Stock { get; set; }
+        public long Demand { get => demand; set { demand = value; OnPropertyChanged(); } }
         public string DemandString => $"{Demand:N0} t";
-        public int Required { get => required; set { required = value; OnPropertyChanged(); } }
+        public long Required { get => required; set { required = value; OnPropertyChanged(); } }
         public long CarrierStockValue 
         { 
             get => carrierStockValue; 

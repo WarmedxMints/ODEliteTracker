@@ -9,7 +9,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.BGS
     {
         public TransactionType Type { get; private set; }    
         public long Value { get; private set; }
-        public int Count { get; private set; }
+        public long Count { get; private set; }
 
         public void AddTransaction(TradeTransaction transaction)
         {

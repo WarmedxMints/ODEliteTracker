@@ -1,6 +1,4 @@
 ﻿using ODEliteTracker.ViewModels;
-using ODJournalDatabase.JournalManagement;
-using ODMVVM.Navigation;
 using ODMVVM.Navigation.Controls;
 using ODMVVM.ViewModels;
 

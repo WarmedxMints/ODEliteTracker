@@ -160,7 +160,9 @@ namespace ODEliteTracker.Models
         [Description("Exobiology Route")]
         Exobiology,
         [Description("Colonisation Plotter")]
-        Colonisation
+        Colonisation = 8,
+        [Description("Trade Planner")]
+        TradePlanner = 10
     }
 
     public enum SystemWebSite

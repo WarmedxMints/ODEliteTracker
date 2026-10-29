@@ -34,6 +34,8 @@ namespace ODEliteTracker.Models.Spansh
         Colonisation,
         [Description("Galaxy Plotter Old")]
         GalaxyPlotterOld,
+        [Description("Trade Planner")]
+        TradePlanner
     }
 
     public enum SpanshRouteFilterEnum
@@ -56,5 +58,7 @@ namespace ODEliteTracker.Models.Spansh
         Exobiology,
         [Description("Colonisation Plotter")]
         Colonisation = 8,
+        [Description("Trade Planner")]
+        TradePlanner = 10
     }
 }

@@ -30,6 +30,6 @@ namespace ODEliteTracker.Models.BGS
         public FactionData Faction { get;  }
         public string ItemName { get;  }
         public long Value { get;  }
-        public int Count { get; }
+        public long Count { get; }
     }
 }

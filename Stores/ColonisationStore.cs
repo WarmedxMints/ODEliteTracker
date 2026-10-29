@@ -26,7 +26,7 @@ namespace ODEliteTracker.Stores
         private HashSet<Tuple<ulong, ulong>> inactiveDepots = [];
         private HashSet<Tuple<ulong, ulong>> shoppingListDepots = [];
         private readonly Dictionary<string, ulong> constructionTotals = [];
-        //When the colonisation events were added to the game
+        //When the colonisation events were Added to the game
         private readonly DateTime colonisationEventUpdate = new(2025, 4, 7);
         private List<ColonisationRouteSystem> routeSystems = [];
         private StarSystem? currentSystem;

@@ -1,5 +1,4 @@
-﻿using ODEliteTracker.Models.Spansh;
-using ODEliteTracker.ViewModels.ModelViews.Spansh;
+﻿using ODEliteTracker.ViewModels.ModelViews.Spansh;
 
 namespace ODEliteTracker.Models.Settings
 {
@@ -16,16 +15,14 @@ namespace ODEliteTracker.Models.Settings
             Status = vm.Status;
         }
     }
-    public sealed class SpashAPISave
+    public sealed class SpanshAPISave
     {
-        public Dictionary<string, bool> BoolValues = [];
-        public Dictionary<string, long> IntValues = [];
-        public Dictionary<string, double> DoubleValues = [];
-        public string? JobID { get; set; }
         public SpanshRouteTypeComboBox RouteType { get; set; }
         public ApiRouteSystemSave SourceSystem { get; set; } = new();
         public ApiRouteSystemSave TargetSystem { get; set; } = new();
         public List<ApiRouteSystemSave> AdditionalSystems { get; set; } = [];
-        public SpanshRoutingAlgorithm Algorithm { get; set; } = SpanshRoutingAlgorithm.optimistic;
+        public ulong SelectedStationMarketID { get; set; }
+        public List<ApiTradePlannerStationVM>? Stations { get; set; }
+        public string Json { get; set; } = string.Empty;
     }
 }

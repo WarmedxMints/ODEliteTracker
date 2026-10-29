@@ -15,6 +15,7 @@
     <Application.Resources>
         <ResourceDictionary>            
             <BooleanToVisibilityConverter x:Key="BoolToVis" />
+            <converters:InvertibleBooleanToVisibilityConverter x:Key="InvertibleBoolToVis" />
             <wpfconverters:BoolToScrollBarVisConverter x:Key="ScollBarBoolToVis" />
             <converters:EnumDescriptionConverter x:Key="EnumDescriptionConverter" />
             <wpfconverters:NullToVisibilityConverter x:Key="NullToVis" />

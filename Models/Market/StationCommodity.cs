@@ -51,14 +51,49 @@ namespace ODEliteTracker.Models.Market
             Name = item.Name;
             Category = item.Categoryname;
         }
+
+        public StationCommodity(SaleElement item)
+        {
+            SellPrice = item.Price;
+            Stock = item.Stock;
+            Name = item.Name ?? "Unknown";
+            var commod = EliteCommodityHelpers.GetCommodityFromPartial(item.Name ?? string.Empty, item.Name ?? string.Empty);
+            if (commod != null)
+            {
+                Id = commod.Id;
+                Name = commod.FdevName;
+                Name_Localised = commod.EnglishName;
+                Category = commod.EnglishCategory;
+   
+            }
+        }
+
+        public StationCommodity(Purchase item)
+        {
+            BuyPrice = item.Price;
+            Demand = item.Outstanding;
+            Name = item.Name ?? "Unknown";
+            Name_Localised = item.LocName ?? "Unknown";
+            var commod = EliteCommodityHelpers.GetCommodityFromPartial(item.Name ?? string.Empty, item.LocName ?? string.Empty);
+            if (commod != null)
+            {
+                Id = commod.Id;
+                Name = commod.FdevName;
+                if (string.IsNullOrEmpty(item.LocName))
+                    Name_Localised = commod.EnglishName;
+                Category = commod.EnglishCategory;
+       
+            }
+        }
+
         public long Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Name_Localised { get; set; } = string.Empty;
         public string Category { get; set; } = string.Empty;
         public string Category_Localised { get; set; } = string.Empty;
         public int BuyPrice { get; set; }
-        public int SellPrice { get; set; }
-        public int Stock { get; set; }
-        public int Demand { get; set; }
+        public long SellPrice { get; set; }
+        public long Stock { get; set; }
+        public long Demand { get; set; }
     }
 }

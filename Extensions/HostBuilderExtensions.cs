@@ -15,7 +15,6 @@ using ODEliteTracker.Views;
 using ODJournalDatabase.Database.Interfaces;
 using ODJournalDatabase.JournalManagement;
 using ODMVVM.Navigation;
-using ODMVVM.Navigation.Controls;
 using ODMVVM.ViewModels;
 using System.Net.Http;
 using System.Net.Http.Headers;

@@ -1,5 +1,4 @@
 ﻿using EliteJournalReader.Events;
-using Microsoft.Extensions.DependencyModel;
 using ODCapi.Models;
 
 namespace ODEliteTracker.Models.Market
@@ -31,8 +30,10 @@ namespace ODEliteTracker.Models.Market
             MarketID = docked.MarketID;
             StationName = docked.StationName;
             StarSystem = docked.StarSystem;
-            ItemsForSale = market.Commodities?.Where(x => x.BuyPrice > 0 && x.Categoryname != "NonMarketable").Select(x => new StationCommodity(x)).ToList() ?? []; 
-            ItemsForPurchase = market.Commodities?.Where(x => x.Demand > 0 && x.Categoryname != "NonMarketable").Select(x => new StationCommodity(x)).ToList() ?? [];
+            //ItemsForSale = market.Commodities?.Where(x => x.BuyPrice > 0 && x.Categoryname != "NonMarketable").Select(x => new StationCommodity(x)).ToList() ?? []; 
+            //ItemsForPurchase = market.Commodities?.Where(x => x.Demand > 0 && x.Categoryname != "NonMarketable").Select(x => new StationCommodity(x)).ToList() ?? [];
+            ItemsForSale = market.Orders?.Commodities?.Sales?.Where(x => !x.Blackmarket).Select(x => new StationCommodity(x)).ToList() ?? [];
+            ItemsForPurchase = market.Orders?.Commodities?.Purchases?.Where(x => !x.Blackmarket).Select(x => new StationCommodity(x)).ToList() ?? [];
             TimeStamp = docked.Timestamp;
         }
 

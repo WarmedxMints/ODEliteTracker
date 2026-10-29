@@ -39,23 +39,25 @@
     
     <ResourceDictionary.MergedDictionaries>        
         <ResourceDictionary Source="/ODCompass;component/ODCompassStyle.xaml" />
-        <ResourceDictionary Source="/Controls/Navigation/NavigationBtnStyle.xaml" />
-        <ResourceDictionary Source="/Controls/Styles/ScrollbarStyle.xaml" />
-        <ResourceDictionary Source="/Controls/Styles/DataGridStyles.xaml" />
-        <ResourceDictionary Source="/Controls/Styles/ComboBoxStyle.xaml" />
-        <ResourceDictionary Source="/Controls/Styles/ListBoxStyles.xaml" />
-        <ResourceDictionary Source="/Controls/Styles/ButtonStyles.xaml" />
-        <ResourceDictionary Source="/Controls/Styles/TabControlStyles.xaml" />
-        <ResourceDictionary Source="/Controls/Styles/RadioButton.xaml" />
-        <ResourceDictionary Source="/Controls/Styles/CheckBoxStyles.xaml" />
-        <ResourceDictionary Source="/Controls/Styles/TextBoxStyles.xaml" />
-        <ResourceDictionary Source="/Controls/Trade/DeliveryMissionTemplate.xaml" />
-        <ResourceDictionary Source="/Controls/Styles/RectangleStyles.xaml" />
-        <ResourceDictionary Source="/Controls/Styles/PowerPlayStyles.xaml" />
-        <ResourceDictionary Source="/Controls/Styles/BorderStyles.xaml" />
-        <ResourceDictionary Source="/Controls/Styles/SliderStyles.xaml" />
-        <ResourceDictionary Source="/Controls/Styles/ToolTipStyle.xaml" />
-        <ResourceDictionary Source="/Controls/Styles/MenuStyles.xaml" />
-        <ResourceDictionary Source="/Controls/Styles/ContextMenuStyle.xaml" />
+        <ResourceDictionary Source="../Controls/Navigation/NavigationBtnStyle.xaml" />
+        <ResourceDictionary Source="../Controls/Styles/ScrollbarStyle.xaml" />
+        <ResourceDictionary Source="../Controls/Styles/DataGridStyles.xaml" />
+        <ResourceDictionary Source="../Controls/Styles/ComboBoxStyle.xaml" />
+        <ResourceDictionary Source="../Controls/Styles/ListBoxStyles.xaml" />
+        <ResourceDictionary Source="../Controls/Styles/ButtonStyles.xaml" />
+        <ResourceDictionary Source="../Controls/Styles/TabControlStyles.xaml" />
+        <ResourceDictionary Source="../Controls/Styles/RadioButton.xaml" />
+        <ResourceDictionary Source="../Controls/Styles/CheckBoxStyles.xaml" />
+        <ResourceDictionary Source="../Controls/Styles/TextBoxStyles.xaml" />
+        <ResourceDictionary Source="../Controls/Trade/DeliveryMissionTemplate.xaml" />
+        <ResourceDictionary Source="../Controls/Styles/RectangleStyles.xaml" />
+        <ResourceDictionary Source="../Controls/Styles/PowerPlayStyles.xaml" />
+        <ResourceDictionary Source="../Controls/Styles/BorderStyles.xaml" />
+        <ResourceDictionary Source="../Controls/Styles/SliderStyles.xaml" />
+        <ResourceDictionary Source="../Controls/Styles/ToolTipStyle.xaml" />
+        <ResourceDictionary Source="../Controls/Styles/MenuStyles.xaml" />
+        <ResourceDictionary Source="../Controls/Styles/ContextMenuStyle.xaml" />
+
+        <ResourceDictionary Source="../Controls/Spansh/SpanshRouteDetailsTemplates.xaml" />
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

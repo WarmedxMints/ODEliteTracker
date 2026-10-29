@@ -6,6 +6,7 @@ using ODEliteTracker.Models.Ship;
 using ODEliteTracker.Models.Spansh;
 using ODEliteTracker.Stores;
 using ODEliteTracker.ViewModels.ModelViews.Shared;
+using ODEliteTracker.ViewModels.ModelViews.Spansh.Api;
 using ODJournalDatabase.JournalManagement;
 using ODMVVM.Commands;
 using ODMVVM.Extensions;
@@ -19,7 +20,7 @@ using System.Windows.Input;
 
 namespace ODEliteTracker.ViewModels.ModelViews.Spansh
 {
-
+    public record AdditionalSystemAddedEventArgs(SpanshRouteType RouteType, bool Added);
     public sealed class SpanshAPIController : ODObservableObject, IDisposable
     {
         #region Store references
@@ -30,33 +31,56 @@ namespace ODEliteTracker.ViewModels.ModelViews.Spansh
         public SharedDataStore Shared => sharedDataStore;
         #endregion
 
+        #region Events
+        public EventHandler<AdditionalSystemAddedEventArgs>? AdditionalSystemAdded;
+        #endregion
+
         #region Api Properties
-        private readonly Dictionary<SpanshRouteTypeComboBox, ApiArgsVM> apiArgsVM = [];
-        public ApiArgsVM CurrentApiArgs
+        private readonly Dictionary<SpanshRouteTypeComboBox, ApiBase> apiArgsVM = [];
+        public ApiBase CurrentApiArgs
         {
             get
             {
                 if (apiArgsVM.TryGetValue(CurrentTypeBox, out var routeSystems))
                 {
-                    if (routeSystems.IntProperty1 <= 0)
-                        UpdateCarrierDetails(routeSystems);
                     return routeSystems;
                 }
-                ApiArgsVM newArgs = new(CurrentTypeBox, CurrentSystem);
-                apiArgsVM.Add(CurrentTypeBox, newArgs);
-                UpdateCarrierDetails(newArgs);
-                return newArgs;
+
+                ApiBase apiBase = GetApiBase(CurrentTypeBox);
+                apiArgsVM.TryAdd(CurrentTypeBox, apiBase);
+                return apiBase;
             }
         }
+
+        private ApiBase GetApiBase(SpanshRouteTypeComboBox routeType)
+        {
+            ApiBase apiBase = routeType switch
+            {
+                SpanshRouteTypeComboBox.FleetCarrier => new FleetCarrierRouteApiVM(),
+                SpanshRouteTypeComboBox.NeutronRoute => new NeutronRouteApiVM(),
+                SpanshRouteTypeComboBox.GalaxyPlotter => new GalaxyRouteApiVM(),
+                SpanshRouteTypeComboBox.WorldTypeRoute => new WorldTypeRouteApiVM(),
+                SpanshRouteTypeComboBox.TouristRoute => new TouristRouteApiVM(),
+                SpanshRouteTypeComboBox.Exobiology => new ExobiologyRouteApiVM(),
+                SpanshRouteTypeComboBox.Colonisation => new ColonisationRouteApiVM(),
+                SpanshRouteTypeComboBox.TradePlanner => new TradePlannerApiVM(),
+                _ => new RoadToRichesRouteApiVM(),
+            };
+            apiBase.LoadDefaults();
+            if (!string.IsNullOrEmpty(CurrentSystem))
+                apiBase.SourceSystem = new ApiRouteSystemVM(CurrentSystem);
+            return apiBase;
+        }
+
         public bool CanGenerate => CurrentApiArgs.CanGenerate();
         private bool isGnerating;
         public bool IsGenerating { get => isGnerating; set { isGnerating = value; OnPropertyChanged(nameof(IsGenerating)); } }
         public SpanshRouteTypeComboBox CurrentTypeBox
         {
-            get => settingsStore.SpanshCSVSettings.GetApiSelection(settingsStore.SelectedCommanderID);
+            get => settingsStore.SpanshRouteSettings.GetApiSelection(settingsStore.SelectedCommanderID);
             set
             {
-                settingsStore.SpanshCSVSettings.SetApiSelection(settingsStore.SelectedCommanderID, value);
+                settingsStore.SpanshRouteSettings.SetApiSelection(settingsStore.SelectedCommanderID, value);
                 OnPropertyChanged(nameof(CurrentTypeBox));
                 OnPropertyChanged(nameof(CurrentApiArgs));
                 OnPropertyChanged(nameof(CanGenerate));
@@ -104,8 +128,8 @@ namespace ODEliteTracker.ViewModels.ModelViews.Spansh
         }
         private int SelectedShipId
         {
-            get => settingsStore.SpanshCSVSettings.GetSelectedShipID(settingsStore.SelectedCommanderID);
-            set => settingsStore.SpanshCSVSettings.SetSelectedShipID(settingsStore.SelectedCommanderID, value);
+            get => settingsStore.SpanshRouteSettings.GetSelectedShipID(settingsStore.SelectedCommanderID);
+            set => settingsStore.SpanshRouteSettings.SetSelectedShipID(settingsStore.SelectedCommanderID, value);
         }
         public bool ShowWarning => WarnAboutScoop || WarnAboutAFMU || WarnAboutDSS;
         public bool WarnAboutScoop
@@ -115,16 +139,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Spansh
                 if (SelectedShip == null || SelectedShip.HasScoopBool)
                     return false;
 
-                return CurrentApiArgs.RouteType switch
-                {
-                    SpanshRouteTypeComboBox.RoadToRiches or
-                    SpanshRouteTypeComboBox.NeutronRoute or
-                    SpanshRouteTypeComboBox.WorldTypeRoute or
-                    SpanshRouteTypeComboBox.TouristRoute or
-                    SpanshRouteTypeComboBox.Exobiology => true,
-                    SpanshRouteTypeComboBox.GalaxyPlotter => CurrentApiArgs.BoolProperty1 || CurrentApiArgs.BoolProperty2 || CurrentApiArgs.BoolProperty6,
-                    _ => false,
-                };
+                return CurrentApiArgs.WarnAboutScoop;
             }
         }
         public bool WarnAboutAFMU
@@ -134,12 +149,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Spansh
                 if (SelectedShip == null || SelectedShip.HasAFMUBool)
                     return false;
 
-                return CurrentApiArgs.RouteType switch
-                {
-                    SpanshRouteTypeComboBox.NeutronRoute => true,
-                    SpanshRouteTypeComboBox.GalaxyPlotter => CurrentApiArgs.BoolProperty1 || CurrentApiArgs.BoolProperty2,
-                    _ => false,
-                };
+                return CurrentApiArgs.WarnAboutAFMU;
             }
         }
         public bool WarnAboutDSS
@@ -149,13 +159,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Spansh
                 if (SelectedShip == null || SelectedShip.HasDSSBool)
                     return false;
 
-                return CurrentApiArgs.RouteType switch
-                {
-                    SpanshRouteTypeComboBox.RoadToRiches or
-                    SpanshRouteTypeComboBox.WorldTypeRoute or
-                    SpanshRouteTypeComboBox.Exobiology => true,
-                    _ => false,
-                };
+                return CurrentApiArgs.WarnAboutDSS;
             }
         }
         #endregion
@@ -187,10 +191,11 @@ namespace ODEliteTracker.ViewModels.ModelViews.Spansh
         public ICommand ReverseRouteCommand { get; }
         public ICommand ImportDestinationsCommand { get; }
         public ICommand ChangeCarrierTypeCommand { get; }
-        public ICommand ImportShipStatsCommand { get; }
+        public ICommand ImportStatsCommand { get; }
         public ICommand ClearAdditionDestinationsCommand { get; }
         public ICommand SelectCurrentShipCommand { get; }
         public ICommand OpenShipyardCommand { get; }
+        public ICommand GetTradeStationsCommand { get; }
         #endregion
 
         #region ctor
@@ -204,30 +209,46 @@ namespace ODEliteTracker.ViewModels.ModelViews.Spansh
             this.fcDataStore = fcDataStore;
             this.settingsStore = settingsStore;
 
-            LoadApiSave(settingsStore.SpanshCSVSettings.GetApiSave(settingsStore.SelectedCommanderID));
+            LoadApiSave(settingsStore.SpanshRouteSettings.GetApiSave(settingsStore.SelectedCommanderID));
 
-            ReverseRouteCommand = new ODRelayCommand(ReverseRoute, (_) => CurrentApiArgs.SourceSystem.HasValue && CurrentApiArgs.TargetSystem.HasValue);
+            ReverseRouteCommand = new ODRelayCommand(ReverseRoute, (_) => CurrentApiArgs.CanReverseRoute);
             GenerateRouteCommand = new ODRelayCommand(GenerateRoute, (_) => CanGenerate);
             SetCurrentSystemCommand = new ODRelayCommand(SetCurrentSystem, (_) =>
             {
-                if (CurrentApiArgs.RouteType == SpanshRouteTypeComboBox.FleetCarrier)
+                if (CurrentApiArgs?.RouteType == SpanshRouteType.FleetCarrier)
                 {
-                    var carrierLocation = CurrentApiArgs.BoolProperty1 ? fcDataStore.SquadCarrierData?.StarSystem : fcDataStore.PersonalCarrierData?.StarSystem;
+                    var carrierLocation = ((FleetCarrierRouteApiVM)CurrentApiArgs).SquadCarrier ? fcDataStore.SquadCarrierData?.StarSystem : fcDataStore.PersonalCarrierData?.StarSystem;
                     return !string.Equals(carrierLocation, CurrentApiArgs.SourceSystem.SystemName);
                 }
-                return !string.Equals(CurrentSystem, CurrentApiArgs.SourceSystem.SystemName);
+                return !string.Equals(CurrentSystem, CurrentApiArgs?.SourceSystem.SystemName);
             });
             SetSelectedGameSystemAsSourceCommand = new ODRelayCommand(SetSelectedGameSystemAsSource, (_) => SelectedGameRouteSystem != null);
             SetSelectedGameSystemAsTargetCommand = new ODRelayCommand(SetSelectedGameSystemAsTarget, (_) => SelectedGameRouteSystem != null);
             SetLastGameSystemAsTargetCommand = new ODRelayCommand(SetLastGameSystemAsTarget, (_) => LastGameRouteSystem != null);
-            AddAdditionalSystemCommand = new ODRelayCommand(AddAdditionalSystem, (_) => CurrentApiArgs.CanAddAdditional);
+            AddAdditionalSystemCommand = new ODRelayCommand<string>(AddAdditionalSystem, (name) =>
+            {
+                if (string.IsNullOrEmpty(name))
+                    return false;
+                return CurrentApiArgs.CanAddAdditional([name]);
+            });
             DeleteAdditionalSystemCommand = new ODRelayCommand<ApiRouteSystemVM>(DeleteAdditionalSystem, (vm) => vm != null);
             ImportDestinationsCommand = new ODRelayCommand<IEnumerable<string>>(ImportDestinations, (_) => CurrentApiArgs.CanImportDestinations);
             ClearAdditionDestinationsCommand = new ODRelayCommand(ClearAdditionalSystems, (_) => CurrentApiArgs.CanImportDestinations);
             ChangeCarrierTypeCommand = new ODRelayCommand(ChangeCarrierType);
-            ImportShipStatsCommand = new ODRelayCommand(ImportShipStats, (_) => SelectedShip != null && CurrentApiArgs.CanAddShipStats);
+            ImportStatsCommand = new ODRelayCommand(ImportStats, (_) =>
+            {
+                if (!CurrentApiArgs.CanImportStats)
+                    return false;
+
+                if (CurrentApiArgs is FleetCarrierRouteApiVM vm)
+                {
+                    return vm.SquadCarrier ? fcDataStore.SquadCarrierData != null : fcDataStore.PersonalCarrierData != null;
+                }
+                return SelectedShip != null;
+            });
             SelectCurrentShipCommand = new ODRelayCommand(SelectCurrentShip, (_) => sharedDataStore.CurrentShipInfo?.ShipId != SelectedShip?.ShipId);
             OpenShipyardCommand = new ODRelayCommand<ShipyardWebSite>(OpenShipyard, (_) => SelectedShip != null);
+            GetTradeStationsCommand = new ODAsyncRelayCommand(GetTradeStations, () => IsGenerating == false);
 
             this.routeStore.StoreLive += SpanshStoreLive;
 
@@ -241,7 +262,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Spansh
             {
                 SpanshStoreLive(null, true);
             }
-        }        
+        }
         #endregion
 
         #region Game Route Systems Methods
@@ -331,12 +352,18 @@ namespace ODEliteTracker.ViewModels.ModelViews.Spansh
             ship.OnCargoUpdated(e.Cargo);
         }
 
-        private void ImportShipStats(object? obj)
+        private void ImportStats(object? obj)
         {
+            if (CurrentApiArgs is FleetCarrierRouteApiVM vm)
+            {
+                CurrentApiArgs.ImportStats(vm.SquadCarrier ? fcDataStore.SquadCarrierData : fcDataStore.PersonalCarrierData);
+                return;
+            }
+
             if (SelectedShip == null)
                 return;
 
-            CurrentApiArgs.ImportShipStats(SelectedShip);
+            CurrentApiArgs.ImportStats(SelectedShip);
         }
 
         private void ShipChanged(object? sender, ShipInfo? e)
@@ -379,7 +406,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Spansh
 
         private void ReverseRoute(object? obj)
         {
-            if (!CurrentApiArgs.SourceSystem.HasValue || !CurrentApiArgs.TargetSystem.HasValue)
+            if (!CurrentApiArgs.SourceSystem.HasValue || !(CurrentApiArgs.TargetSystem?.HasValue ?? false))
                 return;
 
             var source = CurrentApiArgs.SourceSystem;
@@ -388,9 +415,11 @@ namespace ODEliteTracker.ViewModels.ModelViews.Spansh
             CurrentApiArgs.TargetSystem = source;
         }
 
-        private void AddAdditionalSystem(object? obj)
+        private void AddAdditionalSystem(string systemName)
         {
-            CurrentApiArgs.AddAdditonalSystem();
+            var added = CurrentApiArgs.AddAdditonalSystem(systemName);
+
+            AdditionalSystemAdded?.Invoke(this, new(CurrentApiArgs.RouteType, added));
         }
 
         private void ApiArgVMPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -400,33 +429,109 @@ namespace ODEliteTracker.ViewModels.ModelViews.Spansh
             OnPropertyChanged(nameof(WarnAboutDSS));
             OnPropertyChanged(nameof(WarnAboutAFMU));
         }
+
+        private async Task GetTradeStations()
+        {
+            if (CurrentApiArgs is not TradePlannerApiVM vm)
+                return;
+            IsGenerating = true;
+            UpdateBusyText("Checking Source System");
+            await Task.Delay(1000);
+            
+
+            if (vm.SourceSystem.Id64 == 0)
+            {
+                await routeStore.CheckSystemNamesWithSpansh([vm.SourceSystem]);
+            }
+
+            if (vm.SourceSystem.Id64 == 0)
+            {
+                UpdateBusyText("Couldn't get system Id64");
+                await Task.Delay(1000);
+                IsGenerating = false;
+                return;
+            }
+
+            UpdateBusyText("Getting Stations from Spansh");
+            await Task.Delay(1000);
+
+            var dump = await routeStore.GetSystemDump(vm.SourceSystem.Id64);
+
+            if (dump == null || dump.System == null)
+            {
+                UpdateBusyText("No stations Found");
+                await Task.Delay(2000);
+                IsGenerating = false;
+                return;
+            }
+
+            var stations = new List<SpanshStation>();
+
+            if (dump.System.Stations.Count != 0)
+                stations.AddRange(dump.System.Stations.Where(IsValidStation));
+
+            foreach (var body in dump.System.Bodies)
+            {
+                if (body.Stations.Count == 0)
+                    continue;
+
+                stations.AddRange(body.Stations.Where(IsValidStation));
+            }
+
+            stations.Sort((x, y) =>
+            {
+                return x.Name?.CompareTo(y.Name) ?? 0;
+            });
+
+            vm.Stations.ClearCollection();
+            vm.Stations.AddRange(stations.Select(station => new ApiTradePlannerStationVM(dump.System, station)));
+            vm.SelectedStation = vm.Stations.FirstOrDefault();
+            UpdateBusyText($"Found {stations.Count} stations");
+            await Task.Delay(1000);
+            IsGenerating = false;
+        }
+
+        private bool IsValidStation(SpanshStation station)
+        {
+            if (station.Market == null)
+                return false;
+
+            if (station.Type == null || station.Type.Contains("Carrier"))
+                return false;
+
+            if (string.Equals(station.Government, "Megaconstruction", StringComparison.InvariantCultureIgnoreCase))
+                return false;
+
+            return true;
+        }
         #endregion
 
         #region Carrier Methods
         private void ChangeCarrierType(object? obj)
         {
-            if (CurrentApiArgs.RouteType != SpanshRouteTypeComboBox.FleetCarrier)
+            if (CurrentApiArgs is not FleetCarrierRouteApiVM vm)
                 return;
 
-            CurrentApiArgs.BoolProperty1 = !CurrentApiArgs.BoolProperty1;
+            vm.SquadCarrier = !vm.SquadCarrier;
 
-            UpdateCarrierDetails(CurrentApiArgs);
+            UpdateCarrierDetails(vm);
         }
 
-        private void UpdateCarrierDetails(ApiArgsVM routeSystem)
+        private void UpdateCarrierDetails(FleetCarrierRouteApiVM vm)
         {
-            if (routeSystem.RouteType != SpanshRouteTypeComboBox.FleetCarrier)
-                return;
-            var fcData = routeSystem.BoolProperty1 ? fcDataStore.SquadCarrierData : fcDataStore.PersonalCarrierData;
+            var fcData = vm.SquadCarrier ? fcDataStore.SquadCarrierData : fcDataStore.PersonalCarrierData;
 
             if (fcData == null)
             {
-                routeSystem.IntProperty1 = 0;
+                vm.CapicityUsed = 0;
+                vm.CurrentFuel = 0;
+                vm.TritInMarket = 0;
                 return;
             }
-            routeSystem.SourceSystem.SystemName = fcData.StarSystem;
-            routeSystem.IntProperty1 = fcData.UsedCapacity;
-            routeSystem.IntProperty2 = fcData.FuelLevel;
+            vm.SourceSystem.SystemName = fcData.StarSystem;
+            vm.CapicityUsed = fcData.UsedCapacity;
+            vm.CurrentFuel = fcData.FuelLevel;
+            vm.TritInMarket = fcData.Stock.FirstOrDefault(x => x.FdevName == "$tritium_name;")?.StockCount ?? 0;
             return;
         }
         #endregion
@@ -462,15 +567,18 @@ namespace ODEliteTracker.ViewModels.ModelViews.Spansh
         #region Api UI Methods
         private void SetCurrentSystem(object? obj)
         {
-            if (CurrentApiArgs.RouteType == SpanshRouteTypeComboBox.FleetCarrier)
+            if (CurrentApiArgs is FleetCarrierRouteApiVM vm)
             {
-                var carrierLocation = CurrentApiArgs.BoolProperty1 ? fcDataStore.SquadCarrierData?.StarSystem : fcDataStore.PersonalCarrierData?.StarSystem;
-                CurrentApiArgs.SourceSystem.SystemName = carrierLocation ?? string.Empty;
+                var carrierData = vm.SquadCarrier ? fcDataStore.SquadCarrierData : fcDataStore.PersonalCarrierData;
+                if (carrierData != null)
+                {
+                    CurrentApiArgs.SourceSystem = new(carrierData);
+                }
                 return;
             }
-            if (CurrentSystem != null)
+            if (sharedDataStore.CurrentSystem != null)
             {
-                CurrentApiArgs.SourceSystem.SystemName = CurrentSystem;
+                CurrentApiArgs.SourceSystem = new(sharedDataStore.CurrentSystem);
             }
         }        
 
@@ -504,19 +612,9 @@ namespace ODEliteTracker.ViewModels.ModelViews.Spansh
                 {
                     IsGenerating = true;
 
-                    var args = CurrentApiArgs.GetApiArgs(SelectedShip?.ShipInfo);
-
-                    if (args.Item1 == null)
-                    {
-                        UpdateBusyText($"Error while creating args for api call\nMessage : {args.Item2}");
-                        await Task.Delay(4000);
-                        ResetBusyText();
-                        return;
-                    }
-
                     UpdateBusyText("Checking System Names");
                     await Task.Delay(500);
-                    var results = await routeStore.CheckSystemNamesWithSpansh(args.Item1);
+                    var results = await routeStore.CheckSystemNamesWithSpansh(CurrentApiArgs.GetSystemNamesToCheck());
 
                     if (results.Count > 0)
                     {
@@ -524,17 +622,25 @@ namespace ODEliteTracker.ViewModels.ModelViews.Spansh
                         await Task.Delay(4000);
                         ResetBusyText();
                         return;
+                    }                 
+
+                    var parameters = CurrentApiArgs.GetRouteParameters(selectedShip);
+                    if (parameters == null)
+                    {
+                        UpdateBusyText("Unable To Get Route Parameters");
+                        await Task.Delay(4000);
+                        ResetBusyText();
+                        return;
                     }
+
                     UpdateBusyText("Generating Route");
-
-                    var route = await routeStore.GenerateRoute(args.Item1, UpdateBusyText);
-
+                    var route = await routeStore.GenerateRoute(parameters, UpdateBusyText);
                     if (route.Item1 == false)
                     {
                         if (route.Item2 == null)
                         {
                             //Just incase we had an id that is no longer valid
-                            CurrentApiArgs.JobID = null;
+                            CurrentApiArgs.ApiParameters.JobId = null;
                             await ErrorBusyTextMessage("Failed to get route");
                             ResetBusyText();
                             return;
@@ -542,22 +648,32 @@ namespace ODEliteTracker.ViewModels.ModelViews.Spansh
                         if (string.IsNullOrEmpty(route.Item2.Job))
                         {
                             //Just incase we had an id that is no longer valid
-                            CurrentApiArgs.JobID = null;
+                            CurrentApiArgs.ApiParameters.JobId = null;
                             await ErrorBusyTextMessage("Failed to get route");
                             await Task.Delay(4000);
                             ResetBusyText();
                             return;
                         }
-                        CurrentApiArgs.JobID = route.Item2.Job;
+                        CurrentApiArgs.ApiParameters.JobId = route.Item2.Job;
                         await ErrorBusyTextMessage($"Failed to get route but we have a job number.\nWait a couple of minutes and click\ngerenate route again to check again.\n\nStatus : {route.Item2.Status}\nState : {route.Item2.State}");
                         await Task.Delay(10000);
                     }
                     if (route.Item2 != null)
-                        CurrentApiArgs.JobID = route.Item2.Job;
+                        CurrentApiArgs.ApiParameters.JobId = route.Item2.Job;
                     if (route.Item2 is ApiGalaxyPlotterRoute galaxy && !string.IsNullOrEmpty(galaxy.Result.Reason))
                     {
                         UpdateBusyText($"Response from Spansh\n{galaxy.Result.Reason}");
                         await Task.Delay(10000);
+                        ResetBusyText();
+                        return;
+                    }
+                    if (route.Item2 is ApiTradePlannerRoute trade && trade.Result.Count == 0)
+                    {
+                        UpdateBusyText("Spansh returned an empty route\n\nTry increasing the hop distance");
+                        await Task.Delay(10000);
+                        ResetBusyText();
+                        return;
+
                     }
                     UpdateBusyText("Route Generated");
                     await Task.Delay(1000);
@@ -612,6 +728,9 @@ namespace ODEliteTracker.ViewModels.ModelViews.Spansh
                     case SpanshRouteType.Colonisation:
                         responseBase = JsonConvert.DeserializeObject<ApiColonisationRoute>(json);
                         break;
+                    case SpanshRouteType.TradePlanner:
+                        responseBase = JsonConvert.DeserializeObject<ApiTradePlannerRoute>(json);
+                        break;
                 }
 
                 if (responseBase != null && SpanshRouteStore.CheckSpanshResponse(responseBase))
@@ -635,27 +754,26 @@ namespace ODEliteTracker.ViewModels.ModelViews.Spansh
         #endregion
 
         #region Persistence & IDisposal
-        internal void LoadApiSave(List<SpashAPISave> savedata)
+        internal void LoadApiSave(List<SpanshAPISave> savedata)
         {
             apiArgsVM.Clear();
             foreach (var args in savedata)
             {
-                var vm = new ApiArgsVM();
-                vm.LoadFronSave(args);
+                var vm = GetApiBase(args.RouteType);
+                vm.LoadFromSave(args);
                 if (!apiArgsVM.TryAdd(args.RouteType, vm))
                 {
                     continue;
                 }
             }
 
-            // We listen to the property changed for the galaxy plotter to update warnings
-            ApiArgsVM? galaxyArgs = null;
+            ApiBase? galaxyArgs = null;
 
             if (apiArgsVM.TryGetValue(SpanshRouteTypeComboBox.GalaxyPlotter, out var routeSystems))
             {
                 galaxyArgs = routeSystems;
             }
-            galaxyArgs ??= new(SpanshRouteTypeComboBox.GalaxyPlotter, CurrentSystem);
+            galaxyArgs ??= GetApiBase(SpanshRouteTypeComboBox.GalaxyPlotter);
             galaxyArgs.PropertyChanged += ApiArgVMPropertyChanged;
 
             OnPropertyChanged(nameof(CurrentApiArgs));
@@ -663,15 +781,15 @@ namespace ODEliteTracker.ViewModels.ModelViews.Spansh
 
         internal void SaveAPIData()
         {
-            var ret = new List<SpashAPISave>();
+            var saveData = new List<SpanshAPISave>();
 
             foreach (var args in apiArgsVM)
             {
                 var save = args.Value.GetSave();
-                ret.Add(save);
+                saveData.Add(save);
             }
 
-            settingsStore.SpanshCSVSettings.SaveAPiData(settingsStore.SelectedCommanderID, ret);
+            settingsStore.SpanshRouteSettings.SaveAPiData(settingsStore.SelectedCommanderID, saveData);
         }
 
         public void Dispose()

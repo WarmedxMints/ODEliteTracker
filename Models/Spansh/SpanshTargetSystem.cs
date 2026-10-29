@@ -8,15 +8,13 @@
         public string? Property3 { get; set; }
         public string? Property4 { get; set; }
         public List<BodiesInfo>? BodiesInfo { get; set; }
-
+        public ApiTradePlannerResult? TradeRestult { get; set; }
         public static SpanshTargetSystem CreateFromApi(SpanshRouteType type, ISpanshApiSystem system)
         {
             var ret = new SpanshTargetSystem();
 
             switch (type)
             {
-                case SpanshRouteType.None:
-                    break;
                 case SpanshRouteType.RoadToRiches:
                     var r2r = (ApiRoadToRichesReult)system;
                     ret.SystemName = r2r.Name;
@@ -38,7 +36,6 @@
                     ret.Property3 = $"{neutron.Jumps}";
                     ret.Property4 = neutron.NeutronStar ? "Yes" : "No";
                     break;
-                case SpanshRouteType.GalaxyPlotterOld:
                 case SpanshRouteType.GalaxyPlotter:
                     var galaxy = (ApiGalaxyPlotterRouteJump)system;
                     ret.SystemName = galaxy.Name;
@@ -70,20 +67,25 @@
                     {
                         var landmarks = body.Landmarks.OrderBy(x => x.Subtype, StringComparer.InvariantCultureIgnoreCase).ToList();
                         body.Name = GetBodyName(body.Name, exo.Name);
-                        for (var i = 0; i < landmarks.Count(); i++)
+                        for (var i = 0; i < landmarks.Count; i++)
                         {
                             bodiesInfos.Add(new BodiesInfo(body, landmarks[i], i == 0));
                         }
                     }
                     ret.BodiesInfo = bodiesInfos;
                     break;
-                case SpanshRouteType.ExobiologyOld:
-                    break;
                 case SpanshRouteType.Colonisation:
                     var coloniation = (ApiColonisationSystemJump)system;
                     ret.SystemName = coloniation.Name;
                     ret.Property1 = $"{coloniation.Distance:N2}";
                     ret.Property2 = $"{coloniation.DistanceToDestination:N2}";
+                    break;
+                case SpanshRouteType.TradePlanner:
+                    var trade = ((ApiTradePlannerResult)system).Copy();
+                    ret.SystemName = trade.Source.System;
+                    ret.TradeRestult = trade;
+                    break;
+                default:
                     break;
             }
             return ret;

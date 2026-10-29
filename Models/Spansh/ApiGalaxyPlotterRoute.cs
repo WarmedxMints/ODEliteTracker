@@ -55,13 +55,13 @@ namespace ODEliteTracker.Models.Spansh
         public double BaseMass { get; set; }
 
         [JsonProperty("cargo")]
-        public long Cargo { get; set; }
+        public int Cargo { get; set; }
 
         [JsonProperty("destination_system")]
-        public required string DestinationSystem { get; set; }
+        public string DestinationSystem { get; set; } = string.Empty;
 
-        [JsonProperty("exclude_secondary"), JsonConverter(typeof(BoolToIntConverter<int>))]
-        public int ExcludeSecondary { get; set; }
+        [JsonProperty("exclude_secondary")]
+        public bool ExcludeSecondary { get; set; }
 
         [JsonProperty("fuel_multiplier")]
         public double FuelMultiplier { get; set; }
@@ -70,19 +70,19 @@ namespace ODEliteTracker.Models.Spansh
         public double FuelPower { get; set; }
 
         [JsonProperty("injection_multiplier")]
-        public long InjectionMultiplier { get; set; }
+        public int InjectionMultiplier { get; set; }
 
         [JsonProperty("internal_tank_size")]
         public double InternalTankSize { get; set; }
 
-        [JsonProperty("is_supercharged"), JsonConverter(typeof(BoolToIntConverter<int>))]
-        public int IsSupercharged { get; set; }
+        [JsonProperty("is_supercharged"), JsonConverter(typeof(BoolConvertor))]
+        public bool IsSupercharged { get; set; }
 
         [JsonProperty("max_fuel_per_jump")]
         public double MaxFuelPerJump { get; set; }
 
-        [JsonProperty("max_time"), JsonConverter(typeof(BoolToIntConverter<int>))]
-        public required int MaxTime { get; set; }
+        [JsonProperty("max_time")]
+        public int MaxTime { get; set; }
 
         [JsonProperty("optimal_mass")]
         public double OptimalMass { get; set; }
@@ -91,31 +91,32 @@ namespace ODEliteTracker.Models.Spansh
         public double RangeBoost { get; set; }
 
         [JsonProperty("refuel_every_scoopable")]
-        public long RefuelEveryScoopable { get; set; }
+        public bool RefuelEveryScoopable { get; set; }
 
         [JsonProperty("reserve_size")]
-        public long ReserveSize { get; set; }
+        public double ReserveSize { get; set; }
 
         [JsonProperty("ship_build")]
-        public required string ShipBuild { get; set; }
+        public string ShipBuild { get; set; } = string.Empty;
 
         [JsonProperty("source_system")]
-        public required string SourceSystem { get; set; }
+        public string SourceSystem { get; set; } = string.Empty;
 
         [JsonProperty("supercharge_multiplier")]
-        public long SuperchargeMultiplier { get; set; }
+        public double SuperchargeMultiplier { get; set; }
 
         [JsonProperty("tank_size")]
-        public long TankSize { get; set; }
+        public int TankSize { get; set; }
 
-        [JsonProperty("use_injections"), JsonConverter(typeof(BoolToIntConverter<int>))]
-        public int UseInjections { get; set; }
+        [JsonProperty("use_injections")]
+        public bool UseInjections { get; set; }
 
-        [JsonProperty("use_injections_when_required"), JsonConverter(typeof(BoolToIntConverter<int>))]
-        public int UseInjectionsWhenRequired { get; set; }
+        //[JsonProperty("use_injections_when_required"), JsonConverter(typeof(BoolConvertor<int>))]
+        [JsonProperty("use_injections_when_required")]
+        public bool UseInjectionsWhenRequired { get; set; }
 
-        [JsonProperty("use_supercharge"), JsonConverter(typeof(BoolToIntConverter<int>))]
-        public int UseSupercharge { get; set; }
+        [JsonProperty("use_supercharge")]
+        public bool UseSupercharge { get; set; }
 
         public override SpanshRouteType GetRouteType() => SpanshRouteType.GalaxyPlotter;
     }

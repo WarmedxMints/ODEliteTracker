@@ -68,7 +68,8 @@ namespace ODEliteTracker.Models.Ship
             this.loadout = loadout;
             Modules = [.. loadout.Modules];
             ShipId = loadout.ShipID;
-            Name = string.IsNullOrEmpty(loadout.ShipName.Trim()) ? EliteHelpers.ConvertShipName(loadout.Ship) : loadout.ShipName;
+            Name = string.IsNullOrEmpty(loadout.ShipName.Trim()) ? loadout.Ship.ConvertShipName() : loadout.ShipName.Trim();
+            Size = EliteHelpers.GetShipSize(loadout.Ship);
             Ident = loadout.ShipIdent;
             CargoCapacity = loadout.CargoCapacity;
             FrameShiftDrive = loadout.Modules.First(x => string.Equals(x.Slot,"FrameShiftDrive", StringComparison.InvariantCultureIgnoreCase));
@@ -84,6 +85,7 @@ namespace ODEliteTracker.Models.Ship
         public JObject ShipJson { get; set; }
         public List<ShipCargo> Cargo { get; set; } = [];
         public int CurrentCargoCount { get; set; }
+        public ShipSize Size { get; }
         public bool OverchargedBoost => FrameShiftDrive.Item.EndsWith("overchargebooster_mkii", StringComparison.InvariantCultureIgnoreCase);
         public string CurrentJumpRangeString => CalcJumpRangeString(CurrentJumpRange);
         public double CurrentJumpRange => CalcJumpRangeSetCargo(0);

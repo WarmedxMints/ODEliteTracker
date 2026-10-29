@@ -5,11 +5,12 @@
                     xmlns:textbox="clr-namespace:ODEliteTracker.Controls.TextBox"
                     xmlns:sliders="clr-namespace:ODEliteTracker.Controls.Sliders"
                     xmlns:modelview="clr-namespace:ODEliteTracker.ViewModels.ModelViews.Spansh"
+                    xmlns:api="clr-namespace:ODEliteTracker.ViewModels.ModelViews.Spansh.Api"
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:spansh="clr-namespace:ODEliteTracker.Models.Spansh"
                     xmlns:wpfconverters="clr-namespace:ODEliteTracker.WPFConverters"
-                    xmlns:odmvvm="clr-namespace:ODMVVM.Helpers;assembly=ODMVVM">
-
+                    xmlns:odmvvm="clr-namespace:ODMVVM.Helpers;assembly=ODMVVM"
+                    xmlns:slilders="clr-namespace:ODEliteTracker.Controls.Slilders">
 
     <ObjectDataProvider x:Key="SpanshRoutingAlgorithmEnum"
                         MethodName="GetValues"
@@ -18,41 +19,6 @@
             <x:Type TypeName="spansh:SpanshRoutingAlgorithm" />
         </ObjectDataProvider.MethodParameters>
     </ObjectDataProvider>
-
-    <Style TargetType="TextBox"
-           x:Key="ApiSystemNameTextBox"
-           BasedOn="{StaticResource EliteTextBox}">
-        <Setter Property="ContextMenu"
-                Value="{StaticResource TextBoxContextMenu}" />
-        <Style.Triggers>
-            <DataTrigger Binding="{Binding Status}"
-                         Value="{x:Static modelview:NameCheckStatus.Bad}">
-                <Setter Property="Foreground"
-                        Value="Red" />
-            </DataTrigger>
-        </Style.Triggers>
-    </Style>
-
-    <Style TargetType="TextBox"
-           x:Key="ApiSystemTextBox"
-           BasedOn="{StaticResource EliteTextBox}">
-        <Setter Property="ContextMenu"
-                Value="{StaticResource TextBoxContextMenu}" />
-    </Style>
-    
-    <Style TargetType="{x:Type TextBlock}"
-           x:Key="ApiSystemNameTextBlock"
-           BasedOn="{StaticResource EliteTextBlock}">
-        <Setter Property="ContextMenu"
-                Value="{StaticResource TextBoxContextMenu}" />
-        <Style.Triggers>
-            <DataTrigger Binding="{Binding Status}"
-                         Value="{x:Static modelview:NameCheckStatus.Bad}">
-                <Setter Property="Foreground"
-                        Value="Red" />
-            </DataTrigger>
-        </Style.Triggers>
-    </Style>
 
     <DataTemplate x:Key="APINotImplement">
         <TextBlock Text="Coming Soon™"
@@ -74,6 +40,7 @@
                 <ColumnDefinition Width="{StaticResource RightColumn}" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -138,7 +105,7 @@
                                             Width="100"
                                             TextBlock.TextAlignment="Right"
                                             DataContext="{Binding CurrentApiArgs}"
-                                            Text="{Binding DoubleProperty1Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                            Value="{Binding Range, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                             HorizontalContentAlignment="Right"
                                             Style="{DynamicResource ApiSystemTextBox}" />
 
@@ -157,8 +124,9 @@
                                             HorizontalAlignment="Center"
                                             Width="100"
                                             TextBlock.TextAlignment="Right"
+                                            AllowDecimals="False"
                                             DataContext="{Binding CurrentApiArgs}"
-                                            Text="{Binding DoubleProperty2Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                            Value="{Binding Radius, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                             HorizontalContentAlignment="Right"
                                             Style="{DynamicResource ApiSystemTextBox}" />
 
@@ -179,23 +147,33 @@
                                             AllowDecimals="False"
                                             TextBlock.TextAlignment="Right"
                                             DataContext="{Binding CurrentApiArgs}"
-                                            Text="{Binding IntProperty1, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                            Value="{Binding MaxResults, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                             HorizontalContentAlignment="Right"
                                             Style="{DynamicResource ApiSystemTextBox}" />
-
             </Grid>
 
+            <DockPanel Grid.Row="5">
+                <CheckBox IsChecked="{Binding UseMappingValue}"
+                          DataContext="{Binding CurrentApiArgs}"
+                          Style="{DynamicResource EliteStyleCheckBox}"
+                          Content="Use Mapping Value"
+                          Margin="10"
+                          FontSize="16"
+                          Foreground="{DynamicResource Header}"
+                          Grid.Row="5" />
 
-            <CheckBox IsChecked="{Binding BoolProperty1}"
-                      DataContext="{Binding CurrentApiArgs}"
-                      Style="{DynamicResource EliteStyleCheckBox}"
-                      Content="Use Mapping Value"
-                      Margin="10"
-                      FontSize="16"
-                      Foreground="{DynamicResource Header}"
-                      Grid.Row="5" />
+                <CheckBox IsChecked="{Binding AvoidThargoids}"
+                          DataContext="{Binding CurrentApiArgs}"
+                          Style="{DynamicResource EliteStyleCheckBox}"
+                          Content="Avoid Thargoids"
+                          Margin="10"
+                          FontSize="16"
+                          Foreground="{DynamicResource Header}"
+                          Grid.Row="6" />
+            </DockPanel>
 
-            <CheckBox IsChecked="{Binding BoolProperty2}"
+
+            <CheckBox IsChecked="{Binding Loop}"
                       DataContext="{Binding CurrentApiArgs}"
                       Style="{DynamicResource EliteStyleCheckBox}"
                       Content="Loop"
@@ -209,64 +187,31 @@
                        Margin="0 2"
                        Foreground="{DynamicResource Header}"
                        FontSize="14" />
-
-            <StackPanel Orientation="Horizontal"
-                        Grid.Row="8">
-                <textbox:NumberInputTextBox Grid.Row="1"
-                                            Height="30"
-                                            HorizontalAlignment="Center"
-                                            Width="120"
-                                            AllowDecimals="False"
-                                            TextBlock.TextAlignment="Right"
-                                            DataContext="{Binding CurrentApiArgs}"
-                                            Text="{Binding IntProperty3, StringFormat={}{0:N0}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                            HorizontalContentAlignment="Right"
-                                            Style="{DynamicResource ApiSystemTextBox}" />
-                <Slider Grid.Row="8"
-                        Minimum="1"
-                        Maximum="1000000"
-                        SmallChange="10000"
-                        TickFrequency="10000"
-                        LargeChange="10000"
-                        Width="310"
-                        Margin="10 0"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        DataContext="{Binding CurrentApiArgs}"
-                        Value="{Binding IntProperty3, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-            </StackPanel>
+            <slilders:ExponetialSliderWithTextBox Grid.Row="8"
+                                                  TextBoxWidth="130"
+                                                  Minimum="1"
+                                                  Margin="0 5"
+                                                  MidPoint="100000"
+                                                  Maximum="1000000"
+                                                  DataContext="{Binding CurrentApiArgs}"
+                                                  Value="{Binding MaxDistance, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                  SliderWidth="320" />
 
             <TextBlock Text="Minimum Scan Value"
                        Grid.Row="9"
                        Margin="0 2"
                        Foreground="{DynamicResource Header}"
                        FontSize="14" />
-
-            <StackPanel Orientation="Horizontal"
-                        Grid.Row="10">
-                <textbox:NumberInputTextBox Grid.Row="1"
-                                            Height="30"
-                                            HorizontalAlignment="Center"
-                                            Width="120"
-                                            AllowDecimals="False"
-                                            TextBlock.TextAlignment="Right"
-                                            DataContext="{Binding CurrentApiArgs}"
-                                            Text="{Binding IntProperty2, StringFormat={}{0:N0}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                            HorizontalContentAlignment="Right"
-                                            Style="{DynamicResource ApiSystemTextBox}" />
-                <Slider Grid.Row="8"
-                        Minimum="1"
-                        Maximum="1000000"
-                        SmallChange="10000"
-                        TickFrequency="10000"
-                        LargeChange="10000"
-                        Width="310"
-                        Margin="10 0"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        DataContext="{Binding CurrentApiArgs}"
-                        Value="{Binding IntProperty2, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-            </StackPanel>
+            <slilders:ExponetialSliderWithTextBox Grid.Row="10"
+                                                  TextBoxWidth="130"
+                                                  Margin="0 5"
+                                                  Minimum="1000"
+                                                  MidPoint="500000"
+                                                  Maximum="5000000"
+                                                  DataContext="{Binding CurrentApiArgs}"
+                                                  Value="{Binding MinValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                  SliderWidth="320" />            
+            
             <!--#endregion-->
 
             <!--#region Coloumn 3-->
@@ -295,7 +240,7 @@
     <DataTemplate x:Key="NeutronRouteAPIControl">
         <Grid Grid.Row="0"
               Grid.RowSpan="3"
-              DataContext="{Binding RelativeSource={RelativeSource AncestorType=ContentControl}, Path=DataContext}">
+              DataContext="{Binding RelativeSource={RelativeSource AncestorType=ContentControl}, Path=DataContext}" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
                 <ColumnDefinition Width="20" />
@@ -348,9 +293,10 @@
                        Foreground="{DynamicResource Header}"
                        FontSize="14" />
 
-            <TextBox Text="{Binding SystemName, UpdateSourceTrigger=PropertyChanged}"
-                     DataContext="{Binding CurrentApiArgs.AdditionSystem}"
-                     Grid.Row="5"
+            <TextBox Grid.Row="5"
+                     x:Name="ViaSystemToAdd"
+                     Loaded="TextBoxLoaded"
+                     Unloaded="TextBoxUnloaded"
                      Margin="10"
                      Height="30"
                      Style="{DynamicResource ApiSystemNameTextBox}" />
@@ -377,7 +323,7 @@
                                             Width="100"
                                             TextBlock.TextAlignment="Right"
                                             DataContext="{Binding CurrentApiArgs}"
-                                            Text="{Binding DoubleProperty1Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                            Value="{Binding Range, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                             HorizontalContentAlignment="Right"
                                             Style="{DynamicResource EliteTextBox}" />
 
@@ -395,7 +341,7 @@
                                             Grid.Column="1"
                                             OffText="Normal"
                                             DataContext="{Binding CurrentApiArgs}"
-                                            IsChecked="{Binding BoolProperty1, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                            IsChecked="{Binding OverChargedSuperCharge, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                             OnText="Overcharge" />
             </Grid>
             <TextBlock Text="Efficiency (%)"
@@ -409,7 +355,7 @@
                                      Maximum="100"
                                      VerticalAlignment="Center"
                                      DataContext="{Binding CurrentApiArgs}"
-                                     Value="{Binding IntProperty1, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                     Value="{Binding Efficiency, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             <!--#endregion-->
 
             <!--#region Coloumn 3-->
@@ -438,6 +384,7 @@
                     Width="200"
                     HorizontalAlignment="Left"
                     Command="{Binding AddAdditionalSystemCommand}"
+                    CommandParameter="{Binding ElementName=ViaSystemToAdd, Path=Text}"
                     Style="{DynamicResource EliteStyleButton}" />
 
 
@@ -574,6 +521,10 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition />
             </Grid.RowDefinitions>
 
@@ -597,10 +548,12 @@
                        Foreground="{DynamicResource Header}"
                        FontSize="14" />
 
-            <TextBox Text="{Binding CurrentApiArgs.AdditionSystem.SystemName, UpdateSourceTrigger=PropertyChanged}"
-                     Grid.Row="3"
+            <TextBox Grid.Row="3"
                      Margin="10"
                      Height="30"
+                     x:Name="DestinationToAddTextBox"
+                     Loaded="TextBoxLoaded"
+                     Unloaded="TextBoxUnloaded"
                      Style="{DynamicResource ApiSystemTextBox}" />
 
             <Grid Grid.Row="4">
@@ -628,7 +581,7 @@
                                             HorizontalContentAlignment="Right"
                                             AllowDecimals="False"
                                             DataContext="{Binding CurrentApiArgs}"
-                                            Text="{Binding IntProperty1, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                            Text="{Binding CapicityUsed, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                             Style="{DynamicResource ApiSystemTextBox}" />
 
                 <TextBlock Text="Carrier Type"
@@ -646,7 +599,7 @@
                                             Grid.Column="1"
                                             OffText="Personal"
                                             Command="{Binding ChangeCarrierTypeCommand}"
-                                            IsChecked="{Binding CurrentApiArgs.BoolProperty1, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                            IsChecked="{Binding SquadCarrier, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                             OnText="Squadron" />
             </Grid>
 
@@ -656,7 +609,50 @@
                       Content="Determine Tritium Requirements"
                       VerticalContentAlignment="Center"
                       VerticalAlignment="Center"
-                      IsChecked="{Binding CurrentApiArgs.BoolProperty2}" />
+                      DataContext="{Binding CurrentApiArgs}"
+                      IsChecked="{Binding DetermineTritRequirements}" />
+
+            <TextBlock Text="Tritium in tank"
+                       Grid.Row="6"
+                       Margin="10 0"
+                       DataContext="{Binding CurrentApiArgs}"
+                       Visibility="{Binding DetermineTritRequirements, Converter={StaticResource InvertibleBoolToVis}, ConverterParameter=Inverted}"
+                       Foreground="{DynamicResource Header}"
+                       FontSize="14" />
+
+            <textbox:NumberInputTextBox Grid.Row="7"
+                                        Height="30"
+                                        HorizontalAlignment="Left"
+                                        Width="120"
+                                        Margin="10 5"
+                                        AllowDecimals="False"
+                                        TextBlock.TextAlignment="Right"
+                                        DataContext="{Binding CurrentApiArgs}"
+                                        Visibility="{Binding DetermineTritRequirements, Converter={StaticResource InvertibleBoolToVis}, ConverterParameter=Inverted}"
+                                        Value="{Binding CurrentFuel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                        HorizontalContentAlignment="Right"
+                                        Style="{DynamicResource ApiSystemTextBox}" />
+
+            <TextBlock Text="Tritium in market"
+                       Grid.Row="8"
+                       Margin="10 0"
+                       DataContext="{Binding CurrentApiArgs}"
+                       Visibility="{Binding DetermineTritRequirements, Converter={StaticResource InvertibleBoolToVis}, ConverterParameter=Inverted}"
+                       Foreground="{DynamicResource Header}"
+                       FontSize="14" />
+
+            <textbox:NumberInputTextBox Grid.Row="9"
+                                        Height="30"
+                                        Margin="10 5"
+                                        HorizontalAlignment="Left"
+                                        Width="120"
+                                        AllowDecimals="False"
+                                        TextBlock.TextAlignment="Right"
+                                        DataContext="{Binding CurrentApiArgs}"
+                                        Visibility="{Binding DetermineTritRequirements, Converter={StaticResource InvertibleBoolToVis}, ConverterParameter=Inverted}"
+                                        Value="{Binding TritInMarket, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                        HorizontalContentAlignment="Right"
+                                        Style="{DynamicResource ApiSystemTextBox}" />
             <!--#endregion-->
 
             <!--#region Coloumn 3-->
@@ -676,6 +672,7 @@
                     Width="200"
                     HorizontalAlignment="Left"
                     Command="{Binding AddAdditionalSystemCommand}"
+                    CommandParameter="{Binding ElementName=DestinationToAddTextBox, Path=Text}"
                     Style="{DynamicResource EliteStyleButton}" />
 
 
@@ -804,7 +801,7 @@
                                             AllowDecimals="False"
                                             TextBlock.TextAlignment="Right"
                                             DataContext="{Binding CurrentApiArgs}"
-                                            Text="{Binding IntProperty1, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                            Value="{Binding Cargo, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                             HorizontalContentAlignment="Right"
                                             Style="{DynamicResource ApiSystemTextBox}" />
 
@@ -825,7 +822,7 @@
                                             AllowDecimals="False"
                                             TextBlock.TextAlignment="Right"
                                             DataContext="{Binding CurrentApiArgs}"
-                                            Text="{Binding IntProperty3, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                            Value="{Binding ReserveSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                             HorizontalContentAlignment="Right"
                                             Style="{DynamicResource ApiSystemTextBox}" />
             </Grid>
@@ -834,7 +831,7 @@
                         FlowDirection="LeftToRight"
                         Width="480">
 
-                <CheckBox IsChecked="{Binding BoolProperty1}"
+                <CheckBox IsChecked="{Binding IsSupercharged}"
                           DataContext="{Binding CurrentApiArgs}"
                           Style="{DynamicResource EliteStyleCheckBox}"
                           Content="Already Supercharged"
@@ -845,7 +842,7 @@
                           Foreground="{DynamicResource Header}"
                           Grid.Row="5" />
 
-                <CheckBox IsChecked="{Binding BoolProperty2}"
+                <CheckBox IsChecked="{Binding UseSupercharge}"
                           DataContext="{Binding CurrentApiArgs}"
                           Style="{DynamicResource EliteStyleCheckBox}"
                           Content="Use Supercharge"
@@ -855,7 +852,7 @@
                           VerticalAlignment="Center"
                           Foreground="{DynamicResource Header}"
                           Grid.Row="6" />
-                <CheckBox IsChecked="{Binding BoolProperty3}"
+                <CheckBox IsChecked="{Binding UseInjections}"
                           DataContext="{Binding CurrentApiArgs}"
                           Style="{DynamicResource EliteStyleCheckBox}"
                           Content="Use FSD Injections Always"
@@ -865,7 +862,7 @@
                           VerticalAlignment="Center"
                           Foreground="{DynamicResource Header}"
                           Grid.Row="6" />
-                <CheckBox IsChecked="{Binding BoolProperty4}"
+                <CheckBox IsChecked="{Binding UseInjectionsWhenRequired}"
                           DataContext="{Binding CurrentApiArgs}"
                           Style="{DynamicResource EliteStyleCheckBox}"
                           Content="Use FSD Injections When Required"
@@ -876,7 +873,7 @@
                           Foreground="{DynamicResource Header}"
                           Grid.Row="5" />
 
-                <CheckBox IsChecked="{Binding BoolProperty5}"
+                <CheckBox IsChecked="{Binding ExcludeSecondary}"
                           DataContext="{Binding CurrentApiArgs}"
                           Style="{DynamicResource EliteStyleCheckBox}"
                           Content="Exclude Secondary Stars"
@@ -886,7 +883,7 @@
                           VerticalAlignment="Center"
                           Foreground="{DynamicResource Header}"
                           Grid.Row="6" />
-                <CheckBox IsChecked="{Binding BoolProperty6}"
+                <CheckBox IsChecked="{Binding RefuelEveryScoopable}"
                           DataContext="{Binding CurrentApiArgs}"
                           Style="{DynamicResource EliteStyleCheckBox}"
                           Content="Refuel Every Scoopable"
@@ -898,7 +895,7 @@
                           Grid.Row="6" />
             </WrapPanel>
 
-            <TextBlock Text="Calucation Time"
+            <TextBlock Text="Calculation Time"
                        Grid.Row="7"
                        Margin="0 2"
                        Foreground="{DynamicResource Header}"
@@ -913,7 +910,7 @@
                                             AllowDecimals="False"
                                             TextBlock.TextAlignment="Right"
                                             DataContext="{Binding CurrentApiArgs}"
-                                            Text="{Binding IntProperty2, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                            Value="{Binding CalculationTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                             HorizontalContentAlignment="Right"
                                             Style="{DynamicResource ApiSystemTextBox}" />
                 <Slider Grid.Row="8"
@@ -924,7 +921,7 @@
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         DataContext="{Binding CurrentApiArgs}"
-                        Value="{Binding IntProperty2, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        Value="{Binding CalculationTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             </StackPanel>
 
             <StackPanel Orientation="Horizontal"
@@ -1050,7 +1047,7 @@
                                             AllowDecimals="False"
                                             TextBlock.TextAlignment="Right"
                                             DataContext="{Binding CurrentApiArgs}"
-                                            Text="{Binding DoubleProperty1, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                            Value="{Binding Range, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                             HorizontalContentAlignment="Right"
                                             Style="{DynamicResource ApiSystemTextBox}" />
 
@@ -1071,7 +1068,7 @@
                                             AllowDecimals="False"
                                             TextBlock.TextAlignment="Right"
                                             DataContext="{Binding CurrentApiArgs}"
-                                            Text="{Binding DoubleProperty2, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                            Value="{Binding Radius, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                             HorizontalContentAlignment="Right"
                                             Style="{DynamicResource ApiSystemTextBox}" />
 
@@ -1092,7 +1089,7 @@
                                             AllowDecimals="False"
                                             TextBlock.TextAlignment="Right"
                                             DataContext="{Binding CurrentApiArgs}"
-                                            Text="{Binding IntProperty1, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                            Value="{Binding MaxResults, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                             HorizontalContentAlignment="Right"
                                             Style="{DynamicResource ApiSystemTextBox}" />
             </Grid>
@@ -1108,7 +1105,7 @@
                         FlowDirection="LeftToRight"
                         Width="480">
 
-                <CheckBox IsChecked="{Binding BoolProperty1}"
+                <CheckBox IsChecked="{Binding EarthLike}"
                           DataContext="{Binding CurrentApiArgs}"
                           Style="{DynamicResource EliteStyleCheckBox}"
                           Content="Earth-like world"
@@ -1119,7 +1116,7 @@
                           Foreground="{DynamicResource Header}"
                           Grid.Row="5" />
 
-                <CheckBox IsChecked="{Binding BoolProperty2}"
+                <CheckBox IsChecked="{Binding Ammonia}"
                           DataContext="{Binding CurrentApiArgs}"
                           Style="{DynamicResource EliteStyleCheckBox}"
                           Content="Ammonia world"
@@ -1129,7 +1126,7 @@
                           VerticalAlignment="Center"
                           Foreground="{DynamicResource Header}"
                           Grid.Row="6" />
-                <CheckBox IsChecked="{Binding BoolProperty3}"
+                <CheckBox IsChecked="{Binding Rocky}"
                           DataContext="{Binding CurrentApiArgs}"
                           Style="{DynamicResource EliteStyleCheckBox}"
                           Content="Rocky body"
@@ -1139,7 +1136,7 @@
                           VerticalAlignment="Center"
                           Foreground="{DynamicResource Header}"
                           Grid.Row="6" />
-                <CheckBox IsChecked="{Binding BoolProperty4}"
+                <CheckBox IsChecked="{Binding HMC}"
                           DataContext="{Binding CurrentApiArgs}"
                           Style="{DynamicResource EliteStyleCheckBox}"
                           Content="High metal content world"
@@ -1161,7 +1158,7 @@
             <WrapPanel  Grid.Row="8"
                         FlowDirection="LeftToRight"
                         Width="480">
-                <CheckBox IsChecked="{Binding BoolProperty5}"
+                <CheckBox IsChecked="{Binding AvoidThargoids}"
                           DataContext="{Binding CurrentApiArgs}"
                           Style="{DynamicResource EliteStyleCheckBox}"
                           Content="Avoid Thargoids"
@@ -1171,7 +1168,7 @@
                           VerticalAlignment="Center"
                           Foreground="{DynamicResource Header}"
                           Grid.Row="6" />
-                <CheckBox IsChecked="{Binding BoolProperty6}"
+                <CheckBox IsChecked="{Binding Loop}"
                           DataContext="{Binding CurrentApiArgs}"
                           Style="{DynamicResource EliteStyleCheckBox}"
                           Content="Loop"
@@ -1189,31 +1186,14 @@
                        Foreground="{DynamicResource Header}"
                        FontSize="14" />
 
-            <StackPanel Orientation="Horizontal"
-                        Grid.Row="10">
-                <textbox:NumberInputTextBox Grid.Row="1"
-                                            Height="30"
-                                            HorizontalAlignment="Center"
-                                            Width="130"
-                                            AllowDecimals="False"
-                                            TextBlock.TextAlignment="Right"
-                                            DataContext="{Binding CurrentApiArgs}"
-                                            Text="{Binding IntProperty3,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                            HorizontalContentAlignment="Right"
-                                            Style="{DynamicResource ApiSystemTextBox}" />
-                <Slider Grid.Row="8"
-                        Minimum="0"
-                        Width="310"
-                        Margin="10 0"
-                        Maximum="1000000"
-                        SmallChange="10000"
-                        TickFrequency="10000"
-                        LargeChange="10000"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        DataContext="{Binding CurrentApiArgs}"
-                        Value="{Binding IntProperty3, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-            </StackPanel>
+            <slilders:ExponetialSliderWithTextBox Grid.Row="10"
+                                                  TextBoxWidth="130"
+                                                  Minimum="1"
+                                                  MidPoint="100000"
+                                                  Maximum="1000000"
+                                                  DataContext="{Binding CurrentApiArgs}"
+                                                  Value="{Binding MaxDistance, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                  SliderWidth="320" />
             <!--#endregion-->
 
             <!--#region Coloumn 3-->
@@ -1312,7 +1292,7 @@
                                             Width="100"
                                             TextBlock.TextAlignment="Right"
                                             DataContext="{Binding CurrentApiArgs}"
-                                            Text="{Binding DoubleProperty1Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                            Value="{Binding Range, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                             HorizontalContentAlignment="Right"
                                             Style="{DynamicResource ApiSystemTextBox}" />
 
@@ -1330,9 +1310,10 @@
                                             Height="30"
                                             HorizontalAlignment="Center"
                                             Width="100"
+                                            AllowDecimals="False"
                                             TextBlock.TextAlignment="Right"
                                             DataContext="{Binding CurrentApiArgs}"
-                                            Text="{Binding DoubleProperty2Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                            Value="{Binding Radius, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                             HorizontalContentAlignment="Right"
                                             Style="{DynamicResource ApiSystemTextBox}" />
 
@@ -1353,13 +1334,13 @@
                                             AllowDecimals="False"
                                             TextBlock.TextAlignment="Right"
                                             DataContext="{Binding CurrentApiArgs}"
-                                            Text="{Binding IntProperty1, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                            Value="{Binding MaxResults, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                             HorizontalContentAlignment="Right"
                                             Style="{DynamicResource ApiSystemTextBox}" />
 
             </Grid>
 
-            <CheckBox IsChecked="{Binding BoolProperty1}"
+            <CheckBox IsChecked="{Binding AvoidThargoids}"
                       DataContext="{Binding CurrentApiArgs}"
                       Style="{DynamicResource EliteStyleCheckBox}"
                       Content="Avoid Thrgoids"
@@ -1368,7 +1349,7 @@
                       Foreground="{DynamicResource Header}"
                       Grid.Row="5" />
 
-            <CheckBox IsChecked="{Binding BoolProperty2}"
+            <CheckBox IsChecked="{Binding Loop}"
                       DataContext="{Binding CurrentApiArgs}"
                       Style="{DynamicResource EliteStyleCheckBox}"
                       Content="Loop"
@@ -1379,67 +1360,36 @@
 
             <TextBlock Text="Maximum Distance To Arrival"
                        Grid.Row="7"
-                       Margin="0 0 0 10"
+                       Margin="0 0 0 5"
                        HorizontalAlignment="Left"
                        Foreground="{DynamicResource Header}"
                        FontSize="14" />
-            <StackPanel Orientation="Horizontal"
-                        Grid.Row="8">
-                <textbox:NumberInputTextBox Grid.Row="1"
-                                            Height="30"
-                                            HorizontalAlignment="Center"
-                                            Width="130"
-                                            AllowDecimals="False"
-                                            TextBlock.TextAlignment="Right"
-                                            DataContext="{Binding CurrentApiArgs}"
-                                            Text="{Binding IntProperty2, StringFormat={}{0:N0}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                            HorizontalContentAlignment="Right"
-                                            Style="{DynamicResource ApiSystemTextBox}" />
-                <Slider Grid.Row="8"
-                        Minimum="1"
-                        Maximum="1000000"
-                        SmallChange="10000"
-                        TickFrequency="10000"
-                        LargeChange="10000"
-                        Width="310"
-                        Margin="10 0"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        DataContext="{Binding CurrentApiArgs}"
-                        Value="{Binding IntProperty2, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-            </StackPanel>
+
+            <slilders:ExponetialSliderWithTextBox Grid.Row="8"
+                                                  TextBoxWidth="130"
+                                                  Minimum="1"
+                                                  MidPoint="50000"
+                                                  Maximum="1000000"
+                                                  DataContext="{Binding CurrentApiArgs}"
+                                                  Value="{Binding MaxDistance, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                  SliderWidth="320" />
+
 
             <TextBlock Text="Minimum Landmark Value"
                        Grid.Row="9"
-                       Margin="0 10 0 10"
+                       Margin="0 5"
                        HorizontalAlignment="Left"
                        Foreground="{DynamicResource Header}"
                        FontSize="14" />
-            <StackPanel Orientation="Horizontal"
-                        Grid.Row="10">
-                <textbox:NumberInputTextBox Grid.Row="1"
-                                            Height="30"
-                                            HorizontalAlignment="Center"
-                                            Width="130"
-                                            AllowDecimals="False"
-                                            TextBlock.TextAlignment="Right"
-                                            DataContext="{Binding CurrentApiArgs}"
-                                            Text="{Binding IntProperty3, StringFormat={}{0:N0}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                            HorizontalContentAlignment="Right"
-                                            Style="{DynamicResource ApiSystemTextBox}" />
-                <Slider Grid.Row="8"
-                        Minimum="1000000"
-                        Maximum="20000000"
-                        SmallChange="10000"
-                        TickFrequency="10000"
-                        LargeChange="10000"
-                        Width="310"
-                        Margin="10 0"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        DataContext="{Binding CurrentApiArgs}"
-                        Value="{Binding IntProperty3, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-            </StackPanel>
+
+            <slilders:ExponetialSliderWithTextBox Grid.Row="10"
+                                                  TextBoxWidth="130"
+                                                  Minimum="1000000"
+                                                  MidPoint="8000000"
+                                                  Maximum="20000000"
+                                                  DataContext="{Binding CurrentApiArgs}"
+                                                  Value="{Binding MinValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                  SliderWidth="320" />
             <!--#endregion-->
 
             <!--#region Coloumn 3-->
@@ -1521,8 +1471,9 @@
                        Foreground="{DynamicResource Header}"
                        FontSize="14" />
 
-            <TextBox Text="{Binding AdditionSystem.SystemName, UpdateSourceTrigger=PropertyChanged}"
-                     DataContext="{Binding CurrentApiArgs}"
+            <TextBox x:Name="TouristAdditonalTextBox"
+                     Loaded="TextBoxLoaded"
+                     Unloaded="TextBoxUnloaded"
                      Grid.Row="5"
                      Margin="10"
                      Height="30"
@@ -1543,9 +1494,9 @@
                                         HorizontalAlignment="Left"
                                         TextBlock.TextAlignment="Right"
                                         HorizontalContentAlignment="Right"
-                                        AllowDecimals="False"
+                                        AllowDecimals="True"
                                         DataContext="{Binding CurrentApiArgs}"
-                                        Text="{Binding DoubleProperty1Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                        Value="{Binding Range, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                         Style="{DynamicResource ApiSystemTextBox}" />
 
             <Button Content="Add Destination"
@@ -1557,6 +1508,7 @@
                     Margin="10"
                     HorizontalAlignment="Right"
                     Command="{Binding AddAdditionalSystemCommand}"
+                    CommandParameter="{Binding ElementName=TouristAdditonalTextBox, Path=Text}"
                     Style="{DynamicResource EliteStyleButton}" />
 
             <CheckBox Style="{DynamicResource EliteStyleCheckBox}"
@@ -1565,7 +1517,7 @@
                       Content="Loop"
                       VerticalContentAlignment="Center"
                       VerticalAlignment="Center"
-                      IsChecked="{Binding CurrentApiArgs.BoolProperty1}" />
+                      IsChecked="{Binding CurrentApiArgs.Loop}" />
             <!--#endregion-->
 
             <!--#region Coloumn 3-->
@@ -1605,8 +1557,7 @@
                       BorderBrush="{DynamicResource PrimaryControlBorder}"
                       BorderThickness="1"
                       PreviewMouseDown="DataGridMouseDown"
-                      ItemsSource="{Binding CurrentApiArgs.AdditionalSystems}"
-                      SelectedItem="{Binding CurrentApiArgs.SelectedAdditional}">
+                      ItemsSource="{Binding CurrentApiArgs.AdditionalSystems}">
                 <DataGrid.Resources>
                     <odmvvm:WpfBindingProxy x:Key="proxy"
                                             Data="{Binding }" />
@@ -1614,7 +1565,7 @@
                 <DataGrid.Columns>
                     <DataGridTextColumn Binding="{Binding SystemName}"
                                         Width="*"
-                                        CellStyle="{DynamicResource CmdrSelectionCellLeftVertCenter}" />
+                                        CellStyle="{DynamicResource SpanshAPISystemGridCell}" />
                     <DataGridTemplateColumn CellStyle="{DynamicResource ButtonGridCell}">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
@@ -1628,6 +1579,296 @@
                     </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
+            <!--#endregion-->
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate x:Key="TradePlannerAPIControl">
+        <Grid Grid.Row="0"
+              Grid.RowSpan="3"
+              DataContext="{Binding RelativeSource={RelativeSource AncestorType=ContentControl}, Path=DataContext}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="20" />
+                <ColumnDefinition Width="{StaticResource RightColumn}" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <!--#region Coloumn 1-->
+            <TextBlock Text="Source System"
+                       Grid.Row="0"
+                       Margin="0 2"
+                       Foreground="{DynamicResource Header}"
+                       FontSize="14" />
+
+            <TextBox Text="{Binding SystemName, UpdateSourceTrigger=PropertyChanged}"
+                     DataContext="{Binding CurrentApiArgs.SourceSystem}"
+                     Style="{DynamicResource ApiSystemNameTextBox}"
+                     Grid.Row="1"
+                     Margin="10"
+                     Height="30" />
+
+            <TextBlock Text="Staion"
+                       Grid.Row="2"
+                       Margin="0 2"
+                       Foreground="{DynamicResource Header}"
+                       FontSize="14" />
+
+            <ComboBox ItemsSource="{Binding Stations}"
+                      DataContext="{Binding CurrentApiArgs}"
+                      SelectedItem="{Binding SelectedStation}"
+                      FontSize="20"
+                      Style="{DynamicResource BottomPlacementComboBox}"
+                      MaxDropDownHeight="290"
+                      DisplayMemberPath="StationName"
+                      Margin="10"
+                      Grid.Row="3" />
+
+            <Grid Grid.Row="4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock Text="Starting Capital"
+                           Grid.Row="0"
+                           Margin="0 2"
+                           HorizontalAlignment="Center"
+                           Foreground="{DynamicResource Header}"
+                           FontSize="14" />
+
+                <textbox:NumberInputTextBox Grid.Row="1"
+                                            Margin="10"
+                                            Height="30"
+                                            HorizontalAlignment="Center"
+                                            Width="150"
+                                            AllowDecimals="False"
+                                            TextBlock.TextAlignment="Right"
+                                            DataContext="{Binding CurrentApiArgs}"
+                                            Value="{Binding StartingCapital, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                            HorizontalContentAlignment="Right"
+                                            Style="{DynamicResource ApiSystemTextBox}" />
+
+                <TextBlock Text="Max Hop Distance (LY)"
+                           Grid.Row="0"
+                           Grid.Column="1"
+                           Margin="0 2"
+                           HorizontalAlignment="Center"
+                           Foreground="{DynamicResource Header}"
+                           FontSize="14" />
+
+                <textbox:NumberInputTextBox Grid.Row="1"
+                                            Grid.Column="1"
+                                            Margin="10"
+                                            Height="30"
+                                            HorizontalAlignment="Center"
+                                            Width="100"
+                                            AllowDecimals="True"
+                                            TextBlock.TextAlignment="Right"
+                                            DataContext="{Binding CurrentApiArgs}"
+                                            Value="{Binding MaxHopDistance, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                            HorizontalContentAlignment="Right"
+                                            Style="{DynamicResource ApiSystemTextBox}" />
+
+                <TextBlock Text="Max Cargo Capcity"
+                           Grid.Row="0"
+                           Grid.Column="2"
+                           Margin="0 2"
+                           HorizontalAlignment="Center"
+                           Foreground="{DynamicResource Header}"
+                           FontSize="14" />
+
+                <textbox:NumberInputTextBox Grid.Row="1"
+                                            Grid.Column="2"
+                                            Margin="10"
+                                            Height="30"
+                                            HorizontalAlignment="Center"
+                                            Width="100"
+                                            AllowDecimals="False"
+                                            TextBlock.TextAlignment="Right"
+                                            DataContext="{Binding CurrentApiArgs}"
+                                            Value="{Binding MaxCargo, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                            HorizontalContentAlignment="Right"
+                                            Style="{DynamicResource ApiSystemTextBox}" />
+            </Grid>
+
+            <TextBlock Text="Max Distance to Arrival (ls)"
+                       Grid.Row="5"
+                       Margin="0 2"
+                       HorizontalAlignment="Left"
+                       Foreground="{DynamicResource Header}"
+                       FontSize="14" />
+
+            <slilders:ExponetialSliderWithTextBox Grid.Row="6"
+                                                  Margin="0 5"
+                                                  TextBoxWidth="130"
+                                                  Minimum="0"
+                                                  MidPoint="20000"
+                                                  Maximum="500000"
+                                                  DataContext="{Binding CurrentApiArgs}"
+                                                  Value="{Binding MaxSystemDistance, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                  SliderWidth="320"/>
+
+            <TextBlock Text="Max Hops"
+                       Grid.Row="7"
+                       Margin="0 2"
+                       HorizontalAlignment="Left"
+                       Foreground="{DynamicResource Header}"
+                       FontSize="14" />
+
+            <StackPanel Orientation="Horizontal"
+                        Margin="0 5"
+                        Grid.Row="8">
+                <textbox:NumberInputTextBox Height="30"
+                                            HorizontalAlignment="Center"
+                                            Width="130"
+                                            Minimum="1"
+                                            Maximum="10"
+                                            AllowDecimals="False"
+                                            TextBlock.TextAlignment="Right"
+                                            DataContext="{Binding CurrentApiArgs}"
+                                            Value="{Binding MaxHops, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                            HorizontalContentAlignment="Right"
+                                            Style="{DynamicResource ApiSystemTextBox}" />
+                <Slider Minimum="1"
+                        Maximum="10"
+                        SmallChange="1"
+                        TickFrequency="1"
+                        LargeChange="1"
+                        Width="320"
+                        Margin="10 0"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        DataContext="{Binding CurrentApiArgs}"
+                        Value="{Binding MaxHops, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
+
+            <TextBlock Text="Max Market Age (Days)"
+                       Grid.Row="9"
+                       Margin="0 2"
+                       HorizontalAlignment="Left"
+                       Foreground="{DynamicResource Header}"
+                       FontSize="14" />
+
+            <slilders:ExponetialSliderWithTextBox Grid.Row="10"
+                                                  Margin="0 5"
+                                                  TextBoxWidth="130"
+                                                  Minimum="1"
+                                                  MidPoint="30"
+                                                  Maximum="1095"
+                                                  DataContext="{Binding CurrentApiArgs}"
+                                                  Value="{Binding MaxPriceAge, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                  SliderWidth="320" />
+
+            <!--#endregion-->
+
+            <!--#region Coloumn 3-->
+            <Button  Content="Current System"
+                     Grid.Column="3"
+                     Grid.Row="1"
+                     Height="30"
+                     Width="200"
+                     HorizontalAlignment="Left"
+                     Command="{Binding SetCurrentSystemCommand}"
+                     Style="{DynamicResource EliteStyleButton}" />
+
+            <Button  Content="Get Stations"
+                     Grid.Column="3"
+                     Grid.Row="3"
+                     Height="30"
+                     Width="200"
+                     HorizontalAlignment="Left"
+                     Command="{Binding GetTradeStationsCommand}"
+                     Style="{DynamicResource EliteStyleButton}" />
+
+            <WrapPanel  Grid.Row="4"
+                        Grid.RowSpan="8"
+                        Grid.Column="2"
+                        Margin="5"
+                        HorizontalAlignment="Left"
+                        FlowDirection="LeftToRight"
+                        Width="220">
+
+                <CheckBox IsChecked="{Binding RequiresLargePad}"
+                          DataContext="{Binding CurrentApiArgs}"
+                          Style="{DynamicResource EliteStyleCheckBox}"
+                          Content="Requires Large Pad"
+                          Margin="5"
+                          Width="210"
+                          HorizontalAlignment="Left"
+                          VerticalAlignment="Center" />
+
+                <CheckBox IsChecked="{Binding AllowPlanetary}"
+                          DataContext="{Binding CurrentApiArgs}"
+                          Style="{DynamicResource EliteStyleCheckBox}"
+                          Content="Allow Planetary"
+                          Margin="5"
+                          Width="210"
+                          HorizontalAlignment="Left"
+                          VerticalAlignment="Center" />
+
+                <CheckBox IsChecked="{Binding AllowPlayerOwned}"
+                          DataContext="{Binding CurrentApiArgs}"
+                          Style="{DynamicResource EliteStyleCheckBox}"
+                          Content="Allow Player Owned"
+                          Margin="5"
+                          Width="210"
+                          HorizontalAlignment="Left"
+                          VerticalAlignment="Center" />
+
+                <CheckBox IsChecked="{Binding AllowProhibited}"
+                          DataContext="{Binding CurrentApiArgs}"
+                          Style="{DynamicResource EliteStyleCheckBox}"
+                          Content="Allow Prohibited"
+                          Margin="5"
+                          Width="210"
+                          HorizontalAlignment="Left"
+                          VerticalAlignment="Center" />
+
+                <CheckBox IsChecked="{Binding AllowRestrictedAccess}"
+                          DataContext="{Binding CurrentApiArgs}"
+                          Style="{DynamicResource EliteStyleCheckBox}"
+                          Content="Allow Restricted Access"
+                          Width="210"
+                          Margin="5"
+                          HorizontalAlignment="Left"
+                          VerticalAlignment="Center" />
+
+                <CheckBox IsChecked="{Binding Permit}"
+                          DataContext="{Binding CurrentApiArgs}"
+                          Style="{DynamicResource EliteStyleCheckBox}"
+                          Content="Allow Permit Systems"
+                          Width="210"
+                          Margin="5"
+                          HorizontalAlignment="Left"
+                          VerticalAlignment="Center" />
+
+                <CheckBox IsChecked="{Binding Unique}"
+                          DataContext="{Binding CurrentApiArgs}"
+                          Style="{DynamicResource EliteStyleCheckBox}"
+                          Content="Avoid Loops"
+                          Width="210"
+                          Margin="5"
+                          HorizontalAlignment="Left"
+                          VerticalAlignment="Center" />
+            </WrapPanel>
             <!--#endregion-->
         </Grid>
     </DataTemplate>

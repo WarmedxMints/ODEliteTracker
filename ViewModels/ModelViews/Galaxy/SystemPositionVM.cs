@@ -6,6 +6,10 @@ namespace ODEliteTracker.ViewModels.ModelViews.Galaxy
 {
     public sealed class SystemPositionVM
     {
+        public SystemPositionVM()
+        {
+            Position = new Position();
+        }
         public SystemPositionVM(Position pos)
         {
             Position = pos;

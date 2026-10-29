@@ -44,8 +44,8 @@ namespace ODEliteTracker.ViewModels.ModelViews.Trade
         public int CreditPerTInt { get; }
         public string CarrierStock => CarrierStockInt == 0 ? string.Empty : $"{CarrierStockInt:N0}";
 
-        private int carrierStockInt;          
-        public int CarrierStockInt
+        private long carrierStockInt;          
+        public long CarrierStockInt
         {
             get => carrierStockInt;
             set
@@ -57,8 +57,8 @@ namespace ODEliteTracker.ViewModels.ModelViews.Trade
         }
         public string CarrierDiff => CarrierStockInt == 0 ? string.Empty : $"{CarrierDiffInt:N0}";
 
-        private int carrierDiffInt;
-        public int CarrierDiffInt
+        private long carrierDiffInt;
+        public long CarrierDiffInt
         {
             get => carrierDiffInt;
             set

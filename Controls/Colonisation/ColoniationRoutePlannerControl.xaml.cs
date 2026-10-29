@@ -1,5 +1,4 @@
-﻿using ODEliteTracker.Models.Settings;
-using ODEliteTracker.ViewModels;
+﻿using ODEliteTracker.ViewModels;
 using ODEliteTracker.ViewModels.ModelViews.Colonisation;
 using ODMVVM.Services.MessageBox;
 using System.Windows;

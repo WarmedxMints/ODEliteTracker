@@ -26,6 +26,7 @@ namespace ODEliteTracker.ViewModels.ModelViews
             }
         }
         public bool HasScoopBool => info.HasScoop;
+        public bool NeedsLargePad => info.Size == ODMVVM.Helpers.ShipSize.L;
         public string HasScoop => info.HasScoop ? string.Empty : $"No Fuel Scoop!";
         public string HasScoopYesNo => info.HasScoop ? "Yes" : "No";
         public bool HasAFMUBool => info.Modules.FirstOrDefault(x => x.Item.StartsWith("Int_Repairer", StringComparison.OrdinalIgnoreCase)) != null;

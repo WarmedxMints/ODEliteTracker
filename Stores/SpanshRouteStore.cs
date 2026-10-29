@@ -1,7 +1,6 @@
 ﻿using EliteJournalReader;
 using EliteJournalReader.Events;
 using ODEliteTracker.Database;
-using ODEliteTracker.Models;
 using ODEliteTracker.Models.Spansh;
 using ODEliteTracker.Services;
 using ODEliteTracker.ViewModels.ModelViews.Spansh;
@@ -245,7 +244,7 @@ namespace ODEliteTracker.Stores
                         notificationService.ShowBasicNotification(new Notifications.NotificationArgs(NextTarget.SystemName, ["Refuel System"], Models.Settings.NotificationOptions.SpanshRefuel));
                     }
 
-                    if (settingsStore.SpanshCSVSettings.AutoCopySystemToClipboard && string.IsNullOrEmpty(NextTarget?.SystemName) == false)
+                    if (settingsStore.SpanshRouteSettings.AutoCopySystemToClipboard && string.IsNullOrEmpty(NextTarget?.SystemName) == false)
                     {
                         notificationService.SetClipboard(NextTarget.SystemName);
                     }
@@ -254,7 +253,7 @@ namespace ODEliteTracker.Stores
                 return;
             }
 
-            if (settingsStore.SpanshCSVSettings.AutoCopySystemToClipboard == false)
+            if (settingsStore.SpanshRouteSettings.AutoCopySystemToClipboard == false)
                 return;
 
             if (NextTarget is not null && CurrentTarget is not null && CurrentTarget.SystemName.Equals(system, StringComparison.OrdinalIgnoreCase))
@@ -305,9 +304,8 @@ namespace ODEliteTracker.Stores
             return container;
         }
 
-        public async Task<List<ApiRouteSystemVM>> CheckSystemNamesWithSpansh(ApiArgs args)
+        public async Task<List<ApiRouteSystemVM>> CheckSystemNamesWithSpansh(List<ApiRouteSystemVM> systems)
         {
-            List<ApiRouteSystemVM> systems = GetSystemNames(args);
             //Store a list of all the names we get in each in case one matches something later in the list
             HashSet<string> spanshResults = [];
 
@@ -354,88 +352,21 @@ namespace ODEliteTracker.Stores
             return systemsNotFound;
         }
 
-        private static List<ApiRouteSystemVM> GetSystemNames(ApiArgs args)
+        public async Task<SpanshSystemApiDump?> GetSystemDump(ulong id64)
         {
-            List<ApiRouteSystemVM> ret = [];
+            var dump = await spanshClient.GetSystem(id64);
 
-            if (args.SourceSystem.HasValue)
-                ret.Add(args.SourceSystem);
+            if (dump == null || dump.System == null)
+                return null;
 
-            if (args.TargetSystem.HasValue)
-                ret.Add(args.TargetSystem);
-
-            if (args.AdditionSystems.Any(x => x.HasValue))
-                ret.AddRange(args.AdditionSystems.Where(x => x.HasValue));
-            //TODO
-            switch (args.RouteType)
-            {
-                case SpanshRouteTypeComboBox.RoadToRiches:
-                    break;
-                case SpanshRouteTypeComboBox.FleetCarrier:
-                    break;
-                case SpanshRouteTypeComboBox.NeutronRoute:
-                    break;
-                case SpanshRouteTypeComboBox.GalaxyPlotter:
-                    break;
-                case SpanshRouteTypeComboBox.WorldTypeRoute:
-                    break;
-                case SpanshRouteTypeComboBox.TouristRoute:
-                    break;
-                case SpanshRouteTypeComboBox.Exobiology:
-                    break;
-                case SpanshRouteTypeComboBox.Colonisation:
-                    break;
-            }
-            return ret;
+            return dump;
         }
 
-        public async Task<(bool, SpanshResponseBase?)> GenerateRoute(ApiArgs args, Action<string>? textUpdate)
+        public async Task<(bool, SpanshResponseBase?)> GenerateRoute(SpanshApiParameters apiParams, Action<string>? textUpdate)
         {
-            switch (args.RouteType)
+            switch (apiParams)
             {
-                case SpanshRouteTypeComboBox.RoadToRiches:
-                    if (args.GetApiParamters() is not ApiRoadToRichesParameters r2rParams)
-                        return (false, null);
-                    var r2rRoute = await spanshClient.GetApiRoute(r2rParams, textUpdate) as ApiRoadToRichesRoute;
-                    if (r2rRoute != null && CheckSpanshResponse(r2rRoute))
-                    {
-                        GenerateRoute(r2rRoute);
-                        return (true, r2rRoute);
-                    }
-                    return (false, r2rRoute);
-                case SpanshRouteTypeComboBox.FleetCarrier:
-                    if (args.GetApiParamters() is not ApiFleetCarrierRouteParameters fcParams)
-                        return (false, null);
-                    var fcRoute = await spanshClient.GetApiRoute(fcParams, textUpdate) as ApiFleetCarrierRoute;
-                    if (fcRoute != null && CheckSpanshResponse(fcRoute))
-                    {
-                        GenerateRoute(fcRoute);
-                        return (true, fcRoute);
-                    }
-                    break;
-                case SpanshRouteTypeComboBox.NeutronRoute:
-                   if (args.GetApiParamters() is not ApiNeutronParameters neutronParams)
-                        return (false, null);
-                    var neutronRoute = await spanshClient.GetApiRoute(neutronParams, textUpdate) as ApiNeutronRoute;
-                    if (neutronRoute != null && CheckSpanshResponse(neutronRoute))
-                    {
-                        GenerateRoute(neutronRoute);
-                        return (true, neutronRoute);
-                    }
-                    return (false, neutronRoute);
-                case SpanshRouteTypeComboBox.GalaxyPlotter:
-                    if (args.GetApiParamters() is not ApiGalaxyRouteParameters galaxyParams)
-                        return (false, null);
-                    var galaxyRoute = await spanshClient.GetApiRoute(galaxyParams, textUpdate) as ApiGalaxyPlotterRoute;
-                    if (galaxyRoute != null && CheckSpanshResponse(galaxyRoute))
-                    {
-                        GenerateRoute(galaxyRoute);
-                        return (true, galaxyRoute);
-                    }
-                    break;
-                case SpanshRouteTypeComboBox.WorldTypeRoute:
-                    if (args.GetApiParamters() is not ApiWorldTypeParameters worldParams)
-                        return (false, null);
+                case ApiWorldTypeParameters worldParams:
                     var worldRoute = await spanshClient.GetApiRoute(worldParams, textUpdate) as ApiWorldTypeRoute;
                     if (worldRoute != null && CheckSpanshResponse(worldRoute))
                     {
@@ -443,20 +374,7 @@ namespace ODEliteTracker.Stores
                         return (true, worldRoute);
                     }
                     break;
-                case SpanshRouteTypeComboBox.TouristRoute:
-                    if (args.GetApiParamters() is not ApiTouristRouteApiParameters touristParams)
-                        return (false, null);
-                    var tourist = await spanshClient.GetApiRoute(touristParams, textUpdate) as ApiTouristRoute;
-
-                    if (tourist != null && CheckSpanshResponse(tourist))
-                    {
-                        GenerateRoute(tourist);
-                        return (true, tourist);
-                    }
-                    break;
-                case SpanshRouteTypeComboBox.Exobiology:
-                    if (args.GetApiParamters() is not ApiExobiologyRouteParameters exoParams)
-                        return (false, null);
+                case ApiExobiologyRouteParameters exoParams:
                     var exuRoute = await spanshClient.GetApiRoute(exoParams, textUpdate) as ApiExoviologyRoute;
                     if (exuRoute != null && CheckSpanshResponse(exuRoute))
                     {
@@ -464,17 +382,62 @@ namespace ODEliteTracker.Stores
                         return (true, exuRoute);
                     }
                     break;
-                case SpanshRouteTypeComboBox.Colonisation:
-                    if (args.GetApiParamters() is not ApiColonisationParameters colPamars)
-                        return (false, null);
+                case ApiRoadToRichesParameters r2rParams:
+                    var r2rRoute = await spanshClient.GetApiRoute(r2rParams, textUpdate) as ApiRoadToRichesRoute;
+                    if (r2rRoute != null && CheckSpanshResponse(r2rRoute))
+                    {
+                        GenerateRoute(r2rRoute);
+                        return (true, r2rRoute);
+                    }
+                    return (false, r2rRoute);
+                case ApiFleetCarrierRouteParameters fcParams:
+                    var fcRoute = await spanshClient.GetApiRoute(fcParams, textUpdate) as ApiFleetCarrierRoute;
+                    if (fcRoute != null && CheckSpanshResponse(fcRoute))
+                    {
+                        GenerateRoute(fcRoute);
+                        return (true, fcRoute);
+                    }
+                    break;
+                case ApiNeutronParameters neutronParams:
+                    var neutronRoute = await spanshClient.GetApiRoute(neutronParams, textUpdate) as ApiNeutronRoute;
+                    if (neutronRoute != null && CheckSpanshResponse(neutronRoute))
+                    {
+                        GenerateRoute(neutronRoute);
+                        return (true, neutronRoute);
+                    }
+                    break;
+                case ApiGalaxyRouteParameters galaxyParams:
+                    var galaxyRoute = await spanshClient.GetApiRoute(galaxyParams, textUpdate) as ApiGalaxyPlotterRoute;
+                    if (galaxyRoute != null && CheckSpanshResponse(galaxyRoute))
+                    {
+                        GenerateRoute(galaxyRoute);
+                        return (true, galaxyRoute);
+                    }
+                    break;
+                case ApiTouristRouteApiParameters touristParams:
+                    var tourist = await spanshClient.GetApiRoute(touristParams, textUpdate) as ApiTouristRoute;
+                    if (tourist != null && CheckSpanshResponse(tourist))
+                    {
+                        GenerateRoute(tourist);
+                        return (true, tourist);
+                    }
+                    break;
+                case ApiColonisationParameters colPamars:
                     var colonisationRoute = await spanshClient.GetApiRoute(colPamars, textUpdate) as ApiColonisationRoute;
-
                     if (colonisationRoute != null && CheckSpanshResponse(colonisationRoute))
                     {
                         GenerateRoute(colonisationRoute);
                         return (true, colonisationRoute);
                     }
-                    return (false, colonisationRoute);
+                    break;
+                case ApiTradePlannerParameters tradeParams:
+                    var tradeRoute = await spanshClient.GetApiRoute(tradeParams, textUpdate) as ApiTradePlannerRoute;
+                    if (tradeRoute != null && CheckSpanshResponse(tradeRoute))
+                    {
+                        GenerateRoute(tradeRoute);
+                        return (true, tradeRoute);
+                    }
+                    break;
             }
             return (false, null);
         }
@@ -485,6 +448,7 @@ namespace ODEliteTracker.Stores
                 return false;
             return true;
         }
+
         internal bool GenerateRoute(SpanshResponseBase route)
         {
             if (route == null)

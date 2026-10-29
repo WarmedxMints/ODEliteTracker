@@ -65,7 +65,7 @@ namespace ODEliteTracker.Models.FleetCarrier
         public string StarSystem { get; internal set; } = string.Empty;
         public ulong SystemAddress { get; internal set; }
         public int BodyID { get; internal set; }
-        public long TotalCapacity { get; internal set; }
+        public int TotalCapacity { get; internal set; }
         public long FreeSpace { get; internal set; }
         public long UsedCapacity => TotalCapacity - FreeSpace;
         public FleetCarrierDestination Destination { get; set; } = new();

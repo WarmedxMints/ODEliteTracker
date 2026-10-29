@@ -1,9 +1,9 @@
 ﻿namespace ODEliteTracker.Models.Settings
 {
-    public sealed class SpanshCSVSettings
+    public sealed class SpanshRouteSettings
     {
         public bool AutoCopySystemToClipboard { get; set; } = true;
-        public Dictionary<int,List<SpashAPISave>> CmdrApiSaveData { get; set; } = [];
+        public Dictionary<int,List<SpanshAPISave>> CmdrApiData { get; set; } = [];
         public Dictionary<int, SpanshRouteTypeComboBox> SelectedApi { get; set; } = [];
         public Dictionary<int, int> SelectedShipID { get; set; } = [];
         public int RouteControllerSelectedTab { get; set; }
@@ -30,26 +30,26 @@
             SelectedApi.TryAdd(commanderId, apiSelection);
         }        
 
-        internal List<SpashAPISave> GetApiSave(int commanderId)
+        internal List<SpanshAPISave> GetApiSave(int commanderId)
         {
-            if (CmdrApiSaveData.TryGetValue(commanderId, out var save))
+            if (CmdrApiData.TryGetValue(commanderId, out var save))
                 return save;
 
-            var ret = new List<SpashAPISave>();
-            CmdrApiSaveData.TryAdd(commanderId, ret);
+            var ret = new List<SpanshAPISave>();
+            CmdrApiData.TryAdd(commanderId, ret);
             return ret;
                
         }
 
-        internal void SaveAPiData(int selectedCommanderID, List<SpashAPISave> saveData)
+        internal void SaveAPiData(int selectedCommanderID, List<SpanshAPISave> saveData)
         {
-            if (CmdrApiSaveData.ContainsKey(selectedCommanderID))
+            if (CmdrApiData.ContainsKey(selectedCommanderID))
                 {
-                CmdrApiSaveData[selectedCommanderID] = saveData;
+                CmdrApiData[selectedCommanderID] = saveData;
                 return;
             }
 
-            CmdrApiSaveData.TryAdd(selectedCommanderID, saveData);
+            CmdrApiData.TryAdd(selectedCommanderID, saveData);
         }
 
         internal int GetSelectedShipID(int selectedCommanderID)

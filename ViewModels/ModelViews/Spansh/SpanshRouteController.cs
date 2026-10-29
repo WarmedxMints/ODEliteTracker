@@ -93,10 +93,10 @@ namespace ODEliteTracker.ViewModels.ModelViews.Spansh
 
         public bool AutoCopyNextSystem
         {
-            get => settingsStore.SpanshCSVSettings.AutoCopySystemToClipboard;
+            get => settingsStore.SpanshRouteSettings.AutoCopySystemToClipboard;
             set
             {
-                settingsStore.SpanshCSVSettings.AutoCopySystemToClipboard = value;
+                settingsStore.SpanshRouteSettings.AutoCopySystemToClipboard = value;
                 OnPropertyChanged(nameof(AutoCopyNextSystem));
             }
         }
@@ -125,10 +125,10 @@ namespace ODEliteTracker.ViewModels.ModelViews.Spansh
 
         public int SelectedTab
         {
-            get => settingsStore.SpanshCSVSettings.RouteControllerSelectedTab;
+            get => settingsStore.SpanshRouteSettings.RouteControllerSelectedTab;
             set
             {
-                settingsStore.SpanshCSVSettings.RouteControllerSelectedTab = value;
+                settingsStore.SpanshRouteSettings.RouteControllerSelectedTab = value;
                 OnPropertyChanged(nameof(SelectedTab));
             }
         }
@@ -150,7 +150,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Spansh
             PreviousTargetCommand = new ODRelayCommand(SelectPreviousTarget, (_) => CurrentIndex > 0);
             NextTargetCommand = new ODRelayCommand(SelectNextTarget, (_) => NextTarget != null);
             SetCurrentRouteTypeCommand = new ODRelayCommand<SpanshRouteType>(SetRouteType, (routeType) => CurrentType != routeType);
-            CopyToClipboardCommand = new ODRelayCommand<SpanshRouteTargetViewModel>(CopySystemNameToClipboard, (targetVM) => targetVM != null);
+            CopyToClipboardCommand = new ODRelayCommand<string>(CopySystemNameToClipboard, (name) => !string.IsNullOrEmpty(name));
             DeleteRouteCommand = new ODRelayCommand<SpanshRouteContainerVM>(DeleteRoute, (vm) => vm != null);
             LoadSavedRouteCommand = new ODRelayCommand(LoadSavedRoute, (_) => SelectedContainer != null);
             RouteContainers.CollectionChanged += RouteContainers_CollectionChanged;
@@ -200,7 +200,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Spansh
                 OnPropertyChanged(nameof(CurrentContainer));
                 return;
             }
-            currentTarget = CurrentIndex < CurrentContainer.Targets.Count - 1 ? CurrentContainer.Targets[CurrentIndex]
+            currentTarget = CurrentIndex < CurrentContainer.Targets.Count ? CurrentContainer.Targets[CurrentIndex]
                 : CurrentContainer.Targets.FirstOrDefault(x => x.SystemName == spanshStore.CurrentTarget?.SystemName);
 
             nextTarget = CurrentContainer.Targets.FirstOrDefault(x => x.SystemName == spanshStore.NextTarget?.SystemName);
@@ -243,7 +243,7 @@ namespace ODEliteTracker.ViewModels.ModelViews.Spansh
                 RouteContainers.AddItem(newComtainer);
                 CurrentContainer = newComtainer;
                 notification = true;
-                //SelectedTab = 0;
+                SelectedTab = 0;
             }
             OnCurrentTargetChanged(null, spanshStore.CurrentTarget, notification);
         }
@@ -284,14 +284,14 @@ namespace ODEliteTracker.ViewModels.ModelViews.Spansh
             OnCurrentContainerChanged(null, contianer);
         }
 
-        private void CopySystemNameToClipboard(SpanshRouteTargetViewModel model)
+        private void CopySystemNameToClipboard(string systemName)
         {
-            if (model == null)
+            if (string.IsNullOrEmpty(systemName))
             {
                 return;
             }
 
-            notificationService.SetClipboard(model.SystemName);
+            notificationService.SetClipboard(systemName);
         }
 
         internal void ImportCSV(string? filename)

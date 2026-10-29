@@ -15,7 +15,7 @@ namespace ODEliteTracker
     /// </summary>
     public partial class App
     {
-        public static Version AppVersion { get; } = new Version(1, 5, 33, 2);
+        public static Version AppVersion { get; } = new Version(1, 5, 34);
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 #if INSTALL || DEBUG
@@ -70,7 +70,6 @@ namespace ODEliteTracker
             });
 
             await _host.StartAsync();
-
             //Disable shutdown when the dialog closes
             ShutdownMode = ShutdownMode.OnExplicitShutdown; 
             var updateWindow = Services.GetRequiredService<LoaderWindow>();

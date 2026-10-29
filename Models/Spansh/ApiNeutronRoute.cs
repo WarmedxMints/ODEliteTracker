@@ -23,18 +23,15 @@ namespace ODEliteTracker.Models.Spansh
         public double Range { get; set; }
 
         [JsonProperty("supercharge_multiplier")]
-        public long SuperchargeMultiplier { get; set; }
+        public int SuperchargeMultiplier { get; set; } = 4;
 
         [JsonProperty("efficiency")]
-        public long Efficiency { get; set; }
+        public int Efficiency { get; set; } = 60;
 
         [JsonProperty("via")]
         public List<string>? Via { get; set; }
 
-        public override SpanshRouteType GetRouteType()
-        {
-            return SpanshRouteType.NeutronRoute;
-        }
+        public override SpanshRouteType GetRouteType() => SpanshRouteType.NeutronRoute;
         
     }
 

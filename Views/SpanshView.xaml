@@ -23,7 +23,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Controls/Spansh/SpanshAPITemplates.xaml" />
+                <ResourceDictionary Source="../Controls/Spansh/SpanshAPITemplates.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <sys:Double x:Key="ButtonWidth">130</sys:Double>
         </ResourceDictionary>
@@ -104,6 +104,10 @@
                                               Style="{DynamicResource EliteMenuStyle}"
                                               Tag="{x:Static spanshModels:SpanshRouteType.Colonisation}"
                                               Click="ImportJson" />
+                                    <MenuItem Header="Trade Planner Route"
+                                              Style="{DynamicResource EliteMenuStyle}"
+                                              Tag="{x:Static spanshModels:SpanshRouteType.TradePlanner}"
+                                              Click="ImportJson" />
                                 </MenuItem>
                             </Menu>
                         </buttons:ToggleButonWithPopup.PopupContent>
@@ -160,6 +164,12 @@
                                 FontSize="18"
                                 Command="{Binding RouteController.SetCurrentRouteTypeCommand}"
                                 CommandParameter="{x:Static spanshModels:SpanshRouteType.Colonisation}"
+                                Style="{DynamicResource TabButton}"
+                                Width="{StaticResource ButtonWidth}" />
+                        <Button Content="Trade Planner"
+                                FontSize="18"
+                                Command="{Binding RouteController.SetCurrentRouteTypeCommand}"
+                                CommandParameter="{x:Static spanshModels:SpanshRouteType.TradePlanner}"
                                 Style="{DynamicResource TabButton}"
                                 Width="{StaticResource ButtonWidth}" />
                     </StackPanel>
@@ -306,14 +316,15 @@
                                                VerticalAlignment="Center"
                                                Foreground="Red" />
                                 </StackPanel>
-                                <Button Content="Apply Ship Stats"
+                                <Button Content="{Binding ApiController.CurrentApiArgs.ButtonText}"
                                         Grid.Row="3"
                                         HorizontalAlignment="Right"
                                         VerticalAlignment="Center"
                                         Margin="10"
                                         Height="30"
                                         Width="150"
-                                        Command="{Binding ApiController.ImportShipStatsCommand}"
+                                        IsEnabled="{Binding ApiController.CurrentApiArgs.CanImportStats}"
+                                        Command="{Binding ApiController.ImportStatsCommand}"
                                         Style="{DynamicResource EliteStyleButton}" />
 
                                 <buttons:ToggleButonWithPopup ToggleButtonContent="Destinations"
@@ -375,9 +386,7 @@
                                           VerticalScrollBarVisibility="Auto"
                                           Grid.RowSpan="3"
                                           Grid.Row="1">
-                                <ContentControl Grid.Row="0"
-                                                Grid.RowSpan="3"
-                                                DataContext="{Binding ApiController}">
+                                <ContentControl DataContext="{Binding ApiController}">
                                     <ContentControl.Style>
                                         <Style TargetType="{x:Type ContentControl}">
                                             <Setter Property="ContentTemplate"
@@ -422,6 +431,11 @@
                                                              Value="{x:Static models:SpanshRouteTypeComboBox.TouristRoute}">
                                                     <Setter Property="ContentTemplate"
                                                             Value="{StaticResource TouristRouteAPIControl}" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding CurrentTypeBox}"
+                                                             Value="{x:Static models:SpanshRouteTypeComboBox.TradePlanner}">
+                                                    <Setter Property="ContentTemplate"
+                                                            Value="{StaticResource TradePlannerAPIControl}" />
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>

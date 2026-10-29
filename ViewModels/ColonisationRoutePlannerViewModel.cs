@@ -16,7 +16,6 @@ using ODMVVM.ViewModels;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
-using System.Web;
 using System.Windows;
 using System.Windows.Input;
 using Position = ODEliteTracker.Models.Galaxy.Position;
@@ -330,7 +329,7 @@ namespace ODEliteTracker.ViewModels
             bool updated = false;
             foreach (var routesystem in routeSystems)
             {
-                if (routesystem.BodyCount > 0 && routesystem.Built)
+                if (routesystem.BodyCount > 0 && routesystem.StarCount > 0 && routesystem.Built)
                     continue;
 
                 if (await UpdateSystemBodyCounts(routesystem, checkSpansh))
@@ -341,19 +340,21 @@ namespace ODEliteTracker.ViewModels
         }
         internal async Task<bool> UpdateSystemBodyCounts(ColonisationRouteSystemVM routesystem, bool checkSpansh)
         {
-            if (routesystem.BodyCount > 0 && routesystem.Built)
+            var shouldCheck = !(routesystem.BodyCount > 0 && routesystem.StarCount > 0 && routesystem.Built);
+            if (!shouldCheck)
                 return false;
 
-            if (sharedData.Systems.TryGetValue(routesystem.SystemAddress, out var system) && (system.BodyCount > 0 || !routesystem.Built))
+            if (sharedData.Systems.TryGetValue(routesystem.SystemAddress, out var system) && shouldCheck)
             {
                 routesystem.BodyCount = system.BodyCount;
                 routesystem.StarCount = system.Bodies.Count(x => x.Value.StarType != EliteJournalReader.StarType.Unknown);
                 if (!routesystem.Built)
                     routesystem.Built = system.FactionCount > 1;
                 DataChanged = true;
+                shouldCheck = !(routesystem.BodyCount > 0 && routesystem.StarCount > 0 && routesystem.Built);
             }
 
-            if (!checkSpansh || routesystem.Built)
+            if (!checkSpansh || !shouldCheck)
                 return DataChanged;
 
             var spanshDump = await spanshClient.GetSystem(routesystem.SystemAddress);
@@ -365,7 +366,6 @@ namespace ODEliteTracker.ViewModels
             routesystem.BodyCount = Math.Max(spanshDump.System.BodyCount, routesystem.BodyCount);
             routesystem.Built = spanshDump.System.Factions?.Count > 1;
             DataChanged = true;
-
             return true;
         }
 
@@ -373,7 +373,7 @@ namespace ODEliteTracker.ViewModels
         public void Dispose()
         {
             if (isDisposing)
-            {
+            { 
                 return;
             }
 

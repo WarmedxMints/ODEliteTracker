@@ -5,8 +5,6 @@ using ODCapi.Services;
 using ODEliteTracker.Stores;
 using ODJournalDatabase.Database.Interfaces;
 using ODJournalDatabase.JournalManagement;
-using ODMVVM.Services.MessageBox;
-using System.Windows;
 
 namespace ODEliteTracker.Services
 {

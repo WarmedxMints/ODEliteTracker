@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using ODEliteTracker.Helpers.JsonCoverters;
 
 namespace ODEliteTracker.Models.Spansh
 {
@@ -14,7 +15,7 @@ namespace ODEliteTracker.Models.Spansh
     public sealed record ApiTouristRouteApiParameters : SpanshApiParameters
     {
         [JsonProperty("source")]
-        public required string Source { get; set; }
+        public string Source { get; set; } = string.Empty;
         [JsonProperty("range")]
         public double Range { get; set; }
 
@@ -24,8 +25,8 @@ namespace ODEliteTracker.Models.Spansh
         [JsonProperty("final_destination")]
         public string? FinalDestination { get; set; }
 
-        [JsonProperty("loop")]
-        public int Loop { get; set; }
+        [JsonProperty("loop"), JsonConverter(typeof(BoolConvertor))]
+        public bool Loop { get; set; }
 
         public override SpanshRouteType GetRouteType() => SpanshRouteType.TouristRoute;
     }

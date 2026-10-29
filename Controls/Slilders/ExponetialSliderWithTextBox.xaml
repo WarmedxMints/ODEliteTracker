@@ -1,0 +1,33 @@
+﻿<UserControl x:Class="ODEliteTracker.Controls.Slilders.ExponetialSliderWithTextBox"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ODEliteTracker.Controls.Slilders"
+             xmlns:textbox="clr-namespace:ODEliteTracker.Controls.TextBox"
+             mc:Ignorable="d" 
+             x:Name="Root"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <StackPanel Orientation="Horizontal">
+        <textbox:NumberInputTextBox Height="30"
+                                    HorizontalAlignment="Center"
+                                    Width="{Binding ElementName=Root, Path=TextBoxWidth}"
+                                    Value="{Binding ElementName=Root, Path=Value}"
+                                    AllowDecimals="{Binding ElementName=Root, Path=AllowDecimals}"
+                                    TextBlock.TextAlignment="Right"
+                                    HorizontalContentAlignment="Right"
+                                    ValueChanged="TextBoxValueChanged"
+                                    Style="{DynamicResource ApiSystemTextBox}" />
+        <Slider Minimum="0"
+                Maximum="1"
+                SmallChange="0.01"
+                TickFrequency="0.01"
+                LargeChange="0.05"
+                x:Name="Slider"
+                Margin="10 0"
+                Width="{Binding ElementName=Root, Path=SliderWidth}"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                ValueChanged="Slider_ValueChanged" />
+    </StackPanel>
+</UserControl>

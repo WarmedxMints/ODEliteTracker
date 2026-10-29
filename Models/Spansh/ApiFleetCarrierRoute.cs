@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using ODEliteTracker.Helpers.JsonCoverters;
 
 namespace ODEliteTracker.Models.Spansh
 {
@@ -13,29 +14,29 @@ namespace ODEliteTracker.Models.Spansh
 
     public sealed record ApiFleetCarrierRouteParameters : SpanshApiParameters
     {
-        [JsonProperty("calculate_starting_fuel")]
-        public long CalculateStartingFuel { get; set; }
+        [JsonProperty("calculate_starting_fuel"), JsonConverter(typeof(BoolConvertor))]
+        public bool CalculateStartingFuel { get; set; }
 
         [JsonProperty("capacity")]
-        public long Capacity { get; set; }
+        public int Capacity { get; set; } = 25000;
 
         [JsonProperty("capacity_used")]
         public long CapacityUsed { get; set; }
 
         [JsonProperty("current_fuel")]
-        public long CurrentFuel { get; set; }
+        public int CurrentFuel { get; set; }
 
         [JsonProperty("destination_systems")]
         public IReadOnlyList<string> DestinationSystems { get; set; } = [];
 
         [JsonProperty("mass")]
-        public long Mass { get; set; }
+        public int Mass { get; set; } 
 
         [JsonProperty("refuel_destinations")]
         public IReadOnlyList<string> RefuelDestinations { get; set; } = [];
 
         [JsonProperty("source_system")]
-        public required string SourceSystem { get; set; }
+        public string SourceSystem { get; set; } = string.Empty;
 
         [JsonProperty("tritium_amount")]
         public long TritiumAmount { get; set; }

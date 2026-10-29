@@ -1,5 +1,6 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:modelview="clr-namespace:ODEliteTracker.ViewModels.ModelViews.Spansh">
 
     <Style TargetType="{x:Type TextBox}"
            x:Key="PopOutTextBox">
@@ -236,5 +237,40 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
+
+    <Style TargetType="TextBox"
+           x:Key="ApiSystemNameTextBox"
+           BasedOn="{StaticResource EliteTextBox}">
+        <Setter Property="ContextMenu"
+                Value="{StaticResource TextBoxContextMenu}" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Status}"
+                         Value="{x:Static modelview:NameCheckStatus.Bad}">
+                <Setter Property="Foreground"
+                        Value="Red" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style TargetType="TextBox"
+           x:Key="ApiSystemTextBox"
+           BasedOn="{StaticResource EliteTextBox}">
+        <Setter Property="ContextMenu"
+                Value="{DynamicResource TextBoxContextMenu}" />
+    </Style>
+
+    <Style TargetType="{x:Type TextBlock}"
+           x:Key="ApiSystemNameTextBlock"
+           BasedOn="{StaticResource EliteTextBlock}">
+        <Setter Property="ContextMenu"
+                Value="{StaticResource TextBoxContextMenu}" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Status}"
+                         Value="{x:Static modelview:NameCheckStatus.Bad}">
+                <Setter Property="Foreground"
+                        Value="Red" />
+            </DataTrigger>
+        </Style.Triggers>
     </Style>
 </ResourceDictionary>

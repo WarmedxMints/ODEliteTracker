@@ -2,7 +2,6 @@
 using Newtonsoft.Json.Linq;
 using ODEliteTracker.Helpers;
 using ODEliteTracker.Models.Spansh;
-using ODMVVM.Helpers.IO;
 using System.Diagnostics;
 using System.Globalization;
 using System.Net;
@@ -103,7 +102,7 @@ namespace ODEliteTracker.Services
 
                     }
                     var knownRoute = await GetResults(parameters.GetRouteType(), parameters.JobId, textUpdate, maxTime);
-                    //In case it's an old/invalid job id, chcek if it is null
+                    //In case it's an old/invalid job id, check if it is null
                     //If it is then just carry on as if it is a new job
                     //Otherwise return the completed one
                     if (knownRoute != null)
@@ -152,6 +151,10 @@ namespace ODEliteTracker.Services
                         @params = parameters as ApiTouristRouteApiParameters;
                         html = TOURIST_ROUTE;
                         break;
+                    case SpanshRouteType.TradePlanner:
+                        @params = parameters as ApiTradePlannerParameters;
+                        html = TRADE_ROUTE;
+                        break;
                     default:
                         return null;
                 }
@@ -161,13 +164,13 @@ namespace ODEliteTracker.Services
 
                 var headers = JObject.FromObject(@params, ignoreNull)
                            .Properties()
-                           .Select(ChechForArraysAndGetString);
+                           .Select(ChechForArraysAndGetString)
+                           .Where(x => !string.IsNullOrEmpty(x));
 
                 var request = string.Join("&", headers);
 
                 var body = new StringContent(request, Encoding.ASCII, "application/x-www-form-urlencoded");
                 await Task.Delay(500);
-
                 textUpdate?.Invoke("Contacting Spansh");
 
                 var ret = await spanshClient.PostAsync(html, body);
@@ -207,7 +210,8 @@ namespace ODEliteTracker.Services
                 if (response == null)
                     return null;
 
-                return await GetResults(parameters.GetRouteType(), response.Job, textUpdate, maxTime);
+                var result = await GetResults(parameters.GetRouteType(), response.Job, textUpdate, maxTime);
+                return result;
             }
             catch (Exception ex)
             {
@@ -250,6 +254,7 @@ namespace ODEliteTracker.Services
                 SpanshRouteType.WorldTypeRoute => await GetResultsActual<ApiWorldTypeRoute>(job, textUpdate, maxTimeSeconds),
                 SpanshRouteType.Exobiology => await GetResultsActual<ApiExoviologyRoute>(job, textUpdate, maxTimeSeconds),
                 SpanshRouteType.TouristRoute => await GetResultsActual<ApiTouristRoute>(job, textUpdate, maxTimeSeconds),
+                SpanshRouteType.TradePlanner => await GetResultsActual<ApiTradePlannerRoute>(job, textUpdate, maxTimeSeconds),
                 _ => null,
             };
         }
@@ -259,6 +264,7 @@ namespace ODEliteTracker.Services
             textUpdate?.Invoke("Waiting for Results");
             await Task.Delay(9000);
             T? response = null;
+            string json = string.Empty;
             try
             {
                 JsonSerializerSettings ignoreNull = new()
@@ -273,7 +279,7 @@ namespace ODEliteTracker.Services
                 var startTime = DateTime.UtcNow;
                 while (elasped < elaspedLimit)
                 {
-                    var json = await spanshClient.GetStringAsync($"{RESULTS}{job}");
+                    json = await spanshClient.GetStringAsync($"{RESULTS}{job}");
                     response = JsonConvert.DeserializeObject<T>(json, ignoreNull);
 
                     if (response != null && response.State == "completed" && response.Status == "ok")

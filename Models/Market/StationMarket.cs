@@ -1,5 +1,6 @@
 ﻿using EliteJournalReader.Events;
 using ODCapi.Models;
+using ODMVVM.Helpers;
 
 namespace ODEliteTracker.Models.Market
 {
@@ -30,11 +31,53 @@ namespace ODEliteTracker.Models.Market
             MarketID = docked.MarketID;
             StationName = docked.StationName;
             StarSystem = docked.StarSystem;
-            //ItemsForSale = market.Commodities?.Where(x => x.BuyPrice > 0 && x.Categoryname != "NonMarketable").Select(x => new StationCommodity(x)).ToList() ?? []; 
-            //ItemsForPurchase = market.Commodities?.Where(x => x.Demand > 0 && x.Categoryname != "NonMarketable").Select(x => new StationCommodity(x)).ToList() ?? [];
-            ItemsForSale = market.Orders?.Commodities?.Sales?.Where(x => !x.Blackmarket).Select(x => new StationCommodity(x)).ToList() ?? [];
-            ItemsForPurchase = market.Orders?.Commodities?.Purchases?.Where(x => !x.Blackmarket).Select(x => new StationCommodity(x)).ToList() ?? [];
+            ItemsForSale = market.Commodities?.Where(x => x.BuyPrice > 0 && x.Categoryname != "NonMarketable").Select(x => new StationCommodity(x)).ToList() ?? [];
+            ItemsForPurchase = market.Commodities?.Where(x => x.Demand > 0 && x.Categoryname != "NonMarketable").Select(x => new StationCommodity(x)).ToList() ?? [];
+           
+            if(market.Orders?.Commodities != null)
+            {
+                ProcessCAPIOrders(market.Orders.Commodities);
+            }
             TimeStamp = docked.Timestamp;
+        }
+
+        private void ProcessCAPIOrders(MarketCommodities commodities)
+        {
+            if (commodities.Sales != null)
+            {
+                foreach (var item in commodities.Sales)
+                {
+                    if (item.Blackmarket)
+                        continue;
+
+                    var commod = EliteCommodityHelpers.GetCommodityFromPartial(item.Name ?? string.Empty, item.Name ?? string.Empty);
+
+                    var known = ItemsForSale.FirstOrDefault(x => x.Id == commod.Id);
+
+                    if (known != null)
+                        continue;
+
+                    ItemsForSale.Add(new StationCommodity(item));
+                }                    
+            }
+
+            if (commodities.Purchases == null)
+                return;
+
+            foreach (var item in commodities.Purchases)
+            {
+                if (item.Blackmarket)
+                    continue;
+
+                var commod = EliteCommodityHelpers.GetCommodityFromPartial(item.Name ?? string.Empty, item.Name ?? string.Empty);
+
+                var known = ItemsForPurchase.FirstOrDefault(x => x.Id == commod.Id);
+
+                if (known != null)
+                    continue;
+
+                ItemsForPurchase.Add(new StationCommodity(item));
+            }
         }
 
         public DateTime TimeStamp { get; set; }

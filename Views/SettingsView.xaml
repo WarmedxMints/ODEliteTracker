@@ -518,7 +518,7 @@
                            Grid.Row="1">
                     <Button Width="80"
                             Margin="10 0"
-                            ToolTip="www.spansh.co.uk/"
+                            ToolTip="www.spansh.co.uk"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
                             Cursor="Hand"

@@ -239,6 +239,23 @@
         </Setter>
     </Style>
 
+    <ContextMenu x:Key="TextBoxContextMenu">
+        <MenuItem Command="ApplicationCommands.Copy"
+                  TextBlock.TextAlignment="Left"
+                  Style="{DynamicResource EliteContextMenuItemStyle}" />
+        <MenuItem Command="ApplicationCommands.Cut"
+                  TextBlock.TextAlignment="Left"
+                  Style="{DynamicResource EliteContextMenuItemStyle}" />
+        <MenuItem Command="ApplicationCommands.Paste"
+                  TextBlock.TextAlignment="Left"
+                  Style="{DynamicResource EliteContextMenuItemStyle}" />
+    </ContextMenu>
+
+    <Style TargetType="{x:Type TextBox}">
+        <Setter Property="ContextMenu"
+                Value="{StaticResource TextBoxContextMenu}" />
+    </Style>
+    
     <Style TargetType="TextBox"
            x:Key="ApiSystemNameTextBox"
            BasedOn="{StaticResource EliteTextBox}">
@@ -257,7 +274,7 @@
            x:Key="ApiSystemTextBox"
            BasedOn="{StaticResource EliteTextBox}">
         <Setter Property="ContextMenu"
-                Value="{DynamicResource TextBoxContextMenu}" />
+                Value="{StaticResource TextBoxContextMenu}" />
     </Style>
 
     <Style TargetType="{x:Type TextBlock}"
